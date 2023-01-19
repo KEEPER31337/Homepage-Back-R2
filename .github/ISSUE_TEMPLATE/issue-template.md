@@ -17,5 +17,5 @@ assignees: ''
 
 ## ☑️ TODO
 
-- [] todo1
-- [] todo2
+- [ ] todo1
+- [ ] todo2
