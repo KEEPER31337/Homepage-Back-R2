@@ -9,8 +9,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
-  // USER
-  USER_NOT_FOUND("유저를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  // MEMBER
+  MEMBER_NOT_FOUND("해당 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   ;
 
   private final String message;
