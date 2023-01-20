@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
+import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ public class IntegrationTest {
   /******* Spring Bean *******/
   @Autowired
   protected WebApplicationContext webApplicationContext;
+
+  @Autowired
+  protected JwtTokenProvider jwtTokenProvider;
 
   @PersistenceContext
   protected EntityManager em;

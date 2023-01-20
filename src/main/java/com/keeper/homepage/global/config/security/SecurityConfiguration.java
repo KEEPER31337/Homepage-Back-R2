@@ -6,6 +6,7 @@ import com.keeper.homepage.global.config.security.handler.CustomAuthenticationEn
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
   private final JwtTokenProvider jwtTokenProvider;
@@ -29,7 +31,7 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests()
-        .requestMatchers("/docs/*").permitAll()
+        .requestMatchers("/docs/*", "/auth-test").permitAll()
         .anyRequest().hasRole("회원")
         .and()
         .httpBasic().disable()
