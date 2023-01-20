@@ -5,6 +5,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
@@ -65,7 +66,8 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("토큰이 없을 때 permit-all 설정이 아닌 URL은 401을 반환해야 한다.")
     void should_return401_when_noTokenAccessUser() throws Exception {
       mockMvc.perform(get(USER_URL))
-          .andExpect(status().isUnauthorized());
+          .andExpect(status().isUnauthorized())
+          .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -88,7 +90,8 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("토큰이 없을 때 회장 접근 권한의 URL은 401을 반환해야 한다.")
     void should_return401_when_noTokenAccessUser() throws Exception {
       mockMvc.perform(get(ADMIN_URL))
-          .andExpect(status().isUnauthorized());
+          .andExpect(status().isUnauthorized())
+          .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
@@ -96,7 +99,8 @@ class AuthControllerTest extends IntegrationTest {
     void success_noToken() throws Exception {
       mockMvc.perform(get(ADMIN_URL)
               .cookie(new Cookie(ACCESS_TOKEN, userToken)))
-          .andExpect(status().isForbidden());
+          .andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.message").exists());
     }
 
     @Test
