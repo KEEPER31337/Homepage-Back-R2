@@ -5,12 +5,14 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,6 +25,10 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @Transactional
 @SpringBootTest
 public class IntegrationTest {
+
+  /******* Repository *******/
+  @SpyBean
+  protected MemberJobRepository memberJobRepository;
 
   /******* Spring Bean *******/
   @Autowired
