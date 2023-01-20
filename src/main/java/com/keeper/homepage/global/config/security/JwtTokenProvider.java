@@ -86,10 +86,14 @@ public class JwtTokenProvider {
         .getBody();
   }
 
+  public long getAuthId(String token) {
+    return Long.parseLong(getClaim(token).getSubject());
+  }
+
   public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req) {
     try {
       String token = resolveToken(req);
-      Long.parseLong(getClaim(token).getSubject());
+      getAuthId(token);
       return TokenValidationResultDto.of(true, VALID, token);
     } catch (MalformedJwtException e) {
       return TokenValidationResultDto.of(false, MALFORMED);

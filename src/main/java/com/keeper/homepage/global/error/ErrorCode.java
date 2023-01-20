@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+  // AUTH
+  TOKEN_NOT_AVAILABLE("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
   // MEMBER
   MEMBER_NOT_FOUND("해당 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   ;
