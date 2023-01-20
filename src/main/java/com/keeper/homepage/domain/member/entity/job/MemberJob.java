@@ -3,6 +3,8 @@ package com.keeper.homepage.domain.member.entity.job;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +21,7 @@ import lombok.ToString;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"name"})
+@ToString(of = {"type"})
 @Table(name = "member_job")
 public class MemberJob {
 
@@ -30,6 +32,7 @@ public class MemberJob {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
+  @Enumerated(value = EnumType.STRING)
   @Column(name = "name", nullable = false, length = MAX_NAME_LENGTH)
   private MemberJobType type;
 
@@ -51,8 +54,17 @@ public class MemberJob {
   }
 
   public enum MemberJobType {
-    ROLE_회원(1),
-    ROLE_관리자(2);
+    ROLE_회장(1),
+    ROLE_부회장(2),
+    ROLE_대외부장(3),
+    ROLE_학술부장(4),
+    ROLE_전산관리자(5),
+    ROLE_서기(6),
+    ROLE_총무(7),
+    ROLE_사서(8),
+    ROLE_회원(9),
+    ROLE_출제자(10),
+    ;
 
     private final long id;
 
