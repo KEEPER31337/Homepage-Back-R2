@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.keeper.homepage.domain.about.StaticWriteTestHelper;
+import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
@@ -40,6 +41,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
+
+  @SpyBean
+  protected StaticWriteContentRepository staticWriteContentRepository;
 
   /******* Helper *******/
 

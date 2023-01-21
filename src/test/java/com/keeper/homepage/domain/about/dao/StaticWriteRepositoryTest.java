@@ -7,6 +7,7 @@ import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.BasicStat
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.about.entity.StaticWriteContent;
 import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.parameters.P;
 
 public class StaticWriteRepositoryTest extends IntegrationTest {
 
@@ -171,6 +171,77 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
       // then
       assertThat(staticWriteSubtitleImages).doesNotContain(staticWriteSubtitleImage);
+    }
+  }
+
+  @Nested
+  @DisplayName("StaticWrite 컨텐츠 테스트")
+  class StaticWriteContentTest {
+
+    @Test
+    @DisplayName("컨텐츠 저장 테스트")
+    void saveStaticWriteContentTest() {
+      // given
+      StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
+
+      // when
+      Optional<StaticWriteContent> findStaticWriteContent = staticWriteContentRepository.findById(
+          staticWriteContent.getId());
+
+      // then
+      assertThat(findStaticWriteContent).isNotEmpty();
+      assertThat(findStaticWriteContent.get().getId()).isEqualTo(staticWriteContent.getId());
+      assertThat(findStaticWriteContent.get().getContent())
+          .isEqualTo(staticWriteContent.getContent());
+      assertThat(findStaticWriteContent.get().getStaticWriteSubtitleImage())
+          .isEqualTo(staticWriteContent.getStaticWriteSubtitleImage());
+      assertThat(findStaticWriteContent.get().getDisplayOrder())
+          .isEqualTo(staticWriteContent.getDisplayOrder());
+    }
+
+    @Test
+    @DisplayName("컨텐츠 수정 테스트")
+    void updateStaticWriteContentTest() {
+      // given
+      StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
+      staticWriteContent.updateStaticWriteContent("수정 컨텐츠",
+          staticWriteContent.getStaticWriteSubtitleImage(), 2);
+
+      // when
+      Optional<StaticWriteContent> findStaticWriteContent = staticWriteContentRepository
+          .findById(staticWriteContent.getId());
+
+      // then
+      assertThat(findStaticWriteContent).isNotEmpty();
+      assertThat(findStaticWriteContent.get().getId()).isEqualTo(staticWriteContent.getId());
+      assertThat(findStaticWriteContent.get().getContent())
+          .isEqualTo(staticWriteContent.getContent());
+      assertThat(findStaticWriteContent.get().getStaticWriteSubtitleImage())
+          .isEqualTo(staticWriteContent.getStaticWriteSubtitleImage());
+      assertThat(findStaticWriteContent.get().getDisplayOrder())
+          .isEqualTo(staticWriteContent.getDisplayOrder());
+    }
+
+    @Test
+    @DisplayName("타입으로 컨텐츠 리스트 조회 테스트")
+    void getStaticWriteContentListByTypeTest() {
+      // given
+      String type = ACTIVITY.getType();
+
+      // when
+      Optional<List<StaticWriteContent>> staticWriteContents = staticWriteContentRepository
+          .findAllByStaticWriteSubtitleImage_StaticWriteTitle_Type(type);
+
+      List<String> contentTypes = staticWriteContents.get()
+          .stream()
+          .map(s -> s.getStaticWriteSubtitleImage().getStaticWriteTitle().getType())
+          .toList();
+
+      // then
+      assertThat(contentTypes).contains(type);
+      assertThat(contentTypes).doesNotContain(INTRO.getType());
+      assertThat(contentTypes).doesNotContain(EXCELLENCE.getType());
+      assertThat(contentTypes).doesNotContain(HISTORY.getType());
     }
   }
 }
