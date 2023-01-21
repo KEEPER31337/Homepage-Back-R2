@@ -7,6 +7,7 @@ import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.BasicStat
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +101,76 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
       assertThat(findStaticWriteTitle.get().getId()).isEqualTo(staticWriteTitle.getId());
       assertThat(findStaticWriteTitle.get().getTitle()).isEqualTo(staticWriteTitle.getTitle());
       assertThat(findStaticWriteTitle.get().getType()).isEqualTo(staticWriteTitle.getType());
+    }
+  }
+
+  @Nested
+  @DisplayName("StaticWrite 서브타이틀 테스트")
+  class StaticWriteSubtitleImageTest {
+
+    @Test
+    @DisplayName("서브타이틀 저장 테스트")
+    void saveStaticWriteSubtitleImageTest() {
+      // given
+      StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
+
+      // when
+      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository.findById(
+          staticWriteSubtitleImage.getId());
+
+      // then
+      assertThat(findStaticWriteSubtitleImage).isNotEmpty();
+      assertThat(findStaticWriteSubtitleImage.get().getId())
+          .isEqualTo(staticWriteSubtitleImage.getId());
+      assertThat(findStaticWriteSubtitleImage.get().getSubtitle())
+          .isEqualTo(staticWriteSubtitleImage.getSubtitle());
+      assertThat(findStaticWriteSubtitleImage.get().getStaticWriteTitle())
+          .isEqualTo(staticWriteSubtitleImage.getStaticWriteTitle());
+      assertThat(findStaticWriteSubtitleImage.get().getThumbnail())
+          .isEqualTo(staticWriteSubtitleImage.getThumbnail());
+      assertThat(findStaticWriteSubtitleImage.get().getDisplayOrder())
+          .isEqualTo(staticWriteSubtitleImage.getDisplayOrder());
+    }
+
+    @Test
+    @DisplayName("서브타이틀 수정 테스트")
+    void updateStaticWriteSubtitleImageTest() {
+      // given
+      StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
+      staticWriteSubtitleImage.updateStaticWriteSubtitleImage("수정 서브 타이틀",
+          staticWriteSubtitleImage.getStaticWriteTitle(),
+          staticWriteSubtitleImage.getThumbnail(), 2);
+
+      // when
+      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository.findById(
+          staticWriteSubtitleImage.getId());
+
+      // then
+      assertThat(findStaticWriteSubtitleImage).isNotEmpty();
+      assertThat(findStaticWriteSubtitleImage.get().getId())
+          .isEqualTo(staticWriteSubtitleImage.getId());
+      assertThat(findStaticWriteSubtitleImage.get().getSubtitle())
+          .isEqualTo(staticWriteSubtitleImage.getSubtitle());
+      assertThat(findStaticWriteSubtitleImage.get().getStaticWriteTitle())
+          .isEqualTo(staticWriteSubtitleImage.getStaticWriteTitle());
+      assertThat(findStaticWriteSubtitleImage.get().getThumbnail())
+          .isEqualTo(staticWriteSubtitleImage.getThumbnail());
+      assertThat(findStaticWriteSubtitleImage.get().getDisplayOrder())
+          .isEqualTo(staticWriteSubtitleImage.getDisplayOrder());
+    }
+
+    @Test
+    @DisplayName("서브타이틀 삭제 테스트")
+    void deleteStaticWriteSubtitleImageTest() {
+      // given
+      StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
+      staticWriteSubtitleImageRepository.delete(staticWriteSubtitleImage);
+
+      // when
+      List<StaticWriteSubtitleImage> staticWriteSubtitleImages = staticWriteSubtitleImageRepository.findAll();
+
+      // then
+      assertThat(staticWriteSubtitleImages).doesNotContain(staticWriteSubtitleImage);
     }
   }
 }

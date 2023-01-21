@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,4 +41,21 @@ public class StaticWriteSubtitleImage {
 
   @Column(name = "display_order", nullable = false)
   private int displayOrder;
+
+  public void updateStaticWriteSubtitleImage(String subtitle, StaticWriteTitle staticWriteTitle,
+      Thumbnail thumbnail, int displayOrder) {
+    this.subtitle = subtitle;
+    this.staticWriteTitle = staticWriteTitle;
+    this.thumbnail = thumbnail;
+    this.displayOrder = displayOrder;
+  }
+
+  @Builder
+  private StaticWriteSubtitleImage(String subtitle, StaticWriteTitle staticWriteTitle,
+      Thumbnail thumbnail, int displayOrder) {
+    this.subtitle = subtitle;
+    this.staticWriteTitle = staticWriteTitle;
+    this.thumbnail = thumbnail;
+    this.displayOrder = displayOrder;
+  }
 }
