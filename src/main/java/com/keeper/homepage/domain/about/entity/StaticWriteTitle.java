@@ -48,9 +48,7 @@ public class StaticWriteTitle {
     HISTORY(4, "동아리 연혁", "history");
 
     private final long id;
-
     private final String title;
-
     private final String type;
 
     BasicStaticWriteTitleType(long id, String title, String type) {
