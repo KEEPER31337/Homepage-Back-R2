@@ -5,6 +5,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.keeper.homepage.domain.about.StaticWriteTestHelper;
+import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import jakarta.persistence.EntityManager;
@@ -30,6 +32,15 @@ public class IntegrationTest {
   /******* Repository *******/
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  @SpyBean
+  protected StaticWriteTitleRepository staticWriteTitleRepository;
+
+  /******* Helper *******/
+
+  @SpyBean
+  protected StaticWriteTestHelper staticWriteTestHelper;
+
 
   /******* Spring Bean *******/
   @Autowired
