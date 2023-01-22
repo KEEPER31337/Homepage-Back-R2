@@ -9,7 +9,7 @@ import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.file.exception.FileDeleteFailedException;
 import com.keeper.homepage.global.util.file.exception.FileSaveFailedException;
-import com.keeper.homepage.global.util.web.ip.WebUtil;
+import com.keeper.homepage.global.util.web.WebUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 class FileServerUtil extends FileUtil {
 
   private final FileRepository fileRepository;
-  private final WebUtil webUtil;
 
   static {
     createDirectoryWhenIsNotExist(DEFAULT_FILE_PATH);
@@ -76,7 +75,7 @@ class FileServerUtil extends FileUtil {
   }
 
   private FileEntity saveFileEntity(MultipartFile file, File newFile, LocalDateTime now) {
-    String ipAddress = webUtil.getUserIP();
+    String ipAddress = WebUtil.getUserIP();
     return fileRepository.save(
         FileEntity.builder()
             .fileName(file.getOriginalFilename())
