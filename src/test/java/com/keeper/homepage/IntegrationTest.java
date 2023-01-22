@@ -1,5 +1,6 @@
 package com.keeper.homepage;
 
+import static com.keeper.homepage.global.util.file.server.FileServerConstants.DEFAULT_FILE_PATH;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -7,8 +8,16 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
+import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
+import com.keeper.homepage.global.util.thumbnail.server.ThumbnailServerUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +39,17 @@ public class IntegrationTest {
   /******* Repository *******/
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  /******* Helper *******/
+  @Autowired
+  protected ThumbnailTestHelper thumbnailTestHelper;
+
+  /******* Util *******/
+  @SpyBean
+  protected ThumbnailServerUtil thumbnailServerUtil;
+
+  @SpyBean
+  protected FileUtil fileUtil;
 
   /******* Spring Bean *******/
   @Autowired
@@ -55,5 +75,17 @@ public class IntegrationTest {
             .withResponseDefaults(prettyPrint())
         )
         .build();
+  }
+
+  @AfterAll
+  static void deleteAllFiles() throws IOException {
+    File todayThumbnailDirectory = new File(getTodayFilesPath());
+    if (todayThumbnailDirectory.exists()) {
+      FileUtils.cleanDirectory(todayThumbnailDirectory);
+    }
+  }
+
+  private static String getTodayFilesPath() {
+    return DEFAULT_FILE_PATH + LocalDate.now();
   }
 }
