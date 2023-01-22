@@ -2,7 +2,6 @@ package com.keeper.homepage.global.util.thumbnail;
 
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import com.keeper.homepage.global.util.thumbnail.server.ThumbnailServerUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,11 @@ public class ThumbnailTestHelper {
   @Autowired
   ThumbnailRepository thumbnailRepository;
 
+  @Autowired
+  ThumbnailUtil thumbnailUtil;
+
   public Thumbnail generateThumbnail() {
-    final ThumbnailUtil thumbnailUtil = new ThumbnailServerUtil(thumbnailRepository);
-    return thumbnailUtil.save(getThumbnailFile()).orElseThrow();
+    return thumbnailUtil.saveThumbnail(getThumbnailFile()).orElseThrow();
   }
 
   public MockMultipartFile getThumbnailFile() {

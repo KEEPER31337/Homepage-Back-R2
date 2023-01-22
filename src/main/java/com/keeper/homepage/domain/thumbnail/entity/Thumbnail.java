@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.thumbnail.entity;
 
 import com.keeper.homepage.domain.file.entity.FileEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,7 +34,7 @@ public class Thumbnail {
   @Column(name = "path", length = MAX_PATH_LENGTH)
   private String path;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "file_id", nullable = false)
   private FileEntity fileEntity;
 
