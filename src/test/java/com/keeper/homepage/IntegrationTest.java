@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
@@ -39,6 +40,9 @@ public class IntegrationTest {
   /******* Repository *******/
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  @Autowired
+  protected FileRepository fileRepository;
 
   /******* Helper *******/
   @Autowired

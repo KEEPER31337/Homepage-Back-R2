@@ -52,7 +52,18 @@ class FileServerUtilTest extends IntegrationTest {
   @DisplayName("파일 삭제 테스트")
   class DeleteFile {
 
-    void deleteFile() {
+    @Test
+    @DisplayName("존재하는 파일의 경우 성공적으로 삭제되어야 한다.")
+    void should_deleteSuccessfully_when_fileExist() {
+      FileEntity fileEntity = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile())
+          .orElseThrow();
+
+      fileUtil.deleteFileAndEntity(fileEntity);
+
+      File file = new File(fileEntity.getFilePath());
+      assertThat(file).doesNotExist();
+      Optional<FileEntity> result = fileRepository.findById(fileEntity.getId());
+      assertThat(result).isEmpty();
     }
   }
 }

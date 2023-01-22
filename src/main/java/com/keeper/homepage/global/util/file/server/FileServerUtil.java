@@ -7,6 +7,7 @@ import static java.io.File.separator;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.file.exception.FileDeleteFailedException;
 import com.keeper.homepage.global.util.file.exception.FileSaveFailedException;
 import com.keeper.homepage.global.util.web.ip.WebUtil;
 import java.io.File;
@@ -91,13 +92,22 @@ class FileServerUtil extends FileUtil {
     return path.substring(ROOT_PATH.length() + 1);
   }
 
+  @Transactional
   @Override
-  protected void deleteFile(FileEntity fileEntity) {
-
+  protected void deleteEntity(FileEntity fileEntity) {
+    fileRepository.delete(fileEntity);
   }
 
   @Override
-  protected void deleteEntity(FileEntity fileEntity) {
-
+  protected void deleteFile(FileEntity fileEntity) {
+    try {
+      String filePath = ROOT_PATH + separator + fileEntity.getFilePath();
+      File newFile = new File(filePath);
+      if (!newFile.delete()) {
+        throw new FileDeleteFailedException();
+      }
+    } catch (SecurityException e) {
+      throw new FileDeleteFailedException(e);
+    }
   }
 }

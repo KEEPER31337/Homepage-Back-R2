@@ -1,6 +1,7 @@
 package com.keeper.homepage.global.util.file;
 
 import com.keeper.homepage.domain.file.entity.FileEntity;
+import com.keeper.homepage.global.util.file.exception.FileDeleteFailedException;
 import com.keeper.homepage.global.util.file.exception.FileSaveFailedException;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +38,7 @@ public abstract class FileUtil {
 
   /**
    * @param fileEntity {@code @NotNull}
+   * @throws FileDeleteFailedException 파일 삭제 실패 시 발생합니다.
    * @apiNote 저장된 파일과 Entity 모두 삭제합니다.
    */
   public void deleteFileAndEntity(@NonNull FileEntity fileEntity) {
@@ -44,8 +46,7 @@ public abstract class FileUtil {
     deleteFile(fileEntity);
   }
 
-  protected abstract void deleteFile(FileEntity fileEntity);
-
   protected abstract void deleteEntity(FileEntity fileEntity);
 
+  protected abstract void deleteFile(FileEntity fileEntity);
 }
