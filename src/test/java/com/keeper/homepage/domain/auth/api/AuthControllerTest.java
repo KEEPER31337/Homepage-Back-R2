@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
-import static com.keeper.homepage.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,8 +24,8 @@ class AuthControllerTest extends IntegrationTest {
 
   @BeforeEach
   void setup() {
-    adminToken = jwtTokenProvider.createAccessToken(adminId, ROLE_회원, ROLE_회장);
-    userToken = jwtTokenProvider.createAccessToken(userId, ROLE_회원);
+    adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
+    userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
   }
 
   @Nested
@@ -43,7 +43,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("회원 권한의 토큰으로 permit-all 설정의 URL은 접근이 가능해야 한다.")
     void success_userToken() throws Exception {
       mockMvc.perform(get("/auth-test")
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
           .andExpect(status().isOk());
     }
 
@@ -51,7 +51,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("회장 권한의 토큰으로 permit-all 설정의 URL은 접근이 가능해야 한다.")
     void success_adminToken() throws Exception {
       mockMvc.perform(get("/auth-test")
-              .cookie(new Cookie(ACCESS_TOKEN, adminToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
           .andExpect(status().isOk());
     }
   }
@@ -74,7 +74,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("회원 권한의 token에서 @AuthId로 id가 가져와져야 한다.")
     void userToken() throws Exception {
       mockMvc.perform(get(USER_URL)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
           .andExpect(status().isOk())
           .andExpect(content().string(String.valueOf(userId)));
     }
@@ -98,7 +98,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("user권한의 토큰일 때 회장 접근 권한의 URL은 403을 반환해야 한다.")
     void success_noToken() throws Exception {
       mockMvc.perform(get(ADMIN_URL)
-              .cookie(new Cookie(ACCESS_TOKEN, userToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
@@ -107,7 +107,7 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("회장 권한의 token에서 @AuthId로 id가 가져와져야 한다.")
     void adminToken() throws Exception {
       mockMvc.perform(get(ADMIN_URL)
-              .cookie(new Cookie(ACCESS_TOKEN, adminToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
           .andExpect(status().isOk())
           .andExpect(content().string(String.valueOf(adminId)));
     }
