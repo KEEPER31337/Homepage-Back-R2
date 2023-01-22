@@ -8,11 +8,15 @@ import java.util.function.Function;
 import lombok.Getter;
 
 public enum JwtType {
-  ACCESS_TOKEN("accessToken", 60 * 60 * 1000L,
+  ACCESS_TOKEN("accessToken", 60 * 60 * 1000L, // 1시간
       (claims, roles) -> claims.put(JwtConstant.ROLES, String.join(JwtConstant.SEPARATOR, roles)),
       (claims) -> List.of(claims.get(JwtConstant.ROLES)
           .toString()
           .split(JwtConstant.SEPARATOR))),
+  REFRESH_TOKEN("refreshToken", 14 * 24 * 60 * 60 * 1000L, // 2주
+      (claims, roles) -> {
+      },
+      (claims) -> List.of()),
   ;
 
   @Getter
