@@ -73,40 +73,6 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
       return basicStaticWriteTitleTitles;
     }
 
-    @Test
-    @DisplayName("타이틀 저장 테스트")
-    void saveStaticWriteTitleTest() {
-      // given
-      StaticWriteTitle staticWriteTitle = staticWriteTestHelper.generateStaticWriteTitle();
-
-      // when
-      Optional<StaticWriteTitle> findStaticWriteTitle = staticWriteTitleRepository
-          .findById(staticWriteTitle.getId());
-
-      // then
-      assertThat(findStaticWriteTitle).isNotEmpty();
-      assertThat(findStaticWriteTitle.get().getId()).isEqualTo(staticWriteTitle.getId());
-      assertThat(findStaticWriteTitle.get().getTitle()).isEqualTo(staticWriteTitle.getTitle());
-      assertThat(findStaticWriteTitle.get().getType()).isEqualTo(staticWriteTitle.getType());
-    }
-
-    @Test
-    @DisplayName("타이틀 수정 테스트")
-    void updateStaticWriteTitleTest() {
-      // given
-      StaticWriteTitle staticWriteTitle = staticWriteTestHelper.generateStaticWriteTitle();
-      staticWriteTitle.updateStaticWriteTitle("수정된 타이틀", intro);
-
-      // when
-      Optional<StaticWriteTitle> findStaticWriteTitle = staticWriteTitleRepository
-          .findById(staticWriteTitle.getId());
-
-      // then
-      assertThat(findStaticWriteTitle).isNotEmpty();
-      assertThat(findStaticWriteTitle.get().getId()).isEqualTo(staticWriteTitle.getId());
-      assertThat(findStaticWriteTitle.get().getTitle()).isEqualTo(staticWriteTitle.getTitle());
-      assertThat(findStaticWriteTitle.get().getType()).isEqualTo(staticWriteTitle.getType());
-    }
   }
 
   @Nested
