@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWri
 import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.excellence;
 import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.history;
 import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.intro;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
@@ -11,7 +12,6 @@ import com.keeper.homepage.domain.about.entity.StaticWriteContent;
 import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -59,14 +59,14 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
   class StaticWriteSubtitleImageTest {
 
     @Test
-    @DisplayName("서브타이틀 저장 테스트")
-    void saveStaticWriteSubtitleImageTest() {
+    @DisplayName("서브타이틀을 생성하면 저장이 성공해야 한다.")
+    void should_saveSuccess_when_generateStaticWriteSubtitleImage() {
       // given
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
 
       // when
-      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository.findById(
-          staticWriteSubtitleImage.getId());
+      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository
+          .findById(staticWriteSubtitleImage.getId());
 
       // then
       assertThat(findStaticWriteSubtitleImage).isNotEmpty();
@@ -83,8 +83,8 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("서브타이틀 수정 테스트")
-    void updateStaticWriteSubtitleImageTest() {
+    @DisplayName("서브타이틀을 수정하면 수정이 성공해야 한다.")
+    void should_updateSuccess_when_updateStaticWriteSubtitleImage() {
       // given
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
       staticWriteSubtitleImage.updateStaticWriteSubtitleImage("수정 서브 타이틀",
@@ -92,8 +92,8 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
           staticWriteSubtitleImage.getThumbnail(), 2);
 
       // when
-      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository.findById(
-          staticWriteSubtitleImage.getId());
+      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository
+          .findById(staticWriteSubtitleImage.getId());
 
       // then
       assertThat(findStaticWriteSubtitleImage).isNotEmpty();
@@ -110,8 +110,8 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("서브타이틀 삭제 테스트")
-    void deleteStaticWriteSubtitleImageTest() {
+    @DisplayName("서브타이틀을 삭제하면 삭제가 성공해야 한다.")
+    void should_deleteSuccess_when_deleteStaticWriteSubtitleImage() {
       // given
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
       staticWriteSubtitleImageRepository.delete(staticWriteSubtitleImage);
@@ -129,8 +129,8 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
   class StaticWriteContentTest {
 
     @Test
-    @DisplayName("컨텐츠 저장 테스트")
-    void saveStaticWriteContentTest() {
+    @DisplayName("컨텐츠를 생성하면 저장이 성공해야 한다.")
+    void should_saveSuccess_when_generateStaticWriteContent() {
       // given
       StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
 
@@ -150,8 +150,8 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("컨텐츠 수정 테스트")
-    void updateStaticWriteContentTest() {
+    @DisplayName("컨텐츠를 수정하면 수정이 성공해야 한다.")
+    void should_updateSuccess_when_updateStaticWriteContent() {
       // given
       StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
       staticWriteContent.updateStaticWriteContent("수정 컨텐츠",
@@ -173,8 +173,8 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("타입으로 컨텐츠 리스트 조회 테스트")
-    void getStaticWriteContentListByTypeTest() {
+    @DisplayName("activity (특정 타입)으로 컨텐츠 리스트를 조회하면 activity 타입(해당 타입)의 컨텐츠 리스트가 조회된다.")
+    void should_getActivityTypeContentList_when_findContentListByActivityType() {
       // given
       StaticWriteTitleType type = activity;
 
