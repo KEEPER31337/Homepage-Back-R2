@@ -1,11 +1,14 @@
 package com.keeper.homepage.domain.about;
 
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.activity;
+
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.about.entity.StaticWriteContent;
 import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
+import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +27,7 @@ public class StaticWriteTestHelper {
   public StaticWriteTitle generateStaticWriteTitle() {
     return staticWriteTitleRepository.save(StaticWriteTitle.builder()
         .title("테스트 타이틀")
-        .type("test")
+        .type(activity)
         .build());
   }
 

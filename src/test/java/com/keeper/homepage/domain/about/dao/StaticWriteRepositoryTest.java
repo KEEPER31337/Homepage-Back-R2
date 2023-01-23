@@ -1,16 +1,18 @@
 package com.keeper.homepage.domain.about.dao;
 
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.BasicStaticWriteTitleType.ACTIVITY;
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.BasicStaticWriteTitleType.EXCELLENCE;
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.BasicStaticWriteTitleType.HISTORY;
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.BasicStaticWriteTitleType.INTRO;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.activity;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.excellence;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.history;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.intro;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.about.entity.StaticWriteContent;
 import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
+import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -27,45 +29,43 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     @DisplayName("기본 타이틀 타입 테스트")
     void staticWriteTitleTest() {
       // given
+      List<Long> basicStaticWriteTitleIds = getStaticWriteTitleIds();
+
+      List<String> basicStaticWriteTitleTitles = getStaticWriteTitleTitles();
+
+      List<StaticWriteTitleType> staticWriteTitleTypes = Arrays
+          .stream(StaticWriteTitleType.values()).toList();
 
       // when
       List<StaticWriteTitle> staticWriteTitles = staticWriteTitleRepository.findAll();
 
       List<Long> ids = staticWriteTitles.stream().map(StaticWriteTitle::getId).toList();
       List<String> titles = staticWriteTitles.stream().map(StaticWriteTitle::getTitle).toList();
-      List<String> types = staticWriteTitles.stream().map(StaticWriteTitle::getType).toList();
+      List<StaticWriteTitleType> types = staticWriteTitles.stream().map(StaticWriteTitle::getType)
+          .toList();
 
       // then
-      assertThat(ids).containsAll(getBasicStaticWriteTitleIds());
-      assertThat(titles).containsAll(getBasicStaticWriteTitleTitles());
-      assertThat(types).containsAll(getBasicStaticWriteTitleTypes());
+      assertThat(ids).containsAll(basicStaticWriteTitleIds);
+      assertThat(titles).containsAll(basicStaticWriteTitleTitles);
+      assertThat(types).containsAll(staticWriteTitleTypes);
     }
 
-    private List<Long> getBasicStaticWriteTitleIds() {
+    private List<Long> getStaticWriteTitleIds() {
       List<Long> basicStaticWriteTitleIds = new ArrayList<>();
-      basicStaticWriteTitleIds.add(INTRO.getId());
-      basicStaticWriteTitleIds.add(ACTIVITY.getId());
-      basicStaticWriteTitleIds.add(EXCELLENCE.getId());
-      basicStaticWriteTitleIds.add(HISTORY.getId());
+      basicStaticWriteTitleIds.add(intro.getId());
+      basicStaticWriteTitleIds.add(activity.getId());
+      basicStaticWriteTitleIds.add(excellence.getId());
+      basicStaticWriteTitleIds.add(history.getId());
       return basicStaticWriteTitleIds;
     }
 
-    private List<String> getBasicStaticWriteTitleTitles() {
+    private List<String> getStaticWriteTitleTitles() {
       List<String> basicStaticWriteTitleTitles = new ArrayList<>();
-      basicStaticWriteTitleTitles.add(INTRO.getTitle());
-      basicStaticWriteTitleTitles.add(ACTIVITY.getTitle());
-      basicStaticWriteTitleTitles.add(EXCELLENCE.getTitle());
-      basicStaticWriteTitleTitles.add(HISTORY.getTitle());
+      basicStaticWriteTitleTitles.add(intro.getTitle());
+      basicStaticWriteTitleTitles.add(activity.getTitle());
+      basicStaticWriteTitleTitles.add(excellence.getTitle());
+      basicStaticWriteTitleTitles.add(history.getTitle());
       return basicStaticWriteTitleTitles;
-    }
-
-    private List<String> getBasicStaticWriteTitleTypes() {
-      List<String> basicStaticWriteTitleTypes = new ArrayList<>();
-      basicStaticWriteTitleTypes.add(INTRO.getType());
-      basicStaticWriteTitleTypes.add(ACTIVITY.getType());
-      basicStaticWriteTitleTypes.add(EXCELLENCE.getType());
-      basicStaticWriteTitleTypes.add(HISTORY.getType());
-      return basicStaticWriteTitleTypes;
     }
 
     @Test
@@ -90,7 +90,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     void updateStaticWriteTitleTest() {
       // given
       StaticWriteTitle staticWriteTitle = staticWriteTestHelper.generateStaticWriteTitle();
-      staticWriteTitle.updateStaticWriteTitle("수정된 타이틀", "수정된 타입");
+      staticWriteTitle.updateStaticWriteTitle("수정된 타이틀", intro);
 
       // when
       Optional<StaticWriteTitle> findStaticWriteTitle = staticWriteTitleRepository
@@ -226,22 +226,22 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     @DisplayName("타입으로 컨텐츠 리스트 조회 테스트")
     void getStaticWriteContentListByTypeTest() {
       // given
-      String type = ACTIVITY.getType();
+      StaticWriteTitleType type = activity;
 
       // when
       Optional<List<StaticWriteContent>> staticWriteContents = staticWriteContentRepository
           .findAllByStaticWriteSubtitleImage_StaticWriteTitle_Type(type);
 
-      List<String> contentTypes = staticWriteContents.get()
+      List<StaticWriteTitleType> contentTypes = staticWriteContents.get()
           .stream()
           .map(s -> s.getStaticWriteSubtitleImage().getStaticWriteTitle().getType())
           .toList();
 
       // then
       assertThat(contentTypes).contains(type);
-      assertThat(contentTypes).doesNotContain(INTRO.getType());
-      assertThat(contentTypes).doesNotContain(EXCELLENCE.getType());
-      assertThat(contentTypes).doesNotContain(HISTORY.getType());
+      assertThat(contentTypes).doesNotContain(intro);
+      assertThat(contentTypes).doesNotContain(excellence);
+      assertThat(contentTypes).doesNotContain(history);
     }
   }
 }

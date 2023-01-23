@@ -4,6 +4,8 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -26,32 +28,33 @@ public class StaticWriteTitle {
   @Column(name = "title", nullable = false)
   private String title;
 
+  @Enumerated(value = EnumType.STRING)
   @Column(name = "type", nullable = false)
-  private String type;
+  private StaticWriteTitleType type;
 
   @Builder
-  private StaticWriteTitle(String title, String type) {
+  private StaticWriteTitle(String title, StaticWriteTitleType type) {
     this.title = title;
     this.type = type;
   }
 
-  public void updateStaticWriteTitle(String title, String type) {
+  public void updateStaticWriteTitle(String title, StaticWriteTitleType type) {
     this.title = title;
     this.type = type;
   }
 
   @Getter
-  public enum BasicStaticWriteTitleType {
-    INTRO(1, "키퍼(KEEPER) 소개글", "intro"),
-    ACTIVITY(2, "정기 활동", "activity"),
-    EXCELLENCE(3, "동아리 자랑", "excellence"),
-    HISTORY(4, "동아리 연혁", "history");
+  public enum StaticWriteTitleType {
+    intro(1, "키퍼(KEEPER) 소개글", "intro"),
+    activity(2, "정기 활동", "activity"),
+    excellence(3, "동아리 자랑", "excellence"),
+    history(4, "동아리 연혁", "history");
 
     private final long id;
     private final String title;
     private final String type;
 
-    BasicStaticWriteTitleType(long id, String title, String type) {
+    StaticWriteTitleType(long id, String title, String type) {
       this.id = id;
       this.title = title;
       this.type = type;
