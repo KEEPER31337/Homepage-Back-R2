@@ -60,7 +60,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("서브타이틀을 생성하면 저장이 성공해야 한다.")
-    void should_saveSuccess_when_generateStaticWriteSubtitleImage() {
+    void should_saveSuccessfully_when_generateStaticWriteSubtitleImage() {
       // given
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
 
@@ -84,7 +84,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("서브타이틀을 수정하면 수정이 성공해야 한다.")
-    void should_updateSuccess_when_updateStaticWriteSubtitleImage() {
+    void should_updateSuccessfully_when_updateStaticWriteSubtitleImage() {
       // given
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
       staticWriteSubtitleImage.updateStaticWriteSubtitleImage("수정 서브 타이틀",
@@ -111,7 +111,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("서브타이틀을 삭제하면 삭제가 성공해야 한다.")
-    void should_deleteSuccess_when_deleteStaticWriteSubtitleImage() {
+    void should_deleteSuccessfully_when_deleteStaticWriteSubtitleImage() {
       // given
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
       staticWriteSubtitleImageRepository.delete(staticWriteSubtitleImage);
@@ -130,7 +130,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("컨텐츠를 생성하면 저장이 성공해야 한다.")
-    void should_saveSuccess_when_generateStaticWriteContent() {
+    void should_saveSuccessfully_when_generateStaticWriteContent() {
       // given
       StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
 
@@ -151,7 +151,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("컨텐츠를 수정하면 수정이 성공해야 한다.")
-    void should_updateSuccess_when_updateStaticWriteContent() {
+    void should_updateSuccessfully_when_updateStaticWriteContent() {
       // given
       StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
       staticWriteContent.updateStaticWriteContent("수정 컨텐츠",
