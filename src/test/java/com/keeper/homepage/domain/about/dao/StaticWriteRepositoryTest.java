@@ -39,9 +39,14 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
       // when
       List<StaticWriteTitle> staticWriteTitles = staticWriteTitleRepository.findAll();
 
-      List<Long> ids = staticWriteTitles.stream().map(StaticWriteTitle::getId).toList();
-      List<String> titles = staticWriteTitles.stream().map(StaticWriteTitle::getTitle).toList();
-      List<StaticWriteTitleType> types = staticWriteTitles.stream().map(StaticWriteTitle::getType)
+      List<Long> ids = staticWriteTitles.stream()
+          .map(StaticWriteTitle::getId)
+          .toList();
+      List<String> titles = staticWriteTitles.stream()
+          .map(StaticWriteTitle::getTitle)
+          .toList();
+      List<StaticWriteTitleType> types = staticWriteTitles.stream()
+          .map(StaticWriteTitle::getType)
           .toList();
 
       // then
