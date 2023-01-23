@@ -86,9 +86,9 @@ public class JwtTokenProvider {
     return Long.parseLong(getClaim(token).getSubject());
   }
 
-  public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req) {
+  public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req, JwtType jwtType) {
     try {
-      String token = resolveToken(req, ACCESS_TOKEN);
+      String token = resolveToken(req, jwtType);
       getAuthId(token);
       return TokenValidationResultDto.of(true, VALID, token);
     } catch (MalformedJwtException e) {
