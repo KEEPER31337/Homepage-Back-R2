@@ -60,9 +60,8 @@ public abstract class ThumbnailUtil {
    * @see ThumbnailUtil#deleteFileAndEntity(Thumbnail)
    */
   public void deleteFileAndEntityIfExist(Thumbnail thumbnail) {
-    if (thumbnail == null) {
-      return;
+    if (thumbnail != null) {
+      deleteFileAndEntity(thumbnail);
     }
-    deleteFileAndEntity(thumbnail);
   }
 }
