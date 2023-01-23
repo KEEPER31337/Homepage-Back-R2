@@ -1,6 +1,5 @@
 package com.keeper.homepage.global.config.security;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.EMPTY;
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.EXPIRED;
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.MALFORMED;
@@ -38,6 +37,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
+  private static final String ROLES = "roles";
+  private static final String SEPARATOR = ",";
+
   final Key secretKey;
 
   public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey) {
@@ -52,7 +54,7 @@ public class JwtTokenProvider {
 
   public String createAccessToken(JwtType jwtType, String userPk, String... roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
-    jwtType.setRoles(claims, roles);
+    setRoles(claims, roles);
     Date now = new Date();
     return Jwts.builder()
         .setClaims(claims)
@@ -64,13 +66,19 @@ public class JwtTokenProvider {
 
   public Authentication getAuthentication(String token) {
     Claims claims = getClaim(token);
-    List<String> roles = getRolesBy(claims, ACCESS_TOKEN);
+    List<String> roles = getRolesBy(claims);
     UserDetails userDetails = new JwtUserDetails(claims.getSubject(), roles);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
-  private static List<String> getRolesBy(Claims claims, JwtType jwtType) {
-    return jwtType.getRoles(claims);
+  private static List<String> getRolesBy(Claims claims) {
+    return List.of(claims.get(ROLES)
+        .toString()
+        .split(SEPARATOR));
+  }
+
+  private static void setRoles(Claims claims, String[] roles) {
+    claims.put(ROLES, String.join(SEPARATOR, roles));
   }
 
   private Claims getClaim(String token) {
@@ -114,5 +122,11 @@ public class JwtTokenProvider {
       throw new EmptyJwtException();
     }
     return accessToken.get().getValue();
+  }
+
+  public String[] getRoles(String token) {
+    Claims claims = getClaim(token);
+    List<String> roles = getRolesBy(claims);
+    return roles.toArray(String[]::new);
   }
 }

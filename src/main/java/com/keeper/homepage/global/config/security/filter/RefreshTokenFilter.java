@@ -43,7 +43,7 @@ public class RefreshTokenFilter extends GenericFilterBean {
         isTokenInRedis(refreshTokenDto);
 
     if (isAccessExpiredAndRefreshValid) {
-      Authentication auth = jwtTokenProvider.getAuthentication(accessTokenDto.getToken());
+      Authentication auth = jwtTokenProvider.getAuthentication(refreshTokenDto.getToken());
       SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
@@ -51,9 +51,10 @@ public class RefreshTokenFilter extends GenericFilterBean {
 
     if (isAccessExpiredAndRefreshValid) {
       long authId = jwtTokenProvider.getAuthId(refreshTokenDto.getToken());
+      String[] roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());
       HttpServletResponse httpResponse = (HttpServletResponse) response;
-      String newRefreshToken = setTokenInCookie(REFRESH_TOKEN, authId, httpResponse);
-      setTokenInCookie(ACCESS_TOKEN, authId, httpResponse);
+      String newRefreshToken = setTokenInCookie(REFRESH_TOKEN, authId, httpResponse, roles);
+      setTokenInCookie(ACCESS_TOKEN, authId, httpResponse, roles);
       redisUtil.setDataExpire(newRefreshToken, "", REFRESH_TOKEN.getExpiredMillis());
     }
   }
@@ -70,9 +71,10 @@ public class RefreshTokenFilter extends GenericFilterBean {
     return refreshTokenDto.isValid();
   }
 
-  private String setTokenInCookie(JwtType jwtType, long authId, HttpServletResponse httpResponse) {
+  private String setTokenInCookie(JwtType jwtType, long authId, HttpServletResponse httpResponse,
+      String[] roles) {
     Cookie cookie = new Cookie(jwtType.getTokenName(),
-        jwtTokenProvider.createAccessToken(jwtType, authId));
+        jwtTokenProvider.createAccessToken(jwtType, String.valueOf(authId), roles));
     cookie.setHttpOnly(true);
     cookie.setMaxAge((int) jwtType.getExpiredMillis() / 1000);
     httpResponse.addCookie(cookie);
