@@ -32,8 +32,17 @@ public class StaticWriteTitle {
   @Column(name = "type", nullable = false)
   private StaticWriteTitleType type;
 
+  public static StaticWriteTitle getStaticWriteTitleBy(StaticWriteTitleType type) {
+    return StaticWriteTitle.builder()
+        .id(type.id)
+        .title(type.title)
+        .type(type)
+        .build();
+  }
+
   @Builder
-  private StaticWriteTitle(String title, StaticWriteTitleType type) {
+  private StaticWriteTitle(Long id, String title, StaticWriteTitleType type) {
+    this.id = id;
     this.title = title;
     this.type = type;
   }

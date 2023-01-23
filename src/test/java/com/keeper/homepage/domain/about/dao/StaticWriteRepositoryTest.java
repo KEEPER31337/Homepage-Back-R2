@@ -26,53 +26,32 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
   class StaticWriteTitleTest {
 
     @Test
-    @DisplayName("기본 타이틀 타입 테스트")
-    void staticWriteTitleTest() {
+    @DisplayName("StaticWriteTitleType Enum 에는 DB의 모든 StaticWriteTitle 정보가 있어야 한다.")
+    void should_allStaticWriteTitleExist_when_givenStaticWriteTitleTypeEnum() {
       // given
-      List<Long> basicStaticWriteTitleIds = getStaticWriteTitleIds();
-
-      List<String> basicStaticWriteTitleTitles = getStaticWriteTitleTitles();
-
-      List<StaticWriteTitleType> staticWriteTitleTypes = Arrays
-          .stream(StaticWriteTitleType.values()).toList();
+      List<StaticWriteTitle> staticWriteTitleTypes = Arrays.stream(StaticWriteTitleType.values())
+          .map(StaticWriteTitle::getStaticWriteTitleBy)
+          .collect(toList());
 
       // when
       List<StaticWriteTitle> staticWriteTitles = staticWriteTitleRepository.findAll();
 
-      List<Long> ids = staticWriteTitles.stream()
-          .map(StaticWriteTitle::getId)
-          .toList();
-      List<String> titles = staticWriteTitles.stream()
-          .map(StaticWriteTitle::getTitle)
-          .toList();
-      List<StaticWriteTitleType> types = staticWriteTitles.stream()
-          .map(StaticWriteTitle::getType)
-          .toList();
-
       // then
-      assertThat(ids).containsAll(basicStaticWriteTitleIds);
-      assertThat(titles).containsAll(basicStaticWriteTitleTitles);
-      assertThat(types).containsAll(staticWriteTitleTypes);
+      assertThat(getIds(staticWriteTitles)).containsAll(getIds(staticWriteTitleTypes));
+      assertThat(getTitles(staticWriteTitles)).containsAll(getTitles(staticWriteTitleTypes));
     }
 
-    private List<Long> getStaticWriteTitleIds() {
-      List<Long> basicStaticWriteTitleIds = new ArrayList<>();
-      basicStaticWriteTitleIds.add(intro.getId());
-      basicStaticWriteTitleIds.add(activity.getId());
-      basicStaticWriteTitleIds.add(excellence.getId());
-      basicStaticWriteTitleIds.add(history.getId());
-      return basicStaticWriteTitleIds;
+    private List<Long> getIds(List<StaticWriteTitle> staticWriteTitleTypes) {
+      return staticWriteTitleTypes.stream()
+          .map(StaticWriteTitle::getId)
+          .collect(toList());
     }
 
-    private List<String> getStaticWriteTitleTitles() {
-      List<String> basicStaticWriteTitleTitles = new ArrayList<>();
-      basicStaticWriteTitleTitles.add(intro.getTitle());
-      basicStaticWriteTitleTitles.add(activity.getTitle());
-      basicStaticWriteTitleTitles.add(excellence.getTitle());
-      basicStaticWriteTitleTitles.add(history.getTitle());
-      return basicStaticWriteTitleTitles;
+    private List<String> getTitles(List<StaticWriteTitle> staticWriteTitleTypes) {
+      return staticWriteTitleTypes.stream()
+          .map(StaticWriteTitle::getTitle)
+          .collect(toList());
     }
-
   }
 
   @Nested
