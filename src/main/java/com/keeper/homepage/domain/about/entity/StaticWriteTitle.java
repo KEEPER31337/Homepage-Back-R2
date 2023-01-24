@@ -49,11 +49,6 @@ public class StaticWriteTitle {
     this.type = type;
   }
 
-  public void updateStaticWriteTitle(String title, StaticWriteTitleType type) {
-    this.title = title;
-    this.type = type;
-  }
-
   @Getter
   public enum StaticWriteTitleType {
     INTRO(1, "키퍼(KEEPER) 소개글", "intro"),
