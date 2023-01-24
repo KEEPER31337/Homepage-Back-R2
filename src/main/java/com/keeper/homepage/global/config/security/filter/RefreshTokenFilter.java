@@ -17,6 +17,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -58,12 +59,14 @@ public class RefreshTokenFilter extends GenericFilterBean {
       setTokenInCookie(REFRESH_TOKEN, httpResponse, newRefreshToken);
       String newAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, authId, roles);
       setTokenInCookie(ACCESS_TOKEN, httpResponse, newAccessToken);
-      redisUtil.setDataExpire(newRefreshToken, "", REFRESH_TOKEN.getExpiredMillis());
+      redisUtil.setDataExpire(authId, newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
     }
   }
 
   private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto) {
-    return redisUtil.getData(refreshTokenDto.getToken()).isPresent();
+    long authId = jwtTokenProvider.getAuthId(refreshTokenDto.getToken());
+    Optional<String> tokenInRedis = redisUtil.getData(String.valueOf(authId));
+    return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
   }
 
   private static boolean isAccessTokenExpired(JwtValidationType resultType) {

@@ -172,8 +172,7 @@ class AuthControllerTest extends IntegrationTest {
 
       @BeforeEach
       void setupRefreshToken() {
-        redisUtil.setDataExpire(refreshToken, "", REFRESH_TOKEN.getExpiredMillis());
-        System.out.println("refreshToken = " + refreshToken);
+        redisUtil.setDataExpire(String.valueOf(0), refreshToken, REFRESH_TOKEN.getExpiredMillis());
       }
 
       @Test
@@ -198,7 +197,7 @@ class AuthControllerTest extends IntegrationTest {
 
         jwtTokenProvider.getAuthId(newAccessToken);
         assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
-        assertThat(redisUtil.getData(newRefreshToken)).isNotEmpty();
+        assertThat(redisUtil.getData("0")).isNotEmpty();
       }
 
       @Test
