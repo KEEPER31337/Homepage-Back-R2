@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
@@ -50,6 +51,7 @@ public class StaticWriteTitle {
   }
 
   @Getter
+  @RequiredArgsConstructor
   public enum StaticWriteTitleType {
     INTRO(1, "키퍼(KEEPER) 소개글", "intro"),
     ACTIVITY(2, "정기 활동", "activity"),
@@ -59,12 +61,6 @@ public class StaticWriteTitle {
     private final long id;
     private final String title;
     private final String type;
-
-    StaticWriteTitleType(long id, String title, String type) {
-      this.id = id;
-      this.title = title;
-      this.type = type;
-    }
 
     public static StaticWriteTitleType fromCode(String dbData) {
       return Arrays.stream(StaticWriteTitleType.values())
