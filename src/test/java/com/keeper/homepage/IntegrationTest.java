@@ -11,6 +11,8 @@ import com.keeper.homepage.domain.about.StaticWriteTestHelper;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
+import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
+import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -61,6 +63,9 @@ public class IntegrationTest {
   @SpyBean
   protected StaticWriteContentRepository staticWriteContentRepository;
 
+  @SpyBean
+  protected AttendanceRepository attendanceRepository;
+
   /******* Helper *******/
 
   @SpyBean
@@ -74,6 +79,9 @@ public class IntegrationTest {
 
   @Autowired
   protected MemberTestHelper memberTestHelper;
+
+  @Autowired
+  protected AttendanceTestHelper attendanceTestHelper;
 
   /******* Helper *******/
   @Autowired
