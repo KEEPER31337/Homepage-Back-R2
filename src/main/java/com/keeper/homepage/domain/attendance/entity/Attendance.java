@@ -59,7 +59,7 @@ public class Attendance {
   @JoinColumn(name = "member_id", nullable = false, updatable = false)
   private Member member;
 
-  @Column(name = "rank")
+  @Column(name = "`rank`")
   private Integer rank;
 
   @Builder
