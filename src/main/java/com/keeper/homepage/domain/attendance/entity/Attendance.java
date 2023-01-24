@@ -7,6 +7,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -16,12 +17,20 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "attendance")
+@Table(name = "attendance",
+    indexes = @Index(name = "is_duplicated", columnList = "member_id, date", unique = true))
 public class Attendance {
+
+  public static final int MAX_IP_ADDRESS_LENGTH = 128;
+  public static final int MAX_GREETINGS_LENGTH = 250;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,10 +55,10 @@ public class Attendance {
   @Column(name = "continuous_point", nullable = false, updatable = false)
   private int continuousPoint;
 
-  @Column(name = "ip_address", nullable = false, updatable = false, length = 128)
+  @Column(name = "ip_address", nullable = false, updatable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
 
-  @Column(name = "greetings", updatable = false, length = 250)
+  @Column(name = "greetings", updatable = false, length = MAX_GREETINGS_LENGTH)
   private String greetings;
 
   @Column(name = "continuous_day", nullable = false, updatable = false)
@@ -63,8 +72,11 @@ public class Attendance {
   private Integer rank;
 
   @Builder
-  private Attendance(int point, int randomPoint, int rankPoint, int continuousPoint,
-      String ipAddress, String greetings, int continuousDay, Member member, Integer rank) {
+  private Attendance(LocalDateTime time, LocalDate date, int point, int randomPoint, int rankPoint,
+      int continuousPoint, String ipAddress, String greetings, int continuousDay, Member member,
+      Integer rank) {
+    this.time = time;
+    this.date = date;
     this.point = point;
     this.randomPoint = randomPoint;
     this.rankPoint = rankPoint;
