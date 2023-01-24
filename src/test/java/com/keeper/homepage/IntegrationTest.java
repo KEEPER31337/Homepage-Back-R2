@@ -7,6 +7,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
+import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,10 @@ public class IntegrationTest {
   /******* Repository *******/
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  /******* Util *******/
+  @SpyBean
+  protected RedisUtil redisUtil;
 
   /******* Spring Bean *******/
   @Autowired

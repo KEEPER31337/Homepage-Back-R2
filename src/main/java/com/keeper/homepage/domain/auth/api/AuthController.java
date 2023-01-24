@@ -28,4 +28,9 @@ public class AuthController {
   public String adminToken(@AuthId long myId) {
     return String.valueOf(myId);
   }
+
+  @GetMapping("/refresh")
+  public String refreshToken(@AuthId long myId) {
+    return String.valueOf(myId);
+  }
 }

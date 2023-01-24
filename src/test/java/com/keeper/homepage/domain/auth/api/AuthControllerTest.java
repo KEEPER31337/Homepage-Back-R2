@@ -3,17 +3,24 @@ package com.keeper.homepage.domain.auth.api;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 class AuthControllerTest extends IntegrationTest {
 
@@ -110,6 +117,120 @@ class AuthControllerTest extends IntegrationTest {
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
           .andExpect(status().isOk())
           .andExpect(content().string(String.valueOf(adminId)));
+    }
+  }
+
+  @Nested
+  @DisplayName("/auth-test/refresh")
+  class RefreshToken {
+
+    private static final String REFRESH_URL = "/auth-test/refresh";
+
+    @Nested
+    @DisplayName("RT가 없을 때")
+    class NotExist {
+
+      @Test
+      @DisplayName("AT만 있어도 200 OK를 응답한다.")
+      void should_200OK_when_accessTokenExist() throws Exception {
+        Cookie accessCookie = new Cookie(ACCESS_TOKEN.getTokenName(), adminToken);
+        accessCookie.setHttpOnly(true);
+
+        callRefreshApi(accessCookie)
+            .andExpect(status().isOk())
+            .andExpect(content().string(String.valueOf(adminId)));
+      }
+
+      @Test
+      @DisplayName("AT도 만료되었으면 401 Unauthorization을 응답한다.")
+      void should_401Unauthorization_when_accessTokenExpired() throws Exception {
+        String expiredToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDQ1MjM1NSwiZXhwIjoxNjc0NDUyMzU1fQ.FoRbgOGlzLwizp9jQNmM6pET4zA8TPXa56zZlsl6Al8";
+        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredToken);
+        expiredCookie.setHttpOnly(true);
+
+        callRefreshApi(expiredCookie)
+            .andExpect(status().isUnauthorized());
+      }
+
+      @Test
+      @DisplayName("AT도 없으면 401 Unauthorization을 응답한다.")
+      void should_401Unauthorization_when_accessTokenNotExist() throws Exception {
+        callRefreshApi()
+            .andExpect(status().isUnauthorized());
+      }
+    }
+
+    @Nested
+    @DisplayName("RT가 있을 때")
+    class Exist {
+
+      // PK: 0
+      // ROLE: 회원
+      // expired: 2073년 1월 24일
+      String refreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDUxODc5OCwiZXhwIjozMjUxMzE4Nzk4fQ.mYiEM9LfwmTJccXYUgwuIhnZzWE74TUgX0ETi9lVZRI";
+      Cookie refreshCookie = new Cookie(REFRESH_TOKEN.getTokenName(), refreshToken);
+
+      @BeforeEach
+      void setupRefreshToken() {
+        redisUtil.setDataExpire(refreshToken, "", REFRESH_TOKEN.getExpiredMillis());
+        System.out.println("refreshToken = " + refreshToken);
+      }
+
+      @Test
+      @DisplayName("AT가 만료되었으면 200 OK를 응답한다.")
+      void should_200OK_when_accessTokenExpired() throws Exception {
+        String expiredToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDQ1MjM1NSwiZXhwIjoxNjc0NDUyMzU1fQ.FoRbgOGlzLwizp9jQNmM6pET4zA8TPXa56zZlsl6Al8";
+        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredToken);
+        expiredCookie.setHttpOnly(true);
+        assertThatThrownBy(() -> jwtTokenProvider.getAuthId(expiredToken))
+            .isInstanceOf(ExpiredJwtException.class);
+
+        MvcResult result = callRefreshApi(refreshCookie, expiredCookie)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        String newAccessToken = Objects.requireNonNull(
+                result.getResponse().getCookie(ACCESS_TOKEN.getTokenName()))
+            .getValue();
+        String newRefreshToken = Objects.requireNonNull(
+                result.getResponse().getCookie(REFRESH_TOKEN.getTokenName()))
+            .getValue();
+
+        jwtTokenProvider.getAuthId(newAccessToken);
+        assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
+        assertThat(redisUtil.getData(newRefreshToken)).isNotEmpty();
+      }
+
+      @Test
+      @DisplayName("AT도 있으면 200 OK를 응답한다.")
+      void should_200OK_when_accessTokenExist() throws Exception {
+        Cookie accessCookie = new Cookie(ACCESS_TOKEN.getTokenName(), adminToken);
+        accessCookie.setHttpOnly(true);
+
+        MvcResult result = callRefreshApi(refreshCookie, accessCookie)
+            .andExpect(status().isOk())
+            .andReturn();
+      }
+
+      @Test
+      @DisplayName("AT가 없으면 401 Unauthorization을 응답한다")
+      void should_401Unauthorizatio_when_accessTokenNotExist() throws Exception {
+        callRefreshApi(refreshCookie)
+            .andExpect(status().isUnauthorized());
+      }
+    }
+
+    @Nested
+    @DisplayName("RT가 만료되었을 때")
+    class Expired {
+
+    }
+
+    private ResultActions callRefreshApi(Cookie... cookies) throws Exception {
+      if (cookies == null || cookies.length == 0) {
+        return mockMvc.perform(get(REFRESH_URL));
+      }
+      return mockMvc.perform(get(REFRESH_URL).cookie(cookies));
     }
   }
 }
