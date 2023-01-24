@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.entity;
+package com.keeper.homepage.domain.member.entity.embedded;
 
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;

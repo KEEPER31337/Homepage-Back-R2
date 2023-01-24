@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.member.entity;
 
+import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

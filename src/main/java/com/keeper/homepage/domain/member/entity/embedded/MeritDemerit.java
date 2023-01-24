@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.entity;
+package com.keeper.homepage.domain.member.entity.embedded;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
