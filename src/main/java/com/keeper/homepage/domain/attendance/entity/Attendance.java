@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -60,4 +61,18 @@ public class Attendance {
 
   @Column(name = "rank")
   private Integer rank;
+
+  @Builder
+  private Attendance(int point, int randomPoint, int rankPoint, int continuousPoint,
+      String ipAddress, String greetings, int continuousDay, Member member, Integer rank) {
+    this.point = point;
+    this.randomPoint = randomPoint;
+    this.rankPoint = rankPoint;
+    this.continuousPoint = continuousPoint;
+    this.ipAddress = ipAddress;
+    this.greetings = greetings;
+    this.continuousDay = continuousDay;
+    this.member = member;
+    this.rank = rank;
+  }
 }
