@@ -44,16 +44,16 @@ public class Attendance {
   private LocalDate date;
 
   @Column(name = "point", nullable = false, updatable = false)
-  private int point;
+  private Integer point;
 
   @Column(name = "random_point", nullable = false, updatable = false)
-  private int randomPoint;
+  private Integer randomPoint;
 
   @Column(name = "rank_point", nullable = false, updatable = false)
-  private int rankPoint;
+  private Integer rankPoint;
 
   @Column(name = "continuous_point", nullable = false, updatable = false)
-  private int continuousPoint;
+  private Integer continuousPoint;
 
   @Column(name = "ip_address", nullable = false, updatable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
@@ -62,7 +62,7 @@ public class Attendance {
   private String greetings;
 
   @Column(name = "continuous_day", nullable = false, updatable = false)
-  private int continuousDay;
+  private Integer continuousDay;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false, updatable = false)
@@ -72,8 +72,10 @@ public class Attendance {
   private Integer rank;
 
   @Builder
-  private Attendance(LocalDateTime time, LocalDate date, int point, int randomPoint, int rankPoint,
-      int continuousPoint, String ipAddress, String greetings, int continuousDay, Member member,
+  private Attendance(LocalDateTime time, LocalDate date, Integer point, Integer randomPoint,
+      Integer rankPoint,
+      Integer continuousPoint, String ipAddress, String greetings, Integer continuousDay,
+      Member member,
       Integer rank) {
     this.time = time;
     this.date = date;

@@ -1,10 +1,14 @@
 package com.keeper.homepage.domain.attendance.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.Member;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,6 +47,43 @@ class AttendanceRepositoryTest extends IntegrationTest {
           .member(member)
           .build())
           .isInstanceOf(DataIntegrityViolationException.class);
+    }
+  }
+
+  @Nested
+  @DisplayName("DB Default 테스트")
+  class Default {
+
+    @Test
+    @DisplayName("default 값이 있는 컬럼은 null로 저장해도 저장에 성공한다.")
+    void should_saveSuccessfully_when_defaultColumnIsNull() {
+      Attendance attendanceBeforeSave = Attendance.builder()
+          .ipAddress("0.0.0.0")
+          .continuousDay(0)
+          .member(memberTestHelper.builder().build())
+          .build();
+      LocalDateTime beforeSaveTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+
+      assertThat(attendanceBeforeSave.getTime()).isNull();
+      assertThat(attendanceBeforeSave.getDate()).isNull();
+      assertThat(attendanceBeforeSave.getPoint()).isNull();
+      assertThat(attendanceBeforeSave.getRandomPoint()).isNull();
+      assertThat(attendanceBeforeSave.getRankPoint()).isNull();
+      assertThat(attendanceBeforeSave.getContinuousPoint()).isNull();
+
+      Long attendanceId = attendanceRepository.save(attendanceBeforeSave).getId();
+      em.flush();
+      em.clear();
+      Attendance savedAttendance = attendanceRepository.findById(attendanceId).orElseThrow();
+
+      assertThat(LocalDateTime.of(
+          savedAttendance.getDate(), savedAttendance.getTime().toLocalTime()))
+          .isAfterOrEqualTo(beforeSaveTime)
+          .isBeforeOrEqualTo(LocalDateTime.now());
+      assertThat(savedAttendance.getPoint()).isEqualTo(100);
+      assertThat(savedAttendance.getRandomPoint()).isEqualTo(0);
+      assertThat(savedAttendance.getRankPoint()).isEqualTo(0);
+      assertThat(savedAttendance.getContinuousPoint()).isEqualTo(0);
     }
   }
 }
