@@ -1,10 +1,10 @@
 package com.keeper.homepage.domain.member;
 
-import static com.keeper.homepage.domain.member.entity.Member.MAX_EMAIL_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_LOGIN_ID_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_NICKNAME_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_REAL_NAME_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_STUDENT_ID_LENGTH;
+import static com.keeper.homepage.domain.member.entity.Profile.MAX_EMAIL_LENGTH;
+import static com.keeper.homepage.domain.member.entity.Profile.MAX_LOGIN_ID_LENGTH;
+import static com.keeper.homepage.domain.member.entity.Profile.MAX_NICKNAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.Profile.MAX_REAL_NAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.Profile.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
