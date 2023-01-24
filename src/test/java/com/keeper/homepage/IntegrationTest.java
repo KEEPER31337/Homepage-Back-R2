@@ -7,6 +7,10 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.keeper.homepage.domain.about.StaticWriteTestHelper;
+import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
+import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
+import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
@@ -42,6 +46,20 @@ public class IntegrationTest {
   /******* Repository *******/
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  @SpyBean
+  protected StaticWriteTitleRepository staticWriteTitleRepository;
+
+  @SpyBean
+  protected StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
+
+  @SpyBean
+  protected StaticWriteContentRepository staticWriteContentRepository;
+
+  /******* Helper *******/
+
+  @SpyBean
+  protected StaticWriteTestHelper staticWriteTestHelper;
 
   @Autowired
   protected FileRepository fileRepository;
