@@ -1,9 +1,9 @@
 package com.keeper.homepage.domain.about.dao;
 
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.activity;
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.excellence;
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.history;
-import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.intro;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.ACTIVITY;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.EXCELLENCE;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.HISTORY;
+import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.INTRO;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +14,6 @@ import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -176,7 +175,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
     @DisplayName("activity (특정 타입)으로 컨텐츠 리스트를 조회하면 activity 타입(해당 타입)의 컨텐츠 리스트가 조회된다.")
     void should_getActivityTypeContentList_when_findContentListByActivityType() {
       // given
-      StaticWriteTitleType type = activity;
+      StaticWriteTitleType type = ACTIVITY;
 
       // when
       List<StaticWriteContent> staticWriteContents = staticWriteContentRepository
@@ -189,9 +188,9 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
 
       // then
       assertThat(contentTypes).contains(type);
-      assertThat(contentTypes).doesNotContain(intro);
-      assertThat(contentTypes).doesNotContain(excellence);
-      assertThat(contentTypes).doesNotContain(history);
+      assertThat(contentTypes).doesNotContain(INTRO);
+      assertThat(contentTypes).doesNotContain(EXCELLENCE);
+      assertThat(contentTypes).doesNotContain(HISTORY);
     }
   }
 }

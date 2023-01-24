@@ -1,14 +1,16 @@
 package com.keeper.homepage.domain.about.entity;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
+import static java.lang.String.format;
 
+import com.keeper.homepage.domain.about.converter.StaticWriteTitleTypeConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +30,7 @@ public class StaticWriteTitle {
   @Column(name = "title", nullable = false)
   private String title;
 
-  @Enumerated(value = EnumType.STRING)
+  @Convert(converter = StaticWriteTitleTypeConverter.class)
   @Column(name = "type", nullable = false)
   private StaticWriteTitleType type;
 
@@ -54,17 +56,26 @@ public class StaticWriteTitle {
 
   @Getter
   public enum StaticWriteTitleType {
-    intro(1, "키퍼(KEEPER) 소개글"),
-    activity(2, "정기 활동"),
-    excellence(3, "동아리 자랑"),
-    history(4, "동아리 연혁");
+    INTRO(1, "키퍼(KEEPER) 소개글", "intro"),
+    ACTIVITY(2, "정기 활동", "activity"),
+    EXCELLENCE(3, "동아리 자랑", "excellence"),
+    HISTORY(4, "동아리 연혁", "history");
 
     private final long id;
     private final String title;
+    private final String type;
 
-    StaticWriteTitleType(long id, String title) {
+    StaticWriteTitleType(long id, String title, String type) {
       this.id = id;
       this.title = title;
+      this.type = type;
+    }
+
+    public static StaticWriteTitleType fromCode(String dbData) {
+      return Arrays.stream(StaticWriteTitleType.values())
+          .filter(type -> type.getType().equals(dbData))
+          .findAny()
+          .orElseThrow(() -> new IllegalArgumentException(format("%s 타입이 DB에 존재하지 않습니다.", dbData)));
     }
   }
 
