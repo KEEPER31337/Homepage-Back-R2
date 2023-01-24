@@ -54,19 +54,17 @@ public class StaticWriteTitle {
 
   @Getter
   public enum StaticWriteTitleType {
-    intro(1, "키퍼(KEEPER) 소개글", "intro"),
-    activity(2, "정기 활동", "activity"),
-    excellence(3, "동아리 자랑", "excellence"),
-    history(4, "동아리 연혁", "history");
+    intro(1, "키퍼(KEEPER) 소개글"),
+    activity(2, "정기 활동"),
+    excellence(3, "동아리 자랑"),
+    history(4, "동아리 연혁");
 
     private final long id;
     private final String title;
-    private final String type;
 
-    StaticWriteTitleType(long id, String title, String type) {
+    StaticWriteTitleType(long id, String title) {
       this.id = id;
       this.title = title;
-      this.type = type;
     }
   }
 
