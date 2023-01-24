@@ -65,7 +65,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
       StaticWriteSubtitleImage staticWriteSubtitleImage = staticWriteTestHelper.generateStaticWriteSubtitleImage();
 
       // when
-      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository
+      final var findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository
           .findById(staticWriteSubtitleImage.getId());
 
       // then
@@ -92,7 +92,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
           staticWriteSubtitleImage.getThumbnail(), 2);
 
       // when
-      Optional<StaticWriteSubtitleImage> findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository
+      final var findStaticWriteSubtitleImage = staticWriteSubtitleImageRepository
           .findById(staticWriteSubtitleImage.getId());
 
       // then
@@ -135,7 +135,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
       StaticWriteContent staticWriteContent = staticWriteTestHelper.generateStaticWriteContent();
 
       // when
-      Optional<StaticWriteContent> findStaticWriteContent = staticWriteContentRepository.findById(
+      final var findStaticWriteContent = staticWriteContentRepository.findById(
           staticWriteContent.getId());
 
       // then
@@ -158,7 +158,7 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
           staticWriteContent.getStaticWriteSubtitleImage(), 2);
 
       // when
-      Optional<StaticWriteContent> findStaticWriteContent = staticWriteContentRepository
+      final var findStaticWriteContent = staticWriteContentRepository
           .findById(staticWriteContent.getId());
 
       // then
