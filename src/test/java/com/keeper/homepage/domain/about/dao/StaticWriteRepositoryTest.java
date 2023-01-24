@@ -179,10 +179,10 @@ public class StaticWriteRepositoryTest extends IntegrationTest {
       StaticWriteTitleType type = activity;
 
       // when
-      Optional<List<StaticWriteContent>> staticWriteContents = staticWriteContentRepository
+      List<StaticWriteContent> staticWriteContents = staticWriteContentRepository
           .findAllByStaticWriteSubtitleImage_StaticWriteTitle_Type(type);
 
-      List<StaticWriteTitleType> contentTypes = staticWriteContents.get()
+      List<StaticWriteTitleType> contentTypes = staticWriteContents
           .stream()
           .map(s -> s.getStaticWriteSubtitleImage().getStaticWriteTitle().getType())
           .toList();
