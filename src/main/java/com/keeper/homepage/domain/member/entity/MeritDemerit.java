@@ -5,8 +5,10 @@ import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Embeddable
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

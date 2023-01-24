@@ -63,8 +63,8 @@ public class Member {
     this.point = point;
     this.level = level;
     this.meritDemerit = MeritDemerit.builder()
-        .merit(merit)
-        .demerit(demerit)
+        .merit(merit == null ? 0 : merit)
+        .demerit(demerit == null ? 0 : demerit)
         .build();
     this.totalAttendance = totalAttendance;
   }

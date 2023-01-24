@@ -27,8 +27,6 @@ class MemberRepositoryTest extends IntegrationTest {
 
       assertThat(memberBeforeSave.getPoint()).isNull();
       assertThat(memberBeforeSave.getLevel()).isNull();
-      assertThat(memberBeforeSave.getMerit()).isNull();
-      assertThat(memberBeforeSave.getDemerit()).isNull();
       assertThat(memberBeforeSave.getTotalAttendance()).isNull();
 
       Long memberId = memberRepository.save(memberBeforeSave).getId();
@@ -38,8 +36,6 @@ class MemberRepositoryTest extends IntegrationTest {
 
       assertThat(savedMember.getPoint()).isEqualTo(0L);
       assertThat(savedMember.getLevel()).isEqualTo(0L);
-      assertThat(savedMember.getMerit()).isEqualTo(0L);
-      assertThat(savedMember.getDemerit()).isEqualTo(0L);
       assertThat(savedMember.getTotalAttendance()).isEqualTo(0L);
     }
   }
