@@ -29,7 +29,7 @@ public class Member {
 
   public static final int MAX_LOGIN_ID_LENGTH = 80;
   public static final int MAX_EMAIL_LENGTH = 250;
-  public static final int MAX_REALNAME_LENGTH = 40;
+  public static final int MAX_REAL_NAME_LENGTH = 40;
   public static final int MAX_NICKNAME_LENGTH = 40;
   public static final int MAX_STUDENT_ID_LENGTH = 45;
 
@@ -47,7 +47,7 @@ public class Member {
   @Column(name = "password", nullable = false, length = 512)
   private String password;
 
-  @Column(name = "real_name", nullable = false, length = MAX_REALNAME_LENGTH)
+  @Column(name = "real_name", nullable = false, length = MAX_REAL_NAME_LENGTH)
   private String realName;
 
   @Column(name = "nick_name", nullable = false, length = MAX_NICKNAME_LENGTH)
