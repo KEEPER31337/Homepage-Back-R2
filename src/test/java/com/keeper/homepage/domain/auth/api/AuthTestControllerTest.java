@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-class AuthControllerTest extends IntegrationTest {
+class AuthTestControllerTest extends IntegrationTest {
 
   private final long adminId = 0L;
   private final long userId = 1L;

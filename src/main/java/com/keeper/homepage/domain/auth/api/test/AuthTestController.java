@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.auth.api;
+package com.keeper.homepage.domain.auth.api.test;
 
 import com.keeper.homepage.global.config.security.annotation.AuthId;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth-test")
-public class AuthController {
+public class AuthTestController {
 
   @GetMapping
   public String noToken() {
