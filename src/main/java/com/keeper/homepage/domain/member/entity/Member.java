@@ -1,7 +1,12 @@
 package com.keeper.homepage.domain.member.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -9,8 +14,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +54,9 @@ public class Member {
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
 
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
+
   @Builder
   private Member(String loginId, String emailAddress, String password, String realName,
       String nickname, LocalDate birthday, String studentId, Integer point, Integer level,
@@ -69,5 +80,17 @@ public class Member {
         .demerit(demerit == null ? 0 : demerit)
         .build();
     this.totalAttendance = totalAttendance;
+  }
+
+  public void assignJob(MemberJobType jobType) {
+    this.memberJob.add(MemberHasMemberJob.builder()
+        .member(this)
+        .memberJob(MemberJob.getMemberJobBy(jobType))
+        .build());
+  }
+
+  public void deleteJob(MemberJobType jobType) {
+    MemberJob deleteJob = MemberJob.getMemberJobBy(jobType);
+    this.memberJob.removeIf(job -> job.getMemberJob().equals(deleteJob));
   }
 }
