@@ -17,6 +17,9 @@ import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.web.servlet.ResultActions;
 
 class SignUpControllerTest extends IntegrationTest {
 
@@ -31,9 +34,7 @@ class SignUpControllerTest extends IntegrationTest {
     void should_successfully_when_validRequest() throws Exception {
       EmailAuthRequest request = EmailAuthRequest.from(VALID_EMAIL);
       when(emailAuthService.emailAuth(any())).thenReturn(EMAIL_EXPIRED_SECONDS);
-      mockMvc.perform(post("/sign-up/email-auth")
-              .contentType(APPLICATION_JSON)
-              .content(asJsonString(request)))
+      callEmailAuthApi(request)
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.expiredSeconds").value(EMAIL_EXPIRED_SECONDS))
           .andDo(document("email-auth",
@@ -43,8 +44,22 @@ class SignUpControllerTest extends IntegrationTest {
               responseFields(
                   fieldWithPath("expiredSeconds").description("인증코드 유효 기간 입니다. (단위: 초)")
               )));
+    }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"a@a.", "notEmail", "ho@hoo.hoh@oho", "isEmail@nono@com"})
+    @DisplayName("이메일 형식에 맞지 않으면 400 Bad Request를 응답한다.")
+    void should_throwException_when_invalidRequest(String invalidEmail) throws Exception {
+      EmailAuthRequest request = EmailAuthRequest.from(invalidEmail);
+      when(emailAuthService.emailAuth(any())).thenReturn(EMAIL_EXPIRED_SECONDS);
+      callEmailAuthApi(request)
+          .andExpect(status().isBadRequest());
+    }
+
+    private ResultActions callEmailAuthApi(EmailAuthRequest request) throws Exception {
+      return mockMvc.perform(post("/sign-up/email-auth")
+          .contentType(APPLICATION_JSON)
+          .content(asJsonString(request)));
     }
   }
-
 }
