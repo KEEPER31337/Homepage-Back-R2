@@ -13,17 +13,16 @@ import lombok.NoArgsConstructor;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "parent_id")
+    @Column(name = "parent_id", nullable = false)
     private Long parent;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-
-    @Column(name = "href")
+    @Column(name = "href", nullable = false)
     private String href;
 
 }
