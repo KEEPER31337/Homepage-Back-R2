@@ -223,6 +223,31 @@ class AuthControllerTest extends IntegrationTest {
     @DisplayName("RT가 만료되었을 때")
     class Expired {
 
+      // PK: 0
+      // ROLE: 회원
+      // expired: 2023년 1월 25일
+      String expiredRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDYzMDk2MCwiZXhwIjoxNjc0NjMwOTYwfQ.qcAfEzhDulqsl6HCg8dziVlJoTPORpSUi5sjbCqTg_E";
+      Cookie expiredRefreshCookie = new Cookie(REFRESH_TOKEN.getTokenName(), expiredRefreshToken);
+
+      @Test
+      @DisplayName("AT가 만료되었으면 401 Unauthorization을 응답한다.")
+      void should_200OK_when_accessTokenExpired() throws Exception {
+        String expiredToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDQ1MjM1NSwiZXhwIjoxNjc0NDUyMzU1fQ.FoRbgOGlzLwizp9jQNmM6pET4zA8TPXa56zZlsl6Al8";
+        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredToken);
+
+        callRefreshApi(expiredRefreshCookie, expiredCookie)
+            .andExpect(status().isUnauthorized());
+      }
+
+      @Test
+      @DisplayName("AT도 있으면 200 OK를 응답한다.")
+      void should_200OK_when_accessTokenExist() throws Exception {
+        Cookie accessCookie = new Cookie(ACCESS_TOKEN.getTokenName(), adminToken);
+
+        callRefreshApi(expiredRefreshCookie, accessCookie)
+            .andExpect(status().isOk())
+            .andReturn();
+      }
     }
 
     private ResultActions callRefreshApi(Cookie... cookies) throws Exception {
