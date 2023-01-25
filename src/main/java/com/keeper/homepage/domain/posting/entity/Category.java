@@ -11,18 +11,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "category")
 public class Category {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
 
-    @Column(name = "parent_id", nullable = false)
-    private Long parent;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false, updatable = false)
+  private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+  @Column(name = "parent_id", nullable = false)
+  private Long parent;
 
-    @Column(name = "href", nullable = false)
-    private String href;
+  @Column(name = "name", nullable = false)
+  private String name;
+
+  @Column(name = "href", nullable = false)
+  private String href;
 
 }

@@ -15,53 +15,54 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "posting")
 public class Posting {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id")
+  private Member member;
 
-    @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_id")
-    private Thumbnail thumbnail;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "category_id")
+  private Category category;
 
-    @Column(name = "title", nullable = false)
-    private String title;
-    @Column(name = "content")
-    private String content;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "thumbnail_id")
+  private Thumbnail thumbnail;
 
-    @Column(name = "register_time", nullable = false)
-    private LocalDateTime registerTime;
-    @Column(name = "update_time", nullable = false)
-    private LocalDateTime updateTime;
+  @Column(name = "title", nullable = false)
+  private String title;
+  @Column(name = "content")
+  private String content;
 
-    @Column(name = "visit_count", nullable = false)
-    private Integer visitCount;
-    @Column(name = "like_count", nullable = false)
-    private Integer likeCount;
-    @Column(name = "dislike_count", nullable = false)
-    private Integer dislikeCount;
-    @Column(name = "comment_count", nullable = false)
-    private Integer commentCount;
+  @Column(name = "register_time", nullable = false)
+  private LocalDateTime registerTime;
+  @Column(name = "update_time", nullable = false)
+  private LocalDateTime updateTime;
 
-    @Column(name = "allow_comment", nullable = false)
-    private boolean allowComment;
-    @Column(name = "is_notice", nullable = false)
-    private boolean isNotice;
-    @Column(name = "is_secret", nullable = false)
-    private boolean isSecret;
-    @Column(name = "is_temp", nullable = false)
-    private boolean isTemp;
+  @Column(name = "visit_count", nullable = false)
+  private Integer visitCount;
+  @Column(name = "like_count", nullable = false)
+  private Integer likeCount;
+  @Column(name = "dislike_count", nullable = false)
+  private Integer dislikeCount;
+  @Column(name = "comment_count", nullable = false)
+  private Integer commentCount;
 
-    @Column(name = "ip_address", nullable = false)
-    private String ipAddress;
-    @Column(name = "password", nullable = false)
-    private String password;
+  @Column(name = "allow_comment", nullable = false)
+  private boolean allowComment;
+  @Column(name = "is_notice", nullable = false)
+  private boolean isNotice;
+  @Column(name = "is_secret", nullable = false)
+  private boolean isSecret;
+  @Column(name = "is_temp", nullable = false)
+  private boolean isTemp;
+
+  @Column(name = "ip_address", nullable = false)
+  private String ipAddress;
+  @Column(name = "password", nullable = false)
+  private String password;
 
 }
