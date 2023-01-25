@@ -1,10 +1,7 @@
 package com.keeper.homepage.global.config.web;
 
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.RESOURCE_PATH;
-import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
-import static java.io.File.separator;
 
-import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.config.security.annotation.AuthIdArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +14,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-  private final JwtTokenProvider jwtTokenProvider;
+  private final AuthIdArgumentResolver authIdArgumentResolver;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-    resolvers.add(new AuthIdArgumentResolver(jwtTokenProvider));
+    resolvers.add(authIdArgumentResolver);
   }
 
   @Override

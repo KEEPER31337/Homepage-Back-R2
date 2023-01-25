@@ -9,6 +9,7 @@ import static com.keeper.homepage.global.config.security.data.JwtValidationType.
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.WRONG_SIGNATURE;
 
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
+import com.keeper.homepage.global.config.security.data.JwtType;
 import com.keeper.homepage.global.config.security.data.JwtUserDetails;
 import com.keeper.homepage.global.config.security.data.TokenValidationResultDto;
 import com.keeper.homepage.global.config.security.exception.EmptyJwtException;
@@ -36,8 +37,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
-  public static final Long DEFAULT_TOKEN_VALID_MILLISECOND = 60 * 60 * 1000L;
-  public static final String ACCESS_TOKEN = "accessToken";
+  private static final String ROLES = "roles";
+  private static final String SEPARATOR = ",";
 
   final Key secretKey;
 
@@ -45,20 +46,20 @@ public class JwtTokenProvider {
     this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
   }
 
-  public String createAccessToken(Long userPk, MemberJobType... roles) {
-    return createAccessToken(String.valueOf(userPk), Arrays.stream(roles)
+  public String createAccessToken(JwtType jwtType, Long userPk, MemberJobType... roles) {
+    return createAccessToken(jwtType, String.valueOf(userPk), Arrays.stream(roles)
         .map(MemberJobType::name)
         .toArray(String[]::new));
   }
 
-  public String createAccessToken(String userPk, String... roles) {
+  public String createAccessToken(JwtType jwtType, String userPk, String... roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
-    claims.put("roles", String.join(",", roles));
+    setRoles(claims, roles);
     Date now = new Date();
     return Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + DEFAULT_TOKEN_VALID_MILLISECOND))
+        .setExpiration(new Date(now.getTime() + jwtType.getExpiredMillis()))
         .signWith(secretKey, SignatureAlgorithm.HS256)
         .compact();
   }
@@ -71,10 +72,13 @@ public class JwtTokenProvider {
   }
 
   private static List<String> getRolesBy(Claims claims) {
-    String[] roles = claims.get("roles")
+    return List.of(claims.get(ROLES)
         .toString()
-        .split(",");
-    return List.of(roles);
+        .split(SEPARATOR));
+  }
+
+  private static void setRoles(Claims claims, String[] roles) {
+    claims.put(ROLES, String.join(SEPARATOR, roles));
   }
 
   private Claims getClaim(String token) {
@@ -90,9 +94,9 @@ public class JwtTokenProvider {
     return Long.parseLong(getClaim(token).getSubject());
   }
 
-  public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req) {
+  public TokenValidationResultDto tryCheckTokenValid(HttpServletRequest req, JwtType jwtType) {
     try {
-      String token = resolveToken(req);
+      String token = resolveToken(req, jwtType);
       getAuthId(token);
       return TokenValidationResultDto.of(true, VALID, token);
     } catch (MalformedJwtException e) {
@@ -110,13 +114,19 @@ public class JwtTokenProvider {
     }
   }
 
-  public String resolveToken(HttpServletRequest req) {
+  public String resolveToken(HttpServletRequest req, JwtType jwtType) {
     Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
-        .filter(cookie -> cookie.getName().equals(ACCESS_TOKEN))
+        .filter(cookie -> cookie.getName().equals(jwtType.getTokenName()))
         .findFirst();
     if (accessToken.isEmpty()) {
       throw new EmptyJwtException();
     }
     return accessToken.get().getValue();
+  }
+
+  public String[] getRoles(String token) {
+    Claims claims = getClaim(token);
+    List<String> roles = getRolesBy(claims);
+    return roles.toArray(String[]::new);
   }
 }
