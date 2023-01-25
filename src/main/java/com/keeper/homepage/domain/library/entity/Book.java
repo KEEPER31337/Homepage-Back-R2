@@ -39,8 +39,9 @@ public class Book {
   @Column(name = "information", columnDefinition = "TEXT")
   private String information;
 
-  @Column(name = "department", nullable = false)
-  private Long department;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "department", nullable = false)
+  private BookDepartment department;
 
   @Column(name = "total", nullable = false)
   private Long total;
