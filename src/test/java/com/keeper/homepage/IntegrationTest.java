@@ -11,7 +11,11 @@ import com.keeper.homepage.domain.about.StaticWriteTestHelper;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
+import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
+import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
+import com.keeper.homepage.domain.member.MemberTestHelper;
+import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
@@ -46,6 +50,9 @@ public class IntegrationTest {
 
   /******* Repository *******/
   @SpyBean
+  protected MemberRepository memberRepository;
+
+  @SpyBean
   protected MemberJobRepository memberJobRepository;
 
   @SpyBean
@@ -57,6 +64,9 @@ public class IntegrationTest {
   @SpyBean
   protected StaticWriteContentRepository staticWriteContentRepository;
 
+  @SpyBean
+  protected AttendanceRepository attendanceRepository;
+
   /******* Helper *******/
 
   @SpyBean
@@ -67,6 +77,12 @@ public class IntegrationTest {
 
   @Autowired
   protected ThumbnailRepository thumbnailRepository;
+
+  @Autowired
+  protected MemberTestHelper memberTestHelper;
+
+  @Autowired
+  protected AttendanceTestHelper attendanceTestHelper;
 
   /******* Helper *******/
   @Autowired
