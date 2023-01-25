@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.dao;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_서기;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_출제자;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
@@ -61,6 +62,18 @@ class MemberRepositoryTest extends IntegrationTest {
   @Nested
   @DisplayName("회원 권한 테스트")
   class MemberJobTest {
+
+    @Test
+    @DisplayName("회원을 저장할 때 권한을 올바르게 가지고 있는다.")
+    void should_assignUserRoleCorrectly_when_saveUser() {
+      em.flush();
+      em.clear();
+
+      member = memberRepository.findById(member.getId()).orElseThrow();
+
+      assertThat(member.containsRole(ROLE_회원)).isTrue();
+      assertThat(member.containsRole(ROLE_회장)).isFalse();
+    }
 
     @Test
     @DisplayName("회원은 중복되는 권한을 가지지 않는다.")

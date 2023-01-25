@@ -80,6 +80,7 @@ public class Member {
         .demerit(demerit == null ? 0 : demerit)
         .build();
     this.totalAttendance = totalAttendance;
+    this.assignJob(MemberJobType.ROLE_회원);
   }
 
   public void assignJob(MemberJobType jobType) {
@@ -92,5 +93,12 @@ public class Member {
   public void deleteJob(MemberJobType jobType) {
     MemberJob deleteJob = MemberJob.getMemberJobBy(jobType);
     this.memberJob.removeIf(job -> job.getMemberJob().equals(deleteJob));
+  }
+
+  public boolean containsRole(MemberJobType jobType) {
+    return memberJob.contains(MemberHasMemberJob.builder()
+        .member(this)
+        .memberJob(MemberJob.getMemberJobBy(jobType))
+        .build());
   }
 }
