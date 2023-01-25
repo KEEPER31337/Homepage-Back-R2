@@ -18,6 +18,7 @@ import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
@@ -62,6 +63,9 @@ public class IntegrationTest {
   /******* Service *******/
   @SpyBean
   protected EmailAuthService emailAuthService;
+
+  @Autowired
+  protected MailUtil mailUtil;
 
   /******* Helper *******/
 
