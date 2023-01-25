@@ -11,6 +11,8 @@ import com.keeper.homepage.domain.about.StaticWriteTestHelper;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
+import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
+import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -21,6 +23,7 @@ import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import jakarta.persistence.EntityManager;
@@ -73,6 +76,9 @@ public class IntegrationTest {
   @SpyBean
   protected StaticWriteContentRepository staticWriteContentRepository;
 
+  @SpyBean
+  protected AttendanceRepository attendanceRepository;
+
   /******* Helper *******/
 
   @SpyBean
@@ -87,6 +93,9 @@ public class IntegrationTest {
   @Autowired
   protected MemberTestHelper memberTestHelper;
 
+  @Autowired
+  protected AttendanceTestHelper attendanceTestHelper;
+
   /******* Helper *******/
   @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
@@ -97,6 +106,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected FileUtil fileUtil;
+
+  @SpyBean
+  protected RedisUtil redisUtil;
 
   /******* Spring Bean *******/
   @Autowired

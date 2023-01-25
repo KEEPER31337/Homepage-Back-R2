@@ -1,7 +1,9 @@
 package com.keeper.homepage.domain.member.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
 
+import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
@@ -17,7 +19,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -53,6 +57,9 @@ public class Member {
 
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
+
+  @OneToMany(mappedBy = "member", cascade = REMOVE)
+  private final List<Attendance> memberAttendance = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();

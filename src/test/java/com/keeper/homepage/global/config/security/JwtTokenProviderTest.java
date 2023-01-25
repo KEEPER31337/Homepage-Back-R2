@@ -1,5 +1,6 @@
 package com.keeper.homepage.global.config.security;
 
+import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
@@ -24,7 +25,7 @@ class JwtTokenProviderTest {
     long userPk = 1;
     MemberJobType[] roleType = new MemberJobType[]{MemberJobType.ROLE_회원, MemberJobType.ROLE_회장};
 
-    String accessToken = jwtTokenProvider.createAccessToken(userPk, roleType);
+    String accessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userPk, roleType);
     System.out.println(accessToken);
     Claims claims = Jwts
         .parserBuilder()
