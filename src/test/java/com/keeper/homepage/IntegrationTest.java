@@ -14,7 +14,9 @@ import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
+import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
@@ -51,6 +53,12 @@ public class IntegrationTest {
 
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  @SpyBean
+  protected MemberRankRepository memberRankRepository;
+
+  @SpyBean
+  protected MemberTypeRepository memberTypeRepository;
 
   @SpyBean
   protected StaticWriteTitleRepository staticWriteTitleRepository;
