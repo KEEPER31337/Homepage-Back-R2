@@ -13,6 +13,8 @@ import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
+import com.keeper.homepage.domain.auth.entity.redis.EmailAuthRedis;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
@@ -59,6 +61,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected StaticWriteContentRepository staticWriteContentRepository;
+
+  @Autowired
+  protected EmailAuthRedisRepository emailAuthRedisRepository;
 
   /******* Service *******/
   @SpyBean
