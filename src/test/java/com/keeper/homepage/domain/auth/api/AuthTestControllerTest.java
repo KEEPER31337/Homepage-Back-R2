@@ -24,13 +24,15 @@ import org.springframework.test.web.servlet.ResultActions;
 
 class AuthTestControllerTest extends IntegrationTest {
 
-  private final long adminId = 0L;
-  private final long userId = 1L;
+  private long adminId;
+  private long userId;
   private String adminToken;
   private String userToken;
 
   @BeforeEach
   void setup() {
+    adminId = memberTestHelper.builder().build().getId();
+    userId = memberTestHelper.builder().build().getId();
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
   }
