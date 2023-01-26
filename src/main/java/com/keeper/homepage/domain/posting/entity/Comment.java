@@ -20,12 +20,10 @@ public class Comment {
   @Column(name = "id", nullable = false)
   private Long id;
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id")
-  @Column(name = "member_id", nullable = false)
+  @JoinColumn(name = "member_id", nullable = false)
   private Member member;
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "posting_id")
-  @Column(name = "posting_id", nullable = false)
+  @JoinColumn(name = "posting_id", nullable = false)
   private Posting posting;
 
   @Column(name = "parent_id", nullable = false)
