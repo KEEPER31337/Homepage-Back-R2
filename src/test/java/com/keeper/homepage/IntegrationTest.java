@@ -14,6 +14,7 @@ import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
+import com.keeper.homepage.domain.library.BookTestHelper;
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -95,6 +96,9 @@ public class IntegrationTest {
 
   @Autowired
   protected AttendanceTestHelper attendanceTestHelper;
+
+  @Autowired
+  protected BookTestHelper bookTestHelper;
 
   /******* Helper *******/
   @Autowired

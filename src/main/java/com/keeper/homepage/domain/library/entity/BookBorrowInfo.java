@@ -43,4 +43,14 @@ public class BookBorrowInfo {
 
   @Column(name = "expire_date", nullable = false)
   private LocalDateTime expireDate;
+
+  @Builder
+  private BookBorrowInfo(Member member, Book book, Long quantity, LocalDateTime borrowDate,
+      LocalDateTime expireDate) {
+    this.member = member;
+    this.book = book;
+    this.quantity = quantity;
+    this.borrowDate = borrowDate;
+    this.expireDate = expireDate;
+  }
 }
