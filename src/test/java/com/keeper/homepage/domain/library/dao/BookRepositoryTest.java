@@ -61,13 +61,7 @@ public class BookRepositoryTest extends IntegrationTest {
     void should_deleteBookBorrowInfo_when_deleteBook() {
       // given
       Book book = bookTestHelper.generateBook();
-      Member member = memberTestHelper.builder()
-          .loginId("ABC")
-          .emailAddress("ABC@keeper.com")
-          .password("password")
-          .realName("realName")
-          .nickname("nickname")
-          .build();
+      Member member = memberTestHelper.builder().build();
       BookBorrowInfo bookBorrowInfo = bookTestHelper.generateBookBorrowInfo(book, member);
       book.addBookBorrowInfo(bookBorrowInfo);
 
