@@ -67,10 +67,10 @@ public class Member {
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
   @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
-  private final List<Friend> follower = new ArrayList<>();
+  private final Set<Friend> follower = new HashSet<>();
 
   @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
-  private final List<Friend> followee = new ArrayList<>();
+  private final Set<Friend> followee = new HashSet<>();
 
   @Builder
   private Member(String loginId, String emailAddress, String password, String realName,
