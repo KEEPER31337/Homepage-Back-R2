@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.auth.api.test;
 
-import com.keeper.homepage.global.config.security.annotation.AuthId;
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,18 +20,18 @@ public class AuthTestController {
 
   @Secured("ROLE_회원")
   @GetMapping("/user")
-  public String userToken(@AuthId long myId) {
-    return String.valueOf(myId);
+  public String userToken(@LoginMember Member loginMember) {
+    return String.valueOf(loginMember.getId());
   }
 
   @Secured("ROLE_회장")
   @GetMapping("/admin")
-  public String adminToken(@AuthId long myId) {
-    return String.valueOf(myId);
+  public String adminToken(@LoginMember Member loginMember) {
+    return String.valueOf(loginMember.getId());
   }
 
   @GetMapping("/refresh")
-  public String refreshToken(@AuthId long myId) {
-    return String.valueOf(myId);
+  public String refreshToken(@LoginMember Member loginMember) {
+    return String.valueOf(loginMember.getId());
   }
 }
