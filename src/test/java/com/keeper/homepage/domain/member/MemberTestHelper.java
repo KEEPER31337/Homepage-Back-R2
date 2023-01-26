@@ -1,10 +1,10 @@
 package com.keeper.homepage.domain.member;
 
-import static com.keeper.homepage.domain.member.entity.Member.MAX_EMAIL_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_LOGIN_ID_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_NICKNAME_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_REALNAME_LENGTH;
-import static com.keeper.homepage.domain.member.entity.Member.MAX_STUDENT_ID_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_EMAIL_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_LOGIN_ID_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_NICKNAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_REAL_NAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -123,7 +123,7 @@ public class MemberTestHelper {
           .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
           .emailAddress(email != null ? email : getRandomUUIDLengthWith(MAX_EMAIL_LENGTH))
           .password(password != null ? password : getRandomUUIDLengthWith(100))
-          .realName(realName != null ? realName : getRandomUUIDLengthWith(MAX_REALNAME_LENGTH))
+          .realName(realName != null ? realName : getRandomUUIDLengthWith(MAX_REAL_NAME_LENGTH))
           .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
           .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
           .studentId(studentId != null ? studentId : getRandomUUIDLengthWith(MAX_STUDENT_ID_LENGTH))
