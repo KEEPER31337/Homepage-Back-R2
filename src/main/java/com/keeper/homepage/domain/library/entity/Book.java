@@ -10,9 +10,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -52,7 +56,27 @@ public class Book {
   @Column(name = "enable", nullable = false)
   private Long enable;
 
+  @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE)
+  private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
+
   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
+
+  @Builder
+  private Book(String title, String author, String information, BookDepartment department,
+      Long total, Long borrow, Long enable, Thumbnail thumbnail) {
+    this.title = title;
+    this.author = author;
+    this.information = information;
+    this.department = department;
+    this.total = total;
+    this.borrow = borrow;
+    this.enable = enable;
+    this.thumbnail = thumbnail;
+  }
+
+  public void addBookBorrowInfo(BookBorrowInfo bookBorrowInfo) {
+    this.getBookBorrowInfos().add(bookBorrowInfo);
+  }
 }

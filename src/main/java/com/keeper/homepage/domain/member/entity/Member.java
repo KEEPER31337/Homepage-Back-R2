@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.entity;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -87,6 +88,9 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+  private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
   private Member(String loginId, String emailAddress, String password, String realName,
