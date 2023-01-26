@@ -31,7 +31,7 @@ public class AuthTestController {
   }
 
   @GetMapping("/refresh")
-  public String refreshToken(@LoginMember Member loginMember) {
-    return String.valueOf(loginMember.getId());
+  public String refreshToken() {
+    return "refresh!";
   }
 }

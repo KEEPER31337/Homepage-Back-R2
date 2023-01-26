@@ -138,7 +138,7 @@ class AuthTestControllerTest extends IntegrationTest {
 
         callRefreshApi(accessCookie)
             .andExpect(status().isOk())
-            .andExpect(content().string(String.valueOf(adminId)));
+            .andExpect(content().string("refresh!"));
       }
 
       @Test
