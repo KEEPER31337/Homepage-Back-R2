@@ -6,10 +6,12 @@ import static jakarta.persistence.CascadeType.REMOVE;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -63,6 +65,12 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
+
+  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
+  private final List<Friend> follower = new ArrayList<>();
+
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+  private final List<Friend> followee = new ArrayList<>();
 
   @Builder
   private Member(String loginId, String emailAddress, String password, String realName,
