@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.auth.api;
+package com.keeper.homepage.domain.auth.api.test;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
