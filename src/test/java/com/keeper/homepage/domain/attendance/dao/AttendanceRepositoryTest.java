@@ -36,7 +36,7 @@ class AttendanceRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("중복되는 출석 정보는 오류를 반환해야 한다.")
     void should_throwException_when_duplicateAttendance() {
-      Member member = memberTestHelper.builder().build();
+      Member member = memberTestHelper.generate();
       attendanceTestHelper.builder()
           .date(LocalDate.of(2022, 1, 24))
           .member(member)
@@ -60,7 +60,7 @@ class AttendanceRepositoryTest extends IntegrationTest {
       Attendance attendanceBeforeSave = Attendance.builder()
           .ipAddress("0.0.0.0")
           .continuousDay(0)
-          .member(memberTestHelper.builder().build())
+          .member(memberTestHelper.generate())
           .build();
       LocalDateTime beforeSaveTime = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
