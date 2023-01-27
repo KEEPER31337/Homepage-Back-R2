@@ -1,5 +1,11 @@
 package com.keeper.homepage.domain.library.dao;
 
+import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.CERTIFICATION;
+import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.DOCUMENT;
+import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.ETC;
+import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.LANGUAGE;
+import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.SECURITY;
+import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.TEXTBOOK;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,6 +42,19 @@ public class BookRepositoryTest extends IntegrationTest {
       // then
       assertThat(getIds(bookDepartments)).containsAll(getIds(bookDepartmentTypes));
       assertThat(getNames(bookDepartments)).containsAll(getNames(bookDepartmentTypes));
+      assertThat(bookDepartments).hasSize(6);
+      assertThat(getId(bookDepartments.get(0))).isEqualTo(LANGUAGE.getId());
+      assertThat(getName(bookDepartments.get(0))).isEqualTo(LANGUAGE.getName());
+      assertThat(getId(bookDepartments.get(1))).isEqualTo(SECURITY.getId());
+      assertThat(getName(bookDepartments.get(1))).isEqualTo(SECURITY.getName());
+      assertThat(getId(bookDepartments.get(2))).isEqualTo(TEXTBOOK.getId());
+      assertThat(getName(bookDepartments.get(2))).isEqualTo(TEXTBOOK.getName());
+      assertThat(getId(bookDepartments.get(3))).isEqualTo(CERTIFICATION.getId());
+      assertThat(getName(bookDepartments.get(3))).isEqualTo(CERTIFICATION.getName());
+      assertThat(getId(bookDepartments.get(4))).isEqualTo(DOCUMENT.getId());
+      assertThat(getName(bookDepartments.get(4))).isEqualTo(DOCUMENT.getName());
+      assertThat(getId(bookDepartments.get(5))).isEqualTo(ETC.getId());
+      assertThat(getName(bookDepartments.get(5))).isEqualTo(ETC.getName());
     }
 
     private List<Long> getIds(List<BookDepartment> bookDepartments) {
@@ -44,11 +63,19 @@ public class BookRepositoryTest extends IntegrationTest {
           .collect(toList());
     }
 
+    private Long getId(BookDepartment bookDepartment) {
+      return bookDepartment.getId();
+    }
+
     private List<String> getNames(List<BookDepartment> bookDepartments) {
       return bookDepartments.stream()
           .map(BookDepartment::getName)
           .map(BookDepartmentType::getName)
           .collect(toList());
+    }
+
+    private String getName(BookDepartment bookDepartment) {
+      return bookDepartment.getName().getName();
     }
   }
 
