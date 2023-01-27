@@ -1,5 +1,8 @@
 package com.keeper.homepage.domain.member.entity.friend;
 
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,25 +16,27 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@EqualsAndHashCode(of = {"follower", "followee"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "friend")
 public class Friend {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "follower", nullable = false)
   private Member follower;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "followee", nullable = false)
   private Member followee;
 
@@ -39,24 +44,5 @@ public class Friend {
   private Friend(Member follower, Member followee) {
     this.follower = follower;
     this.followee = followee;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Friend friend = (Friend) o;
-    return Objects.equals(getId(), friend.getId()) && Objects.equals(
-        getFollower(), friend.getFollower()) && Objects.equals(getFollowee(),
-        friend.getFollowee());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId(), getFollower(), getFollowee());
   }
 }
