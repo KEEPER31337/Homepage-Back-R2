@@ -28,11 +28,11 @@ public class BookBorrowInfo {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id")
+  @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "book_id")
+  @JoinColumn(name = "book_id", nullable = false)
   private Book book;
 
   @Column(name = "quantity", nullable = false)
