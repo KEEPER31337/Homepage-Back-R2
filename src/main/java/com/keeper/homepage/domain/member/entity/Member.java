@@ -11,7 +11,6 @@ import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -66,10 +65,10 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
-  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
   private final Set<Friend> follower = new HashSet<>();
 
-  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "followee", cascade = ALL, orphanRemoval = true)
   private final Set<Friend> followee = new HashSet<>();
 
   @Builder
