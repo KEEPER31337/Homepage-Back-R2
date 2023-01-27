@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -33,7 +34,7 @@ class SignUpControllerTest extends IntegrationTest {
     @DisplayName("유효한 요청이면 이메일 인증은 성공해야 한다.")
     void should_successfully_when_validRequest() throws Exception {
       EmailAuthRequest request = EmailAuthRequest.from(VALID_EMAIL);
-      when(emailAuthService.emailAuth(any())).thenReturn(EMAIL_EXPIRED_SECONDS);
+      doReturn(EMAIL_EXPIRED_SECONDS).when(emailAuthService).emailAuth(any());
       callEmailAuthApi(request)
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.expiredSeconds").value(EMAIL_EXPIRED_SECONDS))
@@ -51,7 +52,7 @@ class SignUpControllerTest extends IntegrationTest {
     @DisplayName("이메일 형식에 맞지 않으면 400 Bad Request를 응답한다.")
     void should_throwException_when_invalidRequest(String invalidEmail) throws Exception {
       EmailAuthRequest request = EmailAuthRequest.from(invalidEmail);
-      when(emailAuthService.emailAuth(any())).thenReturn(EMAIL_EXPIRED_SECONDS);
+      doReturn(EMAIL_EXPIRED_SECONDS).when(emailAuthService).emailAuth(any());
       callEmailAuthApi(request)
           .andExpect(status().isBadRequest());
     }
