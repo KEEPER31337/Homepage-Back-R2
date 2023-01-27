@@ -131,6 +131,9 @@ public class IntegrationTest {
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
 
+  @Autowired
+  protected ObjectMapper objectMapper;
+
   @PersistenceContext
   protected EntityManager em;
 
@@ -176,10 +179,9 @@ public class IntegrationTest {
 
   protected String asJsonString(final Object obj) {
     try {
-      final ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(obj);
     } catch (IOException e) {
-      throw new RuntimeException();
+      throw new RuntimeException(e);
     }
   }
 }
