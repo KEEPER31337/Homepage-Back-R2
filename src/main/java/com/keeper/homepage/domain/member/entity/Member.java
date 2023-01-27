@@ -9,7 +9,6 @@ import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -18,7 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -65,21 +63,9 @@ public class Member {
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
   @Builder
-  private Member(String loginId, String emailAddress, String password, String realName,
-      String nickname, LocalDate birthday, String studentId, Integer point, Integer level,
-      Thumbnail thumbnail, Integer merit, Integer demerit, Float generation,
+  private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
       Integer totalAttendance) {
-    this.profile = Profile.builder()
-        .loginId(loginId)
-        .emailAddress(emailAddress)
-        .password(password)
-        .realName(realName)
-        .nickname(nickname)
-        .birthday(birthday)
-        .studentId(studentId)
-        .thumbnail(thumbnail)
-        .generation(generation)
-        .build();
+    this.profile = profile;
     this.point = point;
     this.level = level;
     this.meritDemerit = MeritDemerit.builder()
