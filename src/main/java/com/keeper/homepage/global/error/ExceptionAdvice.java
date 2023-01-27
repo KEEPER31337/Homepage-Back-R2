@@ -1,8 +1,10 @@
 package com.keeper.homepage.global.error;
 
 import java.util.stream.Collectors;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +18,12 @@ public class ExceptionAdvice {
   public ResponseEntity<ErrorResponse> runtimeException() {
     return ResponseEntity.internalServerError()
         .body(ErrorResponse.from("서버에 문제가 생겼습니다."));
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> accessDeniedException(AccessDeniedException e) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(ErrorResponse.from("권한이 없습니다."));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
