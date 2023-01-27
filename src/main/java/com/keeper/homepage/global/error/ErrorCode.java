@@ -15,6 +15,9 @@ public enum ErrorCode {
   AUTH_CODE_MISMATCH("인증 코드가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED),
   // MEMBER
   MEMBER_NOT_FOUND("해당 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  MEMBER_EMAIL_DUPLICATE("회원 이메일이 중복됩니다.", HttpStatus.CONFLICT),
+  MEMBER_LOGIN_ID_DUPLICATE("회원의 로그인 아이디가 중복됩니다.", HttpStatus.CONFLICT),
+  MEMBER_STUDENT_ID_DUPLICATE("회원의 학번이 중복됩니다.", HttpStatus.CONFLICT),
   ;
 
   private final String message;
