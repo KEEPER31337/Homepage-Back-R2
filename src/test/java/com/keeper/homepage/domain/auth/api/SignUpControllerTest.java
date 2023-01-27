@@ -2,9 +2,9 @@ package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.AUTH_CODE_LENGTH;
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -14,6 +14,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,12 +23,16 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignUpRequest;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 
 class SignUpControllerTest extends IntegrationTest {
@@ -91,7 +96,7 @@ class SignUpControllerTest extends IntegrationTest {
     @DisplayName("유효한 요청일 경우 회원가입은 성공해야 한다.")
     void should_successfully_when_validRequest() throws Exception {
       long createdMemberId = 1L;
-      when(signUpService.signUp(any())).thenReturn(createdMemberId);
+      doReturn(createdMemberId).when(signUpService).signUp(any());
       callSignUpApi(validRequest)
           .andExpect(status().isCreated())
           .andExpect(header().string(HttpHeaders.LOCATION, "/members/" + createdMemberId))
@@ -111,6 +116,49 @@ class SignUpControllerTest extends IntegrationTest {
               responseHeaders(
                   headerWithName(HttpHeaders.LOCATION).description("생성된 회원의 URI입니다.")
               )));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    @DisplayName("잘못된 형식의 요청일 경우 400 Bad Request를 반환해야 한다.")
+    void should_400BadRequest_when_invalidRequest(String field, String invalidValue)
+        throws Exception {
+      Object validValue = ReflectionTestUtils.getField(validRequest, field);
+      ReflectionTestUtils.setField(validRequest, field, invalidValue);
+      callSignUpApi(validRequest)
+          .andExpect(status().isBadRequest())
+          .andExpect(content().string(containsString(field)))
+          .andExpect(content().string(containsString(invalidValue)));
+      ReflectionTestUtils.setField(validRequest, field, validValue);
+    }
+
+    static Stream<Arguments> should_400BadRequest_when_invalidRequest() {
+      return Stream.of(
+          Arguments.arguments("loginId", "a_0"),
+          Arguments.arguments("loginId", "a".repeat(13)),
+          Arguments.arguments("loginId", "abcd#"),
+          Arguments.arguments("loginId", "no-dash-haha"),
+          Arguments.arguments("email", "a@a."),
+          Arguments.arguments("email", "notEmail"),
+          Arguments.arguments("password", "a".repeat(6) + "0"),
+          Arguments.arguments("password", "a".repeat(20) + "0"),
+          Arguments.arguments("password", "abcdefghij"),
+          Arguments.arguments("password", "0123456789"),
+          Arguments.arguments("password", "noNumber###"),
+          Arguments.arguments("password", "0123456!@#$"),
+          Arguments.arguments("realName", "a".repeat(21)),
+          Arguments.arguments("realName", ""),
+          Arguments.arguments("realName", "  "),
+          Arguments.arguments("realName", "noNumber00"),
+          Arguments.arguments("nickname", "0_0"),
+          Arguments.arguments("nickname", "0-0"),
+          Arguments.arguments("nickname", "noSpecial!@#$"),
+          Arguments.arguments("nickname", "공백은 안됩니다."),
+          Arguments.arguments("authCode", "a".repeat(AUTH_CODE_LENGTH - 1)),
+          Arguments.arguments("authCode", "a".repeat(AUTH_CODE_LENGTH + 1)),
+          Arguments.arguments("studentId", "noNumber!"),
+          Arguments.arguments("studentId", "12345_6789")
+      );
     }
 
     private ResultActions callSignUpApi(SignUpRequest request) throws Exception {
