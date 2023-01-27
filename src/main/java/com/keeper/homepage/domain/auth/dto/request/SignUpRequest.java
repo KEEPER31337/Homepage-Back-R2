@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
@@ -42,4 +43,16 @@ public class SignUpRequest {
   private LocalDate birthday;
   @Pattern(regexp = "^[0-9]*$", message = NICKNAME_INVALID)
   private String studentId;
+
+  public Profile toMemberProfile() {
+    return Profile.builder()
+        .loginId(this.loginId)
+        .emailAddress(this.email)
+        .password(this.password)
+        .realName(this.realName)
+        .nickname(this.nickname)
+        .birthday(this.birthday)
+        .studentId(this.studentId)
+        .build();
+  }
 }
