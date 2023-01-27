@@ -4,6 +4,7 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.member.entity.embedded.Generation;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
@@ -17,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +46,9 @@ public class Member {
   @Embedded
   private Profile profile;
 
+  @Embedded
+  private Generation generation;
+
   @Column(name = "point", nullable = false)
   private Integer point;
 
@@ -66,6 +71,7 @@ public class Member {
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
       Integer totalAttendance) {
     this.profile = profile;
+    this.generation = Generation.generateGeneration(LocalDate.now());
     this.point = point;
     this.level = level;
     this.meritDemerit = MeritDemerit.builder()
