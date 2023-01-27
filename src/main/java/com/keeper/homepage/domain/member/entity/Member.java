@@ -115,4 +115,18 @@ public class Member {
         .memberJob(MemberJob.getMemberJobBy(jobType))
         .build());
   }
+
+  public void addFollower(Member follower) {
+    this.follower.add(Friend.builder()
+        .follower(follower)
+        .followee(this)
+        .build());
+  }
+
+  public void addFollowee(Member followee) {
+    this.followee.add(Friend.builder()
+        .follower(this)
+        .followee(followee)
+        .build());
+  }
 }
