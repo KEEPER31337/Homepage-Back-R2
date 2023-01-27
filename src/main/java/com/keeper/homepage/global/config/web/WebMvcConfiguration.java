@@ -2,7 +2,7 @@ package com.keeper.homepage.global.config.web;
 
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.RESOURCE_PATH;
 
-import com.keeper.homepage.global.config.security.annotation.AuthIdArgumentResolver;
+import com.keeper.homepage.global.config.security.annotation.LoginMemberArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -14,11 +14,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
-  private final AuthIdArgumentResolver authIdArgumentResolver;
+  private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-    resolvers.add(authIdArgumentResolver);
+    resolvers.add(loginMemberArgumentResolver);
   }
 
   @Override
