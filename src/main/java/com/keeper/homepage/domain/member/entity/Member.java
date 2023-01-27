@@ -68,10 +68,7 @@ public class Member {
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
-  private final Set<Friend> follower = new HashSet<>();
-
-  @OneToMany(mappedBy = "followee", cascade = ALL, orphanRemoval = true)
-  private final Set<Friend> followee = new HashSet<>();
+  private final Set<Friend> friends = new HashSet<>();
 
   @Builder
   private Member(String loginId, String emailAddress, String password, String realName,
@@ -118,17 +115,14 @@ public class Member {
         .build());
   }
 
-  public void addFollower(Member follower) {
-    this.follower.add(Friend.builder()
-        .follower(follower)
-        .followee(this)
+  public void follow(Member other) {
+    friends.add(Friend.builder()
+        .follower(this)
+        .followee(other)
         .build());
   }
 
-  public void addFollowee(Member followee) {
-    this.followee.add(Friend.builder()
-        .follower(this)
-        .followee(followee)
-        .build());
+  public void unfollow(Member other) {
+    friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 }
