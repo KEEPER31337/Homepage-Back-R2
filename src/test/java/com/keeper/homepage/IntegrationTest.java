@@ -16,6 +16,7 @@ import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
 import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
@@ -78,6 +79,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected AttendanceRepository attendanceRepository;
+
+  @SpyBean
+  protected FriendRepository friendRepository;
 
   /******* Helper *******/
 
