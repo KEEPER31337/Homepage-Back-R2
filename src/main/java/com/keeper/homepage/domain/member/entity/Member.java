@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.member.entity;
 
+import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 
@@ -10,12 +12,17 @@ import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
+import com.keeper.homepage.domain.member.entity.rank.MemberRank;
+import com.keeper.homepage.domain.member.entity.type.MemberType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -61,6 +68,14 @@ public class Member {
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_type_id")
+  private MemberType memberType;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_rank_id")
+  private MemberRank memberRank;
+
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
@@ -79,6 +94,8 @@ public class Member {
         .demerit(demerit == null ? 0 : demerit)
         .build();
     this.totalAttendance = totalAttendance;
+    this.memberType = MemberType.getMemberTypeBy(정회원);
+    this.memberRank = MemberRank.getMemberRankBy(일반회원);
     this.assignJob(MemberJobType.ROLE_회원);
   }
 
