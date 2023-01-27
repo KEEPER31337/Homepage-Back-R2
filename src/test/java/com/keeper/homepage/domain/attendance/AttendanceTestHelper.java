@@ -112,7 +112,7 @@ public class AttendanceTestHelper {
           .ipAddress(ipAddress != null ? ipAddress : "0.0.0.0")
           .greetings(greetings != null ? greetings : getRandomUUIDLengthWith(MAX_GREETINGS_LENGTH))
           .continuousDay(continuousDay != null ? continuousDay : 0)
-          .member(member != null ? member : memberTestHelper.builder().build())
+          .member(member != null ? member : memberTestHelper.generate())
           .rank(rank != null ? rank : 1)
           .build());
     }
