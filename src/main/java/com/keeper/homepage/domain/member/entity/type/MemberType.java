@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.entity.job;
+package com.keeper.homepage.domain.member.entity.type;
 
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
@@ -14,7 +14,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -23,9 +22,8 @@ import lombok.ToString;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"type"})
-@EqualsAndHashCode(of = {"id"})
-@Table(name = "member_job")
-public class MemberJob {
+@Table(name = "member_type")
+public class MemberType {
 
   private static final int MAX_NAME_LENGTH = 45;
 
@@ -36,41 +34,37 @@ public class MemberJob {
 
   @Enumerated(value = EnumType.STRING)
   @Column(name = "name", nullable = false, length = MAX_NAME_LENGTH)
-  private MemberJobType type;
+  private MemberTypeEnum type;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "badge_thumbnail_id", nullable = false)
   private Thumbnail badge;
 
-  public static MemberJob getMemberJobBy(MemberJobType type) {
-    return MemberJob.builder()
+  public static MemberType getMemberTypeBy(MemberTypeEnum type) {
+    return MemberType.builder()
         .id(type.id)
         .type(type)
         .build();
   }
 
   @Builder
-  private MemberJob(Long id, MemberJobType type) {
+  private MemberType(Long id, MemberTypeEnum type) {
     this.id = id;
     this.type = type;
   }
 
-  public enum MemberJobType {
-    ROLE_회장(1),
-    ROLE_부회장(2),
-    ROLE_대외부장(3),
-    ROLE_학술부장(4),
-    ROLE_전산관리자(5),
-    ROLE_서기(6),
-    ROLE_총무(7),
-    ROLE_사서(8),
-    ROLE_회원(9),
-    ROLE_출제자(10),
+  public enum MemberTypeEnum {
+    비회원(1),
+    정회원(2),
+    휴면회원(3),
+    졸업(4),
+    탈퇴(5),
     ;
 
+    @Getter
     private final long id;
 
-    MemberJobType(long id) {
+    MemberTypeEnum(long id) {
       this.id = id;
     }
   }

@@ -15,7 +15,7 @@ class MemberJobRepositoryTest extends IntegrationTest {
 
   @Nested
   @DisplayName("회원 역할 테스트")
-  class MemberJobTypeEnumTest {
+  class MemberRankTypeEnumTest {
 
     @Test
     @DisplayName("MemberJobType Enum에 DB 상의 모든 역할이 들어가 있어야 한다.")

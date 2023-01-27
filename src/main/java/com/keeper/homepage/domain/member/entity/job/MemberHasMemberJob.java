@@ -10,7 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.Objects;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -34,4 +36,28 @@ public class MemberHasMemberJob {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_job_id", nullable = false, updatable = false)
   private MemberJob memberJob;
+
+  @Builder
+  private MemberHasMemberJob(Member member, MemberJob memberJob) {
+    this.member = member;
+    this.memberJob = memberJob;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MemberHasMemberJob memberHasMemberJob = (MemberHasMemberJob) o;
+    return Objects.equals(member.getId(), memberHasMemberJob.getMember().getId()) &&
+        Objects.equals(memberJob.getId(), memberHasMemberJob.getMemberJob().getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(member.getId(), memberJob.getId());
+  }
 }
