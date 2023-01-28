@@ -17,13 +17,13 @@ public class Category {
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @Column(name = "parent_id", nullable = false)
+  @Column(name = "parent_id", nullable = true)
   private Long parent;
 
-  @Column(name = "name", nullable = false)
+  @Column(name = "name", nullable = false, length = 250)
   private String name;
 
-  @Column(name = "href", nullable = false)
+  @Column(name = "href", nullable = true, length = 45)
   private String href;
 
 }
