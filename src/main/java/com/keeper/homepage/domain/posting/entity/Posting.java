@@ -52,13 +52,13 @@ public class Posting {
   private Integer commentCount;
 
   @Column(name = "allow_comment", nullable = false)
-  private Integer allowComment;
+  private boolean allowComment;
   @Column(name = "is_notice", nullable = false)
-  private Integer isNotice;
+  private boolean isNotice;
   @Column(name = "is_secret", nullable = false)
-  private Integer isSecret;
+  private boolean isSecret;
   @Column(name = "is_temp", nullable = false)
-  private Integer isTemp;
+  private boolean isTemp;
 
   @Column(name = "ip_address", nullable = false, length = 128)
   private String ipAddress;
