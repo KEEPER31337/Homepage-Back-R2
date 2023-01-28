@@ -7,12 +7,15 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.domain.about.StaticWriteTestHelper;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -23,6 +26,7 @@ import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
@@ -78,6 +82,16 @@ public class IntegrationTest {
 
   @SpyBean
   protected AttendanceRepository attendanceRepository;
+
+  @Autowired
+  protected EmailAuthRedisRepository emailAuthRedisRepository;
+
+  /******* Service *******/
+  @SpyBean
+  protected EmailAuthService emailAuthService;
+
+  @Autowired
+  protected MailUtil mailUtil;
 
   /******* Helper *******/
 
@@ -158,5 +172,14 @@ public class IntegrationTest {
 
   private static String getTodayThumbnailFilesPath() {
     return DEFAULT_THUMBNAIL_PATH + LocalDate.now();
+  }
+
+  protected String asJsonString(final Object obj) {
+    try {
+      final ObjectMapper objectMapper = new ObjectMapper();
+      return objectMapper.writeValueAsString(obj);
+    } catch (IOException e) {
+      throw new RuntimeException();
+    }
   }
 }
