@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -25,11 +24,10 @@ public class Comment {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "posting_id", nullable = false)
   private Posting posting;
-
   @Column(name = "parent_id", nullable = false)
   private Long parent;
 
-  @Column(name = "content")
+  @Column(name = "content", nullable = false)
   private String content;
 
   @Column(name = "register_time", nullable = false)
@@ -42,8 +40,6 @@ public class Comment {
   @Column(name = "dislike_count", nullable = false)
   private Integer dislikeCount;
 
-  @Column(name = "ip_address", nullable = false)
+  @Column(name = "ip_address", nullable = false, length = 128)
   private String ipAddress;
-
-
 }
