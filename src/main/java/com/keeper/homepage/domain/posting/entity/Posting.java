@@ -29,12 +29,12 @@ public class Posting {
   private Category category;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "thumbnail_id")
+  @JoinColumn(name = "thumbnail_id", nullable = true)
   private Thumbnail thumbnail;
 
-  @Column(name = "title", nullable = false)
+  @Column(name = "title", nullable = false, length = 250)
   private String title;
-  @Column(name = "content")
+  @Column(name = "content", nullable = false)
   private String content;
 
   @Column(name = "register_time", nullable = false)
@@ -60,9 +60,9 @@ public class Posting {
   @Column(name = "is_temp", nullable = false)
   private Integer isTemp;
 
-  @Column(name = "ip_address", nullable = false)
+  @Column(name = "ip_address", nullable = false, length = 128)
   private String ipAddress;
-  @Column(name = "password", nullable = false)
+  @Column(name = "password", nullable = true, length = 512)
   private String password;
 
 }
