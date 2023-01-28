@@ -2,6 +2,8 @@ package com.keeper.homepage.domain.auth.application;
 
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.auth.entity.redis.EmailAuthRedis;
+import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,10 @@ public class EmailAuthService {
   private final EmailAuthRedisRepository emailAuthRedisRepository;
 
   public int emailAuth(String email) {
+    if (emailAuthRedisRepository.existsById(email)) {
+      throw new BusinessException(email, "email", ErrorCode.TOO_MANY_REQUEST_AUTH_CODE);
+    }
+
     String authCode = generateRandomAuthCode();
     setAuthCodeInRedis(email, authCode);
     sendKeeperAuthCodeMail(email, authCode);
