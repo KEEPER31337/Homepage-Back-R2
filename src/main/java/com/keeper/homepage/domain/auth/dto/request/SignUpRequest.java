@@ -13,7 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor(access = PRIVATE)
@@ -32,6 +34,7 @@ public class SignUpRequest {
   @Email
   private String email;
   @Pattern(regexp = "^(?=.*?[A-Za-z])(?=.*?\\d).{8,20}$", message = PASSWORD_INVALID)
+  @Setter
   private String password;
   @Pattern(regexp = "^[a-zA-Z가-힣]{1,20}", message = REAL_NAME_INVALID)
   private String realName;
@@ -44,11 +47,11 @@ public class SignUpRequest {
   @Pattern(regexp = "^[0-9]*$", message = NICKNAME_INVALID)
   private String studentId;
 
-  public Profile toMemberProfile() {
+  public Profile toMemberProfile(PasswordEncoder passwordEncoder) {
     return Profile.builder()
         .loginId(this.loginId)
         .emailAddress(this.email)
-        .password(this.password)
+        .password(passwordEncoder.encode(this.password))
         .realName(this.realName)
         .nickname(this.nickname)
         .birthday(this.birthday)

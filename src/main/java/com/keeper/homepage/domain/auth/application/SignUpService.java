@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class SignUpService {
   private final MemberRepository memberRepository;
   private final EmailAuthRedisRepository emailAuthRedisRepository;
   private final CheckDuplicateService checkDuplicateService;
+  private final PasswordEncoder passwordEncoder;
 
   @Transactional
   public long signUp(SignUpRequest request) {
@@ -31,7 +33,7 @@ public class SignUpService {
     String actualAuthCode = getActualAuthCode(request.getEmail());
     checkAuthCodeMatch(request.getAuthCode(), actualAuthCode);
     return memberRepository.save(Member.builder()
-            .profile(request.toMemberProfile())
+            .profile(request.toMemberProfile(passwordEncoder))
             .build())
         .getId();
   }
@@ -48,13 +50,13 @@ public class SignUpService {
     }
   }
 
-  private static void checkAuthCodeMatch(String requestAuthCode, String actualAuthCode) {
+  void checkAuthCodeMatch(String requestAuthCode, String actualAuthCode) {
     if (!actualAuthCode.equals(requestAuthCode)) {
       throw new BusinessException(requestAuthCode, "authCode", AUTH_CODE_MISMATCH);
     }
   }
 
-  private String getActualAuthCode(@Email String email) {
+  String getActualAuthCode(@Email String email) {
     return emailAuthRedisRepository.findById(email)
         .orElseThrow(() -> new BusinessException(email, "email", AUTH_CODE_EXPIRED))
         .getAuthCode();
