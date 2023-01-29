@@ -28,7 +28,9 @@ public class SignUpService {
 
   @Transactional
   public long signUp(SignUpRequest request) {
-    checkIsDuplicate(request.getEmail(), request.getLoginId(), request.getStudentId());
+    checkIsDuplicateEmail(request.getEmail());
+    checkIsDuplicateLoginId(request.getLoginId());
+    checkIsDuplicateStudentId(request.getStudentId());
 
     String actualAuthCode = getActualAuthCode(request.getEmail());
     checkAuthCodeMatch(request.getAuthCode(), actualAuthCode);
@@ -38,13 +40,19 @@ public class SignUpService {
         .getId();
   }
 
-  private void checkIsDuplicate(String email, String loginId, String studentId) {
+  private void checkIsDuplicateEmail(String email) {
     if (checkDuplicateService.isDuplicateEmail(email)) {
       throw new BusinessException(email, "email", MEMBER_EMAIL_DUPLICATE);
     }
+  }
+
+  private void checkIsDuplicateLoginId(String loginId) {
     if (checkDuplicateService.isDuplicateLoginId(loginId)) {
       throw new BusinessException(loginId, "loginId", MEMBER_LOGIN_ID_DUPLICATE);
     }
+  }
+
+  private void checkIsDuplicateStudentId(String studentId) {
     if (checkDuplicateService.isDuplicateStudentID(studentId)) {
       throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
     }
