@@ -10,10 +10,14 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,8 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignUpRequest;
+import com.keeper.homepage.domain.member.entity.Member;
 import java.time.LocalDate;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -165,6 +171,87 @@ class SignUpControllerTest extends IntegrationTest {
       return mockMvc.perform(post("/sign-up")
           .contentType(APPLICATION_JSON_VALUE)
           .content(asJsonString(request)));
+    }
+  }
+
+  @Nested
+  @DisplayName("중복 확인 테스트")
+  class CheckDuplicate {
+
+    Member member;
+
+    @BeforeEach
+    void setup() {
+      member = memberTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 로그인 아이디일 경우 true를 반환해야 한다.")
+    void should_returnTrue_when_existsLoginId() throws Exception {
+      callCheckDuplicateApi(Field.LOGIN_ID, member.getProfile().getLoginId())
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.duplicate").value(true))
+          .andDo(document("check-duplicate-loginId",
+              queryParameters(
+                  parameterWithName("loginId").description("중복을 확인할 로그인 아이디를 넣어주세요.")
+              ),
+              responseFields(
+                  fieldWithPath("duplicate").description("중복이면 true, 아니면 false")
+              )));
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 이메일일 경우 true를 반환해야 한다.")
+    void should_returnTrue_when_existsEmail() throws Exception {
+      callCheckDuplicateApi(Field.EMAIL, member.getProfile().getEmailAddress())
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.duplicate").value(true))
+          .andDo(document("check-duplicate-email",
+              queryParameters(
+                  parameterWithName("email").description("중복을 확인할 이메일을 넣어주세요.")
+              ),
+              responseFields(
+                  fieldWithPath("duplicate").description("중복이면 true, 아니면 false")
+              )));
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 학번일 경우 true를 반환해야 한다.")
+    void should_returnTrue_when_exigetStudentId() throws Exception {
+      callCheckDuplicateApi(Field.STUDENT_ID, member.getProfile().getStudentId())
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.duplicate").value(true))
+          .andDo(document("check-duplicate-studentId",
+              queryParameters(
+                  parameterWithName("studentId").description("중복을 확인할 학번을 넣어주세요.")
+              ),
+              responseFields(
+                  fieldWithPath("duplicate").description("중복이면 true, 아니면 false")
+              )));
+    }
+
+    private ResultActions callCheckDuplicateApi(Field field, String value) throws Exception {
+      return mockMvc.perform(get("/sign-up/exists" + field.url)
+          .param(field.param, value));
+    }
+
+    private enum Field {
+
+      LOGIN_ID("/login-id", "loginId"),
+      EMAIL("/email", "email"),
+      STUDENT_ID("/student-id", "studentId"),
+      ;
+
+      private final String url;
+      private final String param;
+
+      Field(String url, String param) {
+        this.url = url;
+        this.param = param;
+      }
     }
   }
 }

@@ -56,3 +56,69 @@ include::{snippets}/email-auth/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/email-auth/response-fields.adoc[]
+
+== *로그인 아이디 중복 체크*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/check-duplicate-loginId/http-request.adoc[]
+
+==== Request Param
+
+include::{snippets}/check-duplicate-loginId/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/check-duplicate-loginId/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/check-duplicate-loginId/response-fields.adoc[]
+
+== *이메일 중복 체크*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/check-duplicate-email/http-request.adoc[]
+
+==== Request Param
+
+include::{snippets}/check-duplicate-email/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/check-duplicate-email/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/check-duplicate-email/response-fields.adoc[]
+
+== *학번 중복 체크*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/check-duplicate-studentId/http-request.adoc[]
+
+==== Request Param
+
+include::{snippets}/check-duplicate-studentId/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/check-duplicate-studentId/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/check-duplicate-studentId/response-fields.adoc[]
