@@ -32,7 +32,8 @@ public class BookRepositoryTest extends IntegrationTest {
     @DisplayName("BookDepartmentType Enum 에는 DB의 모든 BookDepartment정보가 있어야 한다.")
     void should_allBookDepartmentInfoExist_when_givenBookDepartmentTypeEnum() {
       // given
-      List<BookDepartment> bookDepartmentTypes = Arrays.stream(BookDepartmentType.values())
+      BookDepartmentType[] departmentTypes = BookDepartmentType.values();
+      List<BookDepartment> bookDepartmentTypes = Arrays.stream(departmentTypes)
           .map(BookDepartment::getBookDepartmentBy)
           .toList();
 
@@ -42,19 +43,11 @@ public class BookRepositoryTest extends IntegrationTest {
       // then
       assertThat(getIds(bookDepartments)).containsAll(getIds(bookDepartmentTypes));
       assertThat(getNames(bookDepartments)).containsAll(getNames(bookDepartmentTypes));
-      assertThat(bookDepartments).hasSize(6);
-      assertThat(getId(bookDepartments.get(0))).isEqualTo(LANGUAGE.getId());
-      assertThat(getName(bookDepartments.get(0))).isEqualTo(LANGUAGE.getName());
-      assertThat(getId(bookDepartments.get(1))).isEqualTo(SECURITY.getId());
-      assertThat(getName(bookDepartments.get(1))).isEqualTo(SECURITY.getName());
-      assertThat(getId(bookDepartments.get(2))).isEqualTo(TEXTBOOK.getId());
-      assertThat(getName(bookDepartments.get(2))).isEqualTo(TEXTBOOK.getName());
-      assertThat(getId(bookDepartments.get(3))).isEqualTo(CERTIFICATION.getId());
-      assertThat(getName(bookDepartments.get(3))).isEqualTo(CERTIFICATION.getName());
-      assertThat(getId(bookDepartments.get(4))).isEqualTo(DOCUMENT.getId());
-      assertThat(getName(bookDepartments.get(4))).isEqualTo(DOCUMENT.getName());
-      assertThat(getId(bookDepartments.get(5))).isEqualTo(ETC.getId());
-      assertThat(getName(bookDepartments.get(5))).isEqualTo(ETC.getName());
+      assertThat(bookDepartments).hasSize(departmentTypes.length);
+      for (int i = 0; i < departmentTypes.length; ++i) {
+        assertThat(getId(bookDepartments.get(i))).isEqualTo(departmentTypes[i].getId());
+        assertThat(getName(bookDepartments.get(i))).isEqualTo(departmentTypes[i].getName());
+      }
     }
 
     private List<Long> getIds(List<BookDepartment> bookDepartments) {
