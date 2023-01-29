@@ -14,7 +14,9 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
@@ -45,6 +47,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +96,12 @@ public class IntegrationTest {
   @SpyBean
   protected EmailAuthService emailAuthService;
 
+  @SpyBean
+  protected SignUpService signUpService;
+
+  @SpyBean
+  protected CheckDuplicateService checkDuplicateService;
+
   @Autowired
   protected MailUtil mailUtil;
 
@@ -133,6 +142,12 @@ public class IntegrationTest {
 
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
+
+  @Autowired
+  protected ObjectMapper objectMapper;
+
+  @Autowired
+  protected PasswordEncoder passwordEncoder;
 
   @PersistenceContext
   protected EntityManager em;
@@ -179,10 +194,9 @@ public class IntegrationTest {
 
   protected String asJsonString(final Object obj) {
     try {
-      final ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.writeValueAsString(obj);
     } catch (IOException e) {
-      throw new RuntimeException();
+      throw new RuntimeException(e);
     }
   }
 }

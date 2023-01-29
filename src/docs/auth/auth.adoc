@@ -13,6 +13,28 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
+== *회원 가입*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/sign-up/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/sign-up/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/sign-up/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/sign-up/response-headers.adoc[]
+
 == *이메일 인증*
 
 === 요청
