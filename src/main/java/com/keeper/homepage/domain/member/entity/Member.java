@@ -6,6 +6,7 @@ import static jakarta.persistence.CascadeType.REMOVE;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -34,6 +36,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Getter
 @Entity
+@EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
 public class Member {
@@ -63,6 +66,9 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
+
+  @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
+  private final Set<Friend> friends = new HashSet<>();
 
   @Builder
   private Member(String loginId, String emailAddress, String password, String realName,
@@ -107,5 +113,16 @@ public class Member {
         .member(this)
         .memberJob(MemberJob.getMemberJobBy(jobType))
         .build());
+  }
+
+  public void follow(Member other) {
+    friends.add(Friend.builder()
+        .follower(this)
+        .followee(other)
+        .build());
+  }
+
+  public void unfollow(Member other) {
+    friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 }
