@@ -7,7 +7,6 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.member.MemberTestHelper.MemberBuilder;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
@@ -20,13 +19,11 @@ import org.junit.jupiter.api.Test;
 
 class MemberRepositoryTest extends IntegrationTest {
 
-  private MemberBuilder memberBuilder;
   private Member member;
 
   @BeforeEach
   void setUp() {
-    memberBuilder = memberTestHelper.builder();
-    member = memberBuilder.build();
+    member = memberTestHelper.generate();
   }
 
   @Nested

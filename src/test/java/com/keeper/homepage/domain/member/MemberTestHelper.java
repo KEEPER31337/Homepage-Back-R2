@@ -24,6 +24,10 @@ public class MemberTestHelper {
   @Autowired
   ThumbnailTestHelper thumbnailTestHelper;
 
+  public Member generate() {
+    return this.builder().build();
+  }
+
   public MemberBuilder builder() {
     return new MemberBuilder();
   }
