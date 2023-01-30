@@ -8,6 +8,7 @@ import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUD
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import java.time.LocalDate;
@@ -124,19 +125,21 @@ public class MemberTestHelper {
 
     public Member build() {
       return memberRepository.save(Member.builder()
-          .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-          .emailAddress(email != null ? email : getRandomUUIDLengthWith(MAX_EMAIL_LENGTH))
-          .password(password != null ? password : getRandomUUIDLengthWith(100))
-          .realName(realName != null ? realName : getRandomUUIDLengthWith(MAX_REAL_NAME_LENGTH))
-          .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
-          .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
-          .studentId(studentId != null ? studentId : getRandomUUIDLengthWith(MAX_STUDENT_ID_LENGTH))
+          .profile(Profile.builder()
+              .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
+              .emailAddress(email != null ? email : getRandomUUIDLengthWith(MAX_EMAIL_LENGTH))
+              .password(password != null ? password : getRandomUUIDLengthWith(100))
+              .realName(realName != null ? realName : getRandomUUIDLengthWith(MAX_REAL_NAME_LENGTH))
+              .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
+              .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
+              .studentId(studentId != null ? studentId
+                  : getRandomUUIDLengthWith(MAX_STUDENT_ID_LENGTH))
+              .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
+              .build())
           .point(point != null ? point : 0)
           .level(level != null ? level : 0)
-          .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
           .merit(merit != null ? merit : 0)
           .demerit(demerit != null ? demerit : 0)
-          .generation(generation != null ? generation : 8.0F)
           .totalAttendance(totalAttendance != null ? totalAttendance : 0)
           .build());
     }

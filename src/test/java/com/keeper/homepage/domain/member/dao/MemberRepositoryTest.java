@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import java.util.List;
@@ -34,11 +35,13 @@ class MemberRepositoryTest extends IntegrationTest {
     @DisplayName("default 값이 있는 컬럼은 null로 저장해도 저장에 성공한다.")
     void should_saveSuccessfully_when_defaultColumnIsNull() {
       Member memberBeforeSave = Member.builder()
-          .loginId("ABC")
-          .emailAddress("ABC@keeper.com")
-          .password("password")
-          .realName("realName")
-          .nickname("nickname")
+          .profile(Profile.builder()
+              .loginId("ABC")
+              .emailAddress("ABC@keeper.com")
+              .password("password")
+              .realName("realName")
+              .nickname("nickname")
+              .build())
           .build();
 
       assertThat(memberBeforeSave.getPoint()).isNull();

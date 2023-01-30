@@ -9,16 +9,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Embeddable
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile {
 
   public static final int MAX_LOGIN_ID_LENGTH = 80;
@@ -52,6 +49,16 @@ public class Profile {
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @Column(name = "generation")
-  private Float generation;
+  @Builder
+  private Profile(String loginId, String emailAddress, String password, String realName,
+      String nickname, LocalDate birthday, String studentId, Thumbnail thumbnail) {
+    this.loginId = loginId;
+    this.emailAddress = emailAddress;
+    this.password = password;
+    this.realName = realName;
+    this.nickname = nickname;
+    this.birthday = birthday;
+    this.studentId = studentId;
+    this.thumbnail = thumbnail;
+  }
 }
