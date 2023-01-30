@@ -1,6 +1,7 @@
 package com.keeper.homepage.global.config.security;
 
 import com.keeper.homepage.global.config.security.filter.JwtAuthenticationFilter;
+import com.keeper.homepage.global.config.security.filter.RefreshTokenFilter;
 import com.keeper.homepage.global.config.security.handler.CustomAccessDeniedHandler;
 import com.keeper.homepage.global.config.security.handler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,14 @@ public class SecurityConfiguration {
   private final JwtTokenProvider jwtTokenProvider;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final RefreshTokenFilter refreshTokenFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests()
-        .requestMatchers("/docs/*", "/auth-test").permitAll()
+        .requestMatchers("/docs/*", "/keeper_files/**", "/auth-test", "/sign-up/**", "/error")
+        .permitAll()
         .anyRequest().hasRole("회원")
         .and()
         .httpBasic().disable()
@@ -45,15 +49,10 @@ public class SecurityConfiguration {
         .and()
         .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
         .and()
-        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-            UsernamePasswordAuthenticationFilter.class);
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(refreshTokenFilter, JwtAuthenticationFilter.class);
 
     return http.build();
-  }
-
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
 
   @Bean

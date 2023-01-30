@@ -1,14 +1,12 @@
 package com.keeper.homepage.global.config.security.annotation;
 
-import static com.keeper.homepage.global.config.security.JwtTokenProvider.ACCESS_TOKEN;
-
-import com.keeper.homepage.global.config.security.JwtTokenProvider;
+import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -17,29 +15,21 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class AuthIdArgumentResolver implements HandlerMethodArgumentResolver {
+public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-  private final JwtTokenProvider jwtTokenProvider;
+  private final MemberRepository memberRepository;
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
-    return parameter.hasParameterAnnotation(AuthId.class);
+    return parameter.hasParameterAnnotation(LoginMember.class);
   }
 
   @Override
   public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
       NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-    HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-    String token = jwtTokenProvider.resolveToken(request);
-    return tryGetMyIdBy(token);
-  }
-
-  private long tryGetMyIdBy(String token) {
-    try {
-      return jwtTokenProvider.getAuthId(token);
-    } catch (NumberFormatException e) {
-      throw new BusinessException(token, HttpHeaders.COOKIE + "." + ACCESS_TOKEN,
-          ErrorCode.TOKEN_NOT_AVAILABLE);
-    }
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    long loginMemberId = Long.parseLong(authentication.getName());
+    return memberRepository.findById(loginMemberId)
+        .orElseThrow(() -> new BusinessException(loginMemberId, "JWT", ErrorCode.MEMBER_NOT_FOUND));
   }
 }
