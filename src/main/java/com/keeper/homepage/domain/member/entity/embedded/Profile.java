@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -18,14 +19,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile {
 
-  public static final int MAX_LOGIN_ID_LENGTH = 80;
   public static final int MAX_EMAIL_LENGTH = 250;
   public static final int MAX_REAL_NAME_LENGTH = 40;
   public static final int MAX_NICKNAME_LENGTH = 40;
   public static final int MAX_STUDENT_ID_LENGTH = 45;
 
-  @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)
-  private String loginId;
+  @Embedded
+  private LoginId loginId;
 
   @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
   private String emailAddress;
@@ -50,7 +50,7 @@ public class Profile {
   private Thumbnail thumbnail;
 
   @Builder
-  private Profile(String loginId, String emailAddress, String password, String realName,
+  private Profile(LoginId loginId, String emailAddress, String password, String realName,
       String nickname, LocalDate birthday, String studentId, Thumbnail thumbnail) {
     this.loginId = loginId;
     this.emailAddress = emailAddress;

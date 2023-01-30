@@ -1,10 +1,12 @@
 package com.keeper.homepage.domain.auth.dto.request;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.AUTH_CODE_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.LoginId.LOGIN_ID_REGEX;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -23,13 +25,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Builder
 public class SignUpRequest {
 
-  public static final String LOGIN_ID_INVALID = "로그인 아이디는 4~12자 영어, 숫자, '_'만 가능합니다.";
   public static final String PASSWORD_INVALID = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.";
   public static final String REAL_NAME_INVALID = "실명은 1~20자 한글, 영어만 가능합니다.";
   public static final String NICKNAME_INVALID = "닉네임은 1~16자 한글, 영어, 숫자만 가능합니다.";
   public static final String STUDENT_ID_INVALID = "학번은 숫자만 가능합니다.";
 
-  @Pattern(regexp = "^[a-zA-Z0-9_]{4,12}", message = LOGIN_ID_INVALID)
+  @Pattern(regexp = LOGIN_ID_REGEX, message = LoginId.LOGIN_ID_INVALID)
   private String loginId;
   @Email
   private String email;
@@ -48,8 +49,9 @@ public class SignUpRequest {
   private String studentId;
 
   public Profile toMemberProfile(PasswordEncoder passwordEncoder) {
+    System.out.println("password = " + passwordEncoder.encode(this.password));
     return Profile.builder()
-        .loginId(this.loginId)
+        .loginId(LoginId.from(this.loginId))
         .emailAddress(this.email)
         .password(passwordEncoder.encode(this.password))
         .realName(this.realName)

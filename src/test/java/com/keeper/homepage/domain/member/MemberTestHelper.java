@@ -1,18 +1,19 @@
 package com.keeper.homepage.domain.member;
 
+import static com.keeper.homepage.IntegrationTest.generateRandomString;
+import static com.keeper.homepage.domain.member.entity.embedded.LoginId.MAX_LOGIN_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_EMAIL_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_LOGIN_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_NICKNAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_REAL_NAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import java.time.LocalDate;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,7 @@ public class MemberTestHelper {
 
   public final class MemberBuilder {
 
-    private String loginId;
+    private LoginId loginId;
     private String email;
     private String password;
     private String realName;
@@ -53,7 +54,7 @@ public class MemberTestHelper {
     private MemberBuilder() {
     }
 
-    public MemberBuilder loginId(String loginId) {
+    public MemberBuilder loginId(LoginId loginId) {
       this.loginId = loginId;
       return this;
     }
@@ -126,14 +127,15 @@ public class MemberTestHelper {
     public Member build() {
       return memberRepository.save(Member.builder()
           .profile(Profile.builder()
-              .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-              .emailAddress(email != null ? email : getRandomUUIDLengthWith(MAX_EMAIL_LENGTH))
-              .password(password != null ? password : getRandomUUIDLengthWith(100))
-              .realName(realName != null ? realName : getRandomUUIDLengthWith(MAX_REAL_NAME_LENGTH))
-              .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
+              .loginId(loginId != null ? loginId
+                  : LoginId.from(generateRandomString(MAX_LOGIN_ID_LENGTH)))
+              .emailAddress(email != null ? email : generateRandomString(MAX_EMAIL_LENGTH))
+              .password(password != null ? password : generateRandomString(100))
+              .realName(realName != null ? realName : generateRandomString(MAX_REAL_NAME_LENGTH))
+              .nickname(nickname != null ? nickname : generateRandomString(MAX_NICKNAME_LENGTH))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
-                  : getRandomUUIDLengthWith(MAX_STUDENT_ID_LENGTH))
+                  : generateRandomString(MAX_STUDENT_ID_LENGTH))
               .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
               .build())
           .point(point != null ? point : 0)
@@ -142,13 +144,6 @@ public class MemberTestHelper {
           .demerit(demerit != null ? demerit : 0)
           .totalAttendance(totalAttendance != null ? totalAttendance : 0)
           .build());
-    }
-
-    private static String getRandomUUIDLengthWith(int length) {
-      String randomString = UUID.randomUUID()
-          .toString();
-      length = Math.min(length, randomString.length());
-      return randomString.substring(0, length);
     }
   }
 }

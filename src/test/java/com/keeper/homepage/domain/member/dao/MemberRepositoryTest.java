@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
@@ -36,7 +37,7 @@ class MemberRepositoryTest extends IntegrationTest {
     void should_saveSuccessfully_when_defaultColumnIsNull() {
       Member memberBeforeSave = Member.builder()
           .profile(Profile.builder()
-              .loginId("ABC")
+              .loginId(LoginId.from("ABCD"))
               .emailAddress("ABC@keeper.com")
               .password("password")
               .realName("realName")

@@ -38,6 +38,7 @@ import jakarta.persistence.PersistenceContext;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Random;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +59,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @Transactional
 @SpringBootTest
 public class IntegrationTest {
+
+  public static final Random RANDOM = new Random();
 
   /******* Repository *******/
   @SpyBean
@@ -198,5 +201,16 @@ public class IntegrationTest {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static String generateRandomString(int length) {
+    char leftLimit = '0';
+    char rightLimit = 'z';
+
+    return RANDOM.ints(leftLimit, rightLimit + 1)
+        .filter(i -> Character.isAlphabetic(i) || Character.isDigit(i))
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
   }
 }
