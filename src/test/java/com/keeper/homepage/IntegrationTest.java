@@ -9,6 +9,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.domain.about.StaticWriteTestHelper;
+import com.keeper.homepage.domain.about.application.StaticWriteService;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
@@ -104,6 +105,9 @@ public class IntegrationTest {
 
   @Autowired
   protected MailUtil mailUtil;
+
+  @Autowired
+  protected StaticWriteService staticWriteService;
 
   /******* Helper *******/
 
