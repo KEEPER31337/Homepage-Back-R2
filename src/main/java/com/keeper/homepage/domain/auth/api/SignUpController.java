@@ -9,6 +9,7 @@ import com.keeper.homepage.domain.auth.dto.response.CheckDuplicateResponse;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -58,7 +59,7 @@ public class SignUpController {
 
   @GetMapping("/exists/student-id")
   public ResponseEntity<CheckDuplicateResponse> checkDuplicateStudentId(
-      @RequestParam @NotNull String studentId) {
+      @RequestParam @NotNull StudentId studentId) {
     boolean isDuplicate = checkDuplicateService.isDuplicateStudentID(studentId);
     return ResponseEntity.ok(CheckDuplicateResponse.from(isDuplicate));
   }

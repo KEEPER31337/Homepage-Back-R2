@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.global.error.BusinessException;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class SignUpService {
     }
   }
 
-  private void checkIsDuplicateStudentId(String studentId) {
+  private void checkIsDuplicateStudentId(StudentId studentId) {
     if (checkDuplicateService.isDuplicateStudentID(studentId)) {
       throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
     }

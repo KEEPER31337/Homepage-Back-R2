@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.member;
 
 import static com.keeper.homepage.IntegrationTest.generateRandomString;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUDENT_ID_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import java.time.LocalDate;
@@ -44,7 +45,7 @@ public class MemberTestHelper {
     private RealName realName;
     private Nickname nickname;
     private LocalDate birthday;
-    private String studentId;
+    private StudentId studentId;
     private Integer point;
     private Integer level;
     private Thumbnail thumbnail;
@@ -86,7 +87,7 @@ public class MemberTestHelper {
       return this;
     }
 
-    public MemberBuilder studentId(String studentId) {
+    public MemberBuilder studentId(StudentId studentId) {
       this.studentId = studentId;
       return this;
     }
@@ -141,7 +142,7 @@ public class MemberTestHelper {
                   Nickname.from(generateRandomAlphabeticString(20)))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
-                  : generateRandomString(MAX_STUDENT_ID_LENGTH))
+                  : StudentId.from(generateRandomDigitString(MAX_STUDENT_ID_LENGTH)))
               .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
               .build())
           .point(point != null ? point : 0)
@@ -166,12 +167,23 @@ public class MemberTestHelper {
   };
 
   private static String generateRandomAlphabeticString(int length) {
-    final Random RANDOM = new Random();
+    final Random random = new Random();
     char leftLimit = '0';
     char rightLimit = 'z';
 
-    return RANDOM.ints(leftLimit, rightLimit + 1)
+    return random.ints(leftLimit, rightLimit + 1)
         .filter(Character::isAlphabetic)
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+  }
+
+  private static String generateRandomDigitString(int length) {
+    final Random random = new Random();
+    char leftLimit = '0';
+    char rightLimit = '9';
+
+    return random.ints(leftLimit, rightLimit + 1)
         .limit(length)
         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
         .toString();

@@ -220,7 +220,7 @@ class SignUpControllerTest extends IntegrationTest {
     @Test
     @DisplayName("이미 존재하는 학번일 경우 true를 반환해야 한다.")
     void should_returnTrue_when_exigetStudentId() throws Exception {
-      callCheckDuplicateApi(Field.STUDENT_ID, member.getProfile().getStudentId())
+      callCheckDuplicateApi(Field.STUDENT_ID, member.getProfile().getStudentId().get())
           .andDo(print())
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.duplicate").value(true))

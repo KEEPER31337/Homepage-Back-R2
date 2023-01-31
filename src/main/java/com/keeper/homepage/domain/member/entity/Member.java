@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.entity;
 import static com.keeper.homepage.domain.member.entity.embedded.EmailAddress.MAX_EMAIL_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.LoginId.MAX_LOGIN_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Nickname.MAX_NICKNAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static jakarta.persistence.CascadeType.ALL;
@@ -65,7 +66,8 @@ public class Member {
       @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false, length = 512)),
       @AttributeOverride(name = "emailAddress", column = @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)),
       @AttributeOverride(name = "realName", column = @Column(name = "real_name", nullable = false, length = RealName.MAX_REAL_NAME_LENGTH)),
-      @AttributeOverride(name = "nickName", column = @Column(name = "nick_name", nullable = false, length = MAX_NICKNAME_LENGTH))
+      @AttributeOverride(name = "nickName", column = @Column(name = "nick_name", nullable = false, length = MAX_NICKNAME_LENGTH)),
+      @AttributeOverride(name = "studentId", column = @Column(name = "student_id", unique = true, length = MAX_STUDENT_ID_LENGTH))
   })
   private Profile profile;
 

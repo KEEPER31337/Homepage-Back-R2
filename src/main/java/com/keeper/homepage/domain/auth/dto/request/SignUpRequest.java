@@ -2,10 +2,11 @@ package com.keeper.homepage.domain.auth.dto.request;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.AUTH_CODE_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.LoginId.LOGIN_ID_REGEX;
-import static com.keeper.homepage.domain.member.entity.embedded.Nickname.NICKNAME_INVALID;
 import static com.keeper.homepage.domain.member.entity.embedded.Nickname.NICKNAME_REGEX;
 import static com.keeper.homepage.domain.member.entity.embedded.Password.PASSWORD_REGEX;
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_REGEX;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_INVALID;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_REGEX;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -17,6 +18,7 @@ import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
@@ -31,8 +33,6 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor(access = PACKAGE)
 @Builder
 public class SignUpRequest {
-
-  public static final String STUDENT_ID_INVALID = "학번은 숫자만 가능합니다.";
 
   @Pattern(regexp = LOGIN_ID_REGEX, message = LoginId.LOGIN_ID_INVALID)
   private String loginId;
@@ -49,7 +49,7 @@ public class SignUpRequest {
   private String authCode;
   @JsonFormat(pattern = "yyyy.MM.dd")
   private LocalDate birthday;
-  @Pattern(regexp = "^[0-9]*$", message = NICKNAME_INVALID)
+  @Pattern(regexp = STUDENT_ID_REGEX, message = STUDENT_ID_INVALID)
   private String studentId;
 
   public Profile toMemberProfile() {
@@ -60,7 +60,7 @@ public class SignUpRequest {
         .realName(RealName.from(this.realName))
         .nickname(Nickname.from(this.nickname))
         .birthday(this.birthday)
-        .studentId(this.studentId)
+        .studentId(StudentId.from(this.studentId))
         .build();
   }
 }

@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +34,7 @@ class SignUpServiceTest extends IntegrationTest {
         .realName(RealName.from("정현모minion"))
         .nickname(Nickname.from("0v0zㅣ존"))
         .birthday(LocalDate.of(1970, 1, 1))
-        .studentId("197012345")
+        .studentId(StudentId.from("197012345"))
         .build();
   }
 

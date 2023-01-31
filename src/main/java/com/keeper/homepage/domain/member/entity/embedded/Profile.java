@@ -19,8 +19,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile {
 
-  public static final int MAX_STUDENT_ID_LENGTH = 45;
-
   @Embedded
   private LoginId loginId;
 
@@ -39,8 +37,8 @@ public class Profile {
   @Column(name = "birthday")
   private LocalDate birthday;
 
-  @Column(name = "student_id", unique = true, length = MAX_STUDENT_ID_LENGTH)
-  private String studentId;
+  @Embedded
+  private StudentId studentId;
 
   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "thumbnail_id")
@@ -48,7 +46,7 @@ public class Profile {
 
   @Builder
   private Profile(LoginId loginId, EmailAddress emailAddress, Password password, RealName realName,
-      Nickname nickname, LocalDate birthday, String studentId, Thumbnail thumbnail) {
+      Nickname nickname, LocalDate birthday, StudentId studentId, Thumbnail thumbnail) {
     this.loginId = loginId;
     this.emailAddress = emailAddress;
     this.password = password;
