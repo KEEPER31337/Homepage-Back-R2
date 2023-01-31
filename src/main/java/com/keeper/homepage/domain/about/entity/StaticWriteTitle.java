@@ -1,16 +1,22 @@
 package com.keeper.homepage.domain.about.entity;
 
+import static com.keeper.homepage.global.error.ErrorCode.TITLE_TYPE_NOT_FOUND;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.String.format;
 
 import com.keeper.homepage.domain.about.converter.StaticWriteTitleTypeConverter;
+import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +40,9 @@ public class StaticWriteTitle {
   @Convert(converter = StaticWriteTitleTypeConverter.class)
   @Column(name = "type", nullable = false)
   private StaticWriteTitleType type;
+
+  @OneToMany(mappedBy = "staticWriteTitle", cascade = REMOVE)
+  private final List<StaticWriteSubtitleImage> staticWriteSubtitleImages = new ArrayList<>();
 
   public static StaticWriteTitle getStaticWriteTitleBy(StaticWriteTitleType type) {
     return StaticWriteTitle.builder()
