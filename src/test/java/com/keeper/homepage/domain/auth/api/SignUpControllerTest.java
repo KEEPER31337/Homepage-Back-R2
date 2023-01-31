@@ -90,7 +90,7 @@ class SignUpControllerTest extends IntegrationTest {
     private final SignUpRequest validRequest = SignUpRequest.builder()
         .loginId("loginId_1337")
         .email("keeper@keeper.or.kr")
-        .password("password123!@#$")
+        .rawPassword("password123!@#$")
         .realName("정현모minion")
         .nickname("0v0zㅣ존")
         .authCode("0123456789")
@@ -146,12 +146,12 @@ class SignUpControllerTest extends IntegrationTest {
           Arguments.arguments("loginId", "no-dash-haha"),
           Arguments.arguments("email", "a@a."),
           Arguments.arguments("email", "notEmail"),
-          Arguments.arguments("password", "a".repeat(6) + "0"),
-          Arguments.arguments("password", "a".repeat(20) + "0"),
-          Arguments.arguments("password", "abcdefghij"),
-          Arguments.arguments("password", "0123456789"),
-          Arguments.arguments("password", "noNumber###"),
-          Arguments.arguments("password", "0123456!@#$"),
+          Arguments.arguments("rawPassword", "a".repeat(6) + "0"),
+          Arguments.arguments("rawPassword", "a".repeat(20) + "0"),
+          Arguments.arguments("rawPassword", "abcdefghij"),
+          Arguments.arguments("rawPassword", "0123456789"),
+          Arguments.arguments("rawPassword", "noNumber###"),
+          Arguments.arguments("rawPassword", "0123456!@#$"),
           Arguments.arguments("realName", "a".repeat(21)),
           Arguments.arguments("realName", ""),
           Arguments.arguments("realName", "  "),

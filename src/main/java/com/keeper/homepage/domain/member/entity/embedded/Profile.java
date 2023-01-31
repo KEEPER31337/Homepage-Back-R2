@@ -30,8 +30,8 @@ public class Profile {
   @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
   private String emailAddress;
 
-  @Column(name = "password", nullable = false, length = 512)
-  private String password;
+  @Embedded
+  private Password password;
 
   @Column(name = "real_name", nullable = false, length = MAX_REAL_NAME_LENGTH)
   private String realName;
@@ -50,7 +50,7 @@ public class Profile {
   private Thumbnail thumbnail;
 
   @Builder
-  private Profile(LoginId loginId, String emailAddress, String password, String realName,
+  private Profile(LoginId loginId, String emailAddress, Password password, String realName,
       String nickname, LocalDate birthday, String studentId, Thumbnail thumbnail) {
     this.loginId = loginId;
     this.emailAddress = emailAddress;

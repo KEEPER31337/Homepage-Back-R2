@@ -59,6 +59,7 @@ public class Member {
   @Embedded
   @AttributeOverrides({
       @AttributeOverride(name = "loginId", column = @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)),
+      @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false, length = 512)),
   })
   private Profile profile;
 

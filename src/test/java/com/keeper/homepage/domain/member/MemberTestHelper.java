@@ -10,11 +10,13 @@ import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUD
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -38,7 +40,7 @@ public class MemberTestHelper {
 
     private LoginId loginId;
     private String email;
-    private String password;
+    private Password password;
     private String realName;
     private String nickname;
     private LocalDate birthday;
@@ -64,7 +66,7 @@ public class MemberTestHelper {
       return this;
     }
 
-    public MemberBuilder password(String password) {
+    public MemberBuilder password(Password password) {
       this.password = password;
       return this;
     }
@@ -130,7 +132,8 @@ public class MemberTestHelper {
               .loginId(loginId != null ? loginId
                   : LoginId.from(generateRandomString(MAX_LOGIN_ID_LENGTH)))
               .emailAddress(email != null ? email : generateRandomString(MAX_EMAIL_LENGTH))
-              .password(password != null ? password : generateRandomString(100))
+              .password(password != null ? password :
+                  Password.from(generateRandomString(10) + "1a", MOCK_PASSWORD_ENCODER))
               .realName(realName != null ? realName : generateRandomString(MAX_REAL_NAME_LENGTH))
               .nickname(nickname != null ? nickname : generateRandomString(MAX_NICKNAME_LENGTH))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
@@ -146,4 +149,16 @@ public class MemberTestHelper {
           .build());
     }
   }
+
+  private static final PasswordEncoder MOCK_PASSWORD_ENCODER = new PasswordEncoder() {
+    @Override
+    public String encode(CharSequence rawPassword) {
+      return rawPassword.toString();
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+      return rawPassword.toString().equals(encodedPassword);
+    }
+  };
 }

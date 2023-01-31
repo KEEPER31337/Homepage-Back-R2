@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ class SignUpServiceTest extends IntegrationTest {
     profile = Profile.builder()
         .loginId(LoginId.from("loginId_1337"))
         .emailAddress("keeper@keeper.or.kr")
-        .password(passwordEncoder.encode(rawPassword))
+        .password(Password.from(rawPassword))
         .realName("정현모minion")
         .nickname("0v0zㅣ존")
         .birthday(LocalDate.of(1970, 1, 1))
@@ -41,7 +42,7 @@ class SignUpServiceTest extends IntegrationTest {
     long savedMemberId = signUpService.signUp(profile, authCode);
 
     Member savedMember = memberRepository.findById(savedMemberId).orElseThrow();
-    String hashedPassword = savedMember.getProfile().getPassword();
+    String hashedPassword = savedMember.getProfile().getPassword().get();
     assertThat(hashedPassword).isNotEqualTo(rawPassword);
     assertThat(passwordEncoder.matches(rawPassword, hashedPassword)).isTrue();
   }

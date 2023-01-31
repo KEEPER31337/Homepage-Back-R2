@@ -27,6 +27,7 @@ import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
+import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.mail.MailUtil;
@@ -139,6 +140,8 @@ public class IntegrationTest {
   @SpyBean
   protected RedisUtil redisUtil;
 
+  protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
+
   /******* Spring Bean *******/
   @Autowired
   protected WebApplicationContext webApplicationContext;
@@ -148,9 +151,6 @@ public class IntegrationTest {
 
   @Autowired
   protected ObjectMapper objectMapper;
-
-  @Autowired
-  protected PasswordEncoder passwordEncoder;
 
   @PersistenceContext
   protected EntityManager em;

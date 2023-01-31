@@ -13,7 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,11 +28,10 @@ public class SignUpController {
   private final SignUpService signUpService;
   private final EmailAuthService emailAuthService;
   private final CheckDuplicateService checkDuplicateService;
-  private final PasswordEncoder passwordEncoder;
 
   @PostMapping
   public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-    long memberId = signUpService.signUp(request.toMemberProfile(passwordEncoder), request.getAuthCode());
+    long memberId = signUpService.signUp(request.toMemberProfile(), request.getAuthCode());
     return ResponseEntity.created(URI.create("/members/" + memberId)).build();
   }
 
