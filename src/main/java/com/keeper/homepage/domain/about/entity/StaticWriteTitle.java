@@ -71,11 +71,11 @@ public class StaticWriteTitle {
     private final String title;
     private final String type;
 
-    public static StaticWriteTitleType fromCode(String dbData) {
+    public static StaticWriteTitleType fromCode(String type) {
       return Arrays.stream(StaticWriteTitleType.values())
-          .filter(type -> type.getType().equals(dbData))
+          .filter(staticWriteTitleType -> staticWriteTitleType.getType().equals(type))
           .findAny()
-          .orElseThrow(() -> new IllegalArgumentException(format("%s 타입이 DB에 존재하지 않습니다.", dbData)));
+          .orElseThrow(() -> new BusinessException(type, "type", TITLE_TYPE_NOT_FOUND));
     }
   }
 
