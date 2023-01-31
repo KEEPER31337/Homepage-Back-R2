@@ -2,13 +2,13 @@ package com.keeper.homepage.domain.member;
 
 import static com.keeper.homepage.IntegrationTest.generateRandomString;
 import static com.keeper.homepage.domain.member.entity.embedded.LoginId.MAX_LOGIN_ID_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_EMAIL_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_NICKNAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_REAL_NAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -39,7 +39,7 @@ public class MemberTestHelper {
   public final class MemberBuilder {
 
     private LoginId loginId;
-    private String email;
+    private EmailAddress email;
     private Password password;
     private String realName;
     private String nickname;
@@ -61,7 +61,7 @@ public class MemberTestHelper {
       return this;
     }
 
-    public MemberBuilder emailAddress(String emailAddress) {
+    public MemberBuilder emailAddress(EmailAddress emailAddress) {
       this.email = emailAddress;
       return this;
     }
@@ -131,7 +131,8 @@ public class MemberTestHelper {
           .profile(Profile.builder()
               .loginId(loginId != null ? loginId
                   : LoginId.from(generateRandomString(MAX_LOGIN_ID_LENGTH)))
-              .emailAddress(email != null ? email : generateRandomString(MAX_EMAIL_LENGTH))
+              .emailAddress(email != null ? email : EmailAddress.from(
+                  generateRandomString(50) + '@' + generateRandomString(50) + ".com"))
               .password(password != null ? password :
                   Password.from(generateRandomString(10) + "1a", MOCK_PASSWORD_ENCODER))
               .realName(realName != null ? realName : generateRandomString(MAX_REAL_NAME_LENGTH))

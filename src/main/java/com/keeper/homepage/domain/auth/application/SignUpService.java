@@ -9,6 +9,7 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLI
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.global.error.BusinessException;
@@ -31,7 +32,7 @@ public class SignUpService {
     checkIsDuplicateLoginId(profile.getLoginId());
     checkIsDuplicateStudentId(profile.getStudentId());
 
-    String actualAuthCode = getActualAuthCode(profile.getEmailAddress());
+    String actualAuthCode = getActualAuthCode(profile.getEmailAddress().get());
     checkAuthCodeMatch(authCode, actualAuthCode);
     return memberRepository.save(Member.builder()
             .profile(profile)
@@ -39,7 +40,7 @@ public class SignUpService {
         .getId();
   }
 
-  private void checkIsDuplicateEmail(String email) {
+  private void checkIsDuplicateEmail(EmailAddress email) {
     if (checkDuplicateService.isDuplicateEmail(email)) {
       throw new BusinessException(email, "email", MEMBER_EMAIL_DUPLICATE);
     }

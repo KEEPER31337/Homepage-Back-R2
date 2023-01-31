@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doReturn;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -25,7 +26,7 @@ class SignUpServiceTest extends IntegrationTest {
   void setupProfile() {
     profile = Profile.builder()
         .loginId(LoginId.from("loginId_1337"))
-        .emailAddress("keeper@keeper.or.kr")
+        .emailAddress(EmailAddress.from("keeper@keeper.or.kr"))
         .password(Password.from(rawPassword))
         .realName("정현모minion")
         .nickname("0v0zㅣ존")

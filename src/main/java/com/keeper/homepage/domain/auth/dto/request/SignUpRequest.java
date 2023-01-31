@@ -8,6 +8,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -51,7 +52,7 @@ public class SignUpRequest {
   public Profile toMemberProfile() {
     return Profile.builder()
         .loginId(LoginId.from(this.loginId))
-        .emailAddress(this.email)
+        .emailAddress(EmailAddress.from(this.email))
         .password(Password.from(this.rawPassword))
         .realName(this.realName)
         .nickname(this.nickname)

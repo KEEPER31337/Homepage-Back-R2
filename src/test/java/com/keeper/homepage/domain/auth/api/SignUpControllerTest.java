@@ -45,7 +45,7 @@ class SignUpControllerTest extends IntegrationTest {
 
   @Nested
   @DisplayName("이메일 인증 테스트")
-  class EmailAuth {
+  class EmailAddressAuth {
 
     private static final String VALID_EMAIL = "email@email.com";
 
@@ -204,7 +204,7 @@ class SignUpControllerTest extends IntegrationTest {
     @Test
     @DisplayName("이미 존재하는 이메일일 경우 true를 반환해야 한다.")
     void should_returnTrue_when_existsEmail() throws Exception {
-      callCheckDuplicateApi(Field.EMAIL, member.getProfile().getEmailAddress())
+      callCheckDuplicateApi(Field.EMAIL, member.getProfile().getEmailAddress().get())
           .andDo(print())
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.duplicate").value(true))

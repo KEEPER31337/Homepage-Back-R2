@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignUpRequest;
 import com.keeper.homepage.domain.auth.dto.response.CheckDuplicateResponse;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -50,7 +51,7 @@ public class SignUpController {
 
   @GetMapping("/exists/email")
   public ResponseEntity<CheckDuplicateResponse> checkDuplicateEmail(
-      @RequestParam @NotNull String email) {
+      @RequestParam @NotNull EmailAddress email) {
     boolean isDuplicate = checkDuplicateService.isDuplicateEmail(email);
     return ResponseEntity.ok(CheckDuplicateResponse.from(isDuplicate));
   }

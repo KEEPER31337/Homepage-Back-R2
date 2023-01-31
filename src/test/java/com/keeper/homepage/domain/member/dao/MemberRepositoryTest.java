@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -39,7 +40,7 @@ class MemberRepositoryTest extends IntegrationTest {
       Member memberBeforeSave = Member.builder()
           .profile(Profile.builder()
               .loginId(LoginId.from("ABCD"))
-              .emailAddress("ABC@keeper.com")
+              .emailAddress(EmailAddress.from("ABC@keeper.com"))
               .password(Password.from("password123"))
               .realName("realName")
               .nickname("nickname")

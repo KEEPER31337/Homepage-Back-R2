@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.member.entity;
 
+import static com.keeper.homepage.domain.member.entity.embedded.EmailAddress.MAX_EMAIL_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.LoginId.MAX_LOGIN_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
@@ -60,6 +61,7 @@ public class Member {
   @AttributeOverrides({
       @AttributeOverride(name = "loginId", column = @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)),
       @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false, length = 512)),
+      @AttributeOverride(name = "emailAddress", column = @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH))
   })
   private Profile profile;
 

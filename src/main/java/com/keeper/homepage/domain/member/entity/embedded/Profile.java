@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Profile {
 
-  public static final int MAX_EMAIL_LENGTH = 250;
   public static final int MAX_REAL_NAME_LENGTH = 40;
   public static final int MAX_NICKNAME_LENGTH = 40;
   public static final int MAX_STUDENT_ID_LENGTH = 45;
@@ -27,8 +26,8 @@ public class Profile {
   @Embedded
   private LoginId loginId;
 
-  @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)
-  private String emailAddress;
+  @Embedded
+  private EmailAddress emailAddress;
 
   @Embedded
   private Password password;
@@ -50,7 +49,7 @@ public class Profile {
   private Thumbnail thumbnail;
 
   @Builder
-  private Profile(LoginId loginId, String emailAddress, Password password, String realName,
+  private Profile(LoginId loginId, EmailAddress emailAddress, Password password, String realName,
       String nickname, LocalDate birthday, String studentId, Thumbnail thumbnail) {
     this.loginId = loginId;
     this.emailAddress = emailAddress;

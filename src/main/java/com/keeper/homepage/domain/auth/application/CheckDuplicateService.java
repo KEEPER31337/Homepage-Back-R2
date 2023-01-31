@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.auth.application;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ public class CheckDuplicateService {
 
   private final MemberRepository memberRepository;
 
-  public boolean isDuplicateEmail(String email) {
+  public boolean isDuplicateEmail(EmailAddress email) {
     return memberRepository.existsByProfileEmailAddress(email);
   }
 

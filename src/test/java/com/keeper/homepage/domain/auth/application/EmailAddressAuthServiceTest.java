@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class EmailAuthServiceTest extends IntegrationTest {
+class EmailAddressAuthServiceTest extends IntegrationTest {
 
   @Test
   @DisplayName("알파벳과 숫자로 이루어진 인증 코드가 잘 생성되어야 하고, Redis에 해당 내용이 들어있어야 한다.")
