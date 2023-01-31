@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,7 @@ class SignUpServiceTest extends IntegrationTest {
         .loginId(LoginId.from("loginId_1337"))
         .emailAddress(EmailAddress.from("keeper@keeper.or.kr"))
         .password(Password.from(rawPassword))
-        .realName("정현모minion")
+        .realName(RealName.from("정현모minion"))
         .nickname("0v0zㅣ존")
         .birthday(LocalDate.of(1970, 1, 1))
         .studentId("197012345")

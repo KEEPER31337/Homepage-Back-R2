@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import java.util.List;
@@ -42,7 +43,7 @@ class MemberRepositoryTest extends IntegrationTest {
               .loginId(LoginId.from("ABCD"))
               .emailAddress(EmailAddress.from("ABC@keeper.com"))
               .password(Password.from("password123"))
-              .realName("realName")
+              .realName(RealName.from("realName"))
               .nickname("nickname")
               .build())
           .build();

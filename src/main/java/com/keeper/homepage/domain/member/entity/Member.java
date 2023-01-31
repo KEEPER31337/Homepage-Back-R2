@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.embedded.Generation;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
@@ -61,7 +62,8 @@ public class Member {
   @AttributeOverrides({
       @AttributeOverride(name = "loginId", column = @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)),
       @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false, length = 512)),
-      @AttributeOverride(name = "emailAddress", column = @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH))
+      @AttributeOverride(name = "emailAddress", column = @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)),
+      @AttributeOverride(name = "realName", column = @Column(name = "real_name", nullable = false, length = RealName.MAX_REAL_NAME_LENGTH))
   })
   private Profile profile;
 
