@@ -9,6 +9,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -30,7 +31,7 @@ class SignUpServiceTest extends IntegrationTest {
         .emailAddress(EmailAddress.from("keeper@keeper.or.kr"))
         .password(Password.from(rawPassword))
         .realName(RealName.from("정현모minion"))
-        .nickname("0v0zㅣ존")
+        .nickname(Nickname.from("0v0zㅣ존"))
         .birthday(LocalDate.of(1970, 1, 1))
         .studentId("197012345")
         .build();

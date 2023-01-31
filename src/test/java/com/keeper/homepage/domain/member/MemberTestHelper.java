@@ -1,13 +1,13 @@
 package com.keeper.homepage.domain.member;
 
 import static com.keeper.homepage.IntegrationTest.generateRandomString;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_NICKNAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -42,7 +42,7 @@ public class MemberTestHelper {
     private EmailAddress email;
     private Password password;
     private RealName realName;
-    private String nickname;
+    private Nickname nickname;
     private LocalDate birthday;
     private String studentId;
     private Integer point;
@@ -76,7 +76,7 @@ public class MemberTestHelper {
       return this;
     }
 
-    public MemberBuilder nickname(String nickname) {
+    public MemberBuilder nickname(Nickname nickname) {
       this.nickname = nickname;
       return this;
     }
@@ -137,7 +137,8 @@ public class MemberTestHelper {
                   Password.from(generateRandomString(10) + "1a", MOCK_PASSWORD_ENCODER))
               .realName(realName != null ? realName :
                   RealName.from(generateRandomAlphabeticString(20)))
-              .nickname(nickname != null ? nickname : generateRandomString(MAX_NICKNAME_LENGTH))
+              .nickname(nickname != null ? nickname :
+                  Nickname.from(generateRandomAlphabeticString(20)))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
                   : generateRandomString(MAX_STUDENT_ID_LENGTH))
