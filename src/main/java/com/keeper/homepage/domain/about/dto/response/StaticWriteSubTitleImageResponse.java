@@ -4,31 +4,44 @@ import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.about.entity.StaticWriteSubtitleImage;
+import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = PRIVATE)
 public class StaticWriteSubTitleImageResponse {
 
-  private Long id;
+  private final Long id;
 
-  private String subtitle;
+  private final String subtitle;
 
-  private String thumbnailPath;
+  private final String thumbnailPath;
 
-  private Integer displayOrder;
+  private final Integer displayOrder;
 
-  private List<StaticWriteContentResponse> staticWriteContents;
+  private final List<StaticWriteContentResponse> staticWriteContents;
 
   public static StaticWriteSubTitleImageResponse from(StaticWriteSubtitleImage subtitleImage) {
-    return new StaticWriteSubTitleImageResponse(subtitleImage.getId(),
-        subtitleImage.getSubtitle(),
-        subtitleImage.getThumbnail() != null ? subtitleImage.getThumbnail().getPath() : null,
-        subtitleImage.getDisplayOrder(),
-        subtitleImage.getStaticWriteContents().stream()
+    return StaticWriteSubTitleImageResponse.builder()
+        .id(subtitleImage.getId())
+        .subtitle(subtitleImage.getSubtitle())
+        .thumbnailPath(subtitleImage.getThumbnail() != null ? subtitleImage.getThumbnail().getPath() : null)
+        .displayOrder(subtitleImage.getDisplayOrder())
+        .staticWriteContents(subtitleImage.getStaticWriteContents().stream()
             .map(StaticWriteContentResponse::from)
-            .collect(toList()));
+            .collect(toList()))
+        .build();
+  }
+
+  @Builder
+  private StaticWriteSubTitleImageResponse(Long id, String subtitle, String thumbnailPath,
+      Integer displayOrder, List<StaticWriteContentResponse> staticWriteContents) {
+    this.id = id;
+    this.subtitle = subtitle;
+    this.thumbnailPath = thumbnailPath;
+    this.displayOrder = displayOrder;
+    this.staticWriteContents = staticWriteContents;
   }
 }
