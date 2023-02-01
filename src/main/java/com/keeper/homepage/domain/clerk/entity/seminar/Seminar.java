@@ -31,7 +31,7 @@ public class Seminar {
   private Long id;
 
   @Column(name = "open_time", nullable = false, updatable = false)
-  private LocalDateTime  openTime;
+  private LocalDateTime openTime;
 
   @Column(name = "attendance_close_time")
   private LocalDateTime attendanceCloseTime;
@@ -53,8 +53,8 @@ public class Seminar {
 
   @Builder
   private Seminar(LocalDateTime openTime, LocalDateTime attendanceCloseTime,
-      LocalDateTime latenessCloseTime, String attendanceCode, String name, LocalDateTime registerTime,
-      LocalDateTime updateTime) {
+      LocalDateTime latenessCloseTime, String attendanceCode, String name,
+      LocalDateTime registerTime, LocalDateTime updateTime) {
     this.openTime = openTime;
     this.attendanceCloseTime = attendanceCloseTime;
     this.latenessCloseTime = latenessCloseTime;
