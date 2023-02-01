@@ -29,6 +29,7 @@ public class SeminarAttendanceStatusRepositoryTest extends IntegrationTest {
 
       assertThat(getId(dbAllStatusTypes)).containsAll(getId(allStatusTypesEnum));
       assertThat(getName(dbAllStatusTypes)).containsAll(getName(allStatusTypesEnum));
+      assertThat(getType(dbAllStatusTypes)).containsAll(getType(allStatusTypesEnum));
     }
 
     private static List<Long> getId(List<SeminarAttendanceStatus> typesList) {
@@ -40,6 +41,12 @@ public class SeminarAttendanceStatusRepositoryTest extends IntegrationTest {
     private static List<String> getName(List<SeminarAttendanceStatus> typesList) {
       return typesList.stream()
           .map(SeminarAttendanceStatus::toString)
+          .toList();
+    }
+
+    private static List<SeminarAttendanceStatusType> getType(List<SeminarAttendanceStatus> typesList) {
+      return typesList.stream()
+          .map(SeminarAttendanceStatus::getType)
           .toList();
     }
   }
