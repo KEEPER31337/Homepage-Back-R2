@@ -19,7 +19,7 @@ public class SeminarAttendanceStatusRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("DB에 세미나 출석에 필요한 모든 타입이 있어야 한다.")
-    void should_allTypeExist_when_givenSeminarAttendanceStatusTypeEnum() {
+    void should_dbAllTypeExist_when_givenSeminarAttendanceStatusTypeEnum() {
       List<SeminarAttendanceStatus> dbAllStatusTypes = seminarAttendanceStatusRepository.findAll();
 
       List<SeminarAttendanceStatus> allStatusTypesEnum = Arrays.stream(
