@@ -77,15 +77,15 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      int beforeAttendanceLength = seminarAttendanceRepository.findAll().size();
       int beforeAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
+      int beforeAttendanceLength = seminarAttendanceRepository.findAll().size();
       SeminarAttendance reFindAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       seminarAttendanceRepository.delete(reFindAttendance);
 
-      int afterAttendanceLength = seminarAttendanceRepository.findAll().size();
       int afterAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
-      assertThat(afterAttendanceLength).isEqualTo(beforeAttendanceLength - 1);
+      int afterAttendanceLength = seminarAttendanceRepository.findAll().size();
       assertThat(afterAttendanceExcuseLength).isEqualTo(beforeAttendanceExcuseLength - 1);
+      assertThat(afterAttendanceLength).isEqualTo(beforeAttendanceLength - 1);
     }
 
     private SeminarAttendanceExcuse makeAttendanceExcuse(SeminarAttendance attendance, String excuse) {
