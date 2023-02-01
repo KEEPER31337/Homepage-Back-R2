@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EqualsAndHashCode(of = {"password"})
 public class Password {
 
+  public static final int HASHED_PASSWORD_MAX_LENGTH = 512;
   public static final String PASSWORD_INVALID = "비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다.";
   public static final String PASSWORD_REGEX = "^(?=.*?[A-Za-z])(?=.*?\\d).{8,20}$";
 
