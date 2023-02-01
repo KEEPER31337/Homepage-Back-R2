@@ -2,8 +2,6 @@ package com.keeper.homepage.domain.about.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.TITLE_TYPE_NOT_FOUND;
 
-import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
-import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.about.dto.response.StaticWriteTitleResponse;
 import com.keeper.homepage.domain.about.dto.response.StaticWriteTitleTypeResponse;
@@ -12,9 +10,11 @@ import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitle
 import com.keeper.homepage.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StaticWriteService {
 
   private final StaticWriteTitleRepository staticWriteTitleRepository;
