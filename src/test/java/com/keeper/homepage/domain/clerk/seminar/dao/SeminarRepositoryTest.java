@@ -18,8 +18,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
   void setUp() {
     seminar = seminarTestHelper.generate();
     seminarId = seminarRepository.save(seminar).getId();
-    em.flush();
-    em.clear();
   }
 
   @Nested
@@ -44,9 +42,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
       int beforeSeminarLength = seminarRepository.findAll().size();
       Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
       seminarRepository.delete(savedSeminar);
-
-      em.flush();
-      em.clear();
 
       int afterSeminarLength = seminarRepository.findAll().size();
       assertThat(afterSeminarLength).isEqualTo(beforeSeminarLength - 1);
