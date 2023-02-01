@@ -34,9 +34,9 @@ public class StaticWriteServiceTest extends IntegrationTest {
 
   @Test
   @DisplayName("각 타이틀 타입으로 페이지 블럭 조회 시 성공적으로 조회되어야 한다.")
-  void should_getTitlesSuccessfully_when_getTitlesByType() {
+  void should_getTitleSuccessfully_when_getTitleByType() {
     StaticWriteTitleType type = ACTIVITY;
-    StaticWriteTitleResponse response = staticWriteService.getAllByType(type.getType());
+    StaticWriteTitleResponse response = staticWriteService.getTitleByType(type.getType());
 
     assertThat(response.getId()).isEqualTo(type.getId());
     assertThat(response.getTitle()).isEqualTo(type.getTitle());
@@ -46,7 +46,7 @@ public class StaticWriteServiceTest extends IntegrationTest {
   @Test
   @DisplayName("DB에서 찾을 수 없는 타입으로 타이틀 조회 시 Exception을 발생시킨다.")
   void should_throwException_when_getTitlesByNotFoundType() {
-    assertThatThrownBy(() -> staticWriteService.getAllByType("null"))
+    assertThatThrownBy(() -> staticWriteService.getTitleByType("null"))
         .isInstanceOf(BusinessException.class)
         .hasMessageContaining("해당 타입의 타이틀을 찾을 수 없습니다.");
   }

@@ -23,7 +23,7 @@ public class StaticWriteService {
     return StaticWriteTitleTypeResponse.from(staticWriteTitleRepository.findAll());
   }
 
-  public StaticWriteTitleResponse getAllByType(String type) {
+  public StaticWriteTitleResponse getTitleByType(String type) {
     StaticWriteTitle staticWriteTitle = staticWriteTitleRepository.findByStaticWriteTitleType(StaticWriteTitleType.fromCode(type))
         .orElseThrow(() -> new BusinessException(type, "type", TITLE_TYPE_NOT_FOUND));
     return StaticWriteTitleResponse.from(staticWriteTitle);

@@ -4,7 +4,6 @@ import com.keeper.homepage.domain.about.application.StaticWriteService;
 import com.keeper.homepage.domain.about.dto.response.StaticWriteTitleResponse;
 import com.keeper.homepage.domain.about.dto.response.StaticWriteTitleTypeResponse;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +27,8 @@ public class StaticWriteController {
   }
 
   @GetMapping("/titles/types/{type}")
-  public ResponseEntity<StaticWriteTitleResponse> getAllByType(@PathVariable @NotNull String type) {
-    StaticWriteTitleResponse response = staticWriteService.getAllByType(type);
+  public ResponseEntity<StaticWriteTitleResponse> getTitleByType(@PathVariable @NotNull String type) {
+    StaticWriteTitleResponse response = staticWriteService.getTitleByType(type);
     return ResponseEntity.status(HttpStatus.OK)
         .body(response);
   }

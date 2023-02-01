@@ -40,7 +40,7 @@ public class StaticWriteControllerTest extends IntegrationTest {
 
     @Test
     @DisplayName("타이틀 타입으로 페이지 블럭 조회시 해당 타이틀의 페이지 블럭이 성공적으로 조회되어야 한다.")
-    void should_getAllTitlesSuccessfully_when_getTitlesByType() throws Exception {
+    void should_getTitleSuccessfully_when_getTitleByType() throws Exception {
       String activity = ACTIVITY.getType();
       mockMvc.perform(get("/about/titles/types/{type}", activity))
           .andExpect(status().isOk())
