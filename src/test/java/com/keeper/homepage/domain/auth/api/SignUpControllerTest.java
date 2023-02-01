@@ -45,7 +45,7 @@ class SignUpControllerTest extends IntegrationTest {
 
   @Nested
   @DisplayName("이메일 인증 테스트")
-  class EmailAuth {
+  class EmailAddressAuth {
 
     private static final String VALID_EMAIL = "email@email.com";
 
@@ -90,7 +90,7 @@ class SignUpControllerTest extends IntegrationTest {
     private final SignUpRequest validRequest = SignUpRequest.builder()
         .loginId("loginId_1337")
         .email("keeper@keeper.or.kr")
-        .password("password123!@#$")
+        .rawPassword("password123!@#$")
         .realName("정현모minion")
         .nickname("0v0zㅣ존")
         .authCode("0123456789")
@@ -102,7 +102,7 @@ class SignUpControllerTest extends IntegrationTest {
     @DisplayName("유효한 요청일 경우 회원가입은 성공해야 한다.")
     void should_successfully_when_validRequest() throws Exception {
       long createdMemberId = 1L;
-      doReturn(createdMemberId).when(signUpService).signUp(any());
+      doReturn(createdMemberId).when(signUpService).signUp(any(), any());
       callSignUpApi(validRequest)
           .andExpect(status().isCreated())
           .andExpect(header().string(HttpHeaders.LOCATION, "/members/" + createdMemberId))
@@ -127,14 +127,14 @@ class SignUpControllerTest extends IntegrationTest {
     @ParameterizedTest
     @MethodSource
     @DisplayName("잘못된 형식의 요청일 경우 400 Bad Request를 반환해야 한다.")
-    void should_400BadRequest_when_invalidRequest(String field, String invalidValue)
+    void should_400BadRequest_when_invalidRequest(String field, Object invalidValue)
         throws Exception {
       Object validValue = ReflectionTestUtils.getField(validRequest, field);
       ReflectionTestUtils.setField(validRequest, field, invalidValue);
       callSignUpApi(validRequest)
           .andExpect(status().isBadRequest())
           .andExpect(content().string(containsString(field)))
-          .andExpect(content().string(containsString(invalidValue)));
+          .andExpect(content().string(containsString(invalidValue.toString())));
       ReflectionTestUtils.setField(validRequest, field, validValue);
     }
 
@@ -146,12 +146,12 @@ class SignUpControllerTest extends IntegrationTest {
           Arguments.arguments("loginId", "no-dash-haha"),
           Arguments.arguments("email", "a@a."),
           Arguments.arguments("email", "notEmail"),
-          Arguments.arguments("password", "a".repeat(6) + "0"),
-          Arguments.arguments("password", "a".repeat(20) + "0"),
-          Arguments.arguments("password", "abcdefghij"),
-          Arguments.arguments("password", "0123456789"),
-          Arguments.arguments("password", "noNumber###"),
-          Arguments.arguments("password", "0123456!@#$"),
+          Arguments.arguments("rawPassword", "a".repeat(6) + "0"),
+          Arguments.arguments("rawPassword", "a".repeat(20) + "0"),
+          Arguments.arguments("rawPassword", "abcdefghij"),
+          Arguments.arguments("rawPassword", "0123456789"),
+          Arguments.arguments("rawPassword", "noNumber###"),
+          Arguments.arguments("rawPassword", "0123456!@#$"),
           Arguments.arguments("realName", "a".repeat(21)),
           Arguments.arguments("realName", ""),
           Arguments.arguments("realName", "  "),
@@ -188,7 +188,7 @@ class SignUpControllerTest extends IntegrationTest {
     @Test
     @DisplayName("이미 존재하는 로그인 아이디일 경우 true를 반환해야 한다.")
     void should_returnTrue_when_existsLoginId() throws Exception {
-      callCheckDuplicateApi(Field.LOGIN_ID, member.getProfile().getLoginId())
+      callCheckDuplicateApi(Field.LOGIN_ID, member.getProfile().getLoginId().get())
           .andDo(print())
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.duplicate").value(true))
@@ -204,7 +204,7 @@ class SignUpControllerTest extends IntegrationTest {
     @Test
     @DisplayName("이미 존재하는 이메일일 경우 true를 반환해야 한다.")
     void should_returnTrue_when_existsEmail() throws Exception {
-      callCheckDuplicateApi(Field.EMAIL, member.getProfile().getEmailAddress())
+      callCheckDuplicateApi(Field.EMAIL, member.getProfile().getEmailAddress().get())
           .andDo(print())
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.duplicate").value(true))
@@ -220,7 +220,7 @@ class SignUpControllerTest extends IntegrationTest {
     @Test
     @DisplayName("이미 존재하는 학번일 경우 true를 반환해야 한다.")
     void should_returnTrue_when_exigetStudentId() throws Exception {
-      callCheckDuplicateApi(Field.STUDENT_ID, member.getProfile().getStudentId())
+      callCheckDuplicateApi(Field.STUDENT_ID, member.getProfile().getStudentId().get())
           .andDo(print())
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.duplicate").value(true))

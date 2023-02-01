@@ -1,5 +1,11 @@
 package com.keeper.homepage.domain.member.entity;
 
+import static com.keeper.homepage.domain.member.entity.embedded.EmailAddress.MAX_EMAIL_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.LoginId.MAX_LOGIN_ID_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Nickname.MAX_NICKNAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.Password.HASHED_PASSWORD_MAX_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REAL_NAME_LENGTH;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static jakarta.persistence.CascadeType.ALL;
@@ -15,6 +21,8 @@ import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -54,6 +62,14 @@ public class Member {
   private Long id;
 
   @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "loginId", column = @Column(name = "login_id", nullable = false, unique = true, length = MAX_LOGIN_ID_LENGTH)),
+      @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false, length = HASHED_PASSWORD_MAX_LENGTH)),
+      @AttributeOverride(name = "emailAddress", column = @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)),
+      @AttributeOverride(name = "realName", column = @Column(name = "real_name", nullable = false, length = MAX_REAL_NAME_LENGTH)),
+      @AttributeOverride(name = "nickName", column = @Column(name = "nick_name", nullable = false, length = MAX_NICKNAME_LENGTH)),
+      @AttributeOverride(name = "studentId", column = @Column(name = "student_id", unique = true, length = MAX_STUDENT_ID_LENGTH))
+  })
   private Profile profile;
 
   @Embedded

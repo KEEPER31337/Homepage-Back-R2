@@ -7,6 +7,9 @@ import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignUpRequest;
 import com.keeper.homepage.domain.auth.dto.response.CheckDuplicateResponse;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -30,7 +33,7 @@ public class SignUpController {
 
   @PostMapping
   public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-    long memberId = signUpService.signUp(request);
+    long memberId = signUpService.signUp(request.toMemberProfile(), request.getAuthCode());
     return ResponseEntity.created(URI.create("/members/" + memberId)).build();
   }
 
@@ -42,21 +45,21 @@ public class SignUpController {
 
   @GetMapping("/exists/login-id")
   public ResponseEntity<CheckDuplicateResponse> checkDuplicateLoginId(
-      @RequestParam @NotNull String loginId) {
+      @RequestParam @NotNull LoginId loginId) {
     boolean isDuplicate = checkDuplicateService.isDuplicateLoginId(loginId);
     return ResponseEntity.ok(CheckDuplicateResponse.from(isDuplicate));
   }
 
   @GetMapping("/exists/email")
   public ResponseEntity<CheckDuplicateResponse> checkDuplicateEmail(
-      @RequestParam @NotNull String email) {
+      @RequestParam @NotNull EmailAddress email) {
     boolean isDuplicate = checkDuplicateService.isDuplicateEmail(email);
     return ResponseEntity.ok(CheckDuplicateResponse.from(isDuplicate));
   }
 
   @GetMapping("/exists/student-id")
   public ResponseEntity<CheckDuplicateResponse> checkDuplicateStudentId(
-      @RequestParam @NotNull String studentId) {
+      @RequestParam @NotNull StudentId studentId) {
     boolean isDuplicate = checkDuplicateService.isDuplicateStudentID(studentId);
     return ResponseEntity.ok(CheckDuplicateResponse.from(isDuplicate));
   }
