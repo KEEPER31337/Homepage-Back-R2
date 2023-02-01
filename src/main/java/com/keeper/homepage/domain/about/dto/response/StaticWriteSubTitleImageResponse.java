@@ -15,11 +15,11 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class StaticWriteSubTitleImageResponse {
 
-  private final Long id;
-  private final String subtitle;
-  private final String thumbnailPath;
-  private final Integer displayOrder;
-  private final List<StaticWriteContentResponse> staticWriteContents;
+  private Long id;
+  private String subtitle;
+  private String thumbnailPath;
+  private Integer displayOrder;
+  private List<StaticWriteContentResponse> staticWriteContents;
 
   public static StaticWriteSubTitleImageResponse from(StaticWriteSubtitleImage subtitleImage) {
     return StaticWriteSubTitleImageResponse.builder()
