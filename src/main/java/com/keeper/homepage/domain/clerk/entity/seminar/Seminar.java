@@ -22,8 +22,8 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "seminar")
 public class Seminar {
 
-  private static final int ATTENDANCE_CODE_LENGTH = 10;
-  private static final int NAME_LENGTH = 100;
+  private static final int MAX_ATTENDANCE_CODE_LENGTH = 10;
+  private static final int MAX_NAME_LENGTH = 100;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,10 +39,10 @@ public class Seminar {
   @Column(name = "lateness_close_time")
   private LocalDateTime latenessCloseTime;
 
-  @Column(name = "attendance_code", length = ATTENDANCE_CODE_LENGTH)
+  @Column(name = "attendance_code", length = MAX_ATTENDANCE_CODE_LENGTH)
   private String attendanceCode;
 
-  @Column(name = "name", length = NAME_LENGTH)
+  @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
   @Column(name = "register_time", nullable = false, updatable = false)

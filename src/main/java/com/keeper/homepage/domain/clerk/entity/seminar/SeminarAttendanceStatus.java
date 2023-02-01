@@ -25,7 +25,7 @@ import lombok.ToString;
 @Table(name = "seminar_attendance_status")
 public class SeminarAttendanceStatus {
 
-  private static final int TYPE_LENGTH = 10;
+  private static final int MAX_TYPE_LENGTH = 10;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class SeminarAttendanceStatus {
   private Long id;
 
   @Convert(converter = SeminarAttendanceStatusTypeConverter.class)
-  @Column(name = "type", nullable = false, length = TYPE_LENGTH)
+  @Column(name = "type", nullable = false, length = MAX_TYPE_LENGTH)
   private SeminarAttendanceStatusType type;
 
   public static SeminarAttendanceStatus getSeminarAttendanceStatusBy(

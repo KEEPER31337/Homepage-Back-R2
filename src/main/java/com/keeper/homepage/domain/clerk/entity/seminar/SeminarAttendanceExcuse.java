@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "seminar_attendance_excuse")
 public class SeminarAttendanceExcuse {
 
-  private static final int ABSENCE_EXCUSE_LENGTH = 200;
+  private static final int MAX_ABSENCE_EXCUSE_LENGTH = 200;
 
   @Id
   private Long id;
@@ -29,7 +29,7 @@ public class SeminarAttendanceExcuse {
   @JoinColumn(name = "seminar_attendance_id")
   private SeminarAttendance seminarAttendance;
 
-  @Column(name = "absence_excuse", nullable = false, length = ABSENCE_EXCUSE_LENGTH)
+  @Column(name = "absence_excuse", nullable = false, length = MAX_ABSENCE_EXCUSE_LENGTH)
   private String absenceExcuse;
 
   @Builder
