@@ -39,24 +39,24 @@ public class StaticWriteTitle {
 
   @Convert(converter = StaticWriteTitleTypeConverter.class)
   @Column(name = "type", nullable = false)
-  private StaticWriteTitleType type;
+  private StaticWriteTitleType staticWriteTitleType;
 
   @OneToMany(mappedBy = "staticWriteTitle", cascade = REMOVE)
   private final List<StaticWriteSubtitleImage> staticWriteSubtitleImages = new ArrayList<>();
 
   public static StaticWriteTitle getStaticWriteTitleBy(StaticWriteTitleType type) {
     return StaticWriteTitle.builder()
-        .id(type.id)
-        .title(type.title)
-        .type(type)
+        .id(type.getId())
+        .title(type.getTitle())
+        .staticWriteTitleType(type)
         .build();
   }
 
   @Builder
-  private StaticWriteTitle(Long id, String title, StaticWriteTitleType type) {
+  private StaticWriteTitle(Long id, String title, StaticWriteTitleType staticWriteTitleType) {
     this.id = id;
     this.title = title;
-    this.type = type;
+    this.staticWriteTitleType = staticWriteTitleType;
   }
 
   @Getter

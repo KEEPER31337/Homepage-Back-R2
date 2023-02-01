@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StaticWriteContentRepository extends JpaRepository<StaticWriteContent, Long> {
 
-  List<StaticWriteContent> findAllByStaticWriteSubtitleImage_StaticWriteTitle_Type(
-      StaticWriteTitleType type);
+  List<StaticWriteContent> findAllByStaticWriteSubtitleImage_StaticWriteTitle_StaticWriteTitleType(
+      StaticWriteTitleType staticWriteTitleType);
 
 }

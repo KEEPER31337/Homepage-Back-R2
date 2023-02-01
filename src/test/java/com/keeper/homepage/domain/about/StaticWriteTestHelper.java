@@ -26,7 +26,7 @@ public class StaticWriteTestHelper {
   public StaticWriteTitle generateStaticWriteTitle() {
     return staticWriteTitleRepository.save(StaticWriteTitle.builder()
         .title("테스트 타이틀")
-        .type(ACTIVITY)
+        .staticWriteTitleType(ACTIVITY)
         .build());
   }
 

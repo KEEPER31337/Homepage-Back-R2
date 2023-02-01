@@ -16,7 +16,7 @@ public class StaticWriteTitleTypeResponse {
 
   public static StaticWriteTitleTypeResponse from(List<StaticWriteTitle> staticWriteTitles) {
     return new StaticWriteTitleTypeResponse(staticWriteTitles.stream()
-        .map(staticWriteTitle -> staticWriteTitle.getType().getType())
+        .map(staticWriteTitle -> staticWriteTitle.getStaticWriteTitleType().getType())
         .collect(toList()));
   }
 }
