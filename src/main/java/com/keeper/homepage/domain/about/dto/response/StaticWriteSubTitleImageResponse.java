@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
+@AllArgsConstructor(access = PRIVATE)
 public class StaticWriteSubTitleImageResponse {
 
   private final Long id;
@@ -29,15 +31,5 @@ public class StaticWriteSubTitleImageResponse {
             .map(StaticWriteContentResponse::from)
             .collect(toList()))
         .build();
-  }
-
-  @Builder
-  private StaticWriteSubTitleImageResponse(Long id, String subtitle, String thumbnailPath,
-      Integer displayOrder, List<StaticWriteContentResponse> staticWriteContents) {
-    this.id = id;
-    this.subtitle = subtitle;
-    this.thumbnailPath = thumbnailPath;
-    this.displayOrder = displayOrder;
-    this.staticWriteContents = staticWriteContents;
   }
 }
