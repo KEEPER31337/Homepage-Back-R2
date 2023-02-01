@@ -14,13 +14,9 @@ import lombok.Getter;
 public class StaticWriteSubTitleImageResponse {
 
   private final Long id;
-
   private final String subtitle;
-
   private final String thumbnailPath;
-
   private final Integer displayOrder;
-
   private final List<StaticWriteContentResponse> staticWriteContents;
 
   public static StaticWriteSubTitleImageResponse from(StaticWriteSubtitleImage subtitleImage) {
