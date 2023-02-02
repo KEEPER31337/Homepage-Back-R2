@@ -164,3 +164,21 @@ include::{snippets}/sign-out/request-cookies.adoc[]
 ==== Response
 
 include::{snippets}/sign-out/http-response.adoc[]
+
+== *로그인 아이디 찾기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-login-id/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/find-login-id/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-login-id/http-response.adoc[]

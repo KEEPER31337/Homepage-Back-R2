@@ -2,12 +2,18 @@ package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,6 +70,31 @@ class SignInControllerTest extends IntegrationTest {
                   cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
               )
           ));
+    }
+  }
+
+  @Nested
+  @DisplayName("찾기 테스트")
+  class Find {
+
+    private Member member;
+
+    @BeforeEach
+    void setupMember() {
+      member = memberTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("유효한 이메일이면 로그인 아이디가 전송되야 한다.")
+    void should_successfullySendLoginId_when_validEmail() throws Exception {
+      doNothing().when(mailUtil).sendMail(anyList(), anyString(), anyString());
+      mockMvc.perform(get("/sign-in/find-login-id")
+              .param("email", member.getProfile().getEmailAddress().get()))
+          .andExpect(status().isNoContent())
+          .andDo(document("find-login-id",
+              queryParameters(
+                  parameterWithName("email").description("이메일")
+              )));
     }
   }
 }
