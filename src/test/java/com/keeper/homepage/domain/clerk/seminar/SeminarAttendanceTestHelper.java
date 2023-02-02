@@ -67,7 +67,7 @@ public class SeminarAttendanceTestHelper {
           .member(member != null ? member : memberTestHelper.builder().build())
           .seminarAttendanceStatus(seminarAttendanceStatus != null ? seminarAttendanceStatus
               : initAttendanceStatus(ATTENDANCE))
-          .attendTime(attendTime != null ? attendTime : LocalDate.now()).build());
+          .attendTime(attendTime).build());
     }
 
     private SeminarAttendanceStatus initAttendanceStatus(SeminarAttendanceStatusType statusType) {
