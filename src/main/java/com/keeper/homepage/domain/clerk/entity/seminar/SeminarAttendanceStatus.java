@@ -1,8 +1,9 @@
 package com.keeper.homepage.domain.clerk.entity.seminar;
 
-import static java.lang.String.format;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TYPE_NOT_FOUND;
 
 import com.keeper.homepage.domain.clerk.converter.SeminarAttendanceStatusTypeConverter;
+import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -63,11 +64,11 @@ public class SeminarAttendanceStatus {
     private final Long id;
     private final String type;
 
-    public static SeminarAttendanceStatusType fromCode(String dbData) {
+    public static SeminarAttendanceStatusType fromCode(String type) {
       return Arrays.stream(SeminarAttendanceStatusType.values())
-          .filter(type -> type.getType().equals(dbData))
+          .filter(EnumType -> EnumType.getType().equals(type))
           .findAny()
-          .orElseThrow(() -> new IllegalArgumentException(format("%s 타입이 DB에 존재하지 않습니다.", dbData)));
+          .orElseThrow(() -> new BusinessException(type, "type", SEMINAR_TYPE_NOT_FOUND));
     }
   }
 }
