@@ -12,6 +12,7 @@ import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class SignInService {
+
+  private static final Random RANDOM = new Random();
+  private static final int MAX_TEMPORARY_PASSWORD_LENGTH = 15;
 
   private final MemberRepository memberRepository;
   private final AuthCookieService authCookieService;
@@ -51,5 +55,26 @@ public class SignInService {
         .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
     mailUtil.sendMail(List.of(email.get()), "KEEPER 로그인 아이디입니다.",
         "회원님의 로그인 아이디: " + member.getProfile().getLoginId().get());
+  }
+
+  @Transactional
+  public void issueTemporaryPassword(EmailAddress email, LoginId loginId) {
+    Member member = memberRepository.findByProfileEmailAddressAndProfileLoginId(email, loginId)
+        .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
+
+    String newPassword = generateRandomPassword();
+    member.getProfile().changePassword(newPassword);
+    mailUtil.sendMail(List.of(email.get()), "KEEPER 임시 비밀번호입니다.", "회원님의 임시 비밀번호: " + newPassword);
+  }
+
+  private static String generateRandomPassword() {
+    char leftLimit = '0';
+    char rightLimit = 'z';
+
+    return RANDOM.ints(leftLimit, rightLimit + 1)
+        .filter(i -> Character.isAlphabetic(i) || Character.isDigit(i))
+        .limit(MAX_TEMPORARY_PASSWORD_LENGTH)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
   }
 }

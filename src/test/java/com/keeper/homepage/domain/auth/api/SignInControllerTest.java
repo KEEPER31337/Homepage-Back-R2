@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,6 +96,23 @@ class SignInControllerTest extends IntegrationTest {
           .andDo(document("find-login-id",
               queryParameters(
                   parameterWithName("email").description("이메일")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 이메일과 로그인 아이디일 경우 임시 비밀번호가 전송되야 한다.")
+    void should_successfullySendTmpPassword_when_validRequest() throws Exception {
+      doNothing().when(signInService)
+          .issueTemporaryPassword(any(EmailAddress.class), any(LoginId.class));
+
+      mockMvc.perform(get("/sign-in/issue-tmp-password")
+              .param("email", member.getProfile().getEmailAddress().get())
+              .param("loginId", member.getProfile().getLoginId().get()))
+          .andExpect(status().isNoContent())
+          .andDo(document("issue-tmp-password",
+              queryParameters(
+                  parameterWithName("email").description("이메일"),
+                  parameterWithName("loginId").description("로그인 아이디")
               )));
     }
   }

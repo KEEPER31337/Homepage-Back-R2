@@ -182,3 +182,25 @@ include::{snippets}/find-login-id/query-parameters.adoc[]
 ==== Response
 
 include::{snippets}/find-login-id/http-response.adoc[]
+
+== *비밀번호 찾기*
+
+NOTE: "임시 비밀번호 발행"과 같은 동작을 합니다.
+
+IMPORTANT: 이 API를 호출하고 나면 비밀번호가 바뀌므로 주의해야 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/issue-tmp-password/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/issue-tmp-password/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/issue-tmp-password/http-response.adoc[]

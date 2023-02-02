@@ -38,4 +38,11 @@ public class SignInController {
     signInService.findLoginId(EmailAddress.from(email));
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/issue-tmp-password")
+  public ResponseEntity<Void> issueTemporaryPassword(@RequestParam @Email String email,
+      @RequestParam String loginId) {
+    signInService.issueTemporaryPassword(EmailAddress.from(email), LoginId.from(loginId));
+    return ResponseEntity.noContent().build();
+  }
 }
