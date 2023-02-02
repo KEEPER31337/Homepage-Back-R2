@@ -15,6 +15,7 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.application.SignInService;
@@ -95,6 +96,7 @@ public class IntegrationTest {
 
   @SpyBean
   protected FriendRepository friendRepository;
+
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
 
@@ -110,6 +112,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected SignInService signInService;
+
+  @SpyBean
+  protected AuthCookieService authCookieService;
 
   @Autowired
   protected MailUtil mailUtil;

@@ -144,3 +144,23 @@ include::{snippets}/sign-in/http-response.adoc[]
 ==== Response Cookies
 
 include::{snippets}/sign-in/response-cookies.adoc[]
+
+== *로그아웃*
+
+NOTE: Cookie를 제거하고 서버의 인증 정보를 제거합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/sign-out/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/sign-out/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/sign-out/http-response.adoc[]

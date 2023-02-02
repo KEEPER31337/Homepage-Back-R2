@@ -4,7 +4,6 @@ import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOK
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
-import com.keeper.homepage.global.config.security.data.JwtType;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,16 +19,25 @@ public class AuthCookieService {
 
   public void setNewCookieInResponse(String authId, String[] roles, HttpServletResponse response) {
     String newRefreshToken = jwtTokenProvider.createAccessToken(REFRESH_TOKEN, authId, roles);
-    setTokenInCookie(REFRESH_TOKEN, response, newRefreshToken);
+    setTokenInCookie(response, newRefreshToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
+        REFRESH_TOKEN.getTokenName());
     String newAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, authId, roles);
-    setTokenInCookie(ACCESS_TOKEN, response, newAccessToken);
+    setTokenInCookie(response, newAccessToken, (int) ACCESS_TOKEN.getExpiredMillis() / 1000,
+        ACCESS_TOKEN.getTokenName());
     redisUtil.setDataExpire(authId, newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
   }
 
-  private void setTokenInCookie(JwtType jwtType, HttpServletResponse httpResponse, String token) {
-    Cookie cookie = new Cookie(jwtType.getTokenName(), token);
+  private void setTokenInCookie(HttpServletResponse httpResponse, String token,
+      int expiredSeconds, String cookieName) {
+    Cookie cookie = new Cookie(cookieName, token);
     cookie.setHttpOnly(true);
-    cookie.setMaxAge((int) jwtType.getExpiredMillis() / 1000);
+    cookie.setMaxAge(expiredSeconds);
     httpResponse.addCookie(cookie);
+  }
+
+  public void setCookieExpired(String authId, HttpServletResponse response) {
+    setTokenInCookie(response, "", 0, REFRESH_TOKEN.getTokenName());
+    setTokenInCookie(response, "", 0, ACCESS_TOKEN.getTokenName());
+    redisUtil.deleteData(authId);
   }
 }
