@@ -173,9 +173,9 @@ include::{snippets}/sign-out/http-response.adoc[]
 
 include::{snippets}/find-login-id/http-request.adoc[]
 
-==== Request Params
+==== Request Fields
 
-include::{snippets}/find-login-id/query-parameters.adoc[]
+include::{snippets}/find-login-id/request-fields.adoc[]
 
 === 응답
 
@@ -195,9 +195,9 @@ IMPORTANT: 이 API를 호출하고 나면 비밀번호가 바뀌므로 주의해
 
 include::{snippets}/issue-tmp-password/http-request.adoc[]
 
-==== Request Params
+==== Request Fields
 
-include::{snippets}/issue-tmp-password/query-parameters.adoc[]
+include::{snippets}/issue-tmp-password/request-fields.adoc[]
 
 === 응답
 

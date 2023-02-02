@@ -9,16 +9,16 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
+import com.keeper.homepage.domain.auth.dto.request.IssueTmpPasswordRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
@@ -90,12 +90,17 @@ class SignInControllerTest extends IntegrationTest {
     @DisplayName("유효한 이메일이면 로그인 아이디가 전송되야 한다.")
     void should_successfullySendLoginId_when_validEmail() throws Exception {
       doNothing().when(mailUtil).sendMail(anyList(), anyString(), anyString());
-      mockMvc.perform(get("/sign-in/find-login-id")
-              .param("email", member.getProfile().getEmailAddress().get()))
+      FindLoginIdRequest request = FindLoginIdRequest.from(
+          member.getProfile().getEmailAddress().get());
+
+      mockMvc.perform(post("/sign-in/find-login-id")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
+          .andDo(print())
           .andExpect(status().isNoContent())
           .andDo(document("find-login-id",
-              queryParameters(
-                  parameterWithName("email").description("이메일")
+              requestFields(
+                  fieldWithPath("email").description("이메일")
               )));
     }
 
@@ -104,15 +109,20 @@ class SignInControllerTest extends IntegrationTest {
     void should_successfullySendTmpPassword_when_validRequest() throws Exception {
       doNothing().when(signInService)
           .issueTemporaryPassword(any(EmailAddress.class), any(LoginId.class));
+      IssueTmpPasswordRequest request = IssueTmpPasswordRequest.builder()
+          .email(member.getProfile().getEmailAddress().get())
+          .loginId(member.getProfile().getLoginId().get())
+          .build();
 
-      mockMvc.perform(get("/sign-in/issue-tmp-password")
-              .param("email", member.getProfile().getEmailAddress().get())
-              .param("loginId", member.getProfile().getLoginId().get()))
+      mockMvc.perform(post("/sign-in/issue-tmp-password")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
+          .andDo(print())
           .andExpect(status().isNoContent())
           .andDo(document("issue-tmp-password",
-              queryParameters(
-                  parameterWithName("email").description("이메일"),
-                  parameterWithName("loginId").description("로그인 아이디")
+              requestFields(
+                  fieldWithPath("email").description("이메일"),
+                  fieldWithPath("loginId").description("로그인 아이디")
               )));
     }
   }
