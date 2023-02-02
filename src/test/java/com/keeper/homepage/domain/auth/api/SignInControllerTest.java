@@ -8,7 +8,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,7 +51,6 @@ class SignInControllerTest extends IntegrationTest {
       mockMvc.perform(post("/sign-in")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(validRequest)))
-          .andDo(print())
           .andExpect(status().isNoContent())
           .andExpect(cookie().exists(ACCESS_TOKEN.getTokenName()))
           .andExpect(cookie().exists(REFRESH_TOKEN.getTokenName()))
