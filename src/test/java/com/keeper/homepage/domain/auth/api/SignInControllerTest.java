@@ -1,0 +1,71 @@
+package com.keeper.homepage.domain.auth.api;
+
+import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
+import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+
+class SignInControllerTest extends IntegrationTest {
+
+  @Nested
+  @DisplayName("로그인 테스트")
+  class SignIn {
+
+    private SignInRequest validRequest;
+    private Member member;
+
+    @BeforeEach
+    void setupMember() {
+      final String loginId = "loginId";
+      final String rawPassword = "password123";
+      member = memberTestHelper.builder()
+          .loginId(LoginId.from(loginId))
+          .password(Password.from(rawPassword))
+          .build();
+      validRequest = SignInRequest.builder()
+          .loginId(loginId)
+          .rawPassword(rawPassword)
+          .build();
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 로그인에 성공해야 한다.")
+    void should_successSignIn_when_validRequest() throws Exception {
+      mockMvc.perform(post("/sign-in")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(validRequest)))
+          .andDo(print())
+          .andExpect(status().isNoContent())
+          .andExpect(cookie().exists(ACCESS_TOKEN.getTokenName()))
+          .andExpect(cookie().exists(REFRESH_TOKEN.getTokenName()))
+          .andDo(document("sign-in",
+              requestFields(
+                  fieldWithPath("loginId").description("로그인 아이디"),
+                  fieldWithPath("password").description("비밀번호")
+              ),
+              responseCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
+                  cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
+              )
+          ));
+    }
+  }
+}

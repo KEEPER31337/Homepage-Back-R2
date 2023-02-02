@@ -122,3 +122,25 @@ include::{snippets}/check-duplicate-studentId/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/check-duplicate-studentId/response-fields.adoc[]
+
+== *로그인*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/sign-in/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/sign-in/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/sign-in/http-response.adoc[]
+
+==== Response Cookies
+
+include::{snippets}/sign-in/response-cookies.adoc[]
