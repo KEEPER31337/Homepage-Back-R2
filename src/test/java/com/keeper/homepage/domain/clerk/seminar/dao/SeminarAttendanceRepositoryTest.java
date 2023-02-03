@@ -1,10 +1,15 @@
 package com.keeper.homepage.domain.clerk.seminar.dao;
 
+import static com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.clerk.entity.seminar.Seminar;
 import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendance;
 import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceExcuse;
+import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus;
+import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
+import com.keeper.homepage.domain.member.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,13 +17,27 @@ import org.junit.jupiter.api.Test;
 
 public class SeminarAttendanceRepositoryTest extends IntegrationTest {
 
+  private Seminar seminar;
+  private Member member;
   private SeminarAttendance seminarAttendance;
+  private SeminarAttendanceStatusType statusType;
   private Long seminarAttendanceId;
 
   @BeforeEach
   void setUp() {
-    seminarAttendance = seminarAttendanceTestHelper.generate();
-    seminarAttendanceId = seminarAttendanceRepository.save(seminarAttendance).getId();
+    seminar = seminarTestHelper.generate();
+    member = memberTestHelper.generate();
+    statusType = ATTENDANCE;
+    seminarAttendance = seminarAttendanceRepository.save(SeminarAttendance.builder()
+        .seminar(seminar)
+        .member(member)
+        .seminarAttendanceStatus(initAttendanceStatus(statusType))
+        .build());
+    seminarAttendanceId = seminarAttendance.getId();
+  }
+
+  private SeminarAttendanceStatus initAttendanceStatus(SeminarAttendanceStatusType statusType) {
+    return SeminarAttendanceStatus.builder().type(statusType).build();
   }
 
   @Nested
@@ -28,39 +47,61 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB에 저장된 세미나 참석 정보를 확인한다.")
     void should_check_when_SavedSeminarAttendance() {
-      SeminarAttendance findAttendance = seminarAttendanceRepository.findById(seminarAttendanceId)
-          .orElseThrow();
+      em.clear();
 
-      assertThat(findAttendance.getMember().getId()).isEqualTo(seminarAttendance.getMember().getId());
-      assertThat(findAttendance.getSeminar().getId()).isEqualTo(seminarAttendance.getSeminar().getId());
-      assertThat(findAttendance.getSeminar().getName()).isEqualTo(seminarAttendance.getSeminar().getName());
-      assertThat(findAttendance.getAttendTime()).isEqualTo(seminarAttendance.getAttendTime());
-      assertThat(findAttendance.getSeminarAttendanceStatus()
-          .getType()).isEqualTo(seminarAttendance.getSeminarAttendanceStatus()
-          .getType());
+      seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
+      assertThat(seminarAttendance.getMember().getId()).isEqualTo(member.getId());
+      assertThat(seminarAttendance.getMember().getProfile().getStudentId()).isEqualTo(member.getProfile().getStudentId());
+
+      assertThat(seminarAttendance.getSeminar().getId()).isEqualTo(seminar.getId());
+      assertThat(seminarAttendance.getSeminar().getName()).isEqualTo(seminar.getName());
+      assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(seminar.getAttendanceCode());
+      assertThat(seminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(statusType);
+      assertThat(seminarAttendance.getAttendTime()).isNotNull();
     }
   }
 
   @Nested
-  @DisplayName("세미나 지각 사유, 상태 테스트")
+  @DisplayName("세미나 지각 사유 및 상태 테스트")
   class SeminarAttendanceExcuseAndStatusTest {
 
     @Test
     @DisplayName("DB에 세미나 지각 사유를 저장해야 한다.")
     void should_success_when_saveAttendExcuseSeminar() {
-      SeminarAttendance findAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       String excuse = "늦게 일어나서";
-      findAttendance.setLatenessStatus(excuse);
+      seminarAttendance.changeLatenessStatus(excuse);
 
       em.flush();
       em.clear();
 
-      SeminarAttendanceExcuse findAttendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
+      seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
+      Long statusId = seminarAttendance.getSeminarAttendanceStatus().getId();
+      SeminarAttendanceStatus attendanceStatus = seminarAttendanceStatusRepository.findById(statusId).orElseThrow();
+      SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
           .orElseThrow();
 
-      SeminarAttendance reFindAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-      assertThat(findAttendanceExcuse.getAbsenceExcuse()).isEqualTo(excuse);
-      assertThat(reFindAttendance.getExcuse().get()).isEqualTo(excuse);
+      assertThat(seminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(LATENESS);
+      assertThat(attendanceStatus.getType()).isEqualTo(LATENESS);
+      assertThat(seminarAttendance.getExcuse().get()).isEqualTo(excuse);
+      assertThat(attendanceExcuse.getAbsenceExcuse()).isEqualTo(excuse);
+    }
+
+    @Test
+    @DisplayName("DB에 세미나 지각 사유를 수정해야 한다.")
+    void should_success_when_modifyAttendExcuseSeminar() {
+      String excuse = "늦게 일어났습니다!";
+      seminarAttendance.changeLatenessStatus("늦게 일어나서");
+
+      em.flush();
+      em.clear();
+
+      seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
+      seminarAttendance.changeLatenessStatus(excuse);
+
+      SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
+          .orElseThrow();
+      assertThat(attendanceExcuse.getAbsenceExcuse()).isEqualTo(excuse);
+      assertThat(seminarAttendance.getExcuse().get()).isEqualTo(excuse);
     }
   }
 
@@ -70,9 +111,7 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유와 상태 정보도 삭제되어야 한다.")
     void should_deleteSeminarAttendance_when_deleteSeminarAttendanceStatus() {
-      SeminarAttendance findAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-      String excuse = "늦게 일어나서";
-      findAttendance.setLatenessStatus(excuse);
+      seminarAttendance.changeLatenessStatus("늦게 일어나서");
 
       em.flush();
       em.clear();
@@ -80,8 +119,8 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       int beforeAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
       int beforeAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
       int beforeAttendanceLength = seminarAttendanceRepository.findAll().size();
-      SeminarAttendance reFindAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-      seminarAttendanceRepository.delete(reFindAttendance);
+      seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
+      seminarAttendanceRepository.delete(seminarAttendance);
 
       int afterAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
       int afterAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
