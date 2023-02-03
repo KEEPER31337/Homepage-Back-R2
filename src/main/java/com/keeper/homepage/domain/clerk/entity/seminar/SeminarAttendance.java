@@ -47,7 +47,7 @@ public class SeminarAttendance {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatus seminarAttendanceStatus;
 
@@ -64,7 +64,7 @@ public class SeminarAttendance {
     return Optional.ofNullable(this.getSeminarAttendanceExcuse().getAbsenceExcuse());
   }
 
-  public void setLatenessStatus(String excuse) {
+  public void changeLatenessStatus(String excuse) {
     seminarAttendanceStatus = getSeminarAttendanceStatusBy(LATENESS);
     if (seminarAttendanceExcuse == null) {
       seminarAttendanceExcuse = SeminarAttendanceExcuse.builder()
