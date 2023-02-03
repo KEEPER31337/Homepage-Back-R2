@@ -57,7 +57,7 @@ public class SeminarAttendanceStatusRepositoryTest extends IntegrationTest {
     void should_throwBusinessException_when_NotFoundType() {
       assertThatThrownBy(() -> SeminarAttendanceStatusType.fromCode("null"))
           .isInstanceOf(BusinessException.class)
-          .hasMessageContaining("존재하지 않는 세미나 유형입니다.");
+          .hasMessageContaining("존재하지 않는 세미나 타입입니다.");
     }
   }
 }
