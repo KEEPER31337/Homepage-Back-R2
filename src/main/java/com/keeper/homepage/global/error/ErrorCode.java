@@ -22,7 +22,7 @@ public enum ErrorCode {
   // ABOUT
   TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR
-  SEMINAR_TYPE_NOT_FOUND("존재하지 않는 세미나 유형입니다.", HttpStatus.NOT_FOUND)
+  SEMINAR_TYPE_NOT_FOUND("존재하지 않는 세미나 타입입니다.", HttpStatus.NOT_FOUND)
   ;
 
   private final String message;
