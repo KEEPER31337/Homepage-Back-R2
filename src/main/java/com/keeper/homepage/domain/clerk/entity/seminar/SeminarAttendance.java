@@ -1,5 +1,8 @@
 package com.keeper.homepage.domain.clerk.entity.seminar;
 
+import static com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
+import static com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,15 +47,30 @@ public class SeminarAttendance {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatus seminarAttendanceStatus;
 
-  @OneToOne(mappedBy = "seminarAttendance", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @OneToOne(mappedBy = "seminarAttendance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private SeminarAttendanceExcuse seminarAttendanceExcuse;
 
   @Column(name = "attend_time", nullable = false, updatable = false)
   private LocalDate attendTime;
+
+  public Optional<String> getExcuse() {
+    if (this.getSeminarAttendanceExcuse() == null) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(this.getSeminarAttendanceExcuse().getAbsenceExcuse());
+  }
+
+  public void setLatenessStatus(String excuse) {
+    seminarAttendanceStatus = getSeminarAttendanceStatusBy(LATENESS);
+    seminarAttendanceExcuse = SeminarAttendanceExcuse.builder()
+        .seminarAttendance(this)
+        .absenceExcuse(excuse)
+        .build();
+  }
 
   @Builder
   private SeminarAttendance(Seminar seminar, Member member,
