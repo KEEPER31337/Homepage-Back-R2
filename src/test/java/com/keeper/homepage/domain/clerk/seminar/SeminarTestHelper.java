@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.clerk.seminar;
 
+import static com.keeper.homepage.IntegrationTest.RANDOM;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
@@ -71,10 +72,9 @@ public class SeminarTestHelper {
     }
 
     private String randomAttendanceCode() {
-      Random r = new Random();
       int ATTENDANCE_CODE_LENGTH = 4;
 
-      return r.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
+      return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
           .mapToObj(i -> ((Integer) i).toString())
           .collect(joining());
     }
