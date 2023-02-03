@@ -19,7 +19,6 @@ import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceExcuseRepos
 import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
 import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
-import com.keeper.homepage.domain.clerk.seminar.SeminarAttendanceTestHelper;
 import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
@@ -149,9 +148,6 @@ public class IntegrationTest {
 
   @Autowired
   protected SeminarTestHelper seminarTestHelper;
-
-  @Autowired
-  protected SeminarAttendanceTestHelper seminarAttendanceTestHelper;
 
   /******* Helper *******/
   @Autowired
