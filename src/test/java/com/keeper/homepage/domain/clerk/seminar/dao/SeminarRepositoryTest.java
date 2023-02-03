@@ -29,7 +29,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 세미나 등록을 성공해야 한다.")
     void should_success_when_createSeminar() {
       LocalDateTime now = LocalDateTime.now();
-
       Seminar seminarBuild = seminarTestHelper.builder()
           .openTime(now)
           .attendanceCloseTime(now.plusMinutes(3))
@@ -38,9 +37,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
           .seminarName("세미나 제목입니다.")
           .build();
 
-      Long seminarId = seminarRepository.save(seminarBuild).getId();
-      Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
-
+      Seminar savedSeminar = seminarRepository.save(seminarBuild);
       assertThat(savedSeminar.getOpenTime()).isEqualTo(seminarBuild.getOpenTime());
       assertThat(savedSeminar.getAttendanceCloseTime()).isEqualTo(seminarBuild.getAttendanceCloseTime());
       assertThat(savedSeminar.getLatenessCloseTime()).isEqualTo(seminarBuild.getLatenessCloseTime());
@@ -52,8 +49,8 @@ public class SeminarRepositoryTest extends IntegrationTest {
     @DisplayName("시간 값을 넣지 않았을 때 DB의 현재 시간으로 처리해야 한다.")
     void should_process_when_EmptyTime() {
       em.clear();
-
       seminar = seminarRepository.findById(seminarId).orElseThrow();
+
       assertThat(seminar.getOpenTime()).isNotNull();
       assertThat(seminar.getRegisterTime()).isNotNull();
       assertThat(seminar.getUpdateTime()).isNotNull();

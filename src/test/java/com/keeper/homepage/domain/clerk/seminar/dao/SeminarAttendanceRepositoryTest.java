@@ -48,11 +48,10 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 저장된 세미나 참석 정보를 확인한다.")
     void should_check_when_SavedSeminarAttendance() {
       em.clear();
-
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
+
       assertThat(seminarAttendance.getMember().getId()).isEqualTo(member.getId());
       assertThat(seminarAttendance.getMember().getProfile().getStudentId()).isEqualTo(member.getProfile().getStudentId());
-
       assertThat(seminarAttendance.getSeminar().getId()).isEqualTo(seminar.getId());
       assertThat(seminarAttendance.getSeminar().getName()).isEqualTo(seminar.getName());
       assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(seminar.getAttendanceCode());
@@ -70,7 +69,6 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     void should_success_when_saveAttendExcuseSeminar() {
       String excuse = "늦게 일어나서";
       seminarAttendance.changeLatenessStatus(excuse);
-
       em.flush();
       em.clear();
 
@@ -91,15 +89,14 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     void should_success_when_modifyAttendExcuseSeminar() {
       String excuse = "늦게 일어났습니다!";
       seminarAttendance.changeLatenessStatus("늦게 일어나서");
-
       em.flush();
       em.clear();
 
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       seminarAttendance.changeLatenessStatus(excuse);
-
       SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
           .orElseThrow();
+
       assertThat(attendanceExcuse.getAbsenceExcuse()).isEqualTo(excuse);
       assertThat(seminarAttendance.getExcuse().get()).isEqualTo(excuse);
     }
@@ -112,7 +109,6 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유와 상태 정보도 삭제되어야 한다.")
     void should_deleteSeminarAttendance_when_deleteSeminarAttendanceStatus() {
       seminarAttendance.changeLatenessStatus("늦게 일어나서");
-
       em.flush();
       em.clear();
 
@@ -125,6 +121,7 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       int afterAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
       int afterAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
       int afterAttendanceLength = seminarAttendanceRepository.findAll().size();
+
       assertThat(afterAttendanceExcuseLength).isEqualTo(beforeAttendanceExcuseLength - 1);
       assertThat(afterAttendanceStatusLength).isEqualTo(beforeAttendanceStatusLength - 1);
       assertThat(afterAttendanceLength).isEqualTo(beforeAttendanceLength - 1);
