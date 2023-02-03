@@ -20,7 +20,7 @@ public enum ErrorCode {
   MEMBER_LOGIN_ID_DUPLICATE("회원의 로그인 아이디가 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_STUDENT_ID_DUPLICATE("회원의 학번이 중복됩니다.", HttpStatus.CONFLICT),
   // ABOUT
-  TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
+  TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR
   SEMINAR_TYPE_NOT_FOUND("존재하지 않는 세미나 유형입니다.", HttpStatus.NOT_FOUND)
   ;
