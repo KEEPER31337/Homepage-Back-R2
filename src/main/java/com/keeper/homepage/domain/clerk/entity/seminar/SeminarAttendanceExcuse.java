@@ -32,6 +32,10 @@ public class SeminarAttendanceExcuse {
   @Column(name = "absence_excuse", nullable = false, length = MAX_ABSENCE_EXCUSE_LENGTH)
   private String absenceExcuse;
 
+  public void changeAbsenceExcuse(String excuse) {
+    this.absenceExcuse = excuse;
+  }
+
   @Builder
   private SeminarAttendanceExcuse(SeminarAttendance seminarAttendance, String absenceExcuse) {
     this.seminarAttendance = seminarAttendance;

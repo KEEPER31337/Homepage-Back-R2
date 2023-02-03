@@ -16,7 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -47,7 +47,7 @@ public class SeminarAttendance {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatus seminarAttendanceStatus;
 
@@ -55,7 +55,7 @@ public class SeminarAttendance {
   private SeminarAttendanceExcuse seminarAttendanceExcuse;
 
   @Column(name = "attend_time", nullable = false, updatable = false)
-  private LocalDate attendTime;
+  private LocalDateTime attendTime;
 
   public Optional<String> getExcuse() {
     if (this.getSeminarAttendanceExcuse() == null) {
@@ -66,15 +66,19 @@ public class SeminarAttendance {
 
   public void setLatenessStatus(String excuse) {
     seminarAttendanceStatus = getSeminarAttendanceStatusBy(LATENESS);
-    seminarAttendanceExcuse = SeminarAttendanceExcuse.builder()
-        .seminarAttendance(this)
-        .absenceExcuse(excuse)
-        .build();
+    if (seminarAttendanceExcuse == null) {
+      seminarAttendanceExcuse = SeminarAttendanceExcuse.builder()
+          .seminarAttendance(this)
+          .absenceExcuse(excuse)
+          .build();
+    } else {
+      seminarAttendanceExcuse.changeAbsenceExcuse(excuse);
+    }
   }
 
   @Builder
   private SeminarAttendance(Seminar seminar, Member member,
-      SeminarAttendanceStatus seminarAttendanceStatus, LocalDate attendTime) {
+      SeminarAttendanceStatus seminarAttendanceStatus, LocalDateTime attendTime) {
     this.seminar = seminar;
     this.member = member;
     this.seminarAttendanceStatus = seminarAttendanceStatus;
