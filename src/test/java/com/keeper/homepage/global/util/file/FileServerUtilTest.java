@@ -26,7 +26,7 @@ class FileServerUtilTest extends IntegrationTest {
 
       FileEntity result = fileEntity.get();
       assertThat(result.getFileName()).isEqualTo("testImage_210x210.png");
-      assertThat(result.getFilePath()).startsWith("keeper_files/files");
+      assertThat(result.getFilePath()).startsWith("keeper_files" + File.separator + "files");
       assertThat(result.getFilePath()).endsWith(".png");
       assertThat(result.getFileSize()).isEqualTo(24428);
       assertThat(result.getId()).isNotNull();

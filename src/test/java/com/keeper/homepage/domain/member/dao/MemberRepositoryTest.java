@@ -7,8 +7,13 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.member.MemberTestHelper.MemberBuilder;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Nickname;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import java.util.List;
@@ -20,13 +25,11 @@ import org.junit.jupiter.api.Test;
 
 class MemberRepositoryTest extends IntegrationTest {
 
-  private MemberBuilder memberBuilder;
   private Member member;
 
   @BeforeEach
   void setUp() {
-    memberBuilder = memberTestHelper.builder();
-    member = memberBuilder.build();
+    member = memberTestHelper.generate();
   }
 
   @Nested
@@ -37,11 +40,13 @@ class MemberRepositoryTest extends IntegrationTest {
     @DisplayName("default 값이 있는 컬럼은 null로 저장해도 저장에 성공한다.")
     void should_saveSuccessfully_when_defaultColumnIsNull() {
       Member memberBeforeSave = Member.builder()
-          .loginId("ABC")
-          .emailAddress("ABC@keeper.com")
-          .password("password")
-          .realName("realName")
-          .nickname("nickname")
+          .profile(Profile.builder()
+              .loginId(LoginId.from("ABCD"))
+              .emailAddress(EmailAddress.from("ABC@keeper.com"))
+              .password(Password.from("password123"))
+              .realName(RealName.from("realName"))
+              .nickname(Nickname.from("nickname"))
+              .build())
           .build();
 
       assertThat(memberBeforeSave.getPoint()).isNull();

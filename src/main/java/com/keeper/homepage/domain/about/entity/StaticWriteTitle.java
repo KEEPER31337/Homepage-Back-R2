@@ -1,16 +1,22 @@
 package com.keeper.homepage.domain.about.entity;
 
+import static com.keeper.homepage.global.error.ErrorCode.TITLE_TYPE_NOT_FOUND;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.String.format;
 
 import com.keeper.homepage.domain.about.converter.StaticWriteTitleTypeConverter;
+import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,21 +39,24 @@ public class StaticWriteTitle {
 
   @Convert(converter = StaticWriteTitleTypeConverter.class)
   @Column(name = "type", nullable = false)
-  private StaticWriteTitleType type;
+  private StaticWriteTitleType staticWriteTitleType;
+
+  @OneToMany(mappedBy = "staticWriteTitle", cascade = REMOVE)
+  private final List<StaticWriteSubtitleImage> staticWriteSubtitleImages = new ArrayList<>();
 
   public static StaticWriteTitle getStaticWriteTitleBy(StaticWriteTitleType type) {
     return StaticWriteTitle.builder()
-        .id(type.id)
-        .title(type.title)
-        .type(type)
+        .id(type.getId())
+        .title(type.getTitle())
+        .staticWriteTitleType(type)
         .build();
   }
 
   @Builder
-  private StaticWriteTitle(Long id, String title, StaticWriteTitleType type) {
+  private StaticWriteTitle(Long id, String title, StaticWriteTitleType staticWriteTitleType) {
     this.id = id;
     this.title = title;
-    this.type = type;
+    this.staticWriteTitleType = staticWriteTitleType;
   }
 
   @Getter
@@ -62,11 +71,11 @@ public class StaticWriteTitle {
     private final String title;
     private final String type;
 
-    public static StaticWriteTitleType fromCode(String dbData) {
+    public static StaticWriteTitleType fromCode(String type) {
       return Arrays.stream(StaticWriteTitleType.values())
-          .filter(type -> type.getType().equals(dbData))
+          .filter(staticWriteTitleType -> staticWriteTitleType.getType().equals(type))
           .findAny()
-          .orElseThrow(() -> new IllegalArgumentException(format("%s 타입이 DB에 존재하지 않습니다.", dbData)));
+          .orElseThrow(() -> new BusinessException(type, "type", TITLE_TYPE_NOT_FOUND));
     }
   }
 
