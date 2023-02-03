@@ -26,8 +26,8 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
   class SeminarAttendanceTest {
 
     @Test
-    @DisplayName("DB에 세미나 참석 정보를 저장해야 한다.")
-    void should_success_when_attendSeminar() {
+    @DisplayName("DB에 저장된 세미나 참석 정보를 확인한다.")
+    void should_check_when_SavedSeminarAttendance() {
       SeminarAttendance findAttendance = seminarAttendanceRepository.findById(seminarAttendanceId)
           .orElseThrow();
 
@@ -42,57 +42,53 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("세미나 지각 사유 테스트")
-  class SeminarAttendanceExcuseTest {
+  @DisplayName("세미나 지각 사유, 상태 테스트")
+  class SeminarAttendanceExcuseAndStatusTest {
 
     @Test
     @DisplayName("DB에 세미나 지각 사유를 저장해야 한다.")
-    void should_success_when_attendExcuseSeminar() {
+    void should_success_when_saveAttendExcuseSeminar() {
       SeminarAttendance findAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       String excuse = "늦게 일어나서";
-      SeminarAttendanceExcuse attendanceExcuseBuild = makeAttendanceExcuse(findAttendance, excuse);
+      findAttendance.setLatenessStatus(excuse);
 
-      Long attendanceExcuseId = seminarAttendanceExcuseRepository.save(attendanceExcuseBuild).getId();
       em.flush();
       em.clear();
 
-      SeminarAttendanceExcuse findAttendanceExcuse = seminarAttendanceExcuseRepository.findById(attendanceExcuseId)
+      SeminarAttendanceExcuse findAttendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
           .orElseThrow();
+
       SeminarAttendance reFindAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-
-      assertThat(findAttendanceExcuse.getAbsenceExcuse()).isEqualTo(
-          attendanceExcuseBuild.getAbsenceExcuse());
-      assertThat(reFindAttendance.getSeminarAttendanceExcuse()
-          .getAbsenceExcuse()).isEqualTo(attendanceExcuseBuild.getAbsenceExcuse());
+      assertThat(findAttendanceExcuse.getAbsenceExcuse()).isEqualTo(excuse);
+      assertThat(reFindAttendance.getExcuse().get()).isEqualTo(excuse);
     }
+  }
 
+  @Nested
+  @DisplayName("세미나 참석 삭제 테스트")
+  class SeminarAttendanceDeleteTest {
     @Test
-    @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유도 삭제되어야 한다.")
+    @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유와 상태 정보도 삭제되어야 한다.")
     void should_deleteSeminarAttendance_when_deleteSeminarAttendanceStatus() {
       SeminarAttendance findAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       String excuse = "늦게 일어나서";
-      SeminarAttendanceExcuse attendanceExcuseBuild = makeAttendanceExcuse(findAttendance, excuse);
+      findAttendance.setLatenessStatus(excuse);
 
-      seminarAttendanceExcuseRepository.save(attendanceExcuseBuild);
       em.flush();
       em.clear();
 
       int beforeAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
+      int beforeAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
       int beforeAttendanceLength = seminarAttendanceRepository.findAll().size();
       SeminarAttendance reFindAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       seminarAttendanceRepository.delete(reFindAttendance);
 
       int afterAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
+      int afterAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
       int afterAttendanceLength = seminarAttendanceRepository.findAll().size();
       assertThat(afterAttendanceExcuseLength).isEqualTo(beforeAttendanceExcuseLength - 1);
+      assertThat(afterAttendanceStatusLength).isEqualTo(beforeAttendanceStatusLength - 1);
       assertThat(afterAttendanceLength).isEqualTo(beforeAttendanceLength - 1);
-    }
-
-    private SeminarAttendanceExcuse makeAttendanceExcuse(SeminarAttendance attendance, String excuse) {
-      return SeminarAttendanceExcuse.builder()
-          .seminarAttendance(attendance)
-          .absenceExcuse(excuse)
-          .build();
     }
   }
 }
