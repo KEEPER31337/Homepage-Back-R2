@@ -116,7 +116,7 @@ public class IntegrationTest {
   @SpyBean
   protected AuthCookieService authCookieService;
 
-  @Autowired
+  @SpyBean
   protected MailUtil mailUtil;
 
   @Autowired
