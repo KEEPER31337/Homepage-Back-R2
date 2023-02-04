@@ -66,8 +66,6 @@ public class SeminarTestHelper {
           .latenessCloseTime(latenessCloseTime)
           .attendanceCode(attendanceCode != null ? attendanceCode : randomAttendanceCode())
           .name(seminarName != null ? seminarName : makeSeminarName())
-          .registerTime(openTime)
-          .updateTime(openTime)
           .build());
     }
 

@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.clerk.entity.seminar;
 
+import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "seminar")
-public class Seminar {
+public class Seminar extends BaseEntity {
 
   private static final int MAX_ATTENDANCE_CODE_LENGTH = 10;
   private static final int MAX_NAME_LENGTH = 100;
@@ -45,22 +46,13 @@ public class Seminar {
   @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
-  @Column(name = "register_time", nullable = false, updatable = false)
-  private LocalDateTime registerTime;
-
-  @Column(name = "update_time", nullable = false, updatable = false)
-  private LocalDateTime updateTime;
-
   @Builder
   private Seminar(LocalDateTime openTime, LocalDateTime attendanceCloseTime,
-      LocalDateTime latenessCloseTime, String attendanceCode, String name,
-      LocalDateTime registerTime, LocalDateTime updateTime) {
+      LocalDateTime latenessCloseTime, String attendanceCode, String name) {
     this.openTime = openTime;
     this.attendanceCloseTime = attendanceCloseTime;
     this.latenessCloseTime = latenessCloseTime;
     this.attendanceCode = attendanceCode;
     this.name = name;
-    this.registerTime = registerTime;
-    this.updateTime = updateTime;
   }
 }
