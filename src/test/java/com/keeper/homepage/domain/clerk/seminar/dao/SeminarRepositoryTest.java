@@ -5,21 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.clerk.entity.seminar.Seminar;
 import java.time.LocalDateTime;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class SeminarRepositoryTest extends IntegrationTest {
-
-  private Seminar seminar;
-  private Long seminarId;
-
-  @BeforeEach
-  void setUp() {
-    seminar = seminarTestHelper.generate();
-    seminarId = seminar.getId();
-  }
 
   @Nested
   @DisplayName("세미나 관리 테스트")
@@ -48,18 +38,31 @@ public class SeminarRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("시간 값을 넣지 않았을 때 DB의 현재 시간으로 처리해야 한다.")
     void should_process_when_EmptyTime() {
+      Long seminarId = seminarTestHelper.generate().getId();
       em.clear();
-      LocalDateTime now = LocalDateTime.now();
-      seminar = seminarRepository.findById(seminarId).orElseThrow();
 
-      assertThat(seminar.getOpenTime()).isAfter(now.minusDays(2));
-      assertThat(seminar.getRegisterTime()).isAfter(now.minusDays(2));
-      assertThat(seminar.getUpdateTime()).isAfter(now.minusDays(2));
+      LocalDateTime now = LocalDateTime.now();
+      Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
+
+      assertThat(savedSeminar.getOpenTime()).isAfter(now.minusDays(2));
+      assertThat(savedSeminar.getRegisterTime()).isAfter(now.minusDays(2));
+      assertThat(savedSeminar.getUpdateTime()).isAfter(now.minusDays(2));
+    }
+    
+    @Test
+    @DisplayName("세미나 이름을 넣지 않았을 때 TRIGGER가 동작해야 한다.")
+    void should_success_when_EmptySeminarName() {
+      Long seminarId = seminarTestHelper.generate().getId();
+      em.clear();
+
+      Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
+      assertThat(savedSeminar.getName()).isNotNull();
     }
 
     @Test
     @DisplayName("DB에 등록된 세미나를 삭제해야 한다.")
     void should_success_when_deleteSeminar() {
+      Seminar seminar = seminarTestHelper.generate();
       int beforeSeminarLength = seminarRepository.findAll().size();
       seminarRepository.delete(seminar);
 
