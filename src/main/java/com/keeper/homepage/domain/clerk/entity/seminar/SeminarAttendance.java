@@ -47,7 +47,7 @@ public class SeminarAttendance {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatus seminarAttendanceStatus;
 
