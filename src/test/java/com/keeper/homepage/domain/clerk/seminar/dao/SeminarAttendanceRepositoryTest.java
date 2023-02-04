@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceExcuse;
 import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus;
 import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import com.keeper.homepage.domain.member.entity.Member;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,6 +49,7 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 저장된 세미나 참석 정보를 확인한다.")
     void should_check_when_SavedSeminarAttendance() {
       em.clear();
+      LocalDateTime now = LocalDateTime.now();
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
 
       assertThat(seminarAttendance.getMember().getId()).isEqualTo(member.getId());
@@ -56,7 +58,7 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       assertThat(seminarAttendance.getSeminar().getName()).isEqualTo(seminar.getName());
       assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(seminar.getAttendanceCode());
       assertThat(seminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(statusType);
-      assertThat(seminarAttendance.getAttendTime()).isNotNull();
+      assertThat(seminarAttendance.getAttendTime()).isAfter(now.minusDays(2));
     }
   }
 
