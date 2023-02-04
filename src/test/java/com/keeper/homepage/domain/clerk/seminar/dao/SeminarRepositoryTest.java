@@ -49,11 +49,15 @@ public class SeminarRepositoryTest extends IntegrationTest {
     @DisplayName("시간 값을 넣지 않았을 때 DB의 현재 시간으로 처리해야 한다.")
     void should_process_when_EmptyTime() {
       em.clear();
+      LocalDateTime now = LocalDateTime.now();
       seminar = seminarRepository.findById(seminarId).orElseThrow();
 
       assertThat(seminar.getOpenTime()).isNotNull();
       assertThat(seminar.getRegisterTime()).isNotNull();
       assertThat(seminar.getUpdateTime()).isNotNull();
+      assertThat(seminar.getOpenTime().isAfter(now.minusDays(2)));
+      assertThat(seminar.getRegisterTime().isAfter(now.minusDays(2)));
+      assertThat(seminar.getUpdateTime().isAfter(now.minusDays(2)));
     }
 
     @Test
