@@ -18,7 +18,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB에 세미나 등록을 성공해야 한다.")
     void should_success_when_createSeminar() {
-      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime now = LocalDateTime.now().withNano(0);
       Seminar seminarBuild = seminarTestHelper.builder()
           .openTime(now)
           .attendanceCloseTime(now.plusMinutes(3))
@@ -27,7 +27,10 @@ public class SeminarRepositoryTest extends IntegrationTest {
           .seminarName("세미나 제목입니다.")
           .build();
 
-      Seminar savedSeminar = seminarRepository.save(seminarBuild);
+      Long seminarId = seminarRepository.save(seminarBuild).getId();
+      em.clear();
+
+      Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
       assertThat(savedSeminar.getOpenTime()).isEqualTo(seminarBuild.getOpenTime());
       assertThat(savedSeminar.getAttendanceCloseTime()).isEqualTo(seminarBuild.getAttendanceCloseTime());
       assertThat(savedSeminar.getLatenessCloseTime()).isEqualTo(seminarBuild.getLatenessCloseTime());
