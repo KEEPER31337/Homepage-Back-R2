@@ -52,9 +52,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
       seminar = seminarRepository.findById(seminarId).orElseThrow();
 
-      assertThat(seminar.getOpenTime()).isNotNull();
-      assertThat(seminar.getRegisterTime()).isNotNull();
-      assertThat(seminar.getUpdateTime()).isNotNull();
       assertThat(seminar.getOpenTime().isAfter(now.minusDays(2)));
       assertThat(seminar.getRegisterTime().isAfter(now.minusDays(2)));
       assertThat(seminar.getUpdateTime().isAfter(now.minusDays(2)));
