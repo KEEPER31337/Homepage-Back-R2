@@ -8,7 +8,6 @@ import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
 import com.keeper.homepage.domain.clerk.entity.seminar.Seminar;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
