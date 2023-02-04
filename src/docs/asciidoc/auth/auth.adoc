@@ -2,7 +2,7 @@ ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
 
-= USER API 문서
+= MEMBER API 문서
 :icons: font
 :source-highlighter: highlight.js
 :toc: left

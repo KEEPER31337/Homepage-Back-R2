@@ -32,7 +32,7 @@ public class SecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests()
-        .requestMatchers("/docs/*", "/keeper_files/**", "/auth-test", "/sign-up/**", "/error",
+        .requestMatchers("/docs/**", "/keeper_files/**", "/auth-test", "/sign-up/**", "/error",
             "/about/**", "/sign-in/**")
         .permitAll()
         .anyRequest().hasRole("회원")
