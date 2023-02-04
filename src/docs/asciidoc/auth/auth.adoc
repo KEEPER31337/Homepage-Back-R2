@@ -2,7 +2,7 @@ ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
 
-= USER API 문서
+= MEMBER API 문서
 :icons: font
 :source-highlighter: highlight.js
 :toc: left
@@ -122,3 +122,85 @@ include::{snippets}/check-duplicate-studentId/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/check-duplicate-studentId/response-fields.adoc[]
+
+== *로그인*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/sign-in/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/sign-in/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/sign-in/http-response.adoc[]
+
+==== Response Cookies
+
+include::{snippets}/sign-in/response-cookies.adoc[]
+
+== *로그아웃*
+
+NOTE: Cookie를 제거하고 서버의 인증 정보를 제거합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/sign-out/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/sign-out/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/sign-out/http-response.adoc[]
+
+== *로그인 아이디 찾기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-login-id/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/find-login-id/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-login-id/http-response.adoc[]
+
+== *비밀번호 찾기*
+
+NOTE: "임시 비밀번호 발행"과 같은 동작을 합니다.
+
+IMPORTANT: 이 API를 호출하고 나면 비밀번호가 바뀌므로 주의해야 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/issue-tmp-password/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/issue-tmp-password/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/issue-tmp-password/http-response.adoc[]

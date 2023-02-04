@@ -41,4 +41,8 @@ public class Password {
   private static boolean isInvalidFormat(String rawPassword) {
     return !PASSWORD_FORMAT.matcher(rawPassword).find();
   }
+
+  public boolean isWrongPassword(String rawPassword) {
+    return !PasswordFactory.getPasswordEncoder().matches(rawPassword, this.password);
+  }
 }

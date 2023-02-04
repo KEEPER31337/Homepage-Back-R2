@@ -56,4 +56,8 @@ public class Profile {
     this.studentId = studentId;
     this.thumbnail = thumbnail;
   }
+
+  public void changePassword(String newPassword) {
+    this.password = Password.from(newPassword);
+  }
 }

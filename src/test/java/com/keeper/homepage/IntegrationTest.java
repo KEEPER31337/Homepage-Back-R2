@@ -20,8 +20,10 @@ import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
 import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
 import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
@@ -111,6 +113,7 @@ public class IntegrationTest {
 
   @SpyBean
   protected FriendRepository friendRepository;
+
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
 
@@ -124,7 +127,13 @@ public class IntegrationTest {
   @SpyBean
   protected CheckDuplicateService checkDuplicateService;
 
-  @Autowired
+  @SpyBean
+  protected SignInService signInService;
+
+  @SpyBean
+  protected AuthCookieService authCookieService;
+
+  @SpyBean
   protected MailUtil mailUtil;
 
   @Autowired
