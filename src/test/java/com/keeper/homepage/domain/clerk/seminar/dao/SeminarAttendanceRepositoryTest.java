@@ -106,24 +106,21 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
   @DisplayName("세미나 참석 삭제 테스트")
   class SeminarAttendanceDeleteTest {
     @Test
-    @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유와 상태 정보도 삭제되어야 한다.")
+    @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유도 삭제되어야 한다.")
     void should_deleteSeminarAttendance_when_deleteSeminarAttendanceStatus() {
       seminarAttendance.changeLatenessStatus("늦게 일어나서");
       em.flush();
       em.clear();
 
       int beforeAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
-      int beforeAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
       int beforeAttendanceLength = seminarAttendanceRepository.findAll().size();
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       seminarAttendanceRepository.delete(seminarAttendance);
 
       int afterAttendanceExcuseLength = seminarAttendanceExcuseRepository.findAll().size();
-      int afterAttendanceStatusLength = seminarAttendanceStatusRepository.findAll().size();
       int afterAttendanceLength = seminarAttendanceRepository.findAll().size();
 
       assertThat(afterAttendanceExcuseLength).isEqualTo(beforeAttendanceExcuseLength - 1);
-      assertThat(afterAttendanceStatusLength).isEqualTo(beforeAttendanceStatusLength - 1);
       assertThat(afterAttendanceLength).isEqualTo(beforeAttendanceLength - 1);
     }
   }
