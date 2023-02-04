@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +38,7 @@ public class SignInController {
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/issue-tmp-password")
+  @PatchMapping("/issue-tmp-password")
   public ResponseEntity<Void> issueTemporaryPassword(
       @RequestBody @Valid IssueTmpPasswordRequest request) {
     signInService.issueTemporaryPassword(EmailAddress.from(request.getEmail()),

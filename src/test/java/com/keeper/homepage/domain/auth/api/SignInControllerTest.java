@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -114,7 +115,7 @@ class SignInControllerTest extends IntegrationTest {
           .loginId(member.getProfile().getLoginId().get())
           .build();
 
-      mockMvc.perform(post("/sign-in/issue-tmp-password")
+      mockMvc.perform(patch("/sign-in/issue-tmp-password")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
