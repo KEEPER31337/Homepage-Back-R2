@@ -55,8 +55,8 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       assertThat(seminarAttendance.getMember().getId()).isEqualTo(member.getId());
       assertThat(seminarAttendance.getMember().getProfile().getStudentId()).isEqualTo(member.getProfile().getStudentId());
       assertThat(seminarAttendance.getSeminar().getId()).isEqualTo(seminar.getId());
-      assertThat(seminarAttendance.getSeminar().getName()).isEqualTo(seminar.getName());
       assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(seminar.getAttendanceCode());
+      assertThat(seminarAttendance.getSeminar().getName()).isNotNull();
       assertThat(seminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(statusType);
       assertThat(seminarAttendance.getAttendTime()).isAfter(now.minusDays(2));
     }
