@@ -15,6 +15,11 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceExcuseRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
+import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
@@ -95,6 +100,18 @@ public class IntegrationTest {
   protected AttendanceRepository attendanceRepository;
 
   @SpyBean
+  protected SeminarRepository seminarRepository;
+
+  @SpyBean
+  protected SeminarAttendanceRepository seminarAttendanceRepository;
+
+  @SpyBean
+  protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
+
+  @SpyBean
+  protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+
+  @SpyBean
   protected FriendRepository friendRepository;
 
   @Autowired
@@ -123,7 +140,6 @@ public class IntegrationTest {
   protected StaticWriteService staticWriteService;
 
   /******* Helper *******/
-
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
 
@@ -138,6 +154,9 @@ public class IntegrationTest {
 
   @Autowired
   protected AttendanceTestHelper attendanceTestHelper;
+
+  @Autowired
+  protected SeminarTestHelper seminarTestHelper;
 
   /******* Helper *******/
   @Autowired
