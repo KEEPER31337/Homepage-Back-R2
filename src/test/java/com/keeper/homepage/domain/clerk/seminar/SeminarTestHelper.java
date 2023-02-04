@@ -1,13 +1,11 @@
 package com.keeper.homepage.domain.clerk.seminar;
 
 import static com.keeper.homepage.IntegrationTest.RANDOM;
-import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
 import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
 import com.keeper.homepage.domain.clerk.entity.seminar.Seminar;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,7 +62,7 @@ public class SeminarTestHelper {
           .attendanceCloseTime(attendanceCloseTime)
           .latenessCloseTime(latenessCloseTime)
           .attendanceCode(attendanceCode != null ? attendanceCode : randomAttendanceCode())
-          .name(seminarName != null ? seminarName : makeSeminarName())
+          .name(seminarName)
           .build());
     }
 
@@ -74,11 +72,6 @@ public class SeminarTestHelper {
       return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
           .mapToObj(i -> ((Integer) i).toString())
           .collect(joining());
-    }
-
-    private String makeSeminarName() {
-      LocalDateTime now = LocalDateTime.now();
-      return format("%s_세미나", now.format(DateTimeFormatter.ofPattern("yyMMdd")));
     }
   }
 }
