@@ -1,10 +1,16 @@
 package com.keeper.homepage.domain.file.entity;
 
+import static jakarta.persistence.FetchType.LAZY;
+
+import com.keeper.homepage.domain.posting.entity.Posting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -42,6 +48,10 @@ public class FileEntity {
 
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
+
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "posting_id")
+  private Posting posting;
 
   @Builder
   private FileEntity(String fileName, String filePath, Long fileSize, LocalDateTime uploadTime,

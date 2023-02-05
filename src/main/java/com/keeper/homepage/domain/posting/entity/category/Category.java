@@ -1,10 +1,17 @@
-package com.keeper.homepage.domain.posting.entity;
+package com.keeper.homepage.domain.posting.entity.category;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.posting.entity.Posting;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +38,18 @@ public class Category {
 
   @Column(name = "href", length = MAX_HREF_LENGTH)
   private String href;
+
+  @OneToMany(mappedBy = "category", cascade = REMOVE, orphanRemoval = true)
+  private final List<Posting> postings = new ArrayList<>();
+
+  @Builder
+  private Category(String name, Long parentId, String href) {
+    this.name = name;
+    this.parentId = parentId;
+    this.href = href;
+  }
+
+  public void addPosting(Posting posting) {
+    postings.add(posting);
+  }
 }

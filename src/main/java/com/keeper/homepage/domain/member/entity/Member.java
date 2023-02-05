@@ -15,6 +15,8 @@ import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
+import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.posting.entity.comment.Comment;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -87,6 +89,12 @@ public class Member {
 
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
   private final Set<Friend> friends = new HashSet<>();
+
+  @OneToMany(mappedBy = "member")
+  private final List<Posting> postings = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member")
+  private final List<Comment> comments = new ArrayList<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
