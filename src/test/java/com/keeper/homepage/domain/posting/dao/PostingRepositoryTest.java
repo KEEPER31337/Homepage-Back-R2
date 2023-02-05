@@ -18,9 +18,7 @@ import org.junit.jupiter.api.Test;
 public class PostingRepositoryTest extends IntegrationTest {
 
   private Member member;
-
   private Posting posting;
-
   private Thumbnail thumbnail;
   private FileEntity file1, file2;
 
