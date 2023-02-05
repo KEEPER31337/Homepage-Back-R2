@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+
 @DynamicInsert
 @DynamicUpdate
 @Getter
@@ -95,7 +96,7 @@ public class Posting extends BaseEntity {
   @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "posting", cascade = REMOVE, orphanRemoval = true)
   private final List<FileEntity> files = new ArrayList<>();
 
   @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)

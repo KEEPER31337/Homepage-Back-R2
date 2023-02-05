@@ -46,6 +46,7 @@ public class CategoryRepositoryTest extends IntegrationTest {
     void should_process_when_EmptyParentId() {
       em.flush();
       em.clear();
+
       Category findCategory = categoryRepository.findById(category.getId()).orElseThrow();
 
       assertThat(findCategory.getParentId()).isEqualTo(0L);

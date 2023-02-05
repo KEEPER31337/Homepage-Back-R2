@@ -134,7 +134,6 @@ public class PostingRepositoryTest extends IntegrationTest {
       assertThat(findPosting.getLikeCount()).isEqualTo(0);
       assertThat(findPosting.getDislikeCount()).isEqualTo(0);
       assertThat(findPosting.getCommentCount()).isEqualTo(0);
-
       assertThat(findPosting.getAllowComment()).isEqualTo(true);
       assertThat(findPosting.getIsNotice()).isEqualTo(false);
       assertThat(findPosting.getIsSecret()).isEqualTo(false);
