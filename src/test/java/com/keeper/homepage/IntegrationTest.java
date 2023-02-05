@@ -124,6 +124,7 @@ public class IntegrationTest {
 
   @SpyBean
   protected FriendRepository friendRepository;
+
   @SpyBean
   protected CategoryRepository categoryRepository;
 
@@ -187,6 +188,9 @@ public class IntegrationTest {
   protected AttendanceTestHelper attendanceTestHelper;
 
   @Autowired
+  protected SeminarTestHelper seminarTestHelper;
+
+  @Autowired
   protected CategoryTestHelper categoryTestHelper;
 
   @Autowired
@@ -194,9 +198,6 @@ public class IntegrationTest {
 
   @Autowired
   protected CommentTestHelper commentTestHelper;
-
-  @Autowired
-  protected SeminarTestHelper seminarTestHelper;
 
   /******* Helper *******/
   @Autowired
