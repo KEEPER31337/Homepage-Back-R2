@@ -133,13 +133,13 @@ public class MemberTestHelper {
               .loginId(loginId != null ? loginId
                   : LoginId.from(generateRandomString(12)))
               .emailAddress(email != null ? email : EmailAddress.from(
-                  generateRandomString(50) + '@' + generateRandomString(50) + ".com"))
+                  generateRandomString(5) + '@' + generateRandomString(5) + ".com"))
               .password(password != null ? password :
                   Password.from(generateRandomString(10) + "1a", MOCK_PASSWORD_ENCODER))
               .realName(realName != null ? realName :
-                  RealName.from(generateRandomAlphabeticString(20)))
+                  RealName.from(generateRandomAlphabeticString(10)))
               .nickname(nickname != null ? nickname :
-                  Nickname.from(generateRandomAlphabeticString(20)))
+                  Nickname.from(generateRandomAlphabeticString(10)))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
                   : StudentId.from(generateRandomDigitString(MAX_STUDENT_ID_LENGTH)))
