@@ -142,7 +142,7 @@ public class MemberTestHelper {
                   Nickname.from(generateRandomAlphabeticString(10)))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
-                  : StudentId.from(generateRandomDigitString(MAX_STUDENT_ID_LENGTH)))
+                  : StudentId.from(generateRandomDigitString(9)))
               .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
               .build())
           .point(point != null ? point : 0)

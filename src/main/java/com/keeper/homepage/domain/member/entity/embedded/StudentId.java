@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class StudentId {
 
   public static final String STUDENT_ID_INVALID = "학번은 숫자만 가능합니다.";
-  public static final int MAX_STUDENT_ID_LENGTH = 9;
+  public static final int MAX_STUDENT_ID_LENGTH = 45;
   public static final String STUDENT_ID_REGEX = "^[0-9]*$";
 
   private static final Pattern STUDENT_ID_FORMAT = Pattern.compile(STUDENT_ID_REGEX);
