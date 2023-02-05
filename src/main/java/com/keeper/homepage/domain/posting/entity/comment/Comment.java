@@ -71,8 +71,8 @@ public class Comment extends BaseEntity {
     this.posting = posting;
     this.parentId = parentId != null ? parentId : 0;
     this.content = content;
-    this.likeCount = likeCount != null ? likeCount : 0;
-    this.dislikeCount = dislikeCount != null ? dislikeCount : 0;
+    this.likeCount = likeCount;
+    this.dislikeCount = dislikeCount;
     this.ipAddress = ipAddress;
   }
 

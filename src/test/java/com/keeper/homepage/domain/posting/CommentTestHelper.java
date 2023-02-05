@@ -83,8 +83,8 @@ public class CommentTestHelper {
           .posting(posting != null ? posting : postingTestHelper.generate())
           .parentId(parentId != null ? parentId : 0L)
           .content(content != null ? content : "댓글내용")
-          .likeCount(likeCount != null ? likeCount : 0)
-          .dislikeCount(dislikeCount != null ? dislikeCount : 0)
+          .likeCount(likeCount)
+          .dislikeCount(dislikeCount)
           .ipAddress(ipAddress != null ? ipAddress : "0.0.0.0")
           .build());
     }
