@@ -11,31 +11,29 @@ import java.util.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration
-public class PasswordConfiguration {
+public class PasswordFactory {
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new PasswordEncoder() {
-      @Override
-      public String encode(CharSequence rawPassword) {
-        return createDelegatingPasswordEncoder().encode(rawPassword);
-      }
-
-      @Override
-      public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        return createDelegatingPasswordEncoder().matches(rawPassword, encodedPassword)
-            || matchesWithPBKDF2SHA256(rawPassword.toString(), encodedPassword)
-            || matchesWithMD5(rawPassword.toString(), encodedPassword);
-      }
-    };
+  public static PasswordEncoder getPasswordEncoder() {
+    return passwordEncoder;
   }
 
-  private boolean matchesWithPBKDF2SHA256(String password, String hashedPassword) {
+  private static final PasswordEncoder passwordEncoder = new PasswordEncoder() {
+    @Override
+    public String encode(CharSequence rawPassword) {
+      return createDelegatingPasswordEncoder().encode(rawPassword);
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+      return createDelegatingPasswordEncoder().matches(rawPassword, encodedPassword)
+          || matchesWithPBKDF2SHA256(rawPassword.toString(), encodedPassword)
+          || matchesWithMD5(rawPassword.toString(), encodedPassword);
+    }
+  };
+
+  private static boolean matchesWithPBKDF2SHA256(String password, String hashedPassword) {
     try {
       String[] parts = hashedPassword.split(":");
       if (parts.length != 4) {
@@ -51,13 +49,13 @@ public class PasswordConfiguration {
     }
   }
 
-  private String encodeWithPBKDF2SHA256(String password, String salt, int iterations)
+  private static String encodeWithPBKDF2SHA256(String password, String salt, int iterations)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     String hash = getEncodedHashWithPBKDF2SHA256(password, salt, iterations);
     return String.format("%s:%d:%s:%s", "pbkdf2_sha256", iterations, salt, hash);
   }
 
-  private String getEncodedHashWithPBKDF2SHA256(String password, String salt, int iterations)
+  private static String getEncodedHashWithPBKDF2SHA256(String password, String salt, int iterations)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
     KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(StandardCharsets.UTF_8),
@@ -71,7 +69,7 @@ public class PasswordConfiguration {
     return new String(hashBase64);
   }
 
-  private boolean matchesWithMD5(String password, String hashedPassword) {
+  private static boolean matchesWithMD5(String password, String hashedPassword) {
     try {
       return hashedPassword.equals(encodeWithMD5(password));
     } catch (Exception ignore) {
@@ -79,11 +77,11 @@ public class PasswordConfiguration {
     }
   }
 
-  private String encodeWithMD5(String password) throws NoSuchAlgorithmException {
+  private static String encodeWithMD5(String password) throws NoSuchAlgorithmException {
     return getEncodedHashWithMD5(password);
   }
 
-  private String getEncodedHashWithMD5(String pwd) throws NoSuchAlgorithmException {
+  private static String getEncodedHashWithMD5(String pwd) throws NoSuchAlgorithmException {
     MessageDigest md = MessageDigest.getInstance("MD5");
     md.update(pwd.getBytes());
     byte[] byteData = md.digest();

@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.about.converter;
 
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
+import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class StaticWriteTitleTypeConverter implements
     }
     try {
       return StaticWriteTitleType.fromCode(dbData);
-    } catch (IllegalArgumentException e) {
+    } catch (BusinessException e) {
       log.error("failure to convert cause unexpected code [{}]", dbData, e);
       throw e;
     }

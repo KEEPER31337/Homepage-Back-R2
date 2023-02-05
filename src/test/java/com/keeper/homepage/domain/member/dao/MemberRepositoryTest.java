@@ -8,7 +8,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Nickname;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import java.util.List;
@@ -36,11 +41,11 @@ class MemberRepositoryTest extends IntegrationTest {
     void should_saveSuccessfully_when_defaultColumnIsNull() {
       Member memberBeforeSave = Member.builder()
           .profile(Profile.builder()
-              .loginId("ABC")
-              .emailAddress("ABC@keeper.com")
-              .password("password")
-              .realName("realName")
-              .nickname("nickname")
+              .loginId(LoginId.from("ABCD"))
+              .emailAddress(EmailAddress.from("ABC@keeper.com"))
+              .password(Password.from("password123"))
+              .realName(RealName.from("realName"))
+              .nickname(Nickname.from("nickname"))
               .build())
           .build();
 

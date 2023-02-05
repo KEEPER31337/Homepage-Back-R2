@@ -19,6 +19,11 @@ public enum ErrorCode {
   MEMBER_EMAIL_DUPLICATE("회원 이메일이 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_LOGIN_ID_DUPLICATE("회원의 로그인 아이디가 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_STUDENT_ID_DUPLICATE("회원의 학번이 중복됩니다.", HttpStatus.CONFLICT),
+  MEMBER_WRONG_ID_OR_PASSWORD("아이디 혹은 비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
+  // ABOUT
+  TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  // SEMINAR
+  SEMINAR_TYPE_NOT_FOUND("존재하지 않는 세미나 타입입니다.", HttpStatus.NOT_FOUND),
   ;
 
   private final String message;

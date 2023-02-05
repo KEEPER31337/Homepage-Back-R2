@@ -1,19 +1,23 @@
 package com.keeper.homepage.domain.member;
 
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_EMAIL_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_LOGIN_ID_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_NICKNAME_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_REAL_NAME_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Profile.MAX_STUDENT_ID_LENGTH;
+import static com.keeper.homepage.IntegrationTest.generateRandomString;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Nickname;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,13 +39,13 @@ public class MemberTestHelper {
 
   public final class MemberBuilder {
 
-    private String loginId;
-    private String email;
-    private String password;
-    private String realName;
-    private String nickname;
+    private LoginId loginId;
+    private EmailAddress email;
+    private Password password;
+    private RealName realName;
+    private Nickname nickname;
     private LocalDate birthday;
-    private String studentId;
+    private StudentId studentId;
     private Integer point;
     private Integer level;
     private Thumbnail thumbnail;
@@ -53,27 +57,27 @@ public class MemberTestHelper {
     private MemberBuilder() {
     }
 
-    public MemberBuilder loginId(String loginId) {
+    public MemberBuilder loginId(LoginId loginId) {
       this.loginId = loginId;
       return this;
     }
 
-    public MemberBuilder emailAddress(String emailAddress) {
+    public MemberBuilder emailAddress(EmailAddress emailAddress) {
       this.email = emailAddress;
       return this;
     }
 
-    public MemberBuilder password(String password) {
+    public MemberBuilder password(Password password) {
       this.password = password;
       return this;
     }
 
-    public MemberBuilder realName(String realName) {
+    public MemberBuilder realName(RealName realName) {
       this.realName = realName;
       return this;
     }
 
-    public MemberBuilder nickname(String nickname) {
+    public MemberBuilder nickname(Nickname nickname) {
       this.nickname = nickname;
       return this;
     }
@@ -83,7 +87,7 @@ public class MemberTestHelper {
       return this;
     }
 
-    public MemberBuilder studentId(String studentId) {
+    public MemberBuilder studentId(StudentId studentId) {
       this.studentId = studentId;
       return this;
     }
@@ -126,14 +130,19 @@ public class MemberTestHelper {
     public Member build() {
       return memberRepository.save(Member.builder()
           .profile(Profile.builder()
-              .loginId(loginId != null ? loginId : getRandomUUIDLengthWith(MAX_LOGIN_ID_LENGTH))
-              .emailAddress(email != null ? email : getRandomUUIDLengthWith(MAX_EMAIL_LENGTH))
-              .password(password != null ? password : getRandomUUIDLengthWith(100))
-              .realName(realName != null ? realName : getRandomUUIDLengthWith(MAX_REAL_NAME_LENGTH))
-              .nickname(nickname != null ? nickname : getRandomUUIDLengthWith(MAX_NICKNAME_LENGTH))
+              .loginId(loginId != null ? loginId
+                  : LoginId.from(generateRandomString(12)))
+              .emailAddress(email != null ? email : EmailAddress.from(
+                  generateRandomString(50) + '@' + generateRandomString(50) + ".com"))
+              .password(password != null ? password :
+                  Password.from(generateRandomString(10) + "1a", MOCK_PASSWORD_ENCODER))
+              .realName(realName != null ? realName :
+                  RealName.from(generateRandomAlphabeticString(20)))
+              .nickname(nickname != null ? nickname :
+                  Nickname.from(generateRandomAlphabeticString(20)))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
-                  : getRandomUUIDLengthWith(MAX_STUDENT_ID_LENGTH))
+                  : StudentId.from(generateRandomDigitString(MAX_STUDENT_ID_LENGTH)))
               .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
               .build())
           .point(point != null ? point : 0)
@@ -143,12 +152,40 @@ public class MemberTestHelper {
           .totalAttendance(totalAttendance != null ? totalAttendance : 0)
           .build());
     }
+  }
 
-    private static String getRandomUUIDLengthWith(int length) {
-      String randomString = UUID.randomUUID()
-          .toString();
-      length = Math.min(length, randomString.length());
-      return randomString.substring(0, length);
+  private static final PasswordEncoder MOCK_PASSWORD_ENCODER = new PasswordEncoder() {
+    @Override
+    public String encode(CharSequence rawPassword) {
+      return rawPassword.toString();
     }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+      return rawPassword.toString().equals(encodedPassword);
+    }
+  };
+
+  private static String generateRandomAlphabeticString(int length) {
+    final Random random = new Random();
+    char leftLimit = '0';
+    char rightLimit = 'z';
+
+    return random.ints(leftLimit, rightLimit + 1)
+        .filter(Character::isAlphabetic)
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+  }
+
+  private static String generateRandomDigitString(int length) {
+    final Random random = new Random();
+    char leftLimit = '0';
+    char rightLimit = '9';
+
+    return random.ints(leftLimit, rightLimit + 1)
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
   }
 }

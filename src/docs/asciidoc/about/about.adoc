@@ -1,0 +1,54 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= ABOUT API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *타이틀 타입 리스트 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/about-title-types/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/about-title-types/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/about-title-types/response-fields.adoc[]
+
+== *타입으로 페이지 블럭 리스트 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/about-title-by-type/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/about-title-by-type/path-parameters.adoc[]
+
+=== 응답
+
+==== Response Body
+
+include::{snippets}/about-title-by-type/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/about-title-by-type/response-fields.adoc[]
