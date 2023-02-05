@@ -21,11 +21,22 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
+import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
+import com.keeper.homepage.domain.member.dao.posting.MemberHasPostingDislikeRepository;
+import com.keeper.homepage.domain.member.dao.posting.MemberHasPostingLikeRepository;
 import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
+import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
+import com.keeper.homepage.domain.posting.CategoryTestHelper;
+import com.keeper.homepage.domain.posting.CommentTestHelper;
+import com.keeper.homepage.domain.posting.PostingTestHelper;
+import com.keeper.homepage.domain.posting.dao.PostingRepository;
+import com.keeper.homepage.domain.posting.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.posting.dao.comment.CommentRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
@@ -89,6 +100,28 @@ public class IntegrationTest {
 
   @SpyBean
   protected FriendRepository friendRepository;
+
+  @SpyBean
+  protected CategoryRepository categoryRepository;
+
+  @SpyBean
+  protected CommentRepository commentRepository;
+
+  @SpyBean
+  protected PostingRepository postingRepository;
+
+  @SpyBean
+  protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
+
+  @SpyBean
+  protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
+
+  @SpyBean
+  protected MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+
+  @SpyBean
+  protected MemberHasPostingLikeRepository memberHasPostingLikeRepository;
+
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
 
@@ -121,6 +154,15 @@ public class IntegrationTest {
 
   @Autowired
   protected AttendanceTestHelper attendanceTestHelper;
+
+  @Autowired
+  protected CategoryTestHelper categoryTestHelper;
+
+  @Autowired
+  protected PostingTestHelper postingTestHelper;
+
+  @Autowired
+  protected CommentTestHelper commentTestHelper;
 
   /******* Helper *******/
   @Autowired
