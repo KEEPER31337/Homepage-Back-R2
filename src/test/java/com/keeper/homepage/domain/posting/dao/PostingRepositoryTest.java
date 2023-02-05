@@ -18,12 +18,16 @@ import org.junit.jupiter.api.Test;
 public class PostingRepositoryTest extends IntegrationTest {
 
   private Member member;
+
+  private Posting posting;
+
   private Thumbnail thumbnail;
   private FileEntity file1, file2;
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
+    posting = postingTestHelper.generate();
     thumbnail = thumbnailTestHelper.generateThumbnail();
     file1 = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
     file2 = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
@@ -34,21 +38,20 @@ public class PostingRepositoryTest extends IntegrationTest {
   class PostingRemoveTest {
 
     @Test
-    @DisplayName("포스팅을 지우면 썸네일도 함께 지워진다")
+    @DisplayName("포스팅을 지우면 썸네일도 함께 지워진다.")
     void should_deletedThumbnail_when_deletePosting() {
-      Posting posting = postingTestHelper.builder()
+      Posting postingWithThumbnail = postingTestHelper.builder()
           .thumbnail(thumbnail)
           .build();
 
-      postingRepository.delete(posting);
+      postingRepository.delete(postingWithThumbnail);
 
       assertThat(thumbnailRepository.findAll()).doesNotContain(thumbnail);
     }
 
     @Test
-    @DisplayName("포스팅을 지우면 파일들도 함께 지워진다")
+    @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
     void should_deletedFiles_when_deletePosting() {
-      Posting posting = postingTestHelper.generate();
       posting.addFile(file1);
       posting.addFile(file2);
 
@@ -59,9 +62,8 @@ public class PostingRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다")
+    @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")
     void should_deletedComments_when_deletePosting() {
-      Posting posting = postingTestHelper.generate();
       posting.addComment(member, 0L, "댓글1", 0, 0, "0.0.0.0");
       posting.addComment(member, 0L, "댓글2", 0, 0, "0.0.0.0");
 
@@ -71,9 +73,8 @@ public class PostingRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("포스팅을 지우면 회원의 좋아요, 싫어요들도 함께 지워진다")
+    @DisplayName("포스팅을 지우면 회원의 좋아요, 싫어요들도 함께 지워진다.")
     void should_deletedLikeAndDislike_when_deletePosting() {
-      Posting posting = postingTestHelper.generate();
       posting.like(member);
       posting.dislike(member);
 
@@ -89,9 +90,8 @@ public class PostingRepositoryTest extends IntegrationTest {
   class PostingLikeDislikeTest {
 
     @Test
-    @DisplayName("게시글을 중복으로 좋아요 싫어요 했을 때 중복된 값이 DB에 저장되지 않는다")
+    @DisplayName("게시글을 중복으로 좋아요 싫어요 했을 때 중복된 값이 DB에 저장되지 않는다.")
     void should_nothingDuplicateLikeDislike_when_duplicateLikeDislike() {
-      Posting posting = postingTestHelper.generate();
       posting.like(member);
       posting.like(member);
       posting.like(member);
@@ -107,15 +107,38 @@ public class PostingRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("좋아요를 취소하면 DB에서 데이터가 삭제되어야 한다")
+    @DisplayName("좋아요를 취소하면 DB에서 데이터가 삭제되어야 한다.")
     void should_deletedLike_when_cancelLike() {
-      Posting posting = postingTestHelper.generate();
       posting.like(member);
       posting.cancelLike(member);
 
       List<MemberHasPostingLike> postingLikes = memberHasPostingLikeRepository.findAll();
 
       assertThat(postingLikes).hasSize(0);
+    }
+  }
+
+  @Nested
+  @DisplayName("DB NOT NULL DEFAULT 테스트")
+  class NotNullDefaultTest {
+
+    @Test
+    @DisplayName("DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
+    void should_process_when_EmptyValue() {
+      em.flush();
+      em.clear();
+
+      Posting findPosting = postingRepository.findById(posting.getId()).orElseThrow();
+
+      assertThat(findPosting.getVisitCount()).isEqualTo(0);
+      assertThat(findPosting.getLikeCount()).isEqualTo(0);
+      assertThat(findPosting.getDislikeCount()).isEqualTo(0);
+      assertThat(findPosting.getCommentCount()).isEqualTo(0);
+
+      assertThat(findPosting.getAllowComment()).isEqualTo(true);
+      assertThat(findPosting.getIsNotice()).isEqualTo(false);
+      assertThat(findPosting.getIsSecret()).isEqualTo(false);
+      assertThat(findPosting.getIsTemp()).isEqualTo(false);
     }
   }
 }

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.posting.entity.Posting;
 import com.keeper.homepage.domain.posting.entity.category.Category;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,7 +24,7 @@ public class CategoryRepositoryTest extends IntegrationTest {
   class CategoryRemoveTest {
 
     @Test
-    @DisplayName("카테고리를 지우면 카테고리의 포스팅 글들도 지워진다")
+    @DisplayName("카테고리를 지우면 카테고리의 포스팅 글들도 지워진다.")
     void should_deletedPostings_when_deleteCategory() {
       Posting posting = postingTestHelper.builder()
           .category(category)
@@ -35,6 +34,21 @@ public class CategoryRepositoryTest extends IntegrationTest {
       categoryRepository.delete(category);
 
       assertThat(postingRepository.findAll()).doesNotContain(posting);
+    }
+  }
+
+  @Nested
+  @DisplayName("DB NOT NULL DEFAULT 테스트")
+  class NotNullDefaultTest{
+
+    @Test
+    @DisplayName("parent id(부모 카테고리)을 넣지 않았을 때 0L으로 처리해야 한다.")
+    void should_process_when_EmptyParentId() {
+      em.flush();
+      em.clear();
+      Category findCategory = categoryRepository.findById(category.getId()).orElseThrow();
+
+      assertThat(findCategory.getParentId()).isEqualTo(0L);
     }
   }
 }
