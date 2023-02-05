@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
 import com.keeper.homepage.domain.posting.entity.category.Category;
 import com.keeper.homepage.domain.posting.entity.comment.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,14 +25,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-
-
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @Table(name = "posting")
-public class Posting {
+public class Posting extends BaseEntity {
 
   private static final int MAX_TITLE_LENGTH = 250;
   private static final int MAX_IP_ADDRESS_LENGTH = 128;

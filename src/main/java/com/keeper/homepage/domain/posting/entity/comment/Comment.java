@@ -9,6 +9,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,13 +17,16 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Entity
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 @Table(name = "comment")
-public class Comment {
+public class Comment extends BaseEntity {
 
   private static final int MAX_IP_ADDRESS_LENGTH = 128;
 
