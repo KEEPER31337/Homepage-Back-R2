@@ -2,6 +2,8 @@ package com.keeper.homepage.domain.member;
 
 import static com.keeper.homepage.IntegrationTest.generateRandomString;
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
+import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -12,8 +14,13 @@ import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.embedded.StudentId;
+import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +34,30 @@ public class MemberTestHelper {
   MemberRepository memberRepository;
 
   @Autowired
+  JwtTokenProvider jwtTokenProvider;
+
+  @Autowired
   ThumbnailTestHelper thumbnailTestHelper;
 
   public Member generate() {
     return this.builder().build();
+  }
+
+  public Cookie[] getTokenCookies(Member member) {
+    return new Cookie[]{
+        new Cookie(ACCESS_TOKEN.getTokenName(),
+            jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), getRoles(member))),
+        new Cookie(REFRESH_TOKEN.getTokenName(),
+            jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), getRoles(member))),
+    };
+  }
+
+  private static MemberJobType[] getRoles(Member member) {
+    return member.getMemberJob()
+        .stream()
+        .map(MemberHasMemberJob::getMemberJob)
+        .map(MemberJob::getType)
+        .toArray(MemberJobType[]::new);
   }
 
   public MemberBuilder builder() {
