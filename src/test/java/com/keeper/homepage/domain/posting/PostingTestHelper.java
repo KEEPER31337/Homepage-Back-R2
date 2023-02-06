@@ -150,14 +150,4 @@ public class PostingTestHelper {
           .build());
     }
   }
-
-  public Posting generatePosting() {
-    return Posting.builder()
-        .title("포스팅 타이틀")
-        .content("포스팅 컨텐츠")
-        .member(memberTestHelper.generate())
-        .ipAddress("0.0.0.0")
-        .thumbnail(thumbnailTestHelper.generateThumbnail())
-        .build();
-  }
 }

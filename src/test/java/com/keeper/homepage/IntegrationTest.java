@@ -38,7 +38,6 @@ import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
-import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
 import com.keeper.homepage.domain.posting.CategoryTestHelper;
 import com.keeper.homepage.domain.posting.CommentTestHelper;
 import com.keeper.homepage.domain.posting.PostingTestHelper;
@@ -48,7 +47,6 @@ import com.keeper.homepage.domain.posting.dao.comment.CommentRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
-import com.keeper.homepage.global.util.file.FileTestHelper;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
@@ -203,9 +201,6 @@ public class IntegrationTest {
   /******* Helper *******/
   @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
-
-  @Autowired
-  protected FileTestHelper fileTestHelper;
 
   /******* Util *******/
   @SpyBean
