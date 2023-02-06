@@ -23,7 +23,7 @@ public class CategoryTestHelper {
 
     private String name;
 
-    private Long parentId;
+    private Category parentCategory;
 
     private String href;
 
@@ -36,8 +36,8 @@ public class CategoryTestHelper {
       return this;
     }
 
-    public CategoryBuilder parentId(Long parentId) {
-      this.parentId = parentId;
+    public CategoryBuilder parentCategory(Category parentCategory) {
+      this.parentCategory = parentCategory;
       return this;
     }
 
@@ -49,7 +49,7 @@ public class CategoryTestHelper {
     public Category build() {
       return categoryRepository.save(Category.builder()
           .name(name != null ? name : "카테고리 이름")
-          .parentId(parentId)
+          .parentCategory(parentCategory)
           .href(href)
           .build());
     }

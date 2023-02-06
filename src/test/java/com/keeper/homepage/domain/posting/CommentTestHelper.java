@@ -32,7 +32,7 @@ public class CommentTestHelper {
 
     private Member member;
     private Posting posting;
-    private Long parentId;
+    private Long parentCommentId;
     private String content;
     private Integer likeCount;
     private Integer dislikeCount;
@@ -52,8 +52,8 @@ public class CommentTestHelper {
       return this;
     }
 
-    private CommentBuilder parentId(Long parentId) {
-      this.parentId = parentId;
+    private CommentBuilder parentCommentId(Long parentCommentId) {
+      this.parentCommentId = parentCommentId;
       return this;
     }
 
@@ -81,7 +81,7 @@ public class CommentTestHelper {
       return commentRepository.save(Comment.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .posting(posting != null ? posting : postingTestHelper.generate())
-          .parentId(parentId != null ? parentId : 0L)
+          .parentCommentId(parentCommentId != null ? parentCommentId : 0L)
           .content(content != null ? content : "댓글내용")
           .likeCount(likeCount)
           .dislikeCount(dislikeCount)

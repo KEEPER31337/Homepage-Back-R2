@@ -39,17 +39,17 @@ public class CategoryRepositoryTest extends IntegrationTest {
 
   @Nested
   @DisplayName("DB NOT NULL DEFAULT 테스트")
-  class NotNullDefaultTest{
+  class NotNullDefaultTest {
 
     @Test
-    @DisplayName("parent id(부모 카테고리)을 넣지 않았을 때 0L으로 처리해야 한다.")
+    @DisplayName("parentCategory을 넣지 않았을 때 0L으로 처리해야 한다.")
     void should_process_when_EmptyParentId() {
       em.flush();
       em.clear();
 
       Category findCategory = categoryRepository.findById(category.getId()).orElseThrow();
 
-      assertThat(findCategory.getParentId()).isEqualTo(0L);
+      assertThat(findCategory.getParentCategory().getId()).isEqualTo(0L);
     }
   }
 }
