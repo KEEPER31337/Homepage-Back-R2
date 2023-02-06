@@ -56,6 +56,8 @@ public class CommentRepositoryTest extends IntegrationTest {
       comment.dislike(member);
       comment.dislike(member);
 
+      em.flush();
+      em.clear();
       List<MemberHasCommentLike> commentLikes = memberHasCommentLikeRepository.findAll();
       List<MemberHasCommentDislike> commentDislikes = memberHasCommentDislikeRepository.findAll();
 
@@ -69,6 +71,8 @@ public class CommentRepositoryTest extends IntegrationTest {
       comment.like(member);
       comment.cancelLike(member);
 
+      em.flush();
+      em.clear();
       List<MemberHasCommentLike> commentLikes = memberHasCommentLikeRepository.findAll();
 
       assertThat(commentLikes).hasSize(0);
