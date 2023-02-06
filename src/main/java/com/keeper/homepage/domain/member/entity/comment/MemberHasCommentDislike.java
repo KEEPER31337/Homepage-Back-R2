@@ -18,22 +18,22 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @EqualsAndHashCode(of = {"member", "comment"})
 @NoArgsConstructor(access = PROTECTED)
-@Getter
 @IdClass(MemberHasCommentPK.class)
 @Table(name = "member_has_comment_dislike")
 public class MemberHasCommentDislike {
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "member_id")
+  @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "comment_id")
+  @JoinColumn(name = "comment_id", nullable = false)
   private Comment comment;
 
   @Builder
