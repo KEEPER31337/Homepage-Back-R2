@@ -27,7 +27,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
           .seminarName("세미나 제목입니다.")
           .build();
 
-      Long seminarId = seminarRepository.save(seminarBuild).getId();
+      Long seminarId = seminarBuild.getId();
       em.clear();
 
       Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
