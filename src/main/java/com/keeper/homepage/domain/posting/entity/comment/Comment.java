@@ -45,7 +45,7 @@ public class Comment extends BaseEntity {
   private Posting posting;
 
   @Column(name = "parent_id", nullable = false)
-  private Long parentId;
+  private Long parentCommentId;
 
   @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
@@ -66,11 +66,12 @@ public class Comment extends BaseEntity {
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
 
   @Builder
-  private Comment(Member member, Posting posting, Long parentId, String content, Integer likeCount,
+  private Comment(Member member, Posting posting, Long parentCommentId, String content,
+      Integer likeCount,
       Integer dislikeCount, String ipAddress) {
     this.member = member;
     this.posting = posting;
-    this.parentId = parentId != null ? parentId : 0;
+    this.parentCommentId = parentCommentId;
     this.content = content;
     this.likeCount = likeCount;
     this.dislikeCount = dislikeCount;

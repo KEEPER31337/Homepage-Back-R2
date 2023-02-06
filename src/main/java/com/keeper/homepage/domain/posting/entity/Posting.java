@@ -157,4 +157,8 @@ public class Posting extends BaseEntity {
   public void cancelDislike(Member member) {
     postingDislikes.removeIf(postingDislike -> postingDislike.getMember().equals(member));
   }
+
+  public void setCategory(Category category) {
+    this.category = category;
+  }
 }
