@@ -8,7 +8,9 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
 import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
 import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.posting.entity.comment.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +26,13 @@ public class PostingRepositoryTest extends IntegrationTest {
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    posting = postingTestHelper.generate();
+    posting = Posting.builder()
+        .title("포스팅 제목")
+        .content("포스팅 내용")
+        .member(member)
+        .ipAddress("0.0.0.0")
+        .category(categoryTestHelper.generate())
+        .build();
     thumbnail = thumbnailTestHelper.generateThumbnail();
   }
 
@@ -47,23 +55,30 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
     void should_deletedFiles_when_deletePosting() {
-      FileEntity file1 = fileTestHelper.generateTestFile();
-      FileEntity file2 = fileTestHelper.generateTestFile();
-      posting.addFile(file1);
-      posting.addFile(file2);
+      Posting postingBuild = postingTestHelper.generate();
+      FileEntity file = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
+      postingBuild.addFile(file);
 
-      postingRepository.delete(posting);
+      em.flush();
+      em.clear();
+      postingRepository.delete(postingBuild);
 
-      assertThat(fileRepository.findAll()).doesNotContain(file1);
-      assertThat(fileRepository.findAll()).doesNotContain(file2);
+      assertThat(fileRepository.findAll()).doesNotContain(file);
     }
 
     @Test
     @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")
     void should_deletedComments_when_deletePosting() {
-      posting.addComment(commentTestHelper.generateComment());
-      posting.addComment(commentTestHelper.generateComment());
+      Comment comment = Comment.builder()
+          .member(member)
+          .parentCommentId(0L)
+          .content("댓글 내용")
+          .ipAddress("0.0.0.0")
+          .build();
+      posting.addComment(comment);
 
+      em.flush();
+      em.clear();
       postingRepository.delete(posting);
 
       assertThat(commentRepository.findAll()).hasSize(0);
@@ -72,9 +87,11 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("포스팅을 지우면 회원의 좋아요, 싫어요들도 함께 지워진다.")
     void should_deletedLikeAndDislike_when_deletePosting() {
-      posting.like(member);
-      posting.dislike(member);
+      member.like(posting);
+      member.dislike(posting);
 
+      em.flush();
+      em.clear();
       postingRepository.delete(posting);
 
       assertThat(memberHasPostingLikeRepository.findAll()).hasSize(0);
@@ -89,12 +106,12 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("게시글을 중복으로 좋아요 싫어요 했을 때 중복된 값이 DB에 저장되지 않는다.")
     void should_nothingDuplicateLikeDislike_when_duplicateLikeDislike() {
-      posting.like(member);
-      posting.like(member);
-      posting.like(member);
-      posting.dislike(member);
-      posting.dislike(member);
-      posting.dislike(member);
+      member.like(posting);
+      member.like(posting);
+      member.like(posting);
+      member.dislike(posting);
+      member.dislike(posting);
+      member.dislike(posting);
 
       em.flush();
       em.clear();
@@ -108,14 +125,26 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("좋아요를 취소하면 DB에서 데이터가 삭제되어야 한다.")
     void should_deletedLike_when_cancelLike() {
-      posting.like(member);
-      posting.cancelLike(member);
+      member.like(posting);
+      member.cancelLike(posting);
 
       em.flush();
       em.clear();
       List<MemberHasPostingLike> postingLikes = memberHasPostingLikeRepository.findAll();
 
       assertThat(postingLikes).hasSize(0);
+    }
+
+    @Test
+    @DisplayName("좋아요를 취소하면 포스팅의 postingLikes에도 좋아요 정보가 삭제되어야 한다.")
+    void should_deletedCommentLike_when_cancelLike() {
+      member.like(posting);
+      member.cancelLike(posting);
+
+      em.flush();
+      em.clear();
+
+      assertThat(posting.getPostingLikes()).hasSize(0);
     }
   }
 
@@ -126,10 +155,10 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
     void should_process_when_EmptyValue() {
+      Posting postingBuild = postingTestHelper.generate();
       em.flush();
       em.clear();
-
-      Posting findPosting = postingRepository.findById(posting.getId()).orElseThrow();
+      Posting findPosting = postingRepository.findById(postingBuild.getId()).orElseThrow();
 
       assertThat(findPosting.getVisitCount()).isEqualTo(0);
       assertThat(findPosting.getLikeCount()).isEqualTo(0);
