@@ -62,4 +62,8 @@ public class FileEntity {
     this.uploadTime = uploadTime;
     this.ipAddress = ipAddress;
   }
+
+  public void setPosting(Posting posting) {
+    this.posting = posting;
+  }
 }

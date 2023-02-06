@@ -96,7 +96,7 @@ public class Posting extends BaseEntity {
   @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "posting", cascade = REMOVE, orphanRemoval = true)
+  @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
   private final List<FileEntity> files = new ArrayList<>();
 
   @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
@@ -127,20 +127,12 @@ public class Posting extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
-  public void addComment(Member member, Long parentId, String content, Integer likeCount,
-      Integer dislikeCount, String ipAddress) {
-    comments.add(Comment.builder()
-        .member(member)
-        .posting(this)
-        .parentId(parentId)
-        .content(content)
-        .likeCount(likeCount)
-        .dislikeCount(dislikeCount)
-        .ipAddress(ipAddress)
-        .build());
+  public void addComment(Comment comment) {
+    comments.add(comment);
   }
 
   public void addFile(FileEntity file) {
+    file.setPosting(this);
     files.add(file);
   }
 
