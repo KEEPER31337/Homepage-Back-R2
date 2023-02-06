@@ -89,4 +89,14 @@ public class CommentTestHelper {
           .build());
     }
   }
+
+  public Comment generateComment() {
+    return Comment.builder()
+        .member(memberTestHelper.generate())
+        .posting(postingTestHelper.generate())
+        .parentCommentId(0L)
+        .content("댓글내용")
+        .ipAddress("0.0.0.0")
+        .build();
+  }
 }

@@ -26,9 +26,7 @@ public class CategoryRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("카테고리를 지우면 카테고리의 포스팅 글들도 지워진다.")
     void should_deletedPostings_when_deleteCategory() {
-      Posting posting = postingTestHelper.builder()
-          .category(category)
-          .build();
+      Posting posting = postingTestHelper.generatePosting();
       category.addPosting(posting);
 
       categoryRepository.delete(category);

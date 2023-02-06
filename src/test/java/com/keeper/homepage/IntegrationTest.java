@@ -48,6 +48,7 @@ import com.keeper.homepage.domain.posting.dao.comment.CommentRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
+import com.keeper.homepage.global.util.file.FileTestHelper;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
@@ -202,6 +203,9 @@ public class IntegrationTest {
   /******* Helper *******/
   @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
+
+  @Autowired
+  protected FileTestHelper fileTestHelper;
 
   /******* Util *******/
   @SpyBean

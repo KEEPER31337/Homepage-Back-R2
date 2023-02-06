@@ -1,4 +1,4 @@
-package com.keeper.homepage.global.util.file;
+package com.keeper.homepage.global.util.file.server;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -20,15 +20,12 @@ public class PostingRepositoryTest extends IntegrationTest {
   private Member member;
   private Posting posting;
   private Thumbnail thumbnail;
-  private FileEntity file1, file2;
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
     posting = postingTestHelper.generate();
     thumbnail = thumbnailTestHelper.generateThumbnail();
-    file1 = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
-    file2 = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
   }
 
   @Nested
@@ -50,6 +47,8 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
     void should_deletedFiles_when_deletePosting() {
+      FileEntity file1 = fileTestHelper.generateTestFile();
+      FileEntity file2 = fileTestHelper.generateTestFile();
       posting.addFile(file1);
       posting.addFile(file2);
 
@@ -62,8 +61,8 @@ public class PostingRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")
     void should_deletedComments_when_deletePosting() {
-      posting.addComment(member, 0L, "댓글1", 0, 0, "0.0.0.0");
-      posting.addComment(member, 0L, "댓글2", 0, 0, "0.0.0.0");
+      posting.addComment(commentTestHelper.generateComment());
+      posting.addComment(commentTestHelper.generateComment());
 
       postingRepository.delete(posting);
 
@@ -97,6 +96,8 @@ public class PostingRepositoryTest extends IntegrationTest {
       posting.dislike(member);
       posting.dislike(member);
 
+      em.flush();
+      em.clear();
       List<MemberHasPostingLike> postingLikes = memberHasPostingLikeRepository.findAll();
       List<MemberHasPostingDislike> postingDislikes = memberHasPostingDislikeRepository.findAll();
 
@@ -110,6 +111,8 @@ public class PostingRepositoryTest extends IntegrationTest {
       posting.like(member);
       posting.cancelLike(member);
 
+      em.flush();
+      em.clear();
       List<MemberHasPostingLike> postingLikes = memberHasPostingLikeRepository.findAll();
 
       assertThat(postingLikes).hasSize(0);
