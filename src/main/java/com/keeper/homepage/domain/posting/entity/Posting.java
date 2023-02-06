@@ -24,7 +24,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -96,13 +95,13 @@ public class Posting extends BaseEntity {
   @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "posting", orphanRemoval = true)
   private final List<FileEntity> files = new ArrayList<>();
 
-  @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "posting", orphanRemoval = true)
   private final Set<MemberHasPostingLike> postingLikes = new HashSet<>();
 
-  @OneToMany(mappedBy = "posting", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "posting", orphanRemoval = true)
   private final Set<MemberHasPostingDislike> postingDislikes = new HashSet<>();
 
   @Builder
@@ -128,37 +127,32 @@ public class Posting extends BaseEntity {
   }
 
   public void addComment(Comment comment) {
+    comment.registerPosting(this);
     comments.add(comment);
   }
 
   public void addFile(FileEntity file) {
-    file.setPosting(this);
+    file.registerPosting(this);
     files.add(file);
   }
 
-  public void like(Member member) {
-    postingLikes.add(MemberHasPostingLike.builder()
-        .member(member)
-        .posting(this)
-        .build());
+  public void addLike(MemberHasPostingLike like) {
+    postingLikes.add(like);
   }
 
-  public void cancelLike(Member member) {
-    postingLikes.removeIf(postingLike -> postingLike.getMember().equals(member));
+  public void removeLike(Posting posting) {
+    postingLikes.removeIf(postingLike -> postingLike.getPosting().equals(posting));
   }
 
-  public void dislike(Member member) {
-    postingDislikes.add(MemberHasPostingDislike.builder()
-        .member(member)
-        .posting(this)
-        .build());
+  public void addDislike(MemberHasPostingDislike dislike) {
+    postingDislikes.add(dislike);
   }
 
-  public void cancelDislike(Member member) {
-    postingDislikes.removeIf(postingDislike -> postingDislike.getMember().equals(member));
+  public void removeDislike(Posting posting) {
+    postingDislikes.removeIf(postingDislike -> postingDislike.getPosting().equals(posting));
   }
 
-  public void setCategory(Category category) {
+  public void assignCategory(Category category) {
     this.category = category;
   }
 }

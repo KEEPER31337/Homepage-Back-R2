@@ -1,18 +1,14 @@
 package com.keeper.homepage.domain.posting.entity.category;
 
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.posting.entity.Posting;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +36,7 @@ public class Category {
 
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "parent_id")
-  private Category parentCategory;
+  private Category parent;
 
   @Column(name = "href", length = MAX_HREF_LENGTH)
   private String href;
@@ -48,15 +44,27 @@ public class Category {
   @OneToMany(mappedBy = "category", cascade = ALL, orphanRemoval = true)
   private final List<Posting> postings = new ArrayList<>();
 
+  @OneToMany(mappedBy = "parent", cascade = ALL, orphanRemoval = true)
+  private final List<Category> children = new ArrayList<>();
+
   @Builder
-  private Category(String name, Category parentCategory, String href) {
+  private Category(String name, Category parent, String href) {
     this.name = name;
-    this.parentCategory = parentCategory;
+    this.parent = parent;
     this.href = href;
   }
 
   public void addPosting(Posting posting) {
-    posting.setCategory(this);
+    posting.assignCategory(this);
     postings.add(posting);
+  }
+
+  public void addChild(Category category) {
+    category.assignParent(this);
+    children.add(category);
+  }
+
+  public void assignParent(Category parent) {
+    this.parent = parent;
   }
 }

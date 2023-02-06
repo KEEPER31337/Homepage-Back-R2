@@ -5,7 +5,6 @@ import static jakarta.persistence.FetchType.LAZY;
 import com.keeper.homepage.domain.posting.entity.Posting;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -63,7 +62,7 @@ public class FileEntity {
     this.ipAddress = ipAddress;
   }
 
-  public void setPosting(Posting posting) {
+  public void registerPosting(Posting posting) {
     this.posting = posting;
   }
 }

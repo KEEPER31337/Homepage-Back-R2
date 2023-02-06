@@ -12,6 +12,8 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
+import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.member.entity.embedded.Generation;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -19,6 +21,8 @@ import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
+import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
+import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.posting.entity.Posting;
@@ -112,6 +116,18 @@ public class Member {
   @OneToMany(mappedBy = "member")
   private final List<Comment> comments = new ArrayList<>();
 
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasPostingLike> postingLikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasPostingDislike> postingDislikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
+
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
       Integer totalAttendance) {
@@ -157,5 +173,61 @@ public class Member {
 
   public void unfollow(Member other) {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
+  }
+
+  public void like(Posting posting) {
+    MemberHasPostingLike like = MemberHasPostingLike.builder()
+        .member(this)
+        .posting(posting)
+        .build();
+    posting.addLike(like);
+    postingLikes.add(like);
+  }
+
+  public void like(Comment comment) {
+    MemberHasCommentLike like = MemberHasCommentLike.builder()
+        .member(this)
+        .comment(comment)
+        .build();
+    comment.addLike(like);
+    commentLikes.add(like);
+  }
+
+  public void cancelLike(Posting posting) {
+    posting.removeLike(posting);
+    postingLikes.removeIf(postingLike -> postingLike.getPosting().equals(posting));
+  }
+
+  public void cancelLike(Comment comment) {
+    comment.removeLike(comment);
+    commentLikes.removeIf(commentLike -> commentLike.getComment().equals(comment));
+  }
+
+  public void dislike(Posting posting) {
+    MemberHasPostingDislike dislike = MemberHasPostingDislike.builder()
+        .member(this)
+        .posting(posting)
+        .build();
+    posting.addDislike(dislike);
+    postingDislikes.add(dislike);
+  }
+
+  public void dislike(Comment comment) {
+    MemberHasCommentDislike dislike = MemberHasCommentDislike.builder()
+        .member(this)
+        .comment(comment)
+        .build();
+    comment.addDislike(dislike);
+    commentDislikes.add(dislike);
+  }
+
+  public void cancelDislike(Posting posting) {
+    posting.removeDislike(posting);
+    postingDislikes.removeIf(postingDislike -> postingDislike.getPosting().equals(posting));
+  }
+
+  public void cancelDislike(Comment comment) {
+    comment.removeDislike(comment);
+    commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
   }
 }

@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.posting.entity.comment;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -59,11 +60,11 @@ public class Comment extends BaseEntity {
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
 
-  @OneToMany(mappedBy = "comment", cascade = ALL, orphanRemoval = true)
-  private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
-
-  @OneToMany(mappedBy = "comment", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "comment", orphanRemoval = true)
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "comment", orphanRemoval = true)
+  private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
 
   @Builder
   private Comment(Member member, Posting posting, Long parentCommentId, String content,
@@ -78,25 +79,23 @@ public class Comment extends BaseEntity {
     this.ipAddress = ipAddress;
   }
 
-  public void like(Member member) {
-    commentLikes.add(MemberHasCommentLike.builder()
-        .member(member)
-        .comment(this)
-        .build());
+  public void addLike(MemberHasCommentLike like) {
+    commentLikes.add(like);
   }
 
-  public void cancelLike(Member member) {
-    commentLikes.removeIf(commentLike -> commentLike.getMember().equals(member));
+  public void removeLike(Comment comment) {
+    commentLikes.removeIf(commentLike -> commentLike.getComment().equals(comment));
   }
 
-  public void dislike(Member member) {
-    commentDislikes.add(MemberHasCommentDislike.builder()
-        .member(member)
-        .comment(this)
-        .build());
+  public void addDislike(MemberHasCommentDislike dislike) {
+    commentDislikes.add(dislike);
   }
 
-  public void cancelDislike(Member member) {
-    commentDislikes.removeIf(commentDislike -> commentDislike.getMember().equals(member));
+  public void removeDislike(Comment comment) {
+    commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
+  }
+
+  public void registerPosting(Posting posting) {
+    this.posting = posting;
   }
 }
