@@ -1,20 +1,19 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static com.keeper.homepage.global.error.ErrorCode.BOOK_TYPE_NOT_FOUND;
+import static jakarta.persistence.GenerationType.IDENTITY;
 import static java.lang.String.format;
+import static lombok.AccessLevel.PROTECTED;
 
-import com.keeper.homepage.domain.about.converter.StaticWriteTitleTypeConverter;
-import com.keeper.homepage.domain.about.entity.StaticWriteTitle;
-import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
 import com.keeper.homepage.domain.library.converter.BookDepartmentTypeConverter;
+import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.Arrays;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,32 +21,32 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_department")
 public class BookDepartment {
 
-  private static final int MAX_NAME_LENGTH = 45;
+  private static final int MAX_TYPE_LENGTH = 45;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
   @Convert(converter = BookDepartmentTypeConverter.class)
-  @Column(name = "name", nullable = false, length = MAX_NAME_LENGTH)
-  private BookDepartmentType name;
+  @Column(name = "name", nullable = false, length = MAX_TYPE_LENGTH)
+  private BookDepartmentType type;
 
-  public static BookDepartment getBookDepartmentBy(BookDepartmentType name) {
+  public static BookDepartment getBookDepartmentBy(BookDepartmentType type) {
     return BookDepartment.builder()
-        .id(name.id)
-        .name(name)
+        .id(type.id)
+        .type(type)
         .build();
   }
 
   @Builder
-  private BookDepartment(Long id, BookDepartmentType name) {
+  private BookDepartment(Long id, BookDepartmentType type) {
     this.id = id;
-    this.name = name;
+    this.type = type;
   }
 
   @Getter
@@ -58,16 +57,17 @@ public class BookDepartment {
     TEXTBOOK(3, "textbook"),
     CERTIFICATION(4, "certification"),
     DOCUMENT(5, "document"),
-    ETC(6, "etc");
+    ETC(6, "etc"),
+    ;
 
     private final long id;
     private final String name;
 
-    public static BookDepartmentType fromCode(String dbData) {
+    public static BookDepartmentType fromCode(String type) {
       return Arrays.stream(BookDepartmentType.values())
-          .filter(type -> type.getName().equals(dbData))
+          .filter(bookDepartmentType -> bookDepartmentType.getName().equals(type))
           .findAny()
-          .orElseThrow(() -> new IllegalArgumentException(format("%s 타입이 DB에 존재하지 않습니다.", dbData)));
+          .orElseThrow(() -> new BusinessException(type, "type", BOOK_TYPE_NOT_FOUND));
     }
   }
 }
