@@ -31,6 +31,17 @@ public class CommentRepositoryTest extends IntegrationTest {
   }
 
   @Nested
+  @DisplayName("Comment Save 테스트")
+  class CommentSaveTest{
+
+    @Test
+    @DisplayName("부모 댓글에 자식 댓글을 등록하면 DB에 저장되어야 한다.")
+    void should_saveChildComment_when_parentAddChild() {
+      // TODO: DB가 변경되면 성공해야 합니다.
+    }
+  }
+
+  @Nested
   @DisplayName("Comment Remove 테스트")
   class CommentRemoveTest {
 
