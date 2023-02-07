@@ -19,18 +19,22 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "book")
-public class Book {
+public class Book extends BaseEntity {
 
   private static final int MAX_TITLE_LENGTH = 250;
   private static final int MAX_AUTHOR_LENGTH = 40;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
