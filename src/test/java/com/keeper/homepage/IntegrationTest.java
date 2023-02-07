@@ -7,12 +7,25 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.domain.about.StaticWriteTestHelper;
+import com.keeper.homepage.domain.about.application.StaticWriteService;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceExcuseRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
+import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
+import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.auth.application.AuthCookieService;
+import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
+import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.application.SignInService;
+import com.keeper.homepage.domain.auth.application.SignUpService;
+import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.library.BookTestHelper;
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
@@ -20,10 +33,16 @@ import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
+import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
+import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
+import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
+import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
@@ -32,6 +51,7 @@ import jakarta.persistence.PersistenceContext;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Random;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +61,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,12 +73,23 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @SpringBootTest
 public class IntegrationTest {
 
+  public static final Random RANDOM = new Random();
+
   /******* Repository *******/
   @SpyBean
   protected MemberRepository memberRepository;
 
   @SpyBean
   protected MemberJobRepository memberJobRepository;
+
+  @SpyBean
+  protected MemberHasMemberJobRepository memberHasMemberJobRepository;
+
+  @SpyBean
+  protected MemberRankRepository memberRankRepository;
+
+  @SpyBean
+  protected MemberTypeRepository memberTypeRepository;
 
   @SpyBean
   protected StaticWriteTitleRepository staticWriteTitleRepository;
@@ -80,8 +112,47 @@ public class IntegrationTest {
   @SpyBean
   protected BookDepartmentRepository bookDepartmentRepository;
 
-  /******* Helper *******/
+  @SpyBean
+  protected SeminarRepository seminarRepository;
 
+  @SpyBean
+  protected SeminarAttendanceRepository seminarAttendanceRepository;
+
+  @SpyBean
+  protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
+
+  @SpyBean
+  protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+
+  @SpyBean
+  protected FriendRepository friendRepository;
+
+  @Autowired
+  protected EmailAuthRedisRepository emailAuthRedisRepository;
+
+  /******* Service *******/
+  @SpyBean
+  protected EmailAuthService emailAuthService;
+
+  @SpyBean
+  protected SignUpService signUpService;
+
+  @SpyBean
+  protected CheckDuplicateService checkDuplicateService;
+
+  @SpyBean
+  protected SignInService signInService;
+
+  @SpyBean
+  protected AuthCookieService authCookieService;
+
+  @SpyBean
+  protected MailUtil mailUtil;
+
+  @Autowired
+  protected StaticWriteService staticWriteService;
+
+  /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
 
@@ -100,7 +171,9 @@ public class IntegrationTest {
   @Autowired
   protected BookTestHelper bookTestHelper;
 
-  /******* Helper *******/
+  @Autowired
+  protected SeminarTestHelper seminarTestHelper;
+
   @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
 
@@ -114,12 +187,17 @@ public class IntegrationTest {
   @SpyBean
   protected RedisUtil redisUtil;
 
+  protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
+
   /******* Spring Bean *******/
   @Autowired
   protected WebApplicationContext webApplicationContext;
 
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
+
+  @Autowired
+  protected ObjectMapper objectMapper;
 
   @PersistenceContext
   protected EntityManager em;
@@ -162,5 +240,24 @@ public class IntegrationTest {
 
   private static String getTodayThumbnailFilesPath() {
     return DEFAULT_THUMBNAIL_PATH + LocalDate.now();
+  }
+
+  protected String asJsonString(final Object obj) {
+    try {
+      return objectMapper.writeValueAsString(obj);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static String generateRandomString(int length) {
+    char leftLimit = '0';
+    char rightLimit = 'z';
+
+    return RANDOM.ints(leftLimit, rightLimit + 1)
+        .filter(i -> Character.isAlphabetic(i) || Character.isDigit(i))
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
   }
 }

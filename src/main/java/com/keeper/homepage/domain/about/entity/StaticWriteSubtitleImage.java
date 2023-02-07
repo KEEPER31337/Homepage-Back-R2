@@ -11,7 +11,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,6 +44,9 @@ public class StaticWriteSubtitleImage {
 
   @Column(name = "display_order", nullable = false)
   private int displayOrder;
+
+  @OneToMany(mappedBy = "staticWriteSubtitleImage", cascade = REMOVE)
+  private final List<StaticWriteContent> staticWriteContents = new ArrayList<>();
 
   public void updateStaticWriteSubtitleImage(String subtitle, StaticWriteTitle staticWriteTitle,
       Thumbnail thumbnail, int displayOrder) {

@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.auth.api;
+package com.keeper.homepage.domain.auth.api.test;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
@@ -24,13 +24,15 @@ import org.springframework.test.web.servlet.ResultActions;
 
 class AuthTestControllerTest extends IntegrationTest {
 
-  private final long adminId = 0L;
-  private final long userId = 1L;
+  private long adminId;
+  private long userId;
   private String adminToken;
   private String userToken;
 
   @BeforeEach
   void setup() {
+    adminId = memberTestHelper.builder().build().getId();
+    userId = memberTestHelper.builder().build().getId();
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
   }
@@ -138,7 +140,7 @@ class AuthTestControllerTest extends IntegrationTest {
 
         callRefreshApi(accessCookie)
             .andExpect(status().isOk())
-            .andExpect(content().string(String.valueOf(adminId)));
+            .andExpect(content().string("refresh!"));
       }
 
       @Test
