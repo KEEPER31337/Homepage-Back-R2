@@ -1,31 +1,38 @@
 package com.keeper.homepage.domain.library.dao;
 
-import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.CERTIFICATION;
-import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.DOCUMENT;
 import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.ETC;
-import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.LANGUAGE;
-import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.SECURITY;
-import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.TEXTBOOK;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookDepartment;
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType;
 import com.keeper.homepage.domain.member.entity.Member;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import org.assertj.core.api.Assertions;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class BookRepositoryTest extends IntegrationTest {
 
+  private Book book;
+  private Member member;
+
+  @BeforeEach
+  void setUp() {
+    book = bookTestHelper.generate();
+    member = memberTestHelper.generate();
+  }
+
   @Nested
-  @DisplayName("Book Department 테스트")
+  @DisplayName("Book Department DB 테스트")
   class BookDepartmentTest {
 
     @Test
@@ -62,37 +69,65 @@ public class BookRepositoryTest extends IntegrationTest {
 
     private List<String> getNames(List<BookDepartment> bookDepartments) {
       return bookDepartments.stream()
-          .map(BookDepartment::getName)
+          .map(BookDepartment::getType)
           .map(BookDepartmentType::getName)
           .collect(toList());
     }
 
     private String getName(BookDepartment bookDepartment) {
-      return bookDepartment.getName().getName();
+      return bookDepartment.getType().getName();
     }
   }
 
   @Nested
-  @DisplayName("Book Borrow Info 테스트")
-  class BookBorrowInfoTest {
+  @DisplayName("Book Remove 테스트")
+  class BookRemoveTest {
 
     @Test
     @DisplayName("Book을 삭제하면 해당 Book의 BookBorrowInfo도 삭제되어야 한다.")
     void should_deleteBookBorrowInfo_when_deleteBook() {
-      // given
-      Book book = bookTestHelper.generateBook();
-      Member member = memberTestHelper.builder().build();
-      BookBorrowInfo bookBorrowInfo = bookTestHelper.generateBookBorrowInfo(book, member);
+      BookBorrowInfo bookBorrowInfo = BookBorrowInfo.builder()
+          .member(member)
+          .build();
       book.addBookBorrowInfo(bookBorrowInfo);
 
-      // when
       bookRepository.delete(book);
-      List<BookBorrowInfo> allBookBorrowInfos = bookBorrowInfoRepository.findAll();
 
-      // then
-      assertThat(allBookBorrowInfos).isEmpty();
-      assertThat(allBookBorrowInfos).doesNotContain(bookBorrowInfo);
+      assertThat(bookBorrowInfoRepository.findAll()).hasSize(0);
+      assertThat(bookBorrowInfoRepository.findAll()).doesNotContain(bookBorrowInfo);
     }
   }
 
+  @Nested
+  @DisplayName("DB NOT NULL DEFAULT 테스트")
+  class NotNullDefaultTest {
+
+    @Test
+    @DisplayName("Book DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
+    void should_processDefault_when_EmptyBookValue() {
+      em.flush();
+      em.clear();
+
+      Book findBook = bookRepository.findById(book.getId()).orElseThrow();
+
+      assertThat(findBook.getBookDepartment().getId()).isEqualTo(ETC.getId());
+      assertThat(findBook.getTotal()).isEqualTo(1);
+      assertThat(findBook.getBorrow()).isEqualTo(0);
+      assertThat(findBook.getEnable()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("BookBorrowInfo DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
+    void should_processDefault_when_EmptyBookBorrowInfoValue() {
+      BookBorrowInfo borrowInfo = bookBorrowInfoTestHelper.generate();
+      em.flush();
+      em.clear();
+
+      BookBorrowInfo findBorrowInfo = bookBorrowInfoRepository.findById(borrowInfo.getId()).orElseThrow();
+
+      assertThat(findBorrowInfo.getQuantity()).isEqualTo(1);
+      assertThat(findBorrowInfo.getBorrowDate()).isBefore(LocalDateTime.now());
+      assertThat(findBorrowInfo.getExpireDate()).isBefore(LocalDateTime.now());
+    }
+  }
 }
