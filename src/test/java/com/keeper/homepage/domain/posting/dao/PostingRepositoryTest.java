@@ -82,6 +82,7 @@ public class PostingRepositoryTest extends IntegrationTest {
       postingRepository.delete(posting);
 
       assertThat(commentRepository.findAll()).hasSize(0);
+      assertThat(commentRepository.findAll()).doesNotContain(comment);
     }
 
     @Test
