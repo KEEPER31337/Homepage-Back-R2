@@ -1,5 +1,9 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,23 +19,27 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_borrow_info")
 public class BookBorrowInfo {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id", nullable = false, updatable = false)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "book_id", nullable = false)
   private Book book;
 
@@ -52,5 +60,9 @@ public class BookBorrowInfo {
     this.quantity = quantity;
     this.borrowDate = borrowDate;
     this.expireDate = expireDate;
+  }
+
+  public void registerBook(Book book) {
+    this.book = book;
   }
 }
