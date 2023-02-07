@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.converter;
 
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType;
+import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class BookDepartmentTypeConverter implements AttributeConverter<BookDepar
     }
     try {
       return BookDepartmentType.fromCode(dbData);
-    } catch (IllegalArgumentException e) {
+    } catch (BusinessException e) {
       log.error("failure to convert cause unexpected code [{}]", dbData, e);
       throw e;
     }
