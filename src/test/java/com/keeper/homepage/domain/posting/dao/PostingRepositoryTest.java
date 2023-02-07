@@ -8,9 +8,9 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
 import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
 import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.posting.entity.category.Category;
 import com.keeper.homepage.domain.posting.entity.comment.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,19 +21,74 @@ public class PostingRepositoryTest extends IntegrationTest {
 
   private Member member;
   private Posting posting;
+  private Category category;
   private Thumbnail thumbnail;
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
+    category = categoryTestHelper.generate();
     posting = Posting.builder()
         .title("포스팅 제목")
         .content("포스팅 내용")
         .member(member)
         .ipAddress("0.0.0.0")
-        .category(categoryTestHelper.generate())
+        .category(category)
         .build();
     thumbnail = thumbnailTestHelper.generateThumbnail();
+  }
+
+  @Nested
+  @DisplayName("Posting Save 테스트")
+  class PostingSaveTest {
+
+    @Test
+    @DisplayName("카테고리에 포스팅을 등록하면, 포스팅이 저장되어야 한다.")
+    void should_savePosing_when_CategoryAddPosting() {
+      category.addPosting(posting);
+
+      em.flush();
+      em.clear();
+      Posting findPosting = postingRepository.findById(posting.getId()).orElseThrow();
+
+      assertThat(findPosting.getId()).isEqualTo(posting.getId());
+      assertThat(findPosting.getTitle()).isEqualTo(posting.getTitle());
+      assertThat(findPosting.getContent()).isEqualTo(posting.getContent());
+      assertThat(findPosting.getMember()).isEqualTo(posting.getMember());
+      assertThat(findPosting.getCategory().getId()).isEqualTo(posting.getCategory().getId());
+    }
+
+    @Test
+    @DisplayName("회원의 게시글 좋아요와 싫어요는 DB에 저장되어야 한다.")
+    void should_saveLikeAndDislike_when_memberLikeAndDislike() {
+      member.like(posting);
+      member.dislike(posting);
+
+      em.flush();
+      em.clear();
+      var findLike = memberHasPostingLikeRepository.findAllByPosting(posting).get(0);
+      var findDislike = memberHasPostingDislikeRepository.findAllByPosting(posting).get(0);
+
+      assertThat(findLike.getMember()).isEqualTo(member);
+      assertThat(findLike.getPosting()).isEqualTo(posting);
+      assertThat(findDislike.getMember()).isEqualTo(member);
+      assertThat(findDislike.getPosting()).isEqualTo(posting);
+    }
+
+    @Test
+    @DisplayName("좋아요를 하면 포스팅의 좋아요 리스트에도 좋아요 정보가 있어야 한다.")
+    void should_existPostingLike_when_memberLike() {
+      member.like(posting);
+
+      em.flush();
+      em.clear();
+
+      assertThat(posting.getPostingLikes()).hasSize(1);
+      assertThat(posting.getPostingLikes()).contains(MemberHasPostingLike.builder()
+          .member(member)
+          .posting(posting)
+          .build());
+    }
   }
 
   @Nested
@@ -137,8 +192,8 @@ public class PostingRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("좋아요를 취소하면 포스팅의 postingLikes에도 좋아요 정보가 삭제되어야 한다.")
-    void should_deletedCommentLike_when_cancelLike() {
+    @DisplayName("좋아요를 취소하면 포스팅의 좋아요 리스트에도 좋아요 정보가 삭제되어야 한다.")
+    void should_deletedPostingLike_when_cancelLike() {
       member.like(posting);
       member.cancelLike(posting);
 
@@ -155,7 +210,7 @@ public class PostingRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
-    void should_process_when_EmptyValue() {
+    void should_processDefault_when_EmptyValue() {
       Posting postingBuild = postingTestHelper.generate();
       em.flush();
       em.clear();
