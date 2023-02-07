@@ -1,6 +1,13 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,9 +54,9 @@ public class Book extends BaseEntity {
   @Column(name = "information", columnDefinition = "TEXT")
   private String information;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "department", nullable = false)
-  private BookDepartment department;
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "book_department_id", nullable = false)
+  private BookDepartment bookDepartment;
 
   @Column(name = "total", nullable = false)
   private Long total;
@@ -60,20 +67,20 @@ public class Book extends BaseEntity {
   @Column(name = "enable", nullable = false)
   private Long enable;
 
-  @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE)
-  private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
-
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @OneToOne(fetch = LAZY, cascade = REMOVE)
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
+  @OneToMany(mappedBy = "book", cascade = ALL, orphanRemoval = true)
+  private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
+
   @Builder
-  private Book(String title, String author, String information, BookDepartment department,
+  private Book(String title, String author, String information, BookDepartment bookDepartment,
       Long total, Long borrow, Long enable, Thumbnail thumbnail) {
     this.title = title;
     this.author = author;
     this.information = information;
-    this.department = department;
+    this.bookDepartment = bookDepartment;
     this.total = total;
     this.borrow = borrow;
     this.enable = enable;
@@ -81,6 +88,7 @@ public class Book extends BaseEntity {
   }
 
   public void addBookBorrowInfo(BookBorrowInfo bookBorrowInfo) {
-    this.getBookBorrowInfos().add(bookBorrowInfo);
+    bookBorrowInfo.registerBook(this);
+    bookBorrowInfos.add(bookBorrowInfo);
   }
 }
