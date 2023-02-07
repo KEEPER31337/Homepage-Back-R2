@@ -55,7 +55,7 @@ public class CategoryRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("부모 카테고리를 넣지 않았을 때 0L으로 처리해야 한다.")
-    void should_process_when_EmptyParentId() {
+    void should_processDefault_when_EmptyParentCategory() {
       em.flush();
       em.clear();
 

@@ -50,7 +50,7 @@ public class CommentRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("부모 댓글을 지워도 자식 댓글은 삭제되지 않아야 한다.")
-    void should_noDeleteChildren_when_deleteParent() {
+    void should_noDeleteChildren_when_deleteParentComment() {
       // TODO: DB가 변경되면 성공해야 합니다.
     }
   }
@@ -61,7 +61,7 @@ public class CommentRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("댓글을 중복으로 좋아요 싫어요 했을 때 중복된 값이 DB에 저장되지 않는다.")
-    void should_nothingDuplicateLikeDislike_when_duplicateLikeDislike() {
+    void should_nothingDuplicateLikeAndDislike_when_duplicateLikeAndDislike() {
       member.like(comment);
       member.like(comment);
       member.like(comment);
@@ -92,7 +92,7 @@ public class CommentRepositoryTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("좋아요를 취소하면 댓글의 commentLikes에도 좋아요 정보가 삭제되어야 한다.")
+    @DisplayName("좋아요를 취소하면 댓글의 좋아요 리스트에도 좋아요 정보가 삭제되어야 한다.")
     void should_deletedCommentLike_when_cancelLike() {
       member.like(comment);
       member.cancelLike(comment);
@@ -110,7 +110,7 @@ public class CommentRepositoryTest extends IntegrationTest {
 
     @Test
     @DisplayName("좋아요 개수, 싫어요 개수를 넣지 않았을 때 0으로 처리해야 한다.")
-    void should_process_when_EmptyLikeCountAndDislikeCount() {
+    void should_processDefault_when_EmptyLikeCountAndDislikeCount() {
       Comment commentBuild = commentTestHelper.generate();
       em.flush();
       em.clear();
