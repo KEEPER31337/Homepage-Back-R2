@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -19,7 +19,7 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
     @Column(name = "last_play_time")
@@ -39,4 +39,7 @@ public class Game {
     @Column(name = "lotto_per_point")
     private Integer lottoDayPoint;
 
+    /***
+     * 질문 1. GameEntity 가 들고 있는 Member (fk)는 1:1 일까 ?
+     */
 }
