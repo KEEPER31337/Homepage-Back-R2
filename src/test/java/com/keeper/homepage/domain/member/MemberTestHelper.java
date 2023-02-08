@@ -143,7 +143,7 @@ public class MemberTestHelper {
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
                   : StudentId.from(generateRandomDigitString(9)))
-              .thumbnail(thumbnail != null ? thumbnail : null)
+              .thumbnail(thumbnail)
               .build())
           .point(point != null ? point : 0)
           .level(level != null ? level : 0)
