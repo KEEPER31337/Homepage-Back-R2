@@ -11,35 +11,45 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Builder
+@Getter
+@NoArgsConstructor
 @Table(name = "game_member_info")
 @Entity
 public class Game {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
     @Column(name = "last_play_time")
     private LocalDateTime lastPlayTime;
 
-    @Column(name = "dice_per_day")
+    @Column(name = "dice_per_day", nullable = false)
     private Integer dicePerDay;
-    @Column(name = "roulette_per_day")
+
+    @Column(name = "roulette_per_day", nullable = false)
     private Integer roulettePerDay;
-    @Column(name = "lotto_per_day")
+
+    @Column(name = "lotto_per_day", nullable = false)
     private Integer lottoPerDay;
 
-    @Column(name = "dice_day_point")
+    @Column(name = "dice_day_point", nullable = false)
     private Integer diceDayPoint;
-    @Column(name = "roulette_day_point")
+
+    @Column(name = "roulette_day_point", nullable = false)
     private Integer rouletteDayPoint;
-    @Column(name = "lotto_per_point")
+
+    @Column(name = "lotto_per_point", nullable = false)
     private Integer lottoDayPoint;
 
-    /***
-     * 질문 1. GameEntity 가 들고 있는 Member (fk)는 1:1 일까 ?
-     */
 }
