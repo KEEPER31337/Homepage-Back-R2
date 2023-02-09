@@ -52,4 +52,25 @@ public class Game {
     @Column(name = "lotto_per_point", nullable = false)
     private Integer lottoDayPoint;
 
+    public void increaseDiceTimes() {
+        this.dicePerDay += 1;
+    }
+
+    public void increaseRouletteTimes() {
+        this.roulettePerDay += 1;
+    }
+
+    public void increaseLottoTimes() {
+        this.lottoPerDay += 1;
+    }
+
+    public void reset() {
+        dicePerDay = 0;
+        roulettePerDay = 0;
+        lottoPerDay = 0;
+        diceDayPoint = 0;
+        rouletteDayPoint = 0;
+        lottoDayPoint = 0;
+    }
+
 }
