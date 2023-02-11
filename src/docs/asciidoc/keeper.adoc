@@ -20,3 +20,7 @@ link:member/member.html[API 문서 보기]
 == *ABOUT API*
 
 link:about/about.html[API 문서 보기]
+
+== *POSTING API*
+
+link:posting/posting.html[API 문서 보기]
