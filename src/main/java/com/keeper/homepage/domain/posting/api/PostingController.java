@@ -31,7 +31,6 @@ public class PostingController {
   private final PostingService postingService;
 
   @PostMapping("/create")
-  @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<Void> createPost(
       @LoginMember Member member,
       @ModelAttribute @Valid PostRequest request
