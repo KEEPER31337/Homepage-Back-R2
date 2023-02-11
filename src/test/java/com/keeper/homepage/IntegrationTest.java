@@ -171,6 +171,9 @@ public class IntegrationTest {
   @Autowired
   protected StaticWriteService staticWriteService;
 
+  @Autowired
+  protected PostingService postingService;
+
   /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
