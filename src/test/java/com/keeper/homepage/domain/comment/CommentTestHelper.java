@@ -1,10 +1,11 @@
-package com.keeper.homepage.domain.posting;
+package com.keeper.homepage.domain.comment;
 
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.posting.dao.comment.CommentRepository;
+import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.posting.PostingTestHelper;
 import com.keeper.homepage.domain.posting.entity.Posting;
-import com.keeper.homepage.domain.posting.entity.comment.Comment;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.posting.dao.comment;
+package com.keeper.homepage.domain.comment.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,7 +6,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
-import com.keeper.homepage.domain.posting.entity.comment.Comment;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

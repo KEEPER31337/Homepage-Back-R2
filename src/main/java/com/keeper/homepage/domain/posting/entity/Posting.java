@@ -11,7 +11,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
 import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
 import com.keeper.homepage.domain.posting.entity.category.Category;
-import com.keeper.homepage.domain.posting.entity.comment.Comment;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;

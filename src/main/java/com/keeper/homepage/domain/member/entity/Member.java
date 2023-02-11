@@ -26,7 +26,7 @@ import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.posting.entity.Posting;
-import com.keeper.homepage.domain.posting.entity.comment.Comment;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
