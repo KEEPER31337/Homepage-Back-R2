@@ -36,9 +36,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "posting")
 public class Posting extends BaseEntity {
 
-  private static final int MAX_TITLE_LENGTH = 250;
+  public static final int MAX_TITLE_LENGTH = 250;
   private static final int MAX_IP_ADDRESS_LENGTH = 128;
-  private static final int MAX_PASSWORD_LENGTH = 512;
+  public static final int MAX_PASSWORD_LENGTH = 512;
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
