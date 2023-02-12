@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SeminarResponse {
 
+  // TODO: 2023-02-13 front-end와 이야기해서 필요한 데이터만 선언하고 나머지는 삭제 예정
   private Long id;
   private LocalDateTime openTime;
   private LocalDateTime attendanceCloseTime;
