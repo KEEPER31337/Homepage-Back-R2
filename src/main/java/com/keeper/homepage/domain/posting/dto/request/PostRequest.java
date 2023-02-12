@@ -28,22 +28,30 @@ public class PostRequest {
   @NotBlank(message = "게시글 제목을 입력해주세요.")
   @Length(max = MAX_TITLE_LENGTH, message = "게시글 제목은 " + MAX_TITLE_LENGTH + "자 이하로 입력해주세요.")
   private String title;
+
   @NotBlank(message = "게시글 본문을 입력해주세요.")
   private String content;
+
   @Nullable
   private Boolean allowComment;
+
   @Nullable
   private Boolean isNotice;
+
   @Nullable
   private Boolean isSecret;
+
   @Nullable
   private Boolean isTemp;
+
   @Nullable
   @Length(max = MAX_PASSWORD_LENGTH, message = "비밀번호는 " + MAX_PASSWORD_LENGTH + "자 이하로 입력해주세요.")
   private String password;
+
   @NotNull(message = "카테고리 아이디를 입력해주세요.")
   @PositiveOrZero(message = "올바른 카테고리 아이디를 입력해주세요.")
   private Long categoryId;
+  
   private MultipartFile thumbnail;
   private List<MultipartFile> files;
 

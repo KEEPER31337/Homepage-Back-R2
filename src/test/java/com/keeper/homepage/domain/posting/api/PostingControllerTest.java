@@ -69,23 +69,23 @@ public class PostingControllerTest extends IntegrationTest {
                       .description("사용자 인증에 필요한 ACCESS TOKEN")),
               queryParameters(
                   parameterWithName("title")
-                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 :" + MAX_TITLE_LENGTH),
+                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_TITLE_LENGTH),
                   parameterWithName("content")
                       .description("게시글 내용을 입력해주세요."),
                   parameterWithName("allowComment")
-                      .description("댓글 허용 여부 (null일 때 default :" + true)
+                      .description("댓글 허용 여부 (null일 때 default : " + true)
                       .optional(),
                   parameterWithName("isNotice")
-                      .description("공지글 여부 (null일 때 default :" + false)
+                      .description("공지글 여부 (null일 때 default : " + false)
                       .optional(),
                   parameterWithName("isSecret")
-                      .description("비밀글 여부 (null일 때 default :" + false)
+                      .description("비밀글 여부 (null일 때 default : " + false)
                       .optional(),
                   parameterWithName("isTemp")
-                      .description("임시 저장글 여부 (null일 때 default :" + false)
+                      .description("임시 저장글 여부 (null일 때 default : " + false)
                       .optional(),
                   parameterWithName("password")
-                      .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 :" + MAX_PASSWORD_LENGTH)
+                      .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_PASSWORD_LENGTH)
                       .optional(),
                   parameterWithName("categoryId")
                       .description("게시글 카테고리를 입력해주세요.")
@@ -121,7 +121,7 @@ public class PostingControllerTest extends IntegrationTest {
     void should_201CREATED_when_createPost() throws Exception {
       addAllParams();
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isCreated());
     }
 
@@ -130,7 +130,7 @@ public class PostingControllerTest extends IntegrationTest {
     void should_201CREATED_when_createPostWithNoPassword() throws Exception {
       addParamsExceptPassword();
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isCreated());
     }
 
@@ -141,7 +141,7 @@ public class PostingControllerTest extends IntegrationTest {
       params.add("content", "게시글 내용");
       params.add("categoryId", category.getId().toString());
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isBadRequest());
     }
 
@@ -152,7 +152,7 @@ public class PostingControllerTest extends IntegrationTest {
       params.add("content", " ");
       params.add("categoryId", category.getId().toString());
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isBadRequest());
     }
 
@@ -163,7 +163,7 @@ public class PostingControllerTest extends IntegrationTest {
       params.add("content", "게시글 내용");
       params.add("categoryId", category.getId().toString());
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isBadRequest());
     }
 
@@ -175,7 +175,7 @@ public class PostingControllerTest extends IntegrationTest {
       params.add("password", "a".repeat(MAX_PASSWORD_LENGTH + 1));
       params.add("categoryId", category.getId().toString());
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isBadRequest());
     }
 
@@ -185,7 +185,7 @@ public class PostingControllerTest extends IntegrationTest {
       params.add("title", "게시글 제목");
       params.add("content", "게시글 내용");
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isBadRequest());
     }
 
@@ -196,7 +196,7 @@ public class PostingControllerTest extends IntegrationTest {
       params.add("content", "게시글 내용");
       params.add("categoryId", String.valueOf(-1));
 
-      callCreatePostApiWithoutFiles()
+      callCreatePostApi()
           .andExpect(status().isBadRequest());
     }
 
@@ -249,7 +249,7 @@ public class PostingControllerTest extends IntegrationTest {
           .contentType(MediaType.MULTIPART_FORM_DATA));
     }
 
-    private ResultActions callCreatePostApiWithoutFiles()
+    private ResultActions callCreatePostApi()
         throws Exception {
       return mockMvc.perform(multipart(HttpMethod.POST, "/postings/create")
           .cookie(accessToken)
