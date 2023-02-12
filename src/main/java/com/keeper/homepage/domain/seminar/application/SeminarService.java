@@ -42,6 +42,7 @@ public class SeminarService {
     seminarRepository.delete(seminar);
   }
 
+  // TODO: 2023-02-13 SeminarRepository에서 select query를 사용하는 방법으로 수정할지 고민이다.
   public List<SeminarResponse> findAll() {
     return seminarRepository.findAll().stream()
         .map(SeminarResponse::new)
