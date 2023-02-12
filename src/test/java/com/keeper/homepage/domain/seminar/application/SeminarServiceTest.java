@@ -10,7 +10,7 @@ class SeminarServiceTest extends IntegrationTest {
 
   @Test
   @DisplayName("출석 코드의 길이가 4인지 확인한다.")
-  public void 출석_코드의_길이가_4인지_확인한다() throws Exception {
+  public void check_randomAttendanceCode_size() throws Exception {
     String attendanceCode = seminarService.randomAttendanceCode();
     assertThat(attendanceCode.length()).isEqualTo(4);
   }
