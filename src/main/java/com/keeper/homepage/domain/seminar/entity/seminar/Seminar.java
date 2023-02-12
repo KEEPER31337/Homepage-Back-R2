@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.clerk.entity.seminar;
+package com.keeper.homepage.domain.seminar.entity.seminar;
 
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;

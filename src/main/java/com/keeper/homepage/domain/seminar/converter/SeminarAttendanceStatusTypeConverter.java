@@ -1,6 +1,6 @@
-package com.keeper.homepage.domain.clerk.converter;
+package com.keeper.homepage.domain.seminar.converter;
 
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
+import com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;

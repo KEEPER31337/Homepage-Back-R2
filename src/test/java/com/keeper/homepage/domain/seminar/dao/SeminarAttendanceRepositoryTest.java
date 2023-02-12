@@ -1,14 +1,14 @@
-package com.keeper.homepage.domain.clerk.seminar.dao;
+package com.keeper.homepage.domain.seminar.dao;
 
-import static com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType.*;
+import static com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.clerk.entity.seminar.Seminar;
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendance;
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceExcuse;
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus;
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
+import com.keeper.homepage.domain.seminar.entity.seminar.Seminar;
+import com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendance;
+import com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceExcuse;
+import com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceStatus;
+import com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import com.keeper.homepage.domain.member.entity.Member;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
