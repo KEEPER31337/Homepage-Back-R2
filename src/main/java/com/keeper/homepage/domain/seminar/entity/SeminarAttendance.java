@@ -1,7 +1,7 @@
-package com.keeper.homepage.domain.seminar.entity.seminar;
+package com.keeper.homepage.domain.seminar.entity;
 
-import static com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
-import static com.keeper.homepage.domain.seminar.entity.seminar.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.persistence.CascadeType;

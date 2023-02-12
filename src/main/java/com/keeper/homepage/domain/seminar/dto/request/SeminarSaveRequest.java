@@ -4,7 +4,7 @@ import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
-import com.keeper.homepage.domain.seminar.entity.seminar.Seminar;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

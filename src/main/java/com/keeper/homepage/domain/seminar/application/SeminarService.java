@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.joining;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
-import com.keeper.homepage.domain.seminar.entity.seminar.Seminar;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import java.util.Random;

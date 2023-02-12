@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.seminar.dto.response;
 
-import com.keeper.homepage.domain.seminar.entity.seminar.Seminar;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

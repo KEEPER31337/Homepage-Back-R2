@@ -4,7 +4,7 @@ import static com.keeper.homepage.IntegrationTest.RANDOM;
 import static java.util.stream.Collectors.joining;
 
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
-import com.keeper.homepage.domain.seminar.entity.seminar.Seminar;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
