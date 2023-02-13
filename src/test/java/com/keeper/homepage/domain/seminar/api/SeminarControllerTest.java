@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.seminar.api;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 
 public class SeminarControllerTest extends IntegrationTest {
 
@@ -28,7 +30,6 @@ public class SeminarControllerTest extends IntegrationTest {
   private String adminToken;
   private String userToken;
   private SeminarSaveRequest seminarSaveRequest;
-  private static final Long virtualSeminarId = 1L;
 
   @BeforeEach
   void setUp() {
@@ -84,20 +85,30 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한으로 생성된 세미나의 개수를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
+      int beforeLength = seminarRepository.findAll().size();
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
       em.flush();
       em.clear();
 
+      int afterLength = seminarRepository.findAll().size();
+      assertThat(afterLength).isEqualTo(beforeLength + 1);
+
+      int idx = afterLength - 1;
       searchSeminarUsingApi(adminToken)
-          // virtual_seminar 컬럼을 포함하여 생성된 세미나는 2개가 존재한다.
-          .andExpect(jsonPath("$.length()", is(2)))
-          .andExpect(jsonPath("$[1].openTime").exists())
-          .andExpect(jsonPath("$[1].attendanceCloseTime").exists())
-          .andExpect(jsonPath("$[1].latenessCloseTime").exists())
-          .andExpect(jsonPath("$[1].attendanceCode").exists())
-          .andExpect(jsonPath("$[1].name").exists())
-          .andExpect(jsonPath("$[1].registerTime").exists())
-          .andExpect(jsonPath("$[1].updateTime").exists());
+          .andExpect(jsonPath("$.length()", is(afterLength)))
+          .andExpectAll(combineJsonPath("openTime", idx).exists())
+          .andExpect(combineJsonPath("openTime", idx).exists())
+          .andExpect(combineJsonPath("attendanceCloseTime", idx).exists())
+          .andExpect(combineJsonPath("latenessCloseTime", idx).exists())
+          .andExpect(combineJsonPath("attendanceCode", idx).exists())
+          .andExpect(combineJsonPath("name", idx).exists())
+          .andExpect(combineJsonPath("registerTime", idx).exists())
+          .andExpect(combineJsonPath("updateTime", idx).exists());
+    }
+
+    public JsonPathResultMatchers combineJsonPath(String name, int idx) {
+      String parseFormat = "$[%d].%s";
+      return jsonPath(parseFormat, idx, name);
     }
 
     @Test
@@ -116,13 +127,17 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("관리자 권한으로 세미나 삭제를 성공한다.")
     public void should_successDeleteSeminar_when_admin() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+
+      int beforeLength = seminarRepository.findAll().size();
       Long seminarId = seminarRepository.findAll().stream()
-          .filter(i -> i.getId() != virtualSeminarId)
           .findAny().orElseThrow()
           .getId();
 
       deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk());
-      searchSeminarUsingApi(adminToken).andExpect(jsonPath("$.length()", is(1)));
+      int afterLength = seminarRepository.findAll().size();
+
+      assertThat(afterLength).isEqualTo(beforeLength - 1);
+      searchSeminarUsingApi(adminToken).andExpect(jsonPath("$.length()", is(afterLength)));
     }
 
     @Test
@@ -130,7 +145,6 @@ public class SeminarControllerTest extends IntegrationTest {
     public void should_failDeleteSeminar_when_notAdmin() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
       Long seminarId = seminarRepository.findAll().stream()
-          .filter(i -> i.getId() != virtualSeminarId)
           .findAny().orElseThrow()
           .getId();
 
