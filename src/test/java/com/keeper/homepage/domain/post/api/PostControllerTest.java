@@ -3,18 +3,25 @@ package com.keeper.homepage.domain.post.api;
 import static com.keeper.homepage.domain.post.entity.Post.MAX_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.entity.Post.MAX_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.dto.request.PostRequest;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
@@ -26,12 +33,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public class PostControllerTest extends IntegrationTest {
 
+  private final Long memberId = 1L;
   private Cookie accessToken;
   private Category category;
   private MockMultipartFile thumbnail, file;
@@ -54,10 +63,12 @@ public class PostControllerTest extends IntegrationTest {
     @Test
     @DisplayName("썸네일과 파일이 포함된 게시글을 생성하면 게시글 생성이 성공한다.")
     void should_201CREATED_when_createPostWithThumbnailAndFiles() throws Exception {
+      mockCreatePostService();
       addAllParams();
 
       callCreatePostApiWithFiles(thumbnail, file)
           .andExpect(status().isCreated())
+          .andExpect(header().string("location", "/posts/" + memberId))
           .andDo(document("create-post",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -90,39 +101,49 @@ public class PostControllerTest extends IntegrationTest {
                       .optional(),
                   partWithName("files").description("게시글의 첨부 파일")
                       .optional()
+              ),
+              responseHeaders(
+                  headerWithName("Location").description("생성한 게시글을 불러오는 URI 입니다.")
               )));
     }
 
     @Test
     @DisplayName("썸네일만 포함된 게시글을 생성해도 게시글 생성이 성공한다.")
     void should_201CREATED_when_createPostWithThumbnail() throws Exception {
+      mockCreatePostService();
       addAllParams();
 
       callCreatePostApiWithFile(thumbnail)
-          .andExpect(status().isCreated());
+          .andExpect(status().isCreated())
+          .andExpect(header().string("location", "/posts/" + memberId));
     }
 
     @Test
     @DisplayName("파일만 포함된 게시글을 생성해도 게시글 생성이 성공한다.")
     void should_201CREATED_when_createPostWithFiles() throws Exception {
+      mockCreatePostService();
       addAllParams();
 
       callCreatePostApiWithFile(file)
-          .andExpect(status().isCreated());
+          .andExpect(status().isCreated())
+          .andExpect(header().string("location", "/posts/" + memberId));
     }
 
     @Test
     @DisplayName("썸네일과 파일이 모두 없는 게시글을 생성해도 게시글 생성이 성공한다.")
     void should_201CREATED_when_createPost() throws Exception {
+      mockCreatePostService();
       addAllParams();
 
       callCreatePostApi()
-          .andExpect(status().isCreated());
+          .andExpect(status().isCreated())
+          .andExpect(header().string("location", "/posts/" + memberId));
     }
 
     @Test
     @DisplayName("비밀번호가 없는 게시글을 생성해도 게시글 생성이 성공한다.")
     void should_201CREATED_when_createPostWithNoPassword() throws Exception {
+      mockCreatePostService();
       params.add("title", "게시글 제목");
       params.add("content", "게시글 내용");
       params.add("allowComment", "true");
@@ -132,7 +153,8 @@ public class PostControllerTest extends IntegrationTest {
       params.add("categoryId", category.getId().toString());
 
       callCreatePostApi()
-          .andExpect(status().isCreated());
+          .andExpect(status().isCreated())
+          .andExpect(header().string("location", "/posts/" + memberId));
     }
 
     @Test
@@ -181,7 +203,7 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 카테고리 ID가 없는 경우 게시글 생성은 실패한다.")
+    @DisplayName("게시글 카테고리 ID가 null일 경우 게시글 생성은 실패한다.")
     void should_400BadRequest_when_WithoutCategoryId() throws Exception {
       params.add("title", "게시글 제목");
       params.add("content", "게시글 내용");
@@ -199,6 +221,11 @@ public class PostControllerTest extends IntegrationTest {
 
       callCreatePostApi()
           .andExpect(status().isBadRequest());
+    }
+
+    private void mockCreatePostService() {
+      doReturn(memberId).when(postService)
+          .createPost(any(Member.class), any(PostRequest.class));
     }
 
     private void addAllParams() {
