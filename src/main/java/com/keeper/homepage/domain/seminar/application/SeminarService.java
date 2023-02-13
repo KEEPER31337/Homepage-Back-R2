@@ -25,7 +25,8 @@ public class SeminarService {
 
   @Transactional
   public Long save(SeminarSaveRequest request) {
-    return seminarRepository.save(request.toEntity(randomAttendanceCode())).getId();
+    Seminar seminar = request.toEntity(randomAttendanceCode());
+    return seminarRepository.save(seminar).getId();
   }
 
   public String randomAttendanceCode() {
