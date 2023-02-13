@@ -93,7 +93,6 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("관리자 권한으로 생성된 세미나의 개수와 데이터를 확인한다.")
     public void should_checkCountAndDataSeminar_when_admin() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
-      em.flush();
       em.clear();
 
       searchSeminarUsingApi(adminToken)
@@ -112,7 +111,6 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
     public void should_searchSeminar_when_filterDate() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
-      em.flush();
       em.clear();
 
       searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
