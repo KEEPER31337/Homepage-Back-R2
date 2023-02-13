@@ -44,11 +44,11 @@ public class SeminarControllerTest extends IntegrationTest {
         .latenessCloseTime(now.plusMinutes(4)).build();
   }
 
-  ResultActions makeSeminarUsingApi(String token) throws Exception {
+  ResultActions makeSeminarUsingApi(String token, SeminarSaveRequest request) throws Exception {
     return mockMvc.perform(post("/seminars")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(seminarSaveRequest)));
+        .content(objectMapper.writeValueAsString(request)));
   }
 
   ResultActions searchSeminarUsingApi(String token) throws Exception {
@@ -68,13 +68,19 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한으로 세미나 등록을 성공한다.")
     public void should_successCreateSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("올바르지 않은 값이 들어왔을 때 세미나 등록을 실패한다.")
+    public void should_failCreateSeminar_when_NotValidValue() throws Exception {
+      makeSeminarUsingApi(adminToken, null).andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 등록을 실패한다.")
     public void should_failCreateSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(userToken).andExpect(status().isForbidden());
+      makeSeminarUsingApi(userToken, seminarSaveRequest).andExpect(status().isForbidden());
     }
   }
 
@@ -86,7 +92,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("관리자 권한으로 생성된 세미나의 개수를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
       int beforeLength = seminarRepository.findAll().size();
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       em.flush();
       em.clear();
 
@@ -114,7 +120,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
     public void should_failCountSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       searchSeminarUsingApi(userToken).andExpect(status().isForbidden());
     }
   }
@@ -126,7 +132,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한으로 세미나 삭제를 성공한다.")
     public void should_successDeleteSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
 
       int beforeLength = seminarRepository.findAll().size();
       Long seminarId = seminarRepository.findAll().stream()
@@ -143,7 +149,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 삭제를 실패한다.")
     public void should_failDeleteSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       Long seminarId = seminarRepository.findAll().stream()
           .findAny().orElseThrow()
           .getId();
@@ -154,7 +160,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("존재하지 않는 세미나를 삭제했을 때 실패한다.")
     public void should_failDeleteNotExistsSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       deleteSeminarUsingApi(adminToken, -1L).andExpect(status().isNotFound());
     }
   }
