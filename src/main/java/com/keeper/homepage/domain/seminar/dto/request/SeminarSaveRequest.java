@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
+import jakarta.validation.constraints.Future;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,10 +20,12 @@ import org.springframework.lang.Nullable;
 public class SeminarSaveRequest {
 
   @Nullable
+  @Future
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime attendanceCloseTime;
 
   @Nullable
+  @Future
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime latenessCloseTime;
 

@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.seminar.api;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
@@ -23,7 +24,7 @@ public class SeminarController {
   private final SeminarService seminarService;
 
   @PostMapping
-  public Long createSeminar(@RequestBody SeminarSaveRequest request) {
+  public Long createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
     return seminarService.save(request);
   }
 
