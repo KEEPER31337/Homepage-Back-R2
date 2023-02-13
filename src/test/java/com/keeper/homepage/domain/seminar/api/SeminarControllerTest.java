@@ -79,7 +79,7 @@ public class SeminarControllerTest extends IntegrationTest {
     }
     
     @Test
-    @DisplayName("세미나 출석 마감 시간 또는 지각 마감 시간이 현재보다 과거인 경우 등록을 실패한다.")
+    @DisplayName("세미나 출석 마감 시간 또는 지각 마감 시간이 과거인 경우 등록을 실패한다.")
     public void should_failCreateSeminar_when_closeTimeIsPast() throws Exception {
       seminarSaveRequest = SeminarSaveRequest.builder()
           .attendanceCloseTime(now.plusMinutes(-5))
