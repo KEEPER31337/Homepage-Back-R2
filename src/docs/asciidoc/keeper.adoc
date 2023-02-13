@@ -21,6 +21,6 @@ link:member/member.html[API 문서 보기]
 
 link:about/about.html[API 문서 보기]
 
-== *POSTING API*
+== *POST API*
 
-link:posting/posting.html[API 문서 보기]
+link:post/post.html[API 문서 보기]

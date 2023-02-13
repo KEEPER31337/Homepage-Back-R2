@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.file.entity;
 
 import static jakarta.persistence.FetchType.LAZY;
 
-import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.post.entity.Post;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,7 +50,7 @@ public class FileEntity {
 
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "posting_id")
-  private Posting posting;
+  private Post post;
 
   @Builder
   private FileEntity(String fileName, String filePath, Long fileSize, LocalDateTime uploadTime,
@@ -62,7 +62,7 @@ public class FileEntity {
     this.ipAddress = ipAddress;
   }
 
-  public void registerPosting(Posting posting) {
-    this.posting = posting;
+  public void registerPost(Post post) {
+    this.post = post;
   }
 }

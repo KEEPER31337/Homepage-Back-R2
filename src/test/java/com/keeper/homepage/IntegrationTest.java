@@ -32,18 +32,18 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
-import com.keeper.homepage.domain.member.dao.posting.MemberHasPostingDislikeRepository;
-import com.keeper.homepage.domain.member.dao.posting.MemberHasPostingLikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostingDislikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostingLikeRepository;
 import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
-import com.keeper.homepage.domain.posting.CategoryTestHelper;
+import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
-import com.keeper.homepage.domain.posting.PostingTestHelper;
-import com.keeper.homepage.domain.posting.application.PostingService;
-import com.keeper.homepage.domain.posting.dao.PostingRepository;
-import com.keeper.homepage.domain.posting.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.post.PostTestHelper;
+import com.keeper.homepage.domain.post.application.PostService;
+import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
@@ -132,7 +132,7 @@ public class IntegrationTest {
   protected CommentRepository commentRepository;
 
   @SpyBean
-  protected PostingRepository postingRepository;
+  protected PostRepository postRepository;
 
   @SpyBean
   protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
@@ -172,7 +172,7 @@ public class IntegrationTest {
   protected StaticWriteService staticWriteService;
 
   @Autowired
-  protected PostingService postingService;
+  protected PostService postService;
 
   /******* Helper *******/
   @SpyBean
@@ -197,7 +197,7 @@ public class IntegrationTest {
   protected CategoryTestHelper categoryTestHelper;
 
   @Autowired
-  protected PostingTestHelper postingTestHelper;
+  protected PostTestHelper postTestHelper;
 
   @Autowired
   protected CommentTestHelper commentTestHelper;

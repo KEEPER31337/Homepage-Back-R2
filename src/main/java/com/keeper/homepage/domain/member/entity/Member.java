@@ -21,11 +21,11 @@ import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
-import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingDislike;
-import com.keeper.homepage.domain.member.entity.posting.MemberHasPostingLike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostingDislike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostingLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
-import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -111,16 +111,16 @@ public class Member {
   private final Set<Friend> friends = new HashSet<>();
 
   @OneToMany(mappedBy = "member")
-  private final List<Posting> postings = new ArrayList<>();
+  private final List<Post> posts = new ArrayList<>();
 
   @OneToMany(mappedBy = "member")
   private final List<Comment> comments = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-  private final Set<MemberHasPostingLike> postingLikes = new HashSet<>();
+  private final Set<MemberHasPostingLike> postLikes = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-  private final Set<MemberHasPostingDislike> postingDislikes = new HashSet<>();
+  private final Set<MemberHasPostingDislike> postDislikes = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
@@ -175,13 +175,13 @@ public class Member {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
-  public void like(Posting posting) {
+  public void like(Post post) {
     MemberHasPostingLike like = MemberHasPostingLike.builder()
         .member(this)
-        .posting(posting)
+        .post(post)
         .build();
-    posting.addLike(like);
-    postingLikes.add(like);
+    post.addLike(like);
+    postLikes.add(like);
   }
 
   public void like(Comment comment) {
@@ -193,9 +193,9 @@ public class Member {
     commentLikes.add(like);
   }
 
-  public void cancelLike(Posting posting) {
-    posting.removeLike(posting);
-    postingLikes.removeIf(postingLike -> postingLike.getPosting().equals(posting));
+  public void cancelLike(Post post) {
+    post.removeLike(post);
+    postLikes.removeIf(postLike -> postLike.getPost().equals(post));
   }
 
   public void cancelLike(Comment comment) {
@@ -203,13 +203,13 @@ public class Member {
     commentLikes.removeIf(commentLike -> commentLike.getComment().equals(comment));
   }
 
-  public void dislike(Posting posting) {
+  public void dislike(Post post) {
     MemberHasPostingDislike dislike = MemberHasPostingDislike.builder()
         .member(this)
-        .posting(posting)
+        .post(post)
         .build();
-    posting.addDislike(dislike);
-    postingDislikes.add(dislike);
+    post.addDislike(dislike);
+    postDislikes.add(dislike);
   }
 
   public void dislike(Comment comment) {
@@ -221,9 +221,9 @@ public class Member {
     commentDislikes.add(dislike);
   }
 
-  public void cancelDislike(Posting posting) {
-    posting.removeDislike(posting);
-    postingDislikes.removeIf(postingDislike -> postingDislike.getPosting().equals(posting));
+  public void cancelDislike(Post post) {
+    post.removeDislike(post);
+    postDislikes.removeIf(postDislike -> postDislike.getPost().equals(post));
   }
 
   public void cancelDislike(Comment comment) {

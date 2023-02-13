@@ -7,7 +7,7 @@ import static lombok.AccessLevel.PROTECTED;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
-import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -41,7 +41,7 @@ public class Comment extends BaseEntity {
 
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "posting_id", nullable = false)
-  private Posting posting;
+  private Post post;
 
   @Column(name = "parent_id", nullable = false)
   private Long parentCommentId;
@@ -65,11 +65,11 @@ public class Comment extends BaseEntity {
   private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
 
   @Builder
-  private Comment(Member member, Posting posting, Long parentCommentId, String content,
+  private Comment(Member member, Post post, Long parentCommentId, String content,
       Integer likeCount,
       Integer dislikeCount, String ipAddress) {
     this.member = member;
-    this.posting = posting;
+    this.post = post;
     this.parentCommentId = parentCommentId;
     this.content = content;
     this.likeCount = likeCount;
@@ -93,7 +93,7 @@ public class Comment extends BaseEntity {
     commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
   }
 
-  public void registerPosting(Posting posting) {
-    this.posting = posting;
+  public void registerPost(Post post) {
+    this.post = post;
   }
 }

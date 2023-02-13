@@ -23,7 +23,7 @@ public class CommentRepositoryTest extends IntegrationTest {
     member = memberTestHelper.generate();
     comment = Comment.builder()
         .member(member)
-        .posting(postingTestHelper.generate())
+        .post(postTestHelper.generate())
         .parentCommentId(0L)
         .content("댓글내용")
         .ipAddress("0.0.0.0")
@@ -32,7 +32,7 @@ public class CommentRepositoryTest extends IntegrationTest {
 
   @Nested
   @DisplayName("Comment Save 테스트")
-  class CommentSaveTest{
+  class CommentSaveTest {
 
     @Test
     @DisplayName("부모 댓글에 자식 댓글을 등록하면 DB에 저장되어야 한다.")

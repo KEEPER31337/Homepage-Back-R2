@@ -3,8 +3,8 @@ package com.keeper.homepage.domain.comment;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
-import com.keeper.homepage.domain.posting.PostingTestHelper;
-import com.keeper.homepage.domain.posting.entity.Posting;
+import com.keeper.homepage.domain.post.PostTestHelper;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class CommentTestHelper {
   MemberTestHelper memberTestHelper;
 
   @Autowired
-  PostingTestHelper postingTestHelper;
+  PostTestHelper postTestHelper;
 
   public Comment generate() {
     return this.builder().build();
@@ -32,7 +32,7 @@ public class CommentTestHelper {
   public final class CommentBuilder {
 
     private Member member;
-    private Posting posting;
+    private Post post;
     private Long parentCommentId;
     private String content;
     private Integer likeCount;
@@ -48,8 +48,8 @@ public class CommentTestHelper {
       return this;
     }
 
-    private CommentBuilder posting(Posting posting) {
-      this.posting = posting;
+    private CommentBuilder post(Post post) {
+      this.post = post;
       return this;
     }
 
@@ -81,7 +81,7 @@ public class CommentTestHelper {
     public Comment build() {
       return commentRepository.save(Comment.builder()
           .member(member != null ? member : memberTestHelper.generate())
-          .posting(posting != null ? posting : postingTestHelper.generate())
+          .post(post != null ? post : postTestHelper.generate())
           .parentCommentId(parentCommentId != null ? parentCommentId : 0L)
           .content(content != null ? content : "댓글내용")
           .likeCount(likeCount)
