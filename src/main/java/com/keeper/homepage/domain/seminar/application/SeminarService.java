@@ -8,6 +8,8 @@ import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +54,11 @@ public class SeminarService {
   public SeminarResponse findById(Long seminarId) {
     return new SeminarResponse(seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
+  }
+
+  public SeminarResponse findByDate(LocalDate dateTime) {
+    return new SeminarResponse(seminarRepository.findByOpenTimeBetween(dateTime.atStartOfDay(),
+            dateTime.atTime(LocalTime.MAX))
+        .orElseThrow(() -> new BusinessException(dateTime, "dateTime", SEMINAR_NOT_FOUND)));
   }
 }
