@@ -33,14 +33,15 @@ public class PostService {
   @Transactional
   public Long createPost(Member member, PostRequest request) {
     Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(request.getThumbnail()).orElse(null);
-    Post post = savePost(member, request, savedThumbnail);
+    Category category = getCategoryById(request.getCategoryId());
+    Post post = savePost(member, request, category, savedThumbnail);
     savePostFiles(request.getFiles(), post);
     return post.getId();
   }
 
-  private Post savePost(Member member, PostRequest request, Thumbnail thumbnail) {
-    Category category = getCategoryById(request.getCategoryId());
-    Post post = request.toEntity(member, WebUtil.getUserIP(), category, thumbnail);
+  private Post savePost(Member member, PostRequest request, Category category,
+      Thumbnail thumbnail) {
+    Post post = request.toEntity(member, WebUtil.getUserIP(), thumbnail);
     category.addPost(post);
     return postRepository.save(post);
   }
