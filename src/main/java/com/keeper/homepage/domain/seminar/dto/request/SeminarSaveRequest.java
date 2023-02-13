@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.seminar.dto.request;
 
-import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
