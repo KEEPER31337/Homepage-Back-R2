@@ -3,16 +3,19 @@ package com.keeper.homepage.domain.seminar.api;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import jakarta.servlet.http.Cookie;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -55,6 +58,11 @@ public class SeminarControllerTest extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
+  ResultActions searchDateSeminarUsingApi(String token, String date) throws Exception {
+    return mockMvc.perform(get("/seminars?date=" + date)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+  }
+
   ResultActions deleteSeminarUsingApi(String token, Long id) throws Exception {
     return mockMvc.perform(delete("/seminars/" + id)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
@@ -82,8 +90,8 @@ public class SeminarControllerTest extends IntegrationTest {
   class SeminarCheckTest {
 
     @Test
-    @DisplayName("관리자 권한으로 생성된 세미나의 개수를 확인한다.")
-    public void should_checkCountSeminar_when_admin() throws Exception {
+    @DisplayName("관리자 권한으로 생성된 세미나의 개수와 데이터를 확인한다.")
+    public void should_checkCountAndDataSeminar_when_admin() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
       em.flush();
       em.clear();
@@ -101,10 +109,36 @@ public class SeminarControllerTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
+    public void should_searchSeminar_when_filterDate() throws Exception {
+      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      em.flush();
+      em.clear();
+
+      searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.openTime").exists())
+          .andExpect(jsonPath("$.attendanceCloseTime").exists())
+          .andExpect(jsonPath("$.latenessCloseTime").exists())
+          .andExpect(jsonPath("$.attendanceCode").exists())
+          .andExpect(jsonPath("$.name").exists())
+          .andExpect(jsonPath("$.registerTime").exists())
+          .andExpect(jsonPath("$.updateTime").exists());
+    }
+
+    @Test
     @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
     public void should_failCountSeminar_when_notAdmin() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
       searchSeminarUsingApi(userToken).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
+    public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
+      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      searchDateSeminarUsingApi(userToken, LocalDate.now().toString())
+          .andExpect(status().isForbidden());
     }
   }
 
