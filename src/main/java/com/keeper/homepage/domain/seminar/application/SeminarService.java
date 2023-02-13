@@ -57,8 +57,6 @@ public class SeminarService {
   }
 
   public SeminarResponse findByDate(LocalDate localDate) {
-    return new SeminarResponse(seminarRepository.findByOpenTimeBetween(localDate.atStartOfDay(),
-            localDate.atTime(LocalTime.MAX))
-        .orElseThrow(() -> new BusinessException(localDate, "localDate", SEMINAR_NOT_FOUND)));
+    return new SeminarResponse(seminarRepository.findByOpenTime(localDate));
   }
 }
