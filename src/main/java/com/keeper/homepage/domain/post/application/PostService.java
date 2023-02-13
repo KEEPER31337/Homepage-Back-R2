@@ -39,9 +39,10 @@ public class PostService {
   }
 
   private Post savePost(Member member, PostRequest request, Thumbnail thumbnail) {
-    return postRepository.save(
-        request.toEntity(member, WebUtil.getUserIP(), getCategoryById(request.getCategoryId()),
-            thumbnail));
+    Category category = getCategoryById(request.getCategoryId());
+    Post post = request.toEntity(member, WebUtil.getUserIP(), category, thumbnail);
+    category.addPost(post);
+    return postRepository.save(post);
   }
 
   private Category getCategoryById(Long categoryId) {
