@@ -32,8 +32,8 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
-import com.keeper.homepage.domain.member.dao.post.MemberHasPostingDislikeRepository;
-import com.keeper.homepage.domain.member.dao.post.MemberHasPostingLikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
@@ -141,10 +141,10 @@ public class IntegrationTest {
   protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
   @SpyBean
-  protected MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+  protected MemberHasPostDislikeRepository memberHasPostDislikeRepository;
 
   @SpyBean
-  protected MemberHasPostingLikeRepository memberHasPostingLikeRepository;
+  protected MemberHasPostLikeRepository memberHasPostLikeRepository;
 
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;

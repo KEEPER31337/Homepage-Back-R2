@@ -20,9 +20,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @EqualsAndHashCode(of = {"member", "post"})
 @NoArgsConstructor(access = PROTECTED)
-@IdClass(MemberHasPostingPK.class)
-@Table(name = "member_has_posting_dislike")
-public class MemberHasPostingDislike {
+@IdClass(MemberHasPostPK.class)
+@Table(name = "member_has_posting_like")
+public class MemberHasPostLike {
 
   @Id
   @ManyToOne(fetch = LAZY)
@@ -35,10 +35,8 @@ public class MemberHasPostingDislike {
   private Post post;
 
   @Builder
-  private MemberHasPostingDislike(Member member, Post post) {
+  private MemberHasPostLike(Member member, Post post) {
     this.member = member;
     this.post = post;
   }
 }
-
-

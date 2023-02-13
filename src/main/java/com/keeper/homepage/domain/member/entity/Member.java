@@ -21,8 +21,8 @@ import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostingDislike;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostingLike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -117,10 +117,10 @@ public class Member {
   private final List<Comment> comments = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-  private final Set<MemberHasPostingLike> postLikes = new HashSet<>();
+  private final Set<MemberHasPostLike> postLikes = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-  private final Set<MemberHasPostingDislike> postDislikes = new HashSet<>();
+  private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
@@ -176,7 +176,7 @@ public class Member {
   }
 
   public void like(Post post) {
-    MemberHasPostingLike like = MemberHasPostingLike.builder()
+    MemberHasPostLike like = MemberHasPostLike.builder()
         .member(this)
         .post(post)
         .build();
@@ -204,7 +204,7 @@ public class Member {
   }
 
   public void dislike(Post post) {
-    MemberHasPostingDislike dislike = MemberHasPostingDislike.builder()
+    MemberHasPostDislike dislike = MemberHasPostDislike.builder()
         .member(this)
         .post(post)
         .build();

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import lombok.Getter;
 
 @Getter
-public class MemberHasPostingPK implements Serializable {
+public class MemberHasPostPK implements Serializable {
 
   private Long member;
   private Long post;

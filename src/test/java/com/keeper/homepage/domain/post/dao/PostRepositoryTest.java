@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostingDislike;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostingLike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -66,8 +66,8 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      var findLike = memberHasPostingLikeRepository.findAllByPost(post).get(0);
-      var findDislike = memberHasPostingDislikeRepository.findAllByPost(post).get(0);
+      var findLike = memberHasPostLikeRepository.findAllByPost(post).get(0);
+      var findDislike = memberHasPostDislikeRepository.findAllByPost(post).get(0);
 
       assertThat(findLike.getMember()).isEqualTo(member);
       assertThat(findLike.getPost()).isEqualTo(post);
@@ -84,7 +84,7 @@ public class PostRepositoryTest extends IntegrationTest {
       em.clear();
 
       assertThat(post.getPostLikes()).hasSize(1);
-      assertThat(post.getPostLikes()).contains(MemberHasPostingLike.builder()
+      assertThat(post.getPostLikes()).contains(MemberHasPostLike.builder()
           .member(member)
           .post(post)
           .build());
@@ -150,8 +150,8 @@ public class PostRepositoryTest extends IntegrationTest {
       em.clear();
       postRepository.delete(post);
 
-      assertThat(memberHasPostingLikeRepository.findAll()).hasSize(0);
-      assertThat(memberHasPostingDislikeRepository.findAll()).hasSize(0);
+      assertThat(memberHasPostLikeRepository.findAll()).hasSize(0);
+      assertThat(memberHasPostDislikeRepository.findAll()).hasSize(0);
     }
   }
 
@@ -171,8 +171,8 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      List<MemberHasPostingLike> postLikes = memberHasPostingLikeRepository.findAll();
-      List<MemberHasPostingDislike> postDislikes = memberHasPostingDislikeRepository.findAll();
+      List<MemberHasPostLike> postLikes = memberHasPostLikeRepository.findAll();
+      List<MemberHasPostDislike> postDislikes = memberHasPostDislikeRepository.findAll();
 
       assertThat(postLikes).hasSize(1);
       assertThat(postDislikes).hasSize(1);
@@ -186,7 +186,7 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      List<MemberHasPostingLike> postLikes = memberHasPostingLikeRepository.findAll();
+      List<MemberHasPostLike> postLikes = memberHasPostLikeRepository.findAll();
 
       assertThat(postLikes).hasSize(0);
     }

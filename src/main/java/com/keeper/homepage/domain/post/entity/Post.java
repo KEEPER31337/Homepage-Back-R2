@@ -8,8 +8,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostingDislike;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostingLike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -99,10 +99,10 @@ public class Post extends BaseEntity {
   private final List<FileEntity> files = new ArrayList<>();
 
   @OneToMany(mappedBy = "post", orphanRemoval = true)
-  private final Set<MemberHasPostingLike> postLikes = new HashSet<>();
+  private final Set<MemberHasPostLike> postLikes = new HashSet<>();
 
   @OneToMany(mappedBy = "post", orphanRemoval = true)
-  private final Set<MemberHasPostingDislike> postDislikes = new HashSet<>();
+  private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @Builder
   private Post(String title, String content, Member member, Integer visitCount,
@@ -136,7 +136,7 @@ public class Post extends BaseEntity {
     files.add(file);
   }
 
-  public void addLike(MemberHasPostingLike like) {
+  public void addLike(MemberHasPostLike like) {
     postLikes.add(like);
   }
 
@@ -144,7 +144,7 @@ public class Post extends BaseEntity {
     postLikes.removeIf(postLike -> postLike.getPost().equals(post));
   }
 
-  public void addDislike(MemberHasPostingDislike dislike) {
+  public void addDislike(MemberHasPostDislike dislike) {
     postDislikes.add(dislike);
   }
 
