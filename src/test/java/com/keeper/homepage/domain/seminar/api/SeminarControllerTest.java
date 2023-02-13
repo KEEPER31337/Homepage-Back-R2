@@ -32,8 +32,8 @@ public class SeminarControllerTest extends IntegrationTest {
 
   @BeforeEach
   void setUp() {
-    adminId = memberTestHelper.generate().getId();
-    userId = memberTestHelper.generate().getId();
+    adminId = memberTestHelper.builder().build().getId();
+    userId = memberTestHelper.builder().build().getId();
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
 
