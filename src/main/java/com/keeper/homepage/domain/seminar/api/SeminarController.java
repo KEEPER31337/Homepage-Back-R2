@@ -28,7 +28,7 @@ public class SeminarController {
   }
 
   @DeleteMapping("/{seminarId}")
-  public void deleteSeminar(@PathVariable Long seminarId) {
+  public void deleteSeminar(@PathVariable long seminarId) {
     seminarService.delete(seminarId);
   }
 
@@ -38,7 +38,7 @@ public class SeminarController {
   }
 
   @GetMapping("/{seminarId}")
-  public SeminarResponse getSeminar(@PathVariable Long seminarId) {
+  public SeminarResponse getSeminar(@PathVariable long seminarId) {
     return seminarService.findById(seminarId);
   }
 }

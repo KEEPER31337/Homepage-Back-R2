@@ -38,7 +38,7 @@ public class SeminarService {
   }
 
   @Transactional
-  public void delete(Long seminarId) {
+  public void delete(long seminarId) {
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
     seminarRepository.delete(seminar);
@@ -51,7 +51,7 @@ public class SeminarService {
         .toList();
   }
 
-  public SeminarResponse findById(Long seminarId) {
+  public SeminarResponse findById(long seminarId) {
     return new SeminarResponse(seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
   }
