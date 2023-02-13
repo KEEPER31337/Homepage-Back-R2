@@ -29,6 +29,7 @@ public class SeminarControllerTest extends IntegrationTest {
   private long userId;
   private String adminToken;
   private String userToken;
+  private LocalDateTime now;
   private SeminarSaveRequest seminarSaveRequest;
 
   @BeforeEach
@@ -38,7 +39,7 @@ public class SeminarControllerTest extends IntegrationTest {
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
 
-    LocalDateTime now = LocalDateTime.now();
+    now = LocalDateTime.now();
     seminarSaveRequest = SeminarSaveRequest.builder()
         .attendanceCloseTime(now.plusMinutes(3))
         .latenessCloseTime(now.plusMinutes(4)).build();
@@ -75,6 +76,15 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("올바르지 않은 값이 들어왔을 때 세미나 등록을 실패한다.")
     public void should_failCreateSeminar_when_NotValidValue() throws Exception {
       makeSeminarUsingApi(adminToken, null).andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    @DisplayName("세미나 마감 시간 또는 지각 마감 시간이 과거인 경우 등록을 실패한다.")
+    public void should_failCreateSeminar_when_closeTimeIsPast() throws Exception {
+      seminarSaveRequest = SeminarSaveRequest.builder()
+          .attendanceCloseTime(now.plusMinutes(-5))
+          .latenessCloseTime(now.plusMinutes(-3)).build();
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isBadRequest());
     }
 
     @Test
