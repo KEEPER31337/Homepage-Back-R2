@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
 import static java.util.stream.Collectors.joining;
 
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
@@ -8,6 +9,7 @@ import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,19 @@ public class SeminarService {
 
   @Transactional
   public Long save(SeminarSaveRequest request) {
+    validCloseTime(request);
+
     Seminar seminar = request.toEntity(randomAttendanceCode());
     return seminarRepository.save(seminar).getId();
+  }
+
+  private void validCloseTime(SeminarSaveRequest request) {
+    LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
+    LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
+
+    if (attendanceCloseTime.isAfter(latenessCloseTime)) {
+      throw new BusinessException(attendanceCloseTime, "attendanceCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
+    }
   }
 
   public String randomAttendanceCode() {
