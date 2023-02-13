@@ -36,9 +36,9 @@ public class PostController {
   }
 
   // TODO: 포스팅 생성 후 redirect용 api - 게시글 조회
-  @GetMapping("/{id}")
+  @GetMapping("/{postId}")
   public void getPost(
-      @PathVariable("id") Long postId
+      @PathVariable("postId") long postId
   ) {
 
   }
