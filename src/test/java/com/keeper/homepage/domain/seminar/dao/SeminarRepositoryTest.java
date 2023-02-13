@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.seminar.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
