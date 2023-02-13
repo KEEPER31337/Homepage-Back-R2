@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SeminarService {
 
   private static final Random RANDOM = new Random();
+
   private final SeminarRepository seminarRepository;
 
   @Transactional

@@ -45,9 +45,9 @@ public class SeminarControllerTest extends IntegrationTest {
 
   ResultActions makeSeminarUsingApi(String token) throws Exception {
     return mockMvc.perform(post("/seminars")
-            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(seminarSaveRequest)));
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(seminarSaveRequest)));
   }
 
   ResultActions searchSeminarUsingApi(String token) throws Exception {
@@ -121,11 +121,8 @@ public class SeminarControllerTest extends IntegrationTest {
           .findAny().orElseThrow()
           .getId();
 
-      deleteSeminarUsingApi(adminToken, seminarId)
-          .andExpect(status().isOk());
-
-      searchSeminarUsingApi(adminToken)
-          .andExpect(jsonPath("$.length()", is(1)));
+      deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk());
+      searchSeminarUsingApi(adminToken).andExpect(jsonPath("$.length()", is(1)));
     }
 
     @Test
@@ -137,16 +134,14 @@ public class SeminarControllerTest extends IntegrationTest {
           .findAny().orElseThrow()
           .getId();
 
-      deleteSeminarUsingApi(userToken, seminarId)
-          .andExpect(status().isForbidden());
+      deleteSeminarUsingApi(userToken, seminarId).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("존재하지 않는 세미나를 삭제했을 때 실패한다.")
     public void should_failDeleteNotExistsSeminar_when_admin() throws Exception {
       makeSeminarUsingApi(adminToken).andExpect(status().isOk());
-      deleteSeminarUsingApi(adminToken, -1L)
-          .andExpect(status().isNotFound());
+      deleteSeminarUsingApi(adminToken, -1L).andExpect(status().isNotFound());
     }
   }
 }
