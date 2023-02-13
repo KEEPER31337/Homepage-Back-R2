@@ -41,7 +41,7 @@ public class Category {
   @Column(name = "href", length = MAX_HREF_LENGTH)
   private String href;
 
-  @OneToMany(mappedBy = "category", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "category", orphanRemoval = true)
   private final List<Post> posts = new ArrayList<>();
 
   @OneToMany(mappedBy = "parent", cascade = ALL, orphanRemoval = true)
