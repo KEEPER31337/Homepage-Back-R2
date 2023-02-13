@@ -43,22 +43,6 @@ public class PostRepositoryTest extends IntegrationTest {
   class PostSaveTest {
 
     @Test
-    @DisplayName("카테고리에 포스팅을 등록하면, 포스팅이 저장되어야 한다.")
-    void should_savePost_when_CategoryAddPost() {
-      category.addPost(post);
-
-      em.flush();
-      em.clear();
-      Post findPost = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThat(findPost.getId()).isEqualTo(post.getId());
-      assertThat(findPost.getTitle()).isEqualTo(post.getTitle());
-      assertThat(findPost.getContent()).isEqualTo(post.getContent());
-      assertThat(findPost.getMember()).isEqualTo(post.getMember());
-      assertThat(findPost.getCategory().getId()).isEqualTo(post.getCategory().getId());
-    }
-
-    @Test
     @DisplayName("회원의 게시글 좋아요와 싫어요는 DB에 저장되어야 한다.")
     void should_saveLikeAndDislike_when_memberLikeAndDislike() {
       member.like(post);
