@@ -6,7 +6,6 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
   @Nested
   @DisplayName("세미나 조회 테스트")
   class SeminarSearchTest {
-  
+
     @Test
     @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
     public void should_filterDate_when_searchSeminar() throws Exception {
@@ -90,7 +89,8 @@ public class SeminarRepositoryTest extends IntegrationTest {
       Seminar findSeminar = seminarRepository.findByOpenTime(dateNow);
 
       assertThat(findSeminar.getOpenTime().toLocalDate()).isEqualTo(dateNow);
-  }    
+    }
+  }
 
   @Nested
   @DisplayName("세미나 유틸 메서드 테스트")
