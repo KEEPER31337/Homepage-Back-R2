@@ -123,7 +123,7 @@ public class SeminarControllerTest extends IntegrationTest {
 
       int afterLength = seminarRepository.findAll().size();
       assertThat(afterLength).isEqualTo(beforeLength + 1);
-
+      
       int idx = afterLength - 1;
       searchSeminarUsingApi(adminToken)
           .andExpect(jsonPath("$.length()", is(afterLength)))
@@ -145,7 +145,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
     public void should_searchSeminar_when_filterDate() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       em.clear();
 
       searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
@@ -169,7 +169,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
     public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       searchDateSeminarUsingApi(userToken, LocalDate.now().toString())
           .andExpect(status().isForbidden());
     }
