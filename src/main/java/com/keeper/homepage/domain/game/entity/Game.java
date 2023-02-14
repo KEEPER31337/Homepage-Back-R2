@@ -11,12 +11,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
+@DynamicInsert
+@DynamicUpdate
 @Getter
-@NoArgsConstructor
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "game_member_info")
 @Entity
 public class Game {
@@ -48,7 +57,7 @@ public class Game {
     @Column(name = "roulette_day_point", nullable = false)
     private Integer rouletteDayPoint;
 
-    @Column(name = "lotto_per_point", nullable = false)
+    @Column(name = "lotto_day_point", nullable = false)
     private Integer lottoDayPoint;
 
     public void increaseDiceTimes() {
@@ -63,13 +72,14 @@ public class Game {
         this.lottoPerDay += 1;
     }
 
-    public void reset() {
+    public Game reset() {
         dicePerDay = 0;
         roulettePerDay = 0;
         lottoPerDay = 0;
         diceDayPoint = 0;
         rouletteDayPoint = 0;
         lottoDayPoint = 0;
+        return this;
     }
 
 }
