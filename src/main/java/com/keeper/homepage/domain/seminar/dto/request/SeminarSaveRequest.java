@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.seminar.dto.request;
 
+import static com.keeper.homepage.domain.seminar.entity.Seminar.randomAttendanceCode;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -29,11 +30,11 @@ public class SeminarSaveRequest {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime latenessCloseTime;
 
-  public Seminar toEntity(String attendanceCode) {
+  public Seminar toEntity() {
     return Seminar.builder()
         .attendanceCloseTime(attendanceCloseTime)
         .latenessCloseTime(latenessCloseTime)
-        .attendanceCode(attendanceCode)
+        .attendanceCode(randomAttendanceCode())
         .build();
   }
 }
