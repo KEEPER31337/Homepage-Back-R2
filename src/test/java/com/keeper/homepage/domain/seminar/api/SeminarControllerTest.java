@@ -108,7 +108,7 @@ public class SeminarControllerTest extends IntegrationTest {
   class SeminarCheckTest {
 
     @Test
-    @DisplayName("관리자 권한으로 생성된 세미나의 개수를 확인한다.")
+    @DisplayName("관리자 권한으로 생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
       int beforeLength = seminarRepository.findAll().size();
       makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
