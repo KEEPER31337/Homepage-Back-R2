@@ -27,6 +27,8 @@ import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
+import com.keeper.homepage.domain.game.GameTestHelper;
+import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
@@ -148,6 +150,9 @@ public class IntegrationTest {
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
 
+  @Autowired
+  protected GameRepository gameRepository;
+
   /******* Service *******/
   @SpyBean
   protected EmailAuthService emailAuthService;
@@ -197,6 +202,9 @@ public class IntegrationTest {
 
   @Autowired
   protected CommentTestHelper commentTestHelper;
+
+  @Autowired
+  protected GameTestHelper gameTestHelper;
 
   /******* Helper *******/
   @Autowired
