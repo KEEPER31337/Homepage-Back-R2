@@ -90,11 +90,6 @@ public class StudyTestHelper {
       return this;
     }
 
-    public StudyBuilder studyHasMember(List<StudyHasMember> studyHasMember) {
-      this.studyHasMember = studyHasMember;
-      return this;
-    }
-
     public Study build() {
       return studyRepository.save(Study.builder()
           .title(title != null ? title : "스터디명")
