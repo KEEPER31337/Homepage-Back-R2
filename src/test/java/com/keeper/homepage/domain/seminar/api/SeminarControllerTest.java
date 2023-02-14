@@ -179,7 +179,6 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("존재하지 않는 세미나를 삭제했을 때 실패한다.")
     public void should_failDeleteNotExistsSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
       deleteSeminarUsingApi(adminToken, -1L).andExpect(status().isNotFound());
     }
   }
