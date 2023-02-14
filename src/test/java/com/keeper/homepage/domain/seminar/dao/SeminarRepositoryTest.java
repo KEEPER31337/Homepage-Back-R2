@@ -73,4 +73,16 @@ public class SeminarRepositoryTest extends IntegrationTest {
       assertThat(afterSeminarLength).isEqualTo(beforeSeminarLength - 1);
     }
   }
+
+  @Nested
+  @DisplayName("세미나 유틸 메서드 테스트")
+  class SeminarUtilTest {
+
+    @Test
+    @DisplayName("출석 코드의 길이가 4인지 확인한다.")
+    public void check_randomAttendanceCode_size() throws Exception {
+      String attendanceCode = Seminar.randomAttendanceCode();
+      assertThat(attendanceCode.length()).isEqualTo(4);
+    }
+  }
 }
