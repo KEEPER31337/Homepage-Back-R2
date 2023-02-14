@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostRequest;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
+import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,10 @@ public class PostController {
       @LoginMember Member member,
       @ModelAttribute @Valid PostRequest request
   ) {
-    Long postId = postService.createPost(member, request);
+    Long postId = postService.createPost(request.toEntity(member, WebUtil.getUserIP()),
+        request.getCategoryId(),
+        request.getThumbnail(),
+        request.getFiles());
 
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))

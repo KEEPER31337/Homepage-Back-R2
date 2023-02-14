@@ -54,7 +54,7 @@ public class PostRequest {
   private MultipartFile thumbnail;
   private List<MultipartFile> files;
 
-  public Post toEntity(Member member, String ipAddress, Thumbnail thumbnail) {
+  public Post toEntity(Member member, String ipAddress) {
     return Post.builder()
         .title(title)
         .content(content)
@@ -65,7 +65,6 @@ public class PostRequest {
         .isSecret(isSecret)
         .isTemp(isTemp)
         .password(password)
-        .thumbnail(thumbnail)
         .build();
   }
 }

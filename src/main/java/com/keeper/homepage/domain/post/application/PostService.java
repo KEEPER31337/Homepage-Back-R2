@@ -3,17 +3,14 @@ package com.keeper.homepage.domain.post.application;
 import static com.keeper.homepage.global.error.ErrorCode.CATEGORY_NOT_FOUND;
 
 import com.keeper.homepage.domain.file.entity.FileEntity;
-import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
-import com.keeper.homepage.domain.post.dto.request.PostRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
-import com.keeper.homepage.global.util.web.WebUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,19 +28,17 @@ public class PostService {
   private final FileUtil fileUtil;
 
   @Transactional
-  public Long createPost(Member member, PostRequest request) {
-    Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(request.getThumbnail()).orElse(null);
-    Category category = getCategoryById(request.getCategoryId());
-    Post post = savePost(member, request, category, savedThumbnail);
-    savePostFiles(request.getFiles(), post);
-    return post.getId();
+  public Long createPost(Post post, Long categoryId, MultipartFile thumbnail,
+      List<MultipartFile> multipartFiles) {
+    Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
+    savePostFiles(multipartFiles, post);
+    return savePost(post, savedThumbnail, categoryId);
   }
 
-  private Post savePost(Member member, PostRequest request, Category category,
-      Thumbnail thumbnail) {
-    Post post = request.toEntity(member, WebUtil.getUserIP(), thumbnail);
-    category.addPost(post);
-    return postRepository.save(post);
+  private Long savePost(Post post, Thumbnail thumbnail, Long categoryId) {
+    post.registerThumbnail(thumbnail);
+    post.registerCategory(getCategoryById(categoryId));
+    return postRepository.save(post).getId();
   }
 
   private Category getCategoryById(Long categoryId) {
