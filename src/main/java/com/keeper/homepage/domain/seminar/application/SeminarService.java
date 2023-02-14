@@ -34,7 +34,8 @@ public class SeminarService {
     LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
 
     if (attendanceCloseTime.isAfter(latenessCloseTime)) {
-      throw new BusinessException(attendanceCloseTime, "attendanceCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
+      throw new BusinessException(attendanceCloseTime, "attendanceCloseTime",
+          SEMINAR_TIME_NOT_AVAILABLE);
     }
   }
 
