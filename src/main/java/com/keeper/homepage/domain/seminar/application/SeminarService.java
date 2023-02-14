@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
-import static java.util.stream.Collectors.joining;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
 
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
@@ -9,9 +9,8 @@ import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,24 +20,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SeminarService {
 
-  private static final Random RANDOM = new Random();
   private final SeminarRepository seminarRepository;
 
   @Transactional
   public Long save(SeminarSaveRequest request) {
-    return seminarRepository.save(request.toEntity(randomAttendanceCode())).getId();
+    validCloseTime(request);
+
+    Seminar seminar = request.toEntity();
+    return seminarRepository.save(seminar).getId();
   }
 
-  public String randomAttendanceCode() {
-    int ATTENDANCE_CODE_LENGTH = 4;
+  private void validCloseTime(SeminarSaveRequest request) {
+    LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
+    LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
 
-    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
-        .mapToObj(i -> ((Integer) i).toString())
-        .collect(joining());
+    if (attendanceCloseTime.isAfter(latenessCloseTime)) {
+      throw new BusinessException(attendanceCloseTime, "attendanceCloseTime",
+          SEMINAR_TIME_NOT_AVAILABLE);
+    }
   }
 
   @Transactional
-  public void delete(Long seminarId) {
+  public void delete(long seminarId) {
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
     seminarRepository.delete(seminar);
@@ -51,7 +54,7 @@ public class SeminarService {
         .toList();
   }
 
-  public SeminarResponse findById(Long seminarId) {
+  public SeminarResponse findById(long seminarId) {
     return new SeminarResponse(seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
   }

@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import java.time.LocalDate;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,12 +27,12 @@ public class SeminarController {
   private final SeminarService seminarService;
 
   @PostMapping
-  public Long createSeminar(@RequestBody SeminarSaveRequest request) {
+  public Long createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
     return seminarService.save(request);
   }
 
   @DeleteMapping("/{seminarId}")
-  public void deleteSeminar(@PathVariable Long seminarId) {
+  public void deleteSeminar(@PathVariable long seminarId) {
     seminarService.delete(seminarId);
   }
 
@@ -46,7 +47,7 @@ public class SeminarController {
   }
 
   @GetMapping("/{seminarId}")
-  public SeminarResponse getSeminar(@PathVariable Long seminarId) {
+  public SeminarResponse getSeminar(@PathVariable long seminarId) {
     return seminarService.findById(seminarId);
   }
 }
