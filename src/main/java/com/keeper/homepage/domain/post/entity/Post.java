@@ -92,10 +92,10 @@ public class Post extends BaseEntity {
   @Column(name = "password", length = MAX_PASSWORD_LENGTH)
   private String password;
 
-  @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post", orphanRemoval = true)
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<FileEntity> files = new ArrayList<>();
 
   @OneToMany(mappedBy = "post", orphanRemoval = true)
