@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.post.api;
 
+import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_PASSWORD_LENGTH;
+import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_TITLE_LENGTH;
 import static com.keeper.homepage.domain.post.entity.Post.MAX_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.entity.Post.MAX_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -77,7 +79,7 @@ public class PostControllerTest extends IntegrationTest {
                       .description("사용자 인증에 필요한 ACCESS TOKEN")),
               queryParameters(
                   parameterWithName("title")
-                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_TITLE_LENGTH),
+                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_TITLE_LENGTH),
                   parameterWithName("content")
                       .description("게시글 내용을 입력해주세요."),
                   parameterWithName("allowComment")
@@ -93,7 +95,7 @@ public class PostControllerTest extends IntegrationTest {
                       .description("임시 저장글 여부 (null일 때 default : " + false)
                       .optional(),
                   parameterWithName("password")
-                      .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_PASSWORD_LENGTH)
+                      .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_PASSWORD_LENGTH)
                       .optional(),
                   parameterWithName("categoryId")
                       .description("게시글 카테고리를 입력해주세요.")
@@ -184,7 +186,7 @@ public class PostControllerTest extends IntegrationTest {
     @Test
     @DisplayName("게시글 제목이 최대 글자를 넘은 경우 게시글 생성은 실패한다.")
     void should_400BadRequest_when_tooLongTitle() throws Exception {
-      params.add("title", "a".repeat(MAX_TITLE_LENGTH + 1));
+      params.add("title", "a".repeat(MAX_REQUEST_TITLE_LENGTH + 1));
       params.add("content", "게시글 내용");
       params.add("categoryId", category.getId().toString());
 
@@ -197,7 +199,7 @@ public class PostControllerTest extends IntegrationTest {
     void should_400BadRequest_when_tooLongPassword() throws Exception {
       params.add("title", "게시글 제목");
       params.add("content", "게시글 내용");
-      params.add("password", "a".repeat(MAX_PASSWORD_LENGTH + 1));
+      params.add("password", "a".repeat(MAX_REQUEST_PASSWORD_LENGTH + 1));
       params.add("categoryId", category.getId().toString());
 
       callCreatePostApi()
