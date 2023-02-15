@@ -10,7 +10,6 @@ import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +44,6 @@ public class SeminarService {
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
     seminarRepository.delete(seminar);
-  }
-
-  // TODO: 2023-02-13 SeminarRepository에서 select query를 사용하는 방법으로 수정할지 고민이다.
-  public List<SeminarResponse> findAll() {
-    return seminarRepository.findAll().stream()
-        .map(SeminarResponse::new)
-        .toList();
   }
 
   public SeminarResponse findById(long seminarId) {

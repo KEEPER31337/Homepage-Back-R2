@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.seminar.api;
 
 import com.keeper.homepage.domain.seminar.application.SeminarService;
+import com.keeper.homepage.domain.seminar.application.convenience.FindService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SeminarController {
 
   private final SeminarService seminarService;
+  private final FindService findService;
 
   @PostMapping
   public Long createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
@@ -38,7 +40,7 @@ public class SeminarController {
 
   @GetMapping
   public List<SeminarResponse> getAllSeminars() {
-    return seminarService.findAll();
+    return findService.findAll();
   }
 
   @GetMapping(params = "date")
