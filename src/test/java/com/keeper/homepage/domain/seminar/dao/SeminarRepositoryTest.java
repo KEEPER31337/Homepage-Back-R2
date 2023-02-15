@@ -24,7 +24,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
           .openTime(now)
           .attendanceCloseTime(now.plusMinutes(3))
           .latenessCloseTime(now.plusMinutes(4))
-          .attendanceCode("1234")
           .seminarName("세미나 제목입니다.")
           .build();
 
@@ -89,18 +88,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
       Seminar findSeminar = seminarRepository.findByOpenTime(dateNow);
 
       assertThat(findSeminar.getOpenTime().toLocalDate()).isEqualTo(dateNow);
-    }
-  }
-
-  @Nested
-  @DisplayName("세미나 유틸 메서드 테스트")
-  class SeminarUtilTest {
-
-    @Test
-    @DisplayName("출석 코드의 길이가 4인지 확인한다.")
-    public void check_randomAttendanceCode_size() throws Exception {
-      String attendanceCode = Seminar.randomAttendanceCode();
-      assertThat(attendanceCode.length()).isEqualTo(4);
     }
   }
 }
