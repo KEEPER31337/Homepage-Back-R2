@@ -152,7 +152,12 @@ public class Post extends BaseEntity {
     postDislikes.removeIf(postDislike -> postDislike.getPost().equals(post));
   }
 
-  public void assignCategory(Category category) {
+  public void registerCategory(Category category) {
     this.category = category;
+    category.getPosts().add(this);
+  }
+
+  public void registerThumbnail(Thumbnail thumbnail) {
+    this.thumbnail = thumbnail;
   }
 }
