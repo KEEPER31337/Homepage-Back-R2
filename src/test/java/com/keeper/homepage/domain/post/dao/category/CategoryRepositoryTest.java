@@ -3,8 +3,8 @@ package com.keeper.homepage.domain.post.dao.category;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 
 public class CategoryRepositoryTest extends IntegrationTest {
 
-  private Category category;
-  private Member member;
+  private Category parent;
+  private Category child;
 
   @BeforeEach
   void setUp() {
-    category = categoryTestHelper.generate();
-    member = memberTestHelper.generate();
+    parent = categoryTestHelper.generate();
+    child = categoryTestHelper.generate();
   }
 
   @Nested
@@ -28,7 +28,17 @@ public class CategoryRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("부모 카테고리에 자식 카테고리를 등록하면 DB에 저장되어야 한다.")
     void should_saveChildCategory_when_parentAddChild() {
-      // TODO: [DB] self referencing 하는 foreign key로 설정되면 변경한다.
+      parent.addChild(child);
+
+      em.flush();
+      em.clear();
+      parent = categoryRepository.findById(parent.getId()).orElseThrow();
+      child = categoryRepository.findById(child.getId()).orElseThrow();
+      List<Category> categories = categoryRepository.findAll();
+
+      assertThat(parent.getChildren()).hasSize(1);
+      assertThat(parent.getChildren()).contains(child);
+      assertThat(categories).contains(child);
     }
   }
 
@@ -39,24 +49,15 @@ public class CategoryRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("부모 카테고리를 지우면 자식 카테고리들도 지워진다.")
     void should_deletedChildren_when_deleteParent() {
-      // TODO: [DB] self referencing 하는 foreign key로 설정되면 변경한다.
-    }
-  }
+      parent.addChild(child);
 
-  @Nested
-  @DisplayName("DB NOT NULL DEFAULT 테스트")
-  class NotNullDefaultTest {
+      categoryRepository.delete(parent);
 
-    @Test
-    @DisplayName("부모 카테고리를 넣지 않았을 때 0L으로 처리해야 한다.")
-      // TODO: [DB] 부모 카테고리가 없을 경우 null로 처리하도록 변경되면 수정한다.
-    void should_processDefault_when_EmptyParentCategory() {
       em.flush();
       em.clear();
+      List<Category> categories = categoryRepository.findAll();
 
-      Category findCategory = categoryRepository.findById(category.getId()).orElseThrow();
-
-      assertThat(findCategory.getParent().getId()).isEqualTo(0L);
+      assertThat(categories).doesNotContain(child);
     }
   }
 }

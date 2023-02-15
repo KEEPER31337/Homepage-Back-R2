@@ -59,9 +59,9 @@ public class Category {
     posts.add(post);
   }
 
-  public void addChild(Category category) {
-    category.assignParent(this);
-    children.add(category);
+  public void addChild(Category child) {
+    child.assignParent(this);
+    children.add(child);
   }
 
   public void assignParent(Category parent) {

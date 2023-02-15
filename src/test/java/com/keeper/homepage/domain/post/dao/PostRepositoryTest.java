@@ -110,7 +110,6 @@ public class PostRepositoryTest extends IntegrationTest {
     void should_deletedComments_when_deletePost() {
       Comment comment = Comment.builder()
           .member(member)
-          .parentCommentId(0L)
           .content("댓글 내용")
           .ipAddress("0.0.0.0")
           .build();

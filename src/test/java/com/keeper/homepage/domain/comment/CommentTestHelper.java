@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.post.entity.category.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,7 +34,7 @@ public class CommentTestHelper {
 
     private Member member;
     private Post post;
-    private Long parentCommentId;
+    private Comment parent;
     private String content;
     private Integer likeCount;
     private Integer dislikeCount;
@@ -53,8 +54,8 @@ public class CommentTestHelper {
       return this;
     }
 
-    private CommentBuilder parentCommentId(Long parentCommentId) {
-      this.parentCommentId = parentCommentId;
+    private CommentBuilder parent(Comment parent) {
+      this.parent = parent;
       return this;
     }
 
@@ -82,7 +83,7 @@ public class CommentTestHelper {
       return commentRepository.save(Comment.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .post(post != null ? post : postTestHelper.generate())
-          .parentCommentId(parentCommentId != null ? parentCommentId : 0L)
+          .parent(parent)
           .content(content != null ? content : "댓글내용")
           .likeCount(likeCount)
           .dislikeCount(dislikeCount)

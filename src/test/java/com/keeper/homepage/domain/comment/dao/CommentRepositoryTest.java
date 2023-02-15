@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.post.entity.category.Category;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,6 @@ public class CommentRepositoryTest extends IntegrationTest {
     comment = Comment.builder()
         .member(member)
         .post(postTestHelper.generate())
-        .parentCommentId(0L)
         .content("댓글내용")
         .ipAddress("0.0.0.0")
         .build();
@@ -37,7 +37,20 @@ public class CommentRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("부모 댓글에 자식 댓글을 등록하면 DB에 저장되어야 한다.")
     void should_saveChildComment_when_parentAddChild() {
-      // TODO: DB가 변경되면 성공해야 합니다.
+      Comment parent = commentTestHelper.generate();
+      Comment child = commentTestHelper.generate();
+
+      parent.addChild(child);
+
+      em.flush();
+      em.clear();
+      parent = commentRepository.findById(parent.getId()).orElseThrow();
+      child = commentRepository.findById(child.getId()).orElseThrow();
+      List<Comment> comments = commentRepository.findAll();
+
+      assertThat(parent.getChildren()).hasSize(1);
+      assertThat(parent.getChildren()).contains(child);
+      assertThat(comments).contains(child);
     }
   }
 
@@ -57,12 +70,6 @@ public class CommentRepositoryTest extends IntegrationTest {
 
       assertThat(memberHasCommentLikeRepository.findAll()).hasSize(0);
       assertThat(memberHasCommentDislikeRepository.findAll()).hasSize(0);
-    }
-
-    @Test
-    @DisplayName("부모 댓글을 지워도 자식 댓글은 삭제되지 않아야 한다.")
-    void should_noDeleteChildren_when_deleteParentComment() {
-      // TODO: DB가 변경되면 성공해야 합니다.
     }
   }
 
