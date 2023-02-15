@@ -50,7 +50,7 @@ public class Seminar extends BaseEntity {
   @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
-  public static String randomAttendanceCode() {
+  private String randomAttendanceCode() {
     final int ATTENDANCE_CODE_LENGTH = 4;
 
     return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
@@ -60,11 +60,11 @@ public class Seminar extends BaseEntity {
 
   @Builder
   private Seminar(LocalDateTime openTime, LocalDateTime attendanceCloseTime,
-      LocalDateTime latenessCloseTime, String attendanceCode, String name) {
+      LocalDateTime latenessCloseTime, String name) {
     this.openTime = openTime;
     this.attendanceCloseTime = attendanceCloseTime;
     this.latenessCloseTime = latenessCloseTime;
-    this.attendanceCode = attendanceCode;
+    this.attendanceCode = randomAttendanceCode();
     this.name = name;
   }
 }

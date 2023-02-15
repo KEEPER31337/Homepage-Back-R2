@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.seminar.dto.request;
 
-import static com.keeper.homepage.domain.seminar.entity.Seminar.randomAttendanceCode;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -34,7 +33,6 @@ public class SeminarSaveRequest {
     return Seminar.builder()
         .attendanceCloseTime(attendanceCloseTime)
         .latenessCloseTime(latenessCloseTime)
-        .attendanceCode(randomAttendanceCode())
         .build();
   }
 }
