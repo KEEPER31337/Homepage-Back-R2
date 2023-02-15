@@ -4,6 +4,8 @@ import static com.keeper.homepage.domain.post.entity.Post.MAX_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.entity.Post.MAX_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -21,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.dto.request.PostRequest;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
@@ -33,14 +35,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PostControllerTest extends IntegrationTest {
 
-  private final Long memberId = 1L;
+  private final Long postId = 1L;
   private Cookie accessToken;
   private Category category;
   private MockMultipartFile thumbnail, file;
@@ -68,7 +70,7 @@ public class PostControllerTest extends IntegrationTest {
 
       callCreatePostApiWithFiles(thumbnail, file)
           .andExpect(status().isCreated())
-          .andExpect(header().string("location", "/posts/" + memberId))
+          .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("create-post",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -115,7 +117,7 @@ public class PostControllerTest extends IntegrationTest {
 
       callCreatePostApiWithFile(thumbnail)
           .andExpect(status().isCreated())
-          .andExpect(header().string("location", "/posts/" + memberId));
+          .andExpect(header().string("location", "/posts/" + postId));
     }
 
     @Test
@@ -126,7 +128,7 @@ public class PostControllerTest extends IntegrationTest {
 
       callCreatePostApiWithFile(file)
           .andExpect(status().isCreated())
-          .andExpect(header().string("location", "/posts/" + memberId));
+          .andExpect(header().string("location", "/posts/" + postId));
     }
 
     @Test
@@ -137,7 +139,7 @@ public class PostControllerTest extends IntegrationTest {
 
       callCreatePostApi()
           .andExpect(status().isCreated())
-          .andExpect(header().string("location", "/posts/" + memberId));
+          .andExpect(header().string("location", "/posts/" + postId));
     }
 
     @Test
@@ -154,7 +156,7 @@ public class PostControllerTest extends IntegrationTest {
 
       callCreatePostApi()
           .andExpect(status().isCreated())
-          .andExpect(header().string("location", "/posts/" + memberId));
+          .andExpect(header().string("location", "/posts/" + postId));
     }
 
     @Test
@@ -224,8 +226,8 @@ public class PostControllerTest extends IntegrationTest {
     }
 
     private void mockCreatePostService() {
-      doReturn(memberId).when(postService)
-          .createPost(any(Member.class), any(PostRequest.class));
+      doReturn(postId).when(postService)
+          .createPost(any(Post.class), anyLong(), any(), any());
     }
 
     private void addAllParams() {
