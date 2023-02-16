@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.seminar.api;
 
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_서기;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -28,8 +29,10 @@ import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 public class SeminarControllerTest extends IntegrationTest {
 
   private long adminId;
+  private long clerkId;
   private long userId;
   private String adminToken;
+  private String clerkToken;
   private String userToken;
   private LocalDateTime now;
   private SeminarSaveRequest seminarSaveRequest;
@@ -37,8 +40,10 @@ public class SeminarControllerTest extends IntegrationTest {
   @BeforeEach
   void setUp() {
     adminId = memberTestHelper.builder().build().getId();
+    clerkId = memberTestHelper.builder().build().getId();
     userId = memberTestHelper.builder().build().getId();
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
+    clerkToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, clerkId, ROLE_회원, ROLE_서기);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
 
     now = LocalDateTime.now();
@@ -196,6 +201,15 @@ public class SeminarControllerTest extends IntegrationTest {
           .andExpect(jsonPath("$.updateTime").exists());
     }
 
+    @Test
+    @DisplayName("서기는 날짜로 세미나를 조회할 수 없다.")
+    public void should_badRequest_when_clerkSearchDate() throws Exception {
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      em.clear();
+
+      searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString()).andExpect(status().isForbidden());
+    }
+    
     @Test
     @DisplayName("date 값의 형식은 맞지만 데이터가 없을 때 200 (OK)을 반환한다.")
     public void should_OK_when_validDate() throws Exception {
