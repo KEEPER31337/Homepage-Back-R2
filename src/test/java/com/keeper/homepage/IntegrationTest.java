@@ -45,6 +45,7 @@ import com.keeper.homepage.domain.posting.dao.PostingRepository;
 import com.keeper.homepage.domain.posting.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.posting.dao.comment.CommentRepository;
 import com.keeper.homepage.domain.study.StudyTestHelper;
+import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
@@ -152,6 +153,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected StudyRepository studyRepository;
+
+  @SpyBean
+  protected StudyHasMemberRepository studyHasMemberRepository;
 
   /******* Service *******/
   @SpyBean
