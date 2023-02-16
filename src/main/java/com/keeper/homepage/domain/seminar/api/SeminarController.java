@@ -45,6 +45,7 @@ public class SeminarController {
   }
 
   @GetMapping(params = "date")
+  @Secured({"ROLE_회장", "ROLE_부회장"})
   public ResponseEntity<SeminarResponse> getSeminarByDate(
       @RequestParam("date") String strLocalDate) {
     SeminarResponse seminarResponse = seminarService.findByDate(strLocalDate);
