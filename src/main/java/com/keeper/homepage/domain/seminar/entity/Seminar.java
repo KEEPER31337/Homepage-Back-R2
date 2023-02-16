@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Random;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +25,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "seminar")
 public class Seminar extends BaseEntity {
 
-  private static final Random RANDOM = new Random();
   private static final int MAX_ATTENDANCE_CODE_LENGTH = 10;
   private static final int MAX_NAME_LENGTH = 100;
 
@@ -50,21 +48,13 @@ public class Seminar extends BaseEntity {
   @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
-  private String randomAttendanceCode() {
-    final int ATTENDANCE_CODE_LENGTH = 4;
-
-    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
-        .mapToObj(i -> ((Integer) i).toString())
-        .collect(joining());
-  }
-
   @Builder
   private Seminar(LocalDateTime openTime, LocalDateTime attendanceCloseTime,
-      LocalDateTime latenessCloseTime, String name) {
+      LocalDateTime latenessCloseTime, String attendanceCode, String name) {
     this.openTime = openTime;
     this.attendanceCloseTime = attendanceCloseTime;
     this.latenessCloseTime = latenessCloseTime;
-    this.attendanceCode = randomAttendanceCode();
+    this.attendanceCode = attendanceCode;
     this.name = name;
   }
 }
