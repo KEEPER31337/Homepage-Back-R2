@@ -17,11 +17,15 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
+@DynamicInsert
+@DynamicUpdate
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"study", "member"})
 @IdClass(StudyHasMemberPK.class)
 @Table(name = "study_has_member")
 public class StudyHasMember {
