@@ -15,8 +15,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -73,8 +73,8 @@ public class Study extends BaseEntity {
   @JoinColumn(name = "head_member_id", nullable = false)
   private Member headMember;
 
-  @OneToMany(mappedBy = "study", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<StudyHasMember> studyHasMember = new ArrayList<>();
+  @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  private Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
   private Study(String title, String information, Integer memberNumber,
@@ -90,5 +90,13 @@ public class Study extends BaseEntity {
       this.etcLink = etcLink;
       this.thumbnail = thumbnail;
       this.headMember = headMember;
+  }
+
+  public void addMember(StudyHasMember member) {
+    studyMembers.add(member);
+  }
+
+  public void removeMember(Study study) {
+    studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
   }
 }
