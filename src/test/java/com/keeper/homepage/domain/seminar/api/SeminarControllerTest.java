@@ -125,7 +125,7 @@ public class SeminarControllerTest extends IntegrationTest {
       assertThat(afterLength).isEqualTo(beforeLength + 1);
 
       // 데이터가 추가 되었음을 위 코드에서 검증했기 때문에 추가된 데이터들이 정상적인지 확인
-      // 조회된 모든 데이터를 검증하는 것은 비효율적이다.
+      // 조회된 모든 데이터를 검증하는 것은 비효율적이라고 생각이 들었다.
       int idx = afterLength - 1;
       searchSeminarUsingApi(adminToken)
           .andExpect(jsonPath("$.length()", is(afterLength)))
