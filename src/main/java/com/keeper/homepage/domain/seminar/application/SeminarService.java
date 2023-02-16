@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
+import static java.util.stream.Collectors.joining;
 
 import com.keeper.homepage.domain.seminar.application.convenience.FindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
@@ -12,6 +13,7 @@ import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SeminarService {
 
+  private static final Random RANDOM = new Random();
+
   private final SeminarRepository seminarRepository;
   private final FindService findService;
 
@@ -28,7 +32,7 @@ public class SeminarService {
   public Long save(SeminarSaveRequest request) {
     validCloseTime(request);
 
-    Seminar seminar = request.toEntity();
+    Seminar seminar = request.toEntity(randomAttendanceCode());
     return seminarRepository.save(seminar).getId();
   }
 
@@ -40,6 +44,14 @@ public class SeminarService {
       throw new BusinessException(attendanceCloseTime, "attendanceCloseTime",
           SEMINAR_TIME_NOT_AVAILABLE);
     }
+  }
+
+  private String randomAttendanceCode() {
+    final int ATTENDANCE_CODE_LENGTH = 4;
+
+    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
+        .mapToObj(i -> ((Integer) i).toString())
+        .collect(joining());
   }
 
   @Transactional

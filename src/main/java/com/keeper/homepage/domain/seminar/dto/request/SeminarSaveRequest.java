@@ -31,21 +31,11 @@ public class SeminarSaveRequest {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime latenessCloseTime;
 
-  private static final Random RANDOM = new Random();
-
-  public Seminar toEntity() {
+  public Seminar toEntity(String attendanceCode) {
     return Seminar.builder()
         .attendanceCloseTime(attendanceCloseTime)
         .latenessCloseTime(latenessCloseTime)
-        .attendanceCode(randomAttendanceCode())
+        .attendanceCode(attendanceCode)
         .build();
-  }
-
-  private String randomAttendanceCode() {
-    final int ATTENDANCE_CODE_LENGTH = 4;
-
-    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
-        .mapToObj(i -> ((Integer) i).toString())
-        .collect(joining());
   }
 }
