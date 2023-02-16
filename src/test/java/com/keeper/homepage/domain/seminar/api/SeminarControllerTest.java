@@ -162,6 +162,27 @@ public class SeminarControllerTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("date 값의 형식은 맞지만 데이터가 없을 때 200 (OK)을 반환한다.")
+    public void should_OK_when_validDate() throws Exception {
+      searchDateSeminarUsingApi(adminToken, "2022-02-02")
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.openTime").isEmpty())
+          .andExpect(jsonPath("$.attendanceCloseTime").isEmpty())
+          .andExpect(jsonPath("$.latenessCloseTime").isEmpty())
+          .andExpect(jsonPath("$.attendanceCode").isEmpty())
+          .andExpect(jsonPath("$.name").isEmpty())
+          .andExpect(jsonPath("$.registerTime").isEmpty())
+          .andExpect(jsonPath("$.updateTime").isEmpty());
+    }
+
+    @Test
+    @DisplayName("date 값의 형식이 맞지 않으면 400 (Bad Request)을 반환한다.")
+    public void should_badRequest_when_invalidDate() throws Exception {
+      searchDateSeminarUsingApi(adminToken, "20220202").andExpect(status().isBadRequest());
+      searchDateSeminarUsingApi(adminToken, null).andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
     public void should_failCountSeminar_when_notAdmin() throws Exception {
       makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
@@ -191,7 +212,7 @@ public class SeminarControllerTest extends IntegrationTest {
           .findAny().orElseThrow()
           .getId();
 
-      deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk());
+      deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isNoContent());
       int afterLength = seminarRepository.findAll().size();
 
       assertThat(afterLength).isEqualTo(beforeLength - 1);
