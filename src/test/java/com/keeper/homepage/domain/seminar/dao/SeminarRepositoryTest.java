@@ -85,7 +85,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
       em.clear();
 
       LocalDate dateNow = LocalDate.now();
-      Seminar findSeminar = seminarRepository.findByOpenTime(dateNow);
+      Seminar findSeminar = seminarRepository.findByOpenTime(dateNow).orElseThrow();
 
       assertThat(findSeminar.getOpenTime().toLocalDate()).isEqualTo(dateNow);
     }
