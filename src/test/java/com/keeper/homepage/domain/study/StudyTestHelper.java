@@ -94,7 +94,7 @@ public class StudyTestHelper {
       return studyRepository.save(Study.builder()
           .title(title != null ? title : "스터디명")
           .information(information != null ? information : "스터디 소개")
-          .memberNumber(memberNumber != null ? memberNumber : 0)
+          .memberNumber(memberNumber)
           .year(year)
           .season(season)
           .gitLink(gitLink)
