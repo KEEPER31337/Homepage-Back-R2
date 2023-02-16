@@ -26,12 +26,12 @@ public class MemberHasPostDislike {
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
+  @JoinColumn(name = "member_id", nullable = false, updatable = false)
   private Member member;
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "posting_id", nullable = false)
+  @JoinColumn(name = "posting_id", nullable = false, updatable = false)
   private Post post;
 
   @Builder

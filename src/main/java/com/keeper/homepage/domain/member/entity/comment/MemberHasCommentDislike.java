@@ -26,12 +26,12 @@ public class MemberHasCommentDislike {
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
+  @JoinColumn(name = "member_id", nullable = false, updatable = false)
   private Member member;
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "comment_id", nullable = false)
+  @JoinColumn(name = "comment_id", nullable = false, updatable = false)
   private Comment comment;
 
   @Builder
