@@ -1,10 +1,11 @@
 package com.keeper.homepage.domain.study.dao;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.Study;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -45,6 +46,18 @@ public class StudyRepositoryTest extends IntegrationTest {
 
       assertThat(savedStudy.getMemberNumber()).isEqualTo(0L);
       assertThat(savedStudy.getThumbnail().getId()).isEqualTo(1L);
+    }
+    @Test
+    @DisplayName("등록된 스터디인 경우 성공적으로 삭제되어야 한다.")
+    public void should_successfullyDelete_study(){
+      Long studyId = studyRepository.save(study).getId();
+      em.flush();
+      em.clear();
+      Study savedStudy = studyRepository.findById(studyId).orElseThrow();
+      studyRepository.delete(savedStudy);
+
+      assertThatThrownBy(() -> studyRepository.findById(savedStudy.getId()).orElseThrow()).isInstanceOf(
+          NoSuchElementException.class);
     }
   }
 }
