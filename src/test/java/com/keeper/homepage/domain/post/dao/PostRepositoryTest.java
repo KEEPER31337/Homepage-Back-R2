@@ -122,6 +122,7 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      post = postRepository.findById(post.getId()).orElseThrow();
       postRepository.delete(post);
 
       em.flush();
