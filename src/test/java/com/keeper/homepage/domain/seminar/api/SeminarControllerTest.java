@@ -21,6 +21,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
 
@@ -53,8 +54,13 @@ public class SeminarControllerTest extends IntegrationTest {
         .content(objectMapper.writeValueAsString(request)));
   }
 
-  ResultActions searchSeminarUsingApi(String token) throws Exception {
+  ResultActions searchAllSeminarUsingApi(String token) throws Exception {
     return mockMvc.perform(get("/seminars")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+  }
+
+  ResultActions searchSeminarUsingApi(String token, String idx) throws Exception {
+    return mockMvc.perform(get("/seminars/" + idx)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
@@ -114,7 +120,7 @@ public class SeminarControllerTest extends IntegrationTest {
   class SeminarCheckTest {
 
     @Test
-    @DisplayName("관리자 권한으로 생성된 세미나의 개수 및 데이터를 확인한다.")
+    @DisplayName("생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
       int beforeLength = findService.findAll().size();
       makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
@@ -127,7 +133,7 @@ public class SeminarControllerTest extends IntegrationTest {
       // 데이터가 추가 되었음을 위 코드에서 검증했기 때문에 추가된 데이터들이 정상적인지 확인
       // 조회된 모든 데이터를 검증하는 것은 비효율적이라고 생각이 들었다.
       int idx = afterLength - 1;
-      searchSeminarUsingApi(adminToken)
+      searchAllSeminarUsingApi(adminToken)
           .andExpect(jsonPath("$.length()", is(afterLength)))
           .andExpectAll(combineJsonPath("openTime", idx).exists())
           .andExpect(combineJsonPath("openTime", idx).exists())
@@ -142,6 +148,35 @@ public class SeminarControllerTest extends IntegrationTest {
     public JsonPathResultMatchers combineJsonPath(String name, int idx) {
       String parseFormat = "$[%d].%s";
       return jsonPath(parseFormat, idx, name);
+    }
+
+    @Test
+    @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
+    public void should_failSearchSeminar_when_notAdmin() throws Exception {
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      searchAllSeminarUsingApi(userToken).andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("id 값으로 세미나 조회를 성공한다.")
+    public void should_successSearchSeminarUsingId_when_admin() throws Exception {
+      MvcResult mvcResult = makeSeminarUsingApi(adminToken, seminarSaveRequest)
+          .andExpect(status().isOk()).andReturn();
+      String seminarId = mvcResult.getResponse().getContentAsString();
+
+      searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 세미나를 조회했을 때 실패한다.")
+    public void should_failSearchSeminarNotExistId_when_admin() throws Exception {
+      searchSeminarUsingApi(adminToken, "0").andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("관리자 권한이 아니면 id 값으로 세미나 조회를 실패한다.")
+    public void should_failSearchSeminarUsingId_when_notAdmin() throws Exception {
+      searchSeminarUsingApi(userToken, "2").andExpect(status().isForbidden());
     }
 
     @Test
@@ -183,13 +218,6 @@ public class SeminarControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
-    public void should_failCountSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
-      searchSeminarUsingApi(userToken).andExpect(status().isForbidden());
-    }
-
-    @Test
     @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
     public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
       makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
@@ -216,7 +244,7 @@ public class SeminarControllerTest extends IntegrationTest {
       int afterLength = seminarRepository.findAll().size();
 
       assertThat(afterLength).isEqualTo(beforeLength - 1);
-      searchSeminarUsingApi(adminToken).andExpect(jsonPath("$.length()", is(afterLength)));
+      searchAllSeminarUsingApi(adminToken).andExpect(jsonPath("$.length()", is(afterLength)));
     }
 
     @Test
