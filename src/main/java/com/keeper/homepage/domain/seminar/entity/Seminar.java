@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.seminar.entity;
 
-import static java.util.stream.Collectors.joining;
-
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

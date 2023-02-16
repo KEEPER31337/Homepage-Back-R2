@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.seminar.dto.request;
 
-import static java.util.stream.Collectors.joining;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -8,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import jakarta.validation.constraints.Future;
 import java.time.LocalDateTime;
-import java.util.Random;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
