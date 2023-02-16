@@ -21,20 +21,12 @@ public class PostRepositoryTest extends IntegrationTest {
 
   private Member member;
   private Post post;
-  private Category category;
   private Thumbnail thumbnail;
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    category = categoryTestHelper.generate();
-    post = Post.builder()
-        .title("포스팅 제목")
-        .content("포스팅 내용")
-        .member(member)
-        .ipAddress("0.0.0.0")
-        .category(category)
-        .build();
+    post = postTestHelper.generate();
     thumbnail = thumbnailTestHelper.generateThumbnail();
   }
 
@@ -66,6 +58,7 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      post = postRepository.findById(post.getId()).orElseThrow();
 
       assertThat(post.getPostLikes()).hasSize(1);
       assertThat(post.getPostLikes()).contains(MemberHasPostLike.builder()
@@ -88,6 +81,8 @@ public class PostRepositoryTest extends IntegrationTest {
 
       postRepository.delete(postWithThumbnail);
 
+      em.flush();
+      em.clear();
       assertThat(thumbnailRepository.findAll()).doesNotContain(thumbnail);
     }
 
@@ -98,27 +93,23 @@ public class PostRepositoryTest extends IntegrationTest {
       FileEntity file = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
       postBuild.addFile(file);
 
-      em.flush();
-      em.clear();
       postRepository.delete(postBuild);
 
+      em.flush();
+      em.clear();
       assertThat(fileRepository.findAll()).doesNotContain(file);
     }
 
     @Test
     @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")
     void should_deletedComments_when_deletePost() {
-      Comment comment = Comment.builder()
-          .member(member)
-          .content("댓글 내용")
-          .ipAddress("0.0.0.0")
-          .build();
+      Comment comment = commentTestHelper.generate();
       post.addComment(comment);
+
+      postRepository.delete(post);
 
       em.flush();
       em.clear();
-      postRepository.delete(post);
-
       assertThat(commentRepository.findAll()).hasSize(0);
       assertThat(commentRepository.findAll()).doesNotContain(comment);
     }
@@ -133,6 +124,8 @@ public class PostRepositoryTest extends IntegrationTest {
       em.clear();
       postRepository.delete(post);
 
+      em.flush();
+      em.clear();
       assertThat(memberHasPostLikeRepository.findAll()).hasSize(0);
       assertThat(memberHasPostDislikeRepository.findAll()).hasSize(0);
     }
@@ -182,6 +175,7 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      post = postRepository.findById(post.getId()).orElseThrow();
 
       assertThat(post.getPostLikes()).hasSize(0);
     }
@@ -194,10 +188,9 @@ public class PostRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
     void should_processDefault_when_EmptyValue() {
-      Post postBuild = postTestHelper.generate();
       em.flush();
       em.clear();
-      Post findPost = postRepository.findById(postBuild.getId()).orElseThrow();
+      Post findPost = postRepository.findById(post.getId()).orElseThrow();
 
       assertThat(findPost.getVisitCount()).isEqualTo(0);
       assertThat(findPost.getLikeCount()).isEqualTo(0);
