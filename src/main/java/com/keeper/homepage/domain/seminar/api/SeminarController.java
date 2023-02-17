@@ -44,6 +44,8 @@ public class SeminarController {
     return ResponseEntity.status(HttpStatus.OK).body(seminarList);
   }
 
+  // TODO: 2023-02-17 날짜로 조회하는 기능의 권한이 아직 명확하지 않다. 
+  // 프론트와 연결하면서 추후에 수정할 예정
   @GetMapping(params = "date")
   @Secured({"ROLE_회장", "ROLE_부회장"})
   public ResponseEntity<SeminarResponse> getSeminarByDate(
