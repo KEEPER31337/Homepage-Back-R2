@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FindService {
+public class ValidSeminarFindService {
 
   private static final long virtualSeminarId = 1L;
   private final SeminarRepository seminarRepository;

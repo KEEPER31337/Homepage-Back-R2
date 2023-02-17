@@ -127,12 +127,12 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
-      int beforeLength = findService.findAll().size();
+      int beforeLength = validSeminarFindService.findAll().size();
       makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       em.flush();
       em.clear();
 
-      int afterLength = findService.findAll().size();
+      int afterLength = validSeminarFindService.findAll().size();
       assertThat(afterLength).isEqualTo(beforeLength + 1);
 
       // 데이터가 추가 되었음을 위 코드에서 검증했기 때문에 추가된 데이터들이 정상적인지 확인

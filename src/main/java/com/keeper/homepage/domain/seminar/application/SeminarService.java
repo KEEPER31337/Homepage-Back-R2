@@ -4,7 +4,7 @@ import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
 import static java.util.stream.Collectors.joining;
 
-import com.keeper.homepage.domain.seminar.application.convenience.FindService;
+import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
@@ -26,7 +26,7 @@ public class SeminarService {
   private static final Random RANDOM = new Random();
 
   private final SeminarRepository seminarRepository;
-  private final FindService findService;
+  private final ValidSeminarFindService validSeminarFindService;
 
   @Transactional
   public Long save(SeminarSaveRequest request) {
@@ -84,6 +84,6 @@ public class SeminarService {
   }
 
   public List<SeminarResponse> findAll() {
-    return findService.findAll();
+    return validSeminarFindService.findAll();
   }
 }
