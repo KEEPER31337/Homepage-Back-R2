@@ -2,8 +2,6 @@ package com.keeper.homepage.domain.post.api;
 
 import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_TITLE_LENGTH;
-import static com.keeper.homepage.domain.post.entity.Post.MAX_PASSWORD_LENGTH;
-import static com.keeper.homepage.domain.post.entity.Post.MAX_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
