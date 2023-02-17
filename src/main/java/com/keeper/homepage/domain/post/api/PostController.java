@@ -29,9 +29,9 @@ public class PostController {
       @LoginMember Member member,
       @ModelAttribute @Valid PostRequest request
   ) {
-    Long postId = postService.createPost(request.toEntity(member, WebUtil.getUserIP()),
-        request.getCategoryId(),
-        request.getThumbnail(),
+    Long postId = postService.createPost(
+        request.toEntity(member, WebUtil.getUserIP()),
+        request.getCategoryId(), request.getThumbnail(),
         request.getFiles());
 
     return ResponseEntity.status(HttpStatus.CREATED)
