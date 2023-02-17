@@ -86,7 +86,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한으로 세미나 등록을 성공한다.")
     public void should_successCreateSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
     }
 
     @Test
@@ -128,7 +128,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
       int beforeLength = findService.findAll().size();
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       em.flush();
       em.clear();
 
@@ -158,7 +158,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
     public void should_failSearchSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       searchAllSeminarUsingApi(userToken).andExpect(status().isForbidden());
     }
 
@@ -166,7 +166,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("id 값으로 세미나 조회를 성공한다.")
     public void should_successSearchSeminarUsingId_when_admin() throws Exception {
       MvcResult mvcResult = makeSeminarUsingApi(adminToken, seminarSaveRequest)
-          .andExpect(status().isOk()).andReturn();
+          .andExpect(status().isCreated()).andReturn();
       String seminarId = mvcResult.getResponse().getContentAsString();
 
       searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk());
@@ -187,7 +187,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
     public void should_searchSeminar_when_filterDate() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       em.clear();
 
       searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
@@ -204,7 +204,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("서기는 날짜로 세미나를 조회할 수 없다.")
     public void should_badRequest_when_clerkSearchDate() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       em.clear();
 
       searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString()).andExpect(status().isForbidden());
@@ -234,7 +234,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
     public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       searchDateSeminarUsingApi(userToken, LocalDate.now().toString())
           .andExpect(status().isForbidden());
     }
@@ -247,7 +247,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한으로 세미나 삭제를 성공한다.")
     public void should_successDeleteSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
 
       int beforeLength = seminarRepository.findAll().size();
       Long seminarId = seminarRepository.findAll().stream()
@@ -264,7 +264,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 삭제를 실패한다.")
     public void should_failDeleteSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isOk());
+      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       Long seminarId = seminarRepository.findAll().stream()
           .findAny().orElseThrow()
           .getId();
