@@ -98,10 +98,10 @@ public class Post extends BaseEntity {
   @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<FileEntity> files = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post", orphanRemoval = true)
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final Set<MemberHasPostLike> postLikes = new HashSet<>();
 
-  @OneToMany(mappedBy = "post", orphanRemoval = true)
+  @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @Builder
@@ -140,16 +140,8 @@ public class Post extends BaseEntity {
     postLikes.add(like);
   }
 
-  public void removeLike(Post post) {
-    postLikes.removeIf(postLike -> postLike.getPost().equals(post));
-  }
-
   public void addDislike(MemberHasPostDislike dislike) {
     postDislikes.add(dislike);
-  }
-
-  public void removeDislike(Post post) {
-    postDislikes.removeIf(postDislike -> postDislike.getPost().equals(post));
   }
 
   public void registerCategory(Category category) {

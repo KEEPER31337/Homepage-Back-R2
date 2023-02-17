@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.comment.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -64,10 +65,10 @@ public class Comment extends BaseEntity {
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
 
-  @OneToMany(mappedBy = "comment", orphanRemoval = true)
+  @OneToMany(mappedBy = "comment", cascade = REMOVE)
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
 
-  @OneToMany(mappedBy = "comment", orphanRemoval = true)
+  @OneToMany(mappedBy = "comment", cascade = REMOVE)
   private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
 
   @OneToMany(mappedBy = "parent", cascade = PERSIST)
@@ -90,16 +91,8 @@ public class Comment extends BaseEntity {
     commentLikes.add(like);
   }
 
-  public void removeLike(Comment comment) {
-    commentLikes.removeIf(commentLike -> commentLike.getComment().equals(comment));
-  }
-
   public void addDislike(MemberHasCommentDislike dislike) {
     commentDislikes.add(dislike);
-  }
-
-  public void removeDislike(Comment comment) {
-    commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
   }
 
   public void registerPost(Post post) {

@@ -194,12 +194,10 @@ public class Member {
   }
 
   public void cancelLike(Post post) {
-    post.removeLike(post);
     postLikes.removeIf(postLike -> postLike.getPost().equals(post));
   }
 
   public void cancelLike(Comment comment) {
-    comment.removeLike(comment);
     commentLikes.removeIf(commentLike -> commentLike.getComment().equals(comment));
   }
 
@@ -222,12 +220,10 @@ public class Member {
   }
 
   public void cancelDislike(Post post) {
-    post.removeDislike(post);
     postDislikes.removeIf(postDislike -> postDislike.getPost().equals(post));
   }
 
   public void cancelDislike(Comment comment) {
-    comment.removeDislike(comment);
     commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
   }
 }

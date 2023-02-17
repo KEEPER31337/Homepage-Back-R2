@@ -8,7 +8,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import java.util.List;
@@ -58,6 +57,7 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
       post = postRepository.findById(post.getId()).orElseThrow();
 
       assertThat(post.getPostLikes()).hasSize(1);
