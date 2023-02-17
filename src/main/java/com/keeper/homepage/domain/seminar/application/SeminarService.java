@@ -66,21 +66,9 @@ public class SeminarService {
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
   }
 
-  public SeminarResponse findByDate(String localDate) {
-    validLocalDate(localDate);
-
-    LocalDate parseDate = LocalDate.parse(localDate);
-    return new SeminarResponse(seminarRepository.findByOpenTime(parseDate)
+  public SeminarResponse findByDate(LocalDate localDate) {
+    return new SeminarResponse(seminarRepository.findByOpenTime(localDate)
         .orElse(Seminar.builder().build()));
-  }
-
-  private void validLocalDate(String localDate) {
-    try {
-      LocalDate.parse(localDate);
-    } catch (Exception e) {
-      throw new BusinessException(localDate, "localDate",
-          SEMINAR_TIME_NOT_AVAILABLE);
-    }
   }
 
   public List<SeminarResponse> findAll() {

@@ -4,8 +4,10 @@ import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -49,8 +51,8 @@ public class SeminarController {
   @GetMapping(params = "date")
   @Secured({"ROLE_회장", "ROLE_부회장"})
   public ResponseEntity<SeminarResponse> getSeminarByDate(
-      @RequestParam("date") String strLocalDate) {
-    SeminarResponse seminarResponse = seminarService.findByDate(strLocalDate);
+      @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localdate) {
+    SeminarResponse seminarResponse = seminarService.findByDate(localdate);
     return ResponseEntity.status(HttpStatus.OK).body(seminarResponse);
   }
 
