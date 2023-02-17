@@ -1,17 +1,9 @@
 package com.keeper.homepage.domain.library;
 
-import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.LANGUAGE;
-
-import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
-import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.library.entity.Book;
-import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookDepartment;
-import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
-import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,9 +27,8 @@ public class BookTestHelper {
     private String author;
     private String information;
     private BookDepartment bookDepartment;
-    private Long total;
-    private Long borrow;
-    private Long enable;
+    private Long totalQuantity;
+    private Long currentQuantity;
     private Thumbnail thumbnail;
 
     private BookBuilder() {
@@ -63,18 +54,18 @@ public class BookTestHelper {
       return this;
     }
 
-    public BookBuilder total(Long total) {
-      this.total = total;
+    public BookBuilder totalQuantity(Long totalQuantity) {
+      this.totalQuantity = totalQuantity;
       return this;
     }
 
-    public BookBuilder borrow(Long borrow) {
-      this.borrow = borrow;
+    public BookBuilder currentQuantity(Long currentQuantity) {
+      this.currentQuantity = currentQuantity;
       return this;
     }
 
-    public BookBuilder enable(Long enable) {
-      this.enable = enable;
+    public BookBuilder thumbnail(Thumbnail thumbnail){
+      this.thumbnail = thumbnail;
       return this;
     }
 
@@ -84,9 +75,8 @@ public class BookTestHelper {
           .author(author != null ? author : "도서 저자")
           .information(information)
           .bookDepartment(bookDepartment)
-          .total(total)
-          .borrow(borrow)
-          .enable(enable)
+          .totalQuantity(totalQuantity)
+          .currentQuantity(currentQuantity)
           .thumbnail(thumbnail)
           .build());
     }

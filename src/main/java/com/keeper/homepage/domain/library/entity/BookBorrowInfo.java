@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -28,7 +29,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_borrow_info")
-public class BookBorrowInfo {
+public class BookBorrowInfo extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
@@ -43,9 +44,6 @@ public class BookBorrowInfo {
   @JoinColumn(name = "book_id", nullable = false)
   private Book book;
 
-  @Column(name = "quantity", nullable = false)
-  private Long quantity;
-
   @Column(name = "borrow_date", nullable = false)
   private LocalDateTime borrowDate;
 
@@ -53,11 +51,10 @@ public class BookBorrowInfo {
   private LocalDateTime expireDate;
 
   @Builder
-  private BookBorrowInfo(Member member, Book book, Long quantity, LocalDateTime borrowDate,
+  private BookBorrowInfo(Member member, Book book, LocalDateTime borrowDate,
       LocalDateTime expireDate) {
     this.member = member;
     this.book = book;
-    this.quantity = quantity;
     this.borrowDate = borrowDate;
     this.expireDate = expireDate;
   }

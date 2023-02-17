@@ -32,7 +32,6 @@ public class BookBorrowInfoTestHelper {
 
     private Member member;
     private Book book;
-    private Long quantity;
     private LocalDateTime borrowDate;
     private LocalDateTime expireDate;
 
@@ -46,11 +45,6 @@ public class BookBorrowInfoTestHelper {
 
     public BookBorrowInfoBuilder book(Book book) {
       this.book = book;
-      return this;
-    }
-
-    public BookBorrowInfoBuilder quantity(Long quantity) {
-      this.quantity = quantity;
       return this;
     }
 
@@ -68,7 +62,6 @@ public class BookBorrowInfoTestHelper {
       return bookBorrowInfoRepository.save(BookBorrowInfo.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .book(book != null ? book : bookTestHelper.generate())
-          .quantity(quantity)
           .borrowDate(borrowDate)
           .expireDate(expireDate)
           .build());

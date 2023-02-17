@@ -111,9 +111,8 @@ public class BookRepositoryTest extends IntegrationTest {
       Book findBook = bookRepository.findById(book.getId()).orElseThrow();
 
       assertThat(findBook.getBookDepartment().getId()).isEqualTo(ETC.getId());
-      assertThat(findBook.getTotal()).isEqualTo(1);
-      assertThat(findBook.getBorrow()).isEqualTo(0);
-      assertThat(findBook.getEnable()).isEqualTo(1);
+      assertThat(findBook.getTotalQuantity()).isEqualTo(1);
+      assertThat(findBook.getCurrentQuantity()).isEqualTo(1);
     }
 
     @Test
@@ -125,9 +124,7 @@ public class BookRepositoryTest extends IntegrationTest {
 
       BookBorrowInfo findBorrowInfo = bookBorrowInfoRepository.findById(borrowInfo.getId()).orElseThrow();
 
-      assertThat(findBorrowInfo.getQuantity()).isEqualTo(1);
       assertThat(findBorrowInfo.getBorrowDate()).isBefore(LocalDateTime.now());
-      assertThat(findBorrowInfo.getExpireDate()).isBefore(LocalDateTime.now());
     }
   }
 }

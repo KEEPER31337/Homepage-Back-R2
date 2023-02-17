@@ -58,14 +58,11 @@ public class Book extends BaseEntity {
   @JoinColumn(name = "book_department_id", nullable = false)
   private BookDepartment bookDepartment;
 
-  @Column(name = "total", nullable = false)
-  private Long total;
+  @Column(name = "total_quantity", nullable = false)
+  private Long totalQuantity;
 
-  @Column(name = "borrow", nullable = false)
-  private Long borrow;
-
-  @Column(name = "enable", nullable = false)
-  private Long enable;
+  @Column(name = "current_quantity", nullable = false)
+  private Long currentQuantity;
 
   @OneToOne(fetch = LAZY, cascade = REMOVE)
   @JoinColumn(name = "thumbnail_id")
@@ -76,14 +73,13 @@ public class Book extends BaseEntity {
 
   @Builder
   private Book(String title, String author, String information, BookDepartment bookDepartment,
-      Long total, Long borrow, Long enable, Thumbnail thumbnail) {
+      Long totalQuantity, Long currentQuantity, Thumbnail thumbnail) {
     this.title = title;
     this.author = author;
     this.information = information;
     this.bookDepartment = bookDepartment;
-    this.total = total;
-    this.borrow = borrow;
-    this.enable = enable;
+    this.totalQuantity = totalQuantity;
+    this.currentQuantity = currentQuantity;
     this.thumbnail = thumbnail;
   }
 
