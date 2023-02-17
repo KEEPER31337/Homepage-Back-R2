@@ -1,10 +1,10 @@
-package com.keeper.homepage.domain.member.entity.comment;
+package com.keeper.homepage.domain.member.entity.post;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.post.entity.Post;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@EqualsAndHashCode(of = {"member", "comment"})
+@EqualsAndHashCode(of = {"member", "post"})
 @NoArgsConstructor(access = PROTECTED)
-@IdClass(MemberHasCommentPK.class)
-@Table(name = "member_has_comment_dislike")
-public class MemberHasCommentDislike {
+@IdClass(MemberHasPostPK.class)
+@Table(name = "member_has_posting_like")
+public class MemberHasPostLike {
 
   @Id
   @ManyToOne(fetch = LAZY)
@@ -31,12 +31,12 @@ public class MemberHasCommentDislike {
 
   @Id
   @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "comment_id", nullable = false, updatable = false)
-  private Comment comment;
+  @JoinColumn(name = "posting_id", nullable = false, updatable = false)
+  private Post post;
 
   @Builder
-  private MemberHasCommentDislike(Member member, Comment comment) {
+  private MemberHasPostLike(Member member, Post post) {
     this.member = member;
-    this.comment = comment;
+    this.post = post;
   }
 }
