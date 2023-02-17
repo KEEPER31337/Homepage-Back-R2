@@ -54,11 +54,6 @@ public class Category {
     this.href = href;
   }
 
-  public void addPost(Post post) {
-    post.registerCategory(this);
-    posts.add(post);
-  }
-
   public void addChild(Category child) {
     child.assignParent(this);
     children.add(child);
