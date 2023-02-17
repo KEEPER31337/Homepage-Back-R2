@@ -15,11 +15,12 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceExcuseRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
-import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.seminar.application.SeminarService;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
+import com.keeper.homepage.domain.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
@@ -170,6 +171,9 @@ public class IntegrationTest {
 
   @Autowired
   protected StaticWriteService staticWriteService;
+  
+  @Autowired
+  protected SeminarService seminarService;
 
   @SpyBean
   protected PostService postService;

@@ -1,11 +1,11 @@
-package com.keeper.homepage.domain.clerk.seminar.dao;
+package com.keeper.homepage.domain.seminar.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus;
-import com.keeper.homepage.domain.clerk.entity.seminar.SeminarAttendanceStatus.SeminarAttendanceStatusType;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.Arrays;
 import java.util.List;

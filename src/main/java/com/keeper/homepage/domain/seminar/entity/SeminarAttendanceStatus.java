@@ -1,8 +1,8 @@
-package com.keeper.homepage.domain.clerk.entity.seminar;
+package com.keeper.homepage.domain.seminar.entity;
 
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TYPE_NOT_FOUND;
 
-import com.keeper.homepage.domain.clerk.converter.SeminarAttendanceStatusTypeConverter;
+import com.keeper.homepage.domain.seminar.converter.SeminarAttendanceStatusTypeConverter;
 import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

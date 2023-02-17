@@ -1,9 +1,9 @@
-package com.keeper.homepage.domain.clerk.seminar.dao;
+package com.keeper.homepage.domain.seminar.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.clerk.entity.seminar.Seminar;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -71,6 +71,18 @@ public class SeminarRepositoryTest extends IntegrationTest {
 
       int afterSeminarLength = seminarRepository.findAll().size();
       assertThat(afterSeminarLength).isEqualTo(beforeSeminarLength - 1);
+    }
+  }
+
+  @Nested
+  @DisplayName("세미나 유틸 메서드 테스트")
+  class SeminarUtilTest {
+
+    @Test
+    @DisplayName("출석 코드의 길이가 4인지 확인한다.")
+    public void check_randomAttendanceCode_size() throws Exception {
+      String attendanceCode = Seminar.randomAttendanceCode();
+      assertThat(attendanceCode.length()).isEqualTo(4);
     }
   }
 }
