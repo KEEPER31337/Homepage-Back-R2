@@ -29,7 +29,7 @@ public class SeminarController {
   @PostMapping
   public ResponseEntity<Long> createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
     Long seminarId = seminarService.save(request);
-    return ResponseEntity.status(HttpStatus.OK).body(seminarId);
+    return ResponseEntity.status(HttpStatus.CREATED).body(seminarId);
   }
 
   @DeleteMapping("/{seminarId}")
