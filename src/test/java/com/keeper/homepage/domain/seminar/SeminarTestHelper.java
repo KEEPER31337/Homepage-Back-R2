@@ -28,16 +28,10 @@ public class SeminarTestHelper {
     private LocalDateTime openTime;
     private LocalDateTime attendanceCloseTime;
     private LocalDateTime latenessCloseTime;
-    private String attendanceCode;
     private String seminarName;
 
     public SeminarBuilder openTime(LocalDateTime sampleTime) {
       this.openTime = sampleTime;
-      return this;
-    }
-
-    public SeminarBuilder attendanceCode(String attendanceCode) {
-      this.attendanceCode = attendanceCode;
       return this;
     }
 
