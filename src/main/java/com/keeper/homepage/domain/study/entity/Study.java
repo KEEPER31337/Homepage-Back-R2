@@ -73,7 +73,7 @@ public class Study extends BaseEntity {
   @JoinColumn(name = "head_member_id", nullable = false)
   private Member headMember;
 
-  @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE)
   private Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
@@ -92,11 +92,7 @@ public class Study extends BaseEntity {
       this.headMember = headMember;
   }
 
-  public void addMember(StudyHasMember member) {
-    studyMembers.add(member);
-  }
-
-  public void removeMember(Study study) {
-    studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
+  public void addMember(StudyHasMember studyMember) {
+    studyMembers.add(studyMember);
   }
 }

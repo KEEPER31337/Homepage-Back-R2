@@ -247,7 +247,6 @@ public class Member {
   }
 
   public void leave(Study study) {
-    study.removeMember(study);
     studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
   }
 }
