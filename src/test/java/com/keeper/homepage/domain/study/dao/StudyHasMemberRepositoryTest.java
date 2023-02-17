@@ -45,34 +45,45 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
       member.join(study);
       assertThat(studyHasMemberRepository.findAll()).hasSize(1);
 
-      em.flush();
-      em.clear();
       member = memberRepository.findById(member.getId()).orElseThrow();
       study = studyRepository.findById(study.getId()).orElseThrow();
       member.leave(study);
 
       em.flush();
       em.clear();
+
       assertThat(studyHasMemberRepository.findAll()).hasSize(0);
     }
 
     @Test
     @DisplayName("스터디를 삭제하면 스터디원에 대한 정보도 삭제되어야 한다.")
     public void should_successfullyDelete_studyMember_when_studyIsDeleted() {
-      member.join(study);
+      Member memberA = memberTestHelper.generate();
+      Member memberB = memberTestHelper.generate();
+
+      memberA.join(study);
+      memberB.join(study);
 
       em.flush();
       em.clear();
 
-      StudyHasMemberPK key = new StudyHasMemberPK(study.getId(), member.getId());
-      assertThat(studyHasMemberRepository.findAll()).hasSize(1);
+      StudyHasMemberPK keyA = new StudyHasMemberPK(study.getId(), memberA.getId());
+      StudyHasMemberPK keyB = new StudyHasMemberPK(study.getId(), memberB.getId());
+      assertThat(studyHasMemberRepository.findAll()).hasSize(2);
       // existsById로 하면 throw가 안 돼서 검증이 안 되는데 둘 차이가 뭘까?..
-      assertThat(studyHasMemberRepository.findById(key).orElseThrow());
+      assertThat(studyHasMemberRepository.findById(keyA).orElseThrow());
+      assertThat(studyHasMemberRepository.findById(keyB).orElseThrow());
 
+      study = studyRepository.findById(study.getId()).orElseThrow();
       studyRepository.delete(study);
 
+      em.flush();
+      em.clear();
+
       assertThat(studyHasMemberRepository.findAll()).hasSize(0);
-      assertThatThrownBy(() -> studyHasMemberRepository.findById(key).orElseThrow()).isInstanceOf(
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyA).orElseThrow()).isInstanceOf(
+          NoSuchElementException.class);
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyB).orElseThrow()).isInstanceOf(
           NoSuchElementException.class);
     }
 
@@ -86,10 +97,10 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
       member.join(studyB);
       assertThat(studyHasMemberRepository.findAll()).hasSize(2);
 
+      memberRepository.delete(member);
+
       em.flush();
       em.clear();
-
-      memberRepository.delete(member);
 
       StudyHasMemberPK key = new StudyHasMemberPK(study.getId(), member.getId());
 
