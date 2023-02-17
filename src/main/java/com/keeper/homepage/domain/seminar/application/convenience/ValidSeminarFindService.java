@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ValidSeminarFindService {
 
-  private static final long virtualSeminarId = 1L;
+  private static final long VIRTUAL_SEMINAR_ID = 1L;
   private final SeminarRepository seminarRepository;
 
   public List<SeminarResponse> findAll() {
-    return seminarRepository.findAllByIdIsNot(virtualSeminarId).stream()
+    return seminarRepository.findAllByIdIsNot(VIRTUAL_SEMINAR_ID).stream()
         .map(SeminarResponse::new)
         .toList();
   }
