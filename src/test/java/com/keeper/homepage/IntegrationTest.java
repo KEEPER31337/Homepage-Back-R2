@@ -176,6 +176,9 @@ public class IntegrationTest {
   @Autowired
   protected SeminarService seminarService;
 
+  @SpyBean
+  protected PostService postService;
+
   @Autowired
   protected ValidSeminarFindService validSeminarFindService;
 
