@@ -41,6 +41,8 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      post = postRepository.findById(post.getId()).orElseThrow();
       var findLike = memberHasPostLikeRepository.findAllByPost(post).get(0);
       var findDislike = memberHasPostDislikeRepository.findAllByPost(post).get(0);
 
@@ -89,11 +91,10 @@ public class PostRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
     void should_deletedFiles_when_deletePost() {
-      Post postBuild = postTestHelper.generate();
       FileEntity file = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
-      postBuild.addFile(file);
+      post.addFile(file);
 
-      postRepository.delete(postBuild);
+      postRepository.delete(post);
 
       em.flush();
       em.clear();
@@ -111,7 +112,6 @@ public class PostRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
       assertThat(commentRepository.findAll()).hasSize(0);
-      assertThat(commentRepository.findAll()).doesNotContain(comment);
     }
 
     @Test

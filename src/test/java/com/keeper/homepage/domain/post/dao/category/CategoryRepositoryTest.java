@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,8 +57,9 @@ public class CategoryRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
       List<Category> categories = categoryRepository.findAll();
+      List<Long> categoryIds = categories.stream().map(Category::getId).toList();
 
-      assertThat(categories).doesNotContain(child);
+      assertThat(categoryIds).doesNotContain(child.getId());
     }
   }
 }
