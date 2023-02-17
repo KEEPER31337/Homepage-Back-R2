@@ -7,7 +7,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.comment.entity.Comment;
-import com.keeper.homepage.domain.post.entity.category.Category;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,12 +21,7 @@ public class CommentRepositoryTest extends IntegrationTest {
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    comment = Comment.builder()
-        .member(member)
-        .post(postTestHelper.generate())
-        .content("댓글내용")
-        .ipAddress("0.0.0.0")
-        .build();
+    comment = commentTestHelper.generate();
   }
 
   @Nested
@@ -68,6 +62,8 @@ public class CommentRepositoryTest extends IntegrationTest {
       em.clear();
       commentRepository.delete(comment);
 
+      em.flush();
+      em.clear();
       assertThat(memberHasCommentLikeRepository.findAll()).hasSize(0);
       assertThat(memberHasCommentDislikeRepository.findAll()).hasSize(0);
     }
@@ -117,6 +113,7 @@ public class CommentRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      comment = commentRepository.findById(comment.getId()).orElseThrow();
 
       assertThat(comment.getCommentLikes()).hasSize(0);
     }
@@ -129,11 +126,10 @@ public class CommentRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("좋아요 개수, 싫어요 개수를 넣지 않았을 때 0으로 처리해야 한다.")
     void should_processDefault_when_EmptyLikeCountAndDislikeCount() {
-      Comment commentBuild = commentTestHelper.generate();
       em.flush();
       em.clear();
 
-      Comment findComment = commentRepository.findById(commentBuild.getId()).orElseThrow();
+      Comment findComment = commentRepository.findById(comment.getId()).orElseThrow();
 
       assertThat(findComment.getLikeCount()).isEqualTo(0);
       assertThat(findComment.getDislikeCount()).isEqualTo(0);
