@@ -4,7 +4,6 @@ import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.keeper.homepage.domain.seminar.entity.Seminar;
 import jakarta.validation.constraints.Future;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,7 +16,7 @@ import org.springframework.lang.Nullable;
 @Builder
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PACKAGE)
-public class SeminarSaveRequest {
+public class SeminarStartRequest {
 
   @Nullable
   @Future
@@ -28,12 +27,4 @@ public class SeminarSaveRequest {
   @Future
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime latenessCloseTime;
-
-  public Seminar toEntity(String attendanceCode) {
-    return Seminar.builder()
-        .attendanceCloseTime(attendanceCloseTime)
-        .latenessCloseTime(latenessCloseTime)
-        .attendanceCode(attendanceCode)
-        .build();
-  }
 }
