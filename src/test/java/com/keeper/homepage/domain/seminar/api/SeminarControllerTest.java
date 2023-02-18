@@ -24,11 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.restdocs.snippet.Attributes.key;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
-import com.keeper.homepage.domain.seminar.dto.response.SeminarCreateResponse;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,7 +50,7 @@ public class SeminarControllerTest extends IntegrationTest {
   private String clerkToken;
   private String userToken;
   private LocalDateTime now;
-  private SeminarSaveRequest seminarSaveRequest;
+  private SeminarStartRequest seminarStartRequest;
 
   @BeforeEach
   void setUp() {
@@ -59,17 +61,29 @@ public class SeminarControllerTest extends IntegrationTest {
     clerkToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, clerkId, ROLE_회원, ROLE_서기);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
 
-    now = LocalDateTime.now();
-    seminarSaveRequest = SeminarSaveRequest.builder()
+    now = LocalDateTime.now().withNano(0);
+    seminarStartRequest = SeminarStartRequest.builder()
         .attendanceCloseTime(now.plusMinutes(3))
         .latenessCloseTime(now.plusMinutes(4)).build();
   }
 
-  ResultActions makeSeminarUsingApi(String token, SeminarSaveRequest request) throws Exception {
+  ResultActions createSeminarUsingApi(String token) throws Exception {
     return mockMvc.perform(post("/seminars")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+  }
+
+  ResultActions startSeminarUsingApi(String token, Long seminarId, SeminarStartRequest request) throws Exception {
+    return mockMvc.perform(post("/seminars/{seminarId}", seminarId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
+  }
+
+  ResultActions startSeminarUsingApi(String token, Long seminarId, String strJson) throws Exception {
+    return mockMvc.perform(post("/seminars/{seminarId}", seminarId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(strJson));
   }
 
   ResultActions searchAllSeminarUsingApi(String token) throws Exception {
@@ -97,14 +111,39 @@ public class SeminarControllerTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("세미나 등록 테스트")
+  @DisplayName("세미나 생성 테스트")
   class SeminarCreateTest {
+    @Test
+    @DisplayName("세미나 생성을 성공한다.")
+    public void should_successCreateSeminar_when_admin() throws Exception {
+      createSeminarUsingApi(adminToken).andExpect(status().isCreated())
+          .andDo(document("create-seminar",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+              responseFields(
+                  fieldWithPath("id").description("세미나 ID"))
+          ));
+    }
 
     @Test
-    @DisplayName("관리자 권한으로 세미나 등록을 성공한다.")
-    public void should_successCreateSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated())
-          .andDo(document("create-seminar",
+    @DisplayName("관리자 권한이 아니면 세미나 생성을 실패한다.")
+    public void should_failCreateSeminar_when_notAdmin() throws Exception {
+      createSeminarUsingApi(userToken).andExpect(status().isForbidden());
+    }
+  }
+  
+  @Nested
+  @DisplayName("세미나 시작 테스트")
+  class SeminarStartTest {
+    @Test
+    @DisplayName("생성된 세미나에 마감 시간을 넣어서 시작한다.")
+    public void should_successStartSeminar_when_admin() throws Exception {
+      MvcResult mvcResult = createSeminarUsingApi(adminToken)
+          .andExpect(status().isCreated()).andReturn();
+      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+          SeminarIdResponse.class).id();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk())
+          .andDo(document("start-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               requestFields(
@@ -115,48 +154,93 @@ public class SeminarControllerTest extends IntegrationTest {
               responseFields(
                   fieldWithPath("id").description("세미나 ID")
               )));
+
+      em.flush();
+      em.clear();
+
+      Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
+      assertThat(seminar.getAttendanceCloseTime()).isEqualTo(seminar.getAttendanceCloseTime());
+      assertThat(seminar.getLatenessCloseTime()).isEqualTo(seminar.getLatenessCloseTime());
     }
 
     @Test
-    @DisplayName("올바르지 않은 값이 들어왔을 때 세미나 등록을 실패한다.")
-    public void should_failCreateSeminar_when_NotValidValue() throws Exception {
-      makeSeminarUsingApi(adminToken, null).andExpect(status().isBadRequest());
+    @DisplayName("시간 값이 둘 다 null일 때 허용한다. (세미나 생성, 시작이 분리되어 있다.)")
+    public void should_success_when_nullValue() throws Exception {
+      String strJson = "{\"attendanceCloseTime\":null, \"latenessCloseTime\":null}";
+      MvcResult mvcResult = createSeminarUsingApi(adminToken)
+          .andExpect(status().isCreated()).andReturn();
+      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+          SeminarIdResponse.class).id();
+      startSeminarUsingApi(adminToken, seminarId, strJson).andExpect(status().isOk());
+      startSeminarUsingApi(adminToken, seminarId, SeminarStartRequest.builder().build()).andDo(print()).andExpect(status().isOk());
+    }
+    
+    @Test
+    @DisplayName("올바르지 않은 시간 값이 들어오면 세미나 시작을 실패한다.")
+    public void should_failStartSeminar_when_NotValidValue() throws Exception {
+      DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+      String strJson1 = "{\"attendanceCloseTime\":\"null\", \"latenessCloseTime\":\"null\"}";
+      String strJson2 = "{\"attendanceCloseTime\":\"null\", \"latenessCloseTime\":null}";
+      String strJson3 = "{\"attendanceCloseTime\":null, \"latenessCloseTime\":\"null\"}";
+      String strJson4 = String.format("{\"attendanceCloseTime\":\"%s\", \"latenessCloseTime\":null}",now.plusMinutes(3).format(format));
+      String strJson5 = String.format("{\"attendanceCloseTime\":null, \"latenessCloseTime\":\"%s\"}",now.plusMinutes(3).format(format));
+
+      createSeminarUsingApi(adminToken).andExpect(status().isCreated());
+      Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow().getId();
+      startSeminarUsingApi(adminToken, seminarId, strJson1).andExpect(status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, strJson2).andExpect(status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, strJson3).andExpect(status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, strJson4).andExpect(status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, strJson5).andExpect(status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, "asdf").andExpect(status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, (SeminarStartRequest) null).andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("세미나 출석 마감 시간 또는 지각 마감 시간이 과거인 경우 등록을 실패한다.")
     public void should_failCreateSeminar_when_closeTimeIsPast() throws Exception {
-      seminarSaveRequest = SeminarSaveRequest.builder()
+      seminarStartRequest = SeminarStartRequest.builder()
           .attendanceCloseTime(now.plusMinutes(-5))
           .latenessCloseTime(now.plusMinutes(-3)).build();
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isBadRequest());
+
+      createSeminarUsingApi(adminToken).andExpect(status().isCreated());
+      Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow().getId();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("세미나 출석 마감 시간이 지각 마감 시간보다 미래인 경우 등록을 실패한다.")
     public void should_failCreateSeminar_when_attendanceTimeGreaterThanCloseTime() throws Exception {
-      seminarSaveRequest = SeminarSaveRequest.builder()
+      seminarStartRequest = SeminarStartRequest.builder()
           .attendanceCloseTime(now.plusMinutes(5))
           .latenessCloseTime(now.plusMinutes(3)).build();
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isBadRequest());
+
+      createSeminarUsingApi(adminToken).andExpect(status().isCreated());
+      Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow().getId();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("관리자 권한이 아니면 세미나 등록을 실패한다.")
+    @DisplayName("관리자 권한이 아니면 세미나 시작을 실패한다.")
     public void should_failCreateSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(userToken, seminarSaveRequest).andExpect(status().isForbidden());
+      createSeminarUsingApi(adminToken).andExpect(status().isCreated());
+      Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow().getId();
+      startSeminarUsingApi(userToken, seminarId, seminarStartRequest).andExpect(status().isForbidden());
     }
   }
   
   @Nested
   @DisplayName("세미나 조회 테스트")
   class SeminarCheckTest {
-
     @Test
     @DisplayName("생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
       int beforeLength = validSeminarFindService.findAll().size();
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
+      MvcResult mvcResult = createSeminarUsingApi(adminToken)
+          .andExpect(status().isCreated()).andReturn();
+      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+          SeminarIdResponse.class).id();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       em.flush();
       em.clear();
 
@@ -167,7 +251,7 @@ public class SeminarControllerTest extends IntegrationTest {
       // 조회된 모든 데이터를 검증하는 것은 비효율적이라고 생각이 들었다.
       int idx = afterLength - 1;
       searchAllSeminarUsingApi(adminToken)
-          .andExpect(jsonPath("$.length()", is(afterLength)))
+          .andExpect(jsonPath("$.seminarList.length()", is(afterLength)))
           .andExpect(combineJsonPath("openTime", idx).exists())
           .andExpect(combineJsonPath("attendanceCloseTime", idx).exists())
           .andExpect(combineJsonPath("latenessCloseTime", idx).exists())
@@ -199,18 +283,19 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 조회를 실패한다.")
     public void should_failSearchSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
+      createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       searchAllSeminarUsingApi(userToken).andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("id 값으로 세미나 조회를 성공한다.")
     public void should_successSearchSeminarUsingId_when_admin() throws Exception {
-      MvcResult mvcResult = makeSeminarUsingApi(adminToken, seminarSaveRequest)
+      MvcResult mvcResult = createSeminarUsingApi(adminToken)
           .andExpect(status().isCreated()).andReturn();
       Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarCreateResponse.class).id();
-
+          SeminarIdResponse.class).id();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+      em.flush();
       em.clear();
 
       searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
@@ -246,7 +331,12 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
     public void should_searchSeminar_when_filterDate() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
+      MvcResult mvcResult = createSeminarUsingApi(adminToken)
+          .andExpect(status().isCreated()).andReturn();
+      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+          SeminarIdResponse.class).id();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+      em.flush();
       em.clear();
 
       searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
@@ -280,9 +370,6 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("서기는 날짜로 세미나를 조회할 수 없다.")
     public void should_badRequest_when_clerkSearchDate() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
-      em.clear();
-
       searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString()).andExpect(
           status().isForbidden());
     }
@@ -311,7 +398,6 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
     public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
       searchDateSeminarUsingApi(userToken, LocalDate.now().toString())
           .andExpect(status().isForbidden());
     }
@@ -320,17 +406,18 @@ public class SeminarControllerTest extends IntegrationTest {
   @Nested
   @DisplayName("세미나 삭제 테스트")
   class SeminarDeleteTest {
-
     @Test
-    @DisplayName("관리자 권한으로 세미나 삭제를 성공한다.")
+    @DisplayName("세미나 삭제를 성공한다.")
     public void should_successDeleteSeminar_when_admin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
+      MvcResult mvcResult = createSeminarUsingApi(adminToken)
+          .andExpect(status().isCreated()).andReturn();
+      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+          SeminarIdResponse.class).id();
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+      em.flush();
+      em.clear();
 
-      int beforeLength = seminarRepository.findAll().size();
-      Long seminarId = seminarRepository.findAll().stream()
-          .findAny().orElseThrow()
-          .getId();
-
+      int beforeLength = validSeminarFindService.findAll().size();
       deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isNoContent())
           .andDo(document("delete-seminar",
               requestCookies(
@@ -338,21 +425,16 @@ public class SeminarControllerTest extends IntegrationTest {
               pathParameters(
                   parameterWithName("seminarId").description("삭제할 세미나 ID를 입력해주세요."))
           ));
-      int afterLength = seminarRepository.findAll().size();
 
+      int afterLength = validSeminarFindService.findAll().size();
       assertThat(afterLength).isEqualTo(beforeLength - 1);
-      searchAllSeminarUsingApi(adminToken).andExpect(jsonPath("$.length()", is(afterLength)));
+      searchAllSeminarUsingApi(adminToken).andExpect(jsonPath("$.seminarList.length()", is(afterLength)));
     }
 
     @Test
     @DisplayName("관리자 권한이 아니면 세미나 삭제를 실패한다.")
     public void should_failDeleteSeminar_when_notAdmin() throws Exception {
-      makeSeminarUsingApi(adminToken, seminarSaveRequest).andExpect(status().isCreated());
-      Long seminarId = seminarRepository.findAll().stream()
-          .findAny().orElseThrow()
-          .getId();
-
-      deleteSeminarUsingApi(userToken, seminarId).andExpect(status().isForbidden());
+      deleteSeminarUsingApi(userToken, 2L).andExpect(status().isForbidden());
     }
 
     @Test
