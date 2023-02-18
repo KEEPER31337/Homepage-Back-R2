@@ -46,6 +46,11 @@ public class Seminar extends BaseEntity {
   @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
+  public void changeCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
+    this.attendanceCloseTime = attendanceCloseTime;
+    this.latenessCloseTime = latenessCloseTime;
+  }
+
   @Builder
   private Seminar(LocalDateTime openTime, LocalDateTime attendanceCloseTime,
       LocalDateTime latenessCloseTime, String attendanceCode, String name) {

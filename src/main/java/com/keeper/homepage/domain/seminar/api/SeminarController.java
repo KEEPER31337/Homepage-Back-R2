@@ -1,8 +1,8 @@
 package com.keeper.homepage.domain.seminar.api;
 
 import com.keeper.homepage.domain.seminar.application.SeminarService;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
-import com.keeper.homepage.domain.seminar.dto.response.SeminarCreateResponse;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import jakarta.validation.Valid;
@@ -30,9 +30,15 @@ public class SeminarController {
   private final SeminarService seminarService;
 
   @PostMapping
-  public ResponseEntity<SeminarCreateResponse> createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
-    SeminarCreateResponse response = seminarService.save(request);
+  public ResponseEntity<SeminarIdResponse> createSeminar() {
+    SeminarIdResponse response = seminarService.save();
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  @PostMapping("/{seminarId}")
+  public ResponseEntity<SeminarIdResponse> startSeminar(@PathVariable long seminarId, @Valid @RequestBody SeminarStartRequest request) {
+    SeminarIdResponse response = seminarService.start(seminarId, request);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   @DeleteMapping("/{seminarId}")

@@ -6,8 +6,8 @@ import static java.util.stream.Collectors.joining;
 
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
-import com.keeper.homepage.domain.seminar.dto.response.SeminarCreateResponse;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
@@ -30,22 +30,40 @@ public class SeminarService {
   private final ValidSeminarFindService validSeminarFindService;
 
   @Transactional
-  public SeminarCreateResponse save(SeminarSaveRequest request) {
-    validCloseTime(request);
-
-    Seminar seminar = request.toEntity(randomAttendanceCode());
-    return new SeminarCreateResponse(seminarRepository.save(seminar).getId());
+  public SeminarIdResponse save() {
+    Seminar seminar = Seminar.builder()
+        .attendanceCode(randomAttendanceCode())
+        .build();
+    return new SeminarIdResponse(seminarRepository.save(seminar).getId());
   }
 
-  private void validCloseTime(SeminarSaveRequest request) {
-    // 세미나 생성과 시작이 분리되어 있기 때문이다.
-    // 둘 다 null인 경우에만 생성을 허용한다. (둘 중에 하나만 null이면 정상적인 데이터로 인식하지 않는다.)
-    if (request.getLatenessCloseTime() == null && request.getAttendanceCloseTime() == null) {
+  @Transactional
+  public SeminarIdResponse start(Long seminarId, SeminarStartRequest request) {
+    validCloseTime(request);
+
+    Seminar seminar = seminarRepository.findById(seminarId)
+        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
+    seminar.changeCloseTime(request.getAttendanceCloseTime(), request.getAttendanceCloseTime());
+    return new SeminarIdResponse(seminarId);
+  }
+
+  private void validCloseTime(SeminarStartRequest request) {
+    LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
+    LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
+
+    if (attendanceCloseTime == null && latenessCloseTime == null) {
       return;
     }
 
-    LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
-    LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
+    if (attendanceCloseTime == null) {
+      throw new BusinessException("null", "attendanceCloseTime",
+          SEMINAR_TIME_NOT_AVAILABLE);
+    }
+
+    if (latenessCloseTime == null) {
+      throw new BusinessException("null", "latenessCloseTime",
+          SEMINAR_TIME_NOT_AVAILABLE);
+    }
 
     if (attendanceCloseTime.isAfter(latenessCloseTime)) {
       throw new BusinessException(attendanceCloseTime, "attendanceCloseTime",
