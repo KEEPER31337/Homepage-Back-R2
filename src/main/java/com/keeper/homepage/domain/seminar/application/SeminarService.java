@@ -7,12 +7,13 @@ import static java.util.stream.Collectors.joining;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarCreateResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,11 @@ public class SeminarService {
   private final ValidSeminarFindService validSeminarFindService;
 
   @Transactional
-  public Long save(SeminarSaveRequest request) {
+  public SeminarCreateResponse save(SeminarSaveRequest request) {
     validCloseTime(request);
 
     Seminar seminar = request.toEntity(randomAttendanceCode());
-    return seminarRepository.save(seminar).getId();
+    return new SeminarCreateResponse(seminarRepository.save(seminar).getId());
   }
 
   private void validCloseTime(SeminarSaveRequest request) {
@@ -71,7 +72,7 @@ public class SeminarService {
         .orElse(Seminar.builder().build()));
   }
 
-  public List<SeminarResponse> findAll() {
-    return validSeminarFindService.findAll();
+  public SeminarListResponse findAll() {
+    return new SeminarListResponse(validSeminarFindService.findAll());
   }
 }

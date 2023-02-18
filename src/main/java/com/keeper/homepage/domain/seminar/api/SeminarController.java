@@ -2,10 +2,11 @@ package com.keeper.homepage.domain.seminar.api;
 
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarCreateResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -29,9 +30,9 @@ public class SeminarController {
   private final SeminarService seminarService;
 
   @PostMapping
-  public ResponseEntity<Long> createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
-    Long seminarId = seminarService.save(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(seminarId);
+  public ResponseEntity<SeminarCreateResponse> createSeminar(@Valid @RequestBody SeminarSaveRequest request) {
+    SeminarCreateResponse response = seminarService.save(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @DeleteMapping("/{seminarId}")
@@ -41,9 +42,9 @@ public class SeminarController {
   }
 
   @GetMapping
-  public ResponseEntity<List<SeminarResponse>> getAllSeminars() {
-    List<SeminarResponse> seminarList = seminarService.findAll();
-    return ResponseEntity.status(HttpStatus.OK).body(seminarList);
+  public ResponseEntity<SeminarListResponse> getAllSeminars() {
+    SeminarListResponse response = seminarService.findAll();
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   // TODO: 2023-02-17 날짜로 조회하는 기능의 권한이 아직 명확하지 않다. 
@@ -52,13 +53,13 @@ public class SeminarController {
   @Secured({"ROLE_회장", "ROLE_부회장"})
   public ResponseEntity<SeminarResponse> getSeminarByDate(
       @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate localdate) {
-    SeminarResponse seminarResponse = seminarService.findByDate(localdate);
-    return ResponseEntity.status(HttpStatus.OK).body(seminarResponse);
+    SeminarResponse response = seminarService.findByDate(localdate);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
   @GetMapping("/{seminarId}")
   public ResponseEntity<SeminarResponse> getSeminar(@PathVariable long seminarId) {
-    SeminarResponse seminarResponse = seminarService.findById(seminarId);
-    return ResponseEntity.status(HttpStatus.OK).body(seminarResponse);
+    SeminarResponse response = seminarService.findById(seminarId);
+    return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 }
