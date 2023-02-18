@@ -103,6 +103,7 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
+  
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
