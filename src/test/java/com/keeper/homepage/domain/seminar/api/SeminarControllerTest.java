@@ -36,6 +36,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -110,6 +111,15 @@ public class SeminarControllerTest extends IntegrationTest {
     return key("format").value(value);
   }
 
+  public FieldDescriptor field(String path, String description, String format) {
+    return fieldWithPath(path).description(description)
+        .attributes(formatField(format));
+  }
+
+  public FieldDescriptor field(String path, String description) {
+    return fieldWithPath(path).description(description);
+  }
+
   @Nested
   @DisplayName("세미나 생성 테스트")
   class SeminarCreateTest {
@@ -121,7 +131,7 @@ public class SeminarControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               responseFields(
-                  fieldWithPath("id").description("세미나 ID"))
+                  field("id", "세미나 ID"))
           ));
     }
 
@@ -147,12 +157,10 @@ public class SeminarControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               requestFields(
-                  fieldWithPath("attendanceCloseTime").description("출석 마감 시간")
-                      .attributes(formatField("yyyy-MM-dd HH:mm:ss")),
-                  fieldWithPath("latenessCloseTime").description("지각 마감 시간")
-                      .attributes(formatField("yyyy-MM-dd HH:mm:ss"))),
+                  field("attendanceCloseTime", "출석 마감 시간", "yyyy-MM-dd HH:mm:ss"),
+                  field("latenessCloseTime", "지각 마감 시간", "yyyy-MM-dd HH:mm:ss")),
               responseFields(
-                  fieldWithPath("id").description("세미나 ID")
+                  field("id", "세미나 ID")
               )));
 
       em.flush();
@@ -264,14 +272,15 @@ public class SeminarControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               responseFields(
-                  fieldWithPath("seminarList[].id").description("세미나 ID"),
-                  fieldWithPath("seminarList[].openTime").description("세미나 생성 시간"),
-                  fieldWithPath("seminarList[].attendanceCloseTime").description("출석 마감 시간"),
-                  fieldWithPath("seminarList[].latenessCloseTime").description("지각 마감 시간"),
-                  fieldWithPath("seminarList[].attendanceCode").description("출석 코드"),
-                  fieldWithPath("seminarList[].name").description("세미나명"),
-                  fieldWithPath("seminarList[].registerTime").description("DB 생성 시간"),
-                  fieldWithPath("seminarList[].updateTime").description("DB 업데이트 시간"))
+                  field("seminarList[].id", "세미나 ID"),
+                  field("seminarList[].id", "세미나 ID"),
+                  field("seminarList[].openTime", "세미나 생성 시간"),
+                  field("seminarList[].attendanceCloseTime", "출석 마감 시간"),
+                  field("seminarList[].latenessCloseTime", "지각 마감 시간"),
+                  field("seminarList[].attendanceCode", "출석 코드"),
+                  field("seminarList[].name", "세미나명"),
+                  field("seminarList[].registerTime", "DB 생성 시간"),
+                  field("seminarList[].updateTime", "DB 업데이트 시간"))
           ));
     }
 
@@ -305,14 +314,14 @@ public class SeminarControllerTest extends IntegrationTest {
               pathParameters(
                   parameterWithName("seminarId").description("검색할 세미나 ID를 입력해주세요.")),
               responseFields(
-                  fieldWithPath("id").description("세미나 ID"),
-                  fieldWithPath("openTime").description("세미나 생성 시간"),
-                  fieldWithPath("attendanceCloseTime").description("출석 마감 시간"),
-                  fieldWithPath("latenessCloseTime").description("지각 마감 시간"),
-                  fieldWithPath("attendanceCode").description("출석 코드"),
-                  fieldWithPath("name").description("세미나명"),
-                  fieldWithPath("registerTime").description("DB 생성 시간"),
-                  fieldWithPath("updateTime").description("DB 업데이트 시간"))
+                  field("id", "세미나 ID"),
+                  field("openTime", "세미나 생성 시간"),
+                  field("attendanceCloseTime", "출석 마감 시간"),
+                  field("latenessCloseTime", "지각 마감 시간"),
+                  field("attendanceCode", "출석 코드"),
+                  field("name", "세미나명"),
+                  field("registerTime", "DB 생성 시간"),
+                  field("updateTime", "DB 업데이트 시간"))
           ));
     }
 
@@ -356,14 +365,14 @@ public class SeminarControllerTest extends IntegrationTest {
                   parameterWithName("date").attributes(formatField("yyyy-MM-dd"))
                       .description("검색할 날짜를 입력해주세요.")),
               responseFields(
-                  fieldWithPath("id").description("세미나 ID"),
-                  fieldWithPath("openTime").description("세미나 생성 시간"),
-                  fieldWithPath("attendanceCloseTime").description("출석 마감 시간"),
-                  fieldWithPath("latenessCloseTime").description("지각 마감 시간"),
-                  fieldWithPath("attendanceCode").description("출석 코드"),
-                  fieldWithPath("name").description("세미나명"),
-                  fieldWithPath("registerTime").description("DB 생성 시간"),
-                  fieldWithPath("updateTime").description("DB 업데이트 시간"))
+                  field("id", "세미나 ID"),
+                  field("openTime", "세미나 생성 시간"),
+                  field("attendanceCloseTime", "출석 마감 시간"),
+                  field("latenessCloseTime", "지각 마감 시간"),
+                  field("attendanceCode", "출석 코드"),
+                  field("name", "세미나명"),
+                  field("registerTime", "DB 생성 시간"),
+                  field("updateTime", "DB 업데이트 시간"))
           ));
     }
 
