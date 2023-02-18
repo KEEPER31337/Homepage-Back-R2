@@ -136,14 +136,6 @@ public class Post extends BaseEntity {
     files.add(file);
   }
 
-  public void addLike(MemberHasPostLike like) {
-    postLikes.add(like);
-  }
-
-  public void addDislike(MemberHasPostDislike dislike) {
-    postDislikes.add(dislike);
-  }
-
   public void registerCategory(Category category) {
     this.category = category;
     category.getPosts().add(this);
