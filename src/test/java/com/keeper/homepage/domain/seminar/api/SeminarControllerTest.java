@@ -195,9 +195,11 @@ public class SeminarControllerTest extends IntegrationTest {
       String strJson3 = """
           {"attendanceCloseTime":null, "latenessCloseTime":"null"}""";
       String strJson4 = """
-          {"attendanceCloseTime":"%s", "latenessCloseTime":null}""".formatted(now.plusMinutes(3).format(format));
+          {"attendanceCloseTime":"%s", "latenessCloseTime":null}
+          """.formatted(now.plusMinutes(3).format(format));
       String strJson5 = """
-          {"attendanceCloseTime":null, "latenessCloseTime":"%s"}""".formatted(now.plusMinutes(3).format(format));
+          {"attendanceCloseTime":null, "latenessCloseTime":"%s"}
+          """.formatted(now.plusMinutes(3).format(format));
 
       createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow().getId();
