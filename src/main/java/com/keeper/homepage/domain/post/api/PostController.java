@@ -29,7 +29,7 @@ public class PostController {
       @LoginMember Member member,
       @ModelAttribute @Valid PostRequest request
   ) {
-    Long postId = postService.createPost(
+    Long postId = postService.create(
         request.toEntity(member, WebUtil.getUserIP()),
         request.getCategoryId(), request.getThumbnail(),
         request.getFiles());

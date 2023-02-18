@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.dto.request.PostRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.global.error.BusinessException;
@@ -45,7 +44,7 @@ public class PostServiceTest extends IntegrationTest {
           .password("게시글 암호")
           .build();
 
-      Long postId = postService.createPost(post, category.getId(), thumbnail, List.of(thumbnail));
+      Long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
       em.flush();
       em.clear();
       Post findPost = postRepository.findById(postId).orElseThrow();
@@ -73,7 +72,7 @@ public class PostServiceTest extends IntegrationTest {
     void should_throwBusinessException_when_requestNotFoundCategory() {
       Post post = Post.builder().build();
 
-      assertThatThrownBy(() -> postService.createPost(post, 0L, thumbnail, List.of(thumbnail)))
+      assertThatThrownBy(() -> postService.create(post, 0L, thumbnail, List.of(thumbnail)))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining("존재하지 않는 카테고리입니다.");
     }

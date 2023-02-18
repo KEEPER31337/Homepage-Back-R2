@@ -28,7 +28,7 @@ public class PostService {
   private final FileUtil fileUtil;
 
   @Transactional
-  public Long createPost(Post post, Long categoryId, MultipartFile thumbnail,
+  public Long create(Post post, Long categoryId, MultipartFile thumbnail,
       List<MultipartFile> multipartFiles) {
     Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
     savePostFiles(multipartFiles, post);

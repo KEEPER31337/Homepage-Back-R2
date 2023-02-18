@@ -4,7 +4,6 @@ import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUES
 import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -38,7 +37,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 public class PostControllerTest extends IntegrationTest {
 
@@ -227,7 +225,7 @@ public class PostControllerTest extends IntegrationTest {
 
     private void mockCreatePostService() {
       doReturn(postId).when(postService)
-          .createPost(any(Post.class), anyLong(), any(), any());
+          .create(any(Post.class), anyLong(), any(), any());
     }
 
     private void addAllParams() {
