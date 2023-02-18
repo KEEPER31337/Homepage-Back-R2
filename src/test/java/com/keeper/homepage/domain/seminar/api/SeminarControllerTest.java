@@ -187,11 +187,16 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("올바르지 않은 시간 값이 들어오면 세미나 시작을 실패한다.")
     public void should_failStartSeminar_when_NotValidValue() throws Exception {
       DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-      String strJson1 = "{\"attendanceCloseTime\":\"null\", \"latenessCloseTime\":\"null\"}";
-      String strJson2 = "{\"attendanceCloseTime\":\"null\", \"latenessCloseTime\":null}";
-      String strJson3 = "{\"attendanceCloseTime\":null, \"latenessCloseTime\":\"null\"}";
-      String strJson4 = String.format("{\"attendanceCloseTime\":\"%s\", \"latenessCloseTime\":null}",now.plusMinutes(3).format(format));
-      String strJson5 = String.format("{\"attendanceCloseTime\":null, \"latenessCloseTime\":\"%s\"}",now.plusMinutes(3).format(format));
+      String strJson1 = """
+          {"attendanceCloseTime":"null", "latenessCloseTime":"null"}""";
+      String strJson2 = """
+          {"attendanceCloseTime":"null", "latenessCloseTime":null}""";
+      String strJson3 = """
+          {"attendanceCloseTime":null, "latenessCloseTime":"null"}""";
+      String strJson4 = String.format("""
+          {"attendanceCloseTime":"%s", "latenessCloseTime":null}""", now.plusMinutes(3).format(format));
+      String strJson5 = String.format("""
+          {"attendanceCloseTime":null, "latenessCloseTime":"%s"}""", now.plusMinutes(3).format(format));
 
       createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow().getId();
