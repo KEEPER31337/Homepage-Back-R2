@@ -43,13 +43,13 @@ public class SeminarService {
 
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
-    seminar.changeCloseTime(request.getAttendanceCloseTime(), request.getAttendanceCloseTime());
+    seminar.changeCloseTime(request.attendanceCloseTime(), request.attendanceCloseTime());
     return new SeminarIdResponse(seminarId);
   }
 
   private void validCloseTime(SeminarStartRequest request) {
-    LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
-    LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
+    LocalDateTime attendanceCloseTime = request.attendanceCloseTime();
+    LocalDateTime latenessCloseTime = request.latenessCloseTime();
 
     if (attendanceCloseTime == null && latenessCloseTime == null) {
       return;
