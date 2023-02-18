@@ -1,30 +1,21 @@
 package com.keeper.homepage.domain.seminar.dto.request;
 
-import static lombok.AccessLevel.PACKAGE;
-import static lombok.AccessLevel.PRIVATE;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
-@Getter
 @Builder
-@NoArgsConstructor(access = PRIVATE)
-@AllArgsConstructor(access = PACKAGE)
-public class SeminarStartRequest {
+public record SeminarStartRequest (
+    @Nullable
+    @Future
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime attendanceCloseTime,
 
-  @Nullable
-  @Future
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime attendanceCloseTime;
+    @Nullable
+    @Future
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime latenessCloseTime){
 
-  @Nullable
-  @Future
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime latenessCloseTime;
 }
