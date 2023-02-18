@@ -174,7 +174,8 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("시간 값이 둘 다 null일 때 허용한다. (세미나 생성, 시작이 분리되어 있다.)")
     public void should_success_when_nullValue() throws Exception {
-      String strJson = "{\"attendanceCloseTime\":null, \"latenessCloseTime\":null}";
+      String strJson = """
+      {"attendanceCloseTime":null, "latenessCloseTime":null}""";
       MvcResult mvcResult = createSeminarUsingApi(adminToken)
           .andExpect(status().isCreated()).andReturn();
       Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
