@@ -25,10 +25,6 @@ include::{snippets}/create-seminar/http-request.adoc[]
 
 include::{snippets}/create-seminar/request-cookies.adoc[]
 
-==== Request Fields
-
-include::{snippets}/create-seminar/request-fields.adoc[]
-
 === 응답
 
 ==== Response
@@ -38,6 +34,32 @@ include::{snippets}/create-seminar/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/create-seminar/response-fields.adoc[]
+
+== *세미나 시작*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/start-seminar/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/start-seminar/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/start-seminar/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/start-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/start-seminar/response-fields.adoc[]
 
 == *세미나 전부 조회*
 
