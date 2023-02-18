@@ -38,6 +38,12 @@ public class SeminarService {
   }
 
   private void validCloseTime(SeminarSaveRequest request) {
+    // 세미나 생성과 시작이 분리되어 있기 때문이다.
+    // 둘 다 null인 경우에만 생성을 허용한다. (둘 중에 하나만 null이면 정상적인 데이터로 인식하지 않는다.)
+    if (request.getLatenessCloseTime() == null && request.getAttendanceCloseTime() == null) {
+      return;
+    }
+
     LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
     LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
 
