@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor()
+@AllArgsConstructor
 public class StudyHasMemberPK implements Serializable {
 
   private Long study;
