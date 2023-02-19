@@ -68,7 +68,7 @@ public class Book extends BaseEntity {
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @OneToMany(mappedBy = "book", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "book", cascade = REMOVE)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
@@ -83,8 +83,8 @@ public class Book extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
-  public void addBookBorrowInfo(BookBorrowInfo bookBorrowInfo) {
-    bookBorrowInfo.registerBook(this);
-    bookBorrowInfos.add(bookBorrowInfo);
-  }
+//  public void addBookBorrowInfo(BookBorrowInfo bookBorrowInfo) {
+//    bookBorrowInfo.registerBook(this);
+//    bookBorrowInfos.add(bookBorrowInfo);
+//  }
 }
