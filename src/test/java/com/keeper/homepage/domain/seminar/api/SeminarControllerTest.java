@@ -427,6 +427,19 @@ public class SeminarControllerTest extends IntegrationTest {
             .andExpect(jsonPath("$.registerTime").isEmpty())
             .andExpect(jsonPath("$.updateTime").isEmpty());
       }
+
+      @Test
+      @DisplayName("모든 권한이 이용 가능한 세미나를 조회할 수 있다.")
+      public void should_successSearchSeminar_when_AllMember() throws Exception {
+        Long seminarId = createSeminarAndGetId();
+        startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+        em.flush();
+        em.clear();
+
+        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk());
+        searchAvailableSeminarUsingApi(userToken).andExpect(status().isOk());
+        searchAvailableSeminarUsingApi(clerkToken).andExpect(status().isOk());
+      }
     }
 
     @Nested
