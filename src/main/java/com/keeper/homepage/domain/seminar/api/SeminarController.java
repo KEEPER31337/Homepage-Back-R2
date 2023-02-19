@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.seminar.api;
 
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceCodeResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
@@ -36,8 +37,8 @@ public class SeminarController {
   }
 
   @PostMapping("/{seminarId}")
-  public ResponseEntity<SeminarIdResponse> startSeminar(@PathVariable long seminarId, @Valid @RequestBody SeminarStartRequest request) {
-    SeminarIdResponse response = seminarService.start(seminarId, request);
+  public ResponseEntity<SeminarAttendanceCodeResponse> startSeminar(@PathVariable long seminarId, @Valid @RequestBody SeminarStartRequest request) {
+    SeminarAttendanceCodeResponse response = seminarService.start(seminarId, request);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 

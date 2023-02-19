@@ -7,6 +7,7 @@ import static java.util.stream.Collectors.joining;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceCodeResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
@@ -38,13 +39,13 @@ public class SeminarService {
   }
 
   @Transactional
-  public SeminarIdResponse start(Long seminarId, SeminarStartRequest request) {
+  public SeminarAttendanceCodeResponse start(Long seminarId, SeminarStartRequest request) {
     validCloseTime(request);
 
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
     seminar.changeCloseTime(request.attendanceCloseTime(), request.latenessCloseTime());
-    return new SeminarIdResponse(seminarId);
+    return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }
 
   private void validCloseTime(SeminarStartRequest request) {
