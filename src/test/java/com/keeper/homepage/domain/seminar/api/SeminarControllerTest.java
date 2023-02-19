@@ -107,13 +107,21 @@ public class SeminarControllerTest extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
-  public Attribute formatField(String value) {
+  public Attribute customFormat(String value) {
     return key("format").value(value);
   }
 
-  public FieldDescriptor field(String path, String description, String format) {
+  public Attribute dateTimeFormat() {
+    return key("format").value("yyyy-MM-dd HH:mm:ss");
+  }
+
+  public Attribute dateFormat() {
+    return key("format").value("yyyy-MM-dd");
+  }
+
+  public FieldDescriptor field(String path, String description, Attribute attribute) {
     return fieldWithPath(path).description(description)
-        .attributes(formatField(format));
+        .attributes(attribute);
   }
 
   public FieldDescriptor field(String path, String description) {
@@ -157,8 +165,8 @@ public class SeminarControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               requestFields(
-                  field("attendanceCloseTime", "출석 마감 시간", "yyyy-MM-dd HH:mm:ss"),
-                  field("latenessCloseTime", "지각 마감 시간", "yyyy-MM-dd HH:mm:ss")),
+                  field("attendanceCloseTime", "출석 마감 시간", dateTimeFormat()),
+                  field("latenessCloseTime", "지각 마감 시간", dateTimeFormat())),
               responseFields(
                   field("attendanceCode", "세미나 출석 코드")
               )));
@@ -167,8 +175,8 @@ public class SeminarControllerTest extends IntegrationTest {
       em.clear();
 
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
-      assertThat(seminar.getAttendanceCloseTime()).isEqualTo(seminar.getAttendanceCloseTime());
-      assertThat(seminar.getLatenessCloseTime()).isEqualTo(seminar.getLatenessCloseTime());
+      assertThat(seminarStartRequest.attendanceCloseTime()).isEqualTo(seminar.getAttendanceCloseTime());
+      assertThat(seminarStartRequest.latenessCloseTime()).isEqualTo(seminar.getLatenessCloseTime());
     }
 
     @Test
@@ -370,7 +378,7 @@ public class SeminarControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               queryParameters(
-                  parameterWithName("date").attributes(formatField("yyyy-MM-dd"))
+                  parameterWithName("date").attributes(dateFormat())
                       .description("검색할 날짜를 입력해주세요.")),
               responseFields(
                   field("id", "세미나 ID"),
