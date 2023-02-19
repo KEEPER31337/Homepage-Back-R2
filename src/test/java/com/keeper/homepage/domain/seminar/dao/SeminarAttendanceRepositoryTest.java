@@ -87,6 +87,12 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("지각 사유가 없으면 Optional.Empty()를 반환한다.")
+    public void should_returnEmpty_when_EmptyAttendExcuseSeminar() throws Exception {
+      assertThat(seminarAttendance.getExcuse()).isEmpty();
+    }
+
+    @Test
     @DisplayName("DB에 세미나 지각 사유를 수정해야 한다.")
     void should_success_when_modifyAttendExcuseSeminar() {
       String excuse = "늦게 일어났습니다!";
