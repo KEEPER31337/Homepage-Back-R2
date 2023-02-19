@@ -160,7 +160,7 @@ public class SeminarControllerTest extends IntegrationTest {
                   field("attendanceCloseTime", "출석 마감 시간", "yyyy-MM-dd HH:mm:ss"),
                   field("latenessCloseTime", "지각 마감 시간", "yyyy-MM-dd HH:mm:ss")),
               responseFields(
-                  field("id", "세미나 ID")
+                  field("attendanceCode", "세미나 출석 코드")
               )));
 
       em.flush();
