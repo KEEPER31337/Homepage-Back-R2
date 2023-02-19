@@ -56,6 +56,7 @@ public class SeminarController {
   }
 
   @GetMapping("/available")
+  @Secured({"ROLE_회원"})
   public ResponseEntity<SeminarResponse> getSeminarByAvailable() {
     SeminarResponse response = seminarService.findByAvailable();
     return ResponseEntity.status(HttpStatus.OK).body(response);
