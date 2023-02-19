@@ -59,7 +59,4 @@ public class BookBorrowInfo extends BaseEntity {
     this.expireDate = expireDate;
   }
 
-  public void registerBook(Book book) {
-    this.book = book;
-  }
 }
