@@ -242,7 +242,6 @@ public class Member {
         .study(study)
         .member(this)
         .build();
-    study.addMember(studyMember);
     studyMembers.add(studyMember);
   }
 

@@ -91,8 +91,4 @@ public class Study extends BaseEntity {
       this.thumbnail = thumbnail;
       this.headMember = headMember;
   }
-
-  public void addMember(StudyHasMember studyMember) {
-    studyMembers.add(studyMember);
-  }
 }
