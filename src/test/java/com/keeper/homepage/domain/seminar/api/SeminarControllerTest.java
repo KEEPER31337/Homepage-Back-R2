@@ -142,13 +142,20 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나 생성을 성공한다.")
     public void should_successCreateSeminar_when_admin() throws Exception {
-      createSeminarUsingApi(adminToken).andExpect(status().isCreated())
+      MvcResult mvcResult = createSeminarUsingApi(adminToken).andExpect(status().isCreated())
           .andDo(document("create-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               responseFields(
                   field("id", "세미나 ID"))
-          ));
+          )).andReturn();
+
+      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+          SeminarIdResponse.class).id();
+      Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
+
+      assertThat(seminar.getAttendanceCloseTime()).isNull();
+      assertThat(seminar.getLatenessCloseTime()).isNull();
     }
 
     @Test
