@@ -38,7 +38,6 @@ public class StudyTestHelper {
     private String etcLink;
     private Thumbnail thumbnail;
     private Member headMember;
-    private List<StudyHasMember> studyHasMember;
 
     public StudyBuilder title(String title) {
       this.title = title;

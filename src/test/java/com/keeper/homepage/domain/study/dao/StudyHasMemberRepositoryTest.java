@@ -45,8 +45,6 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
       member.join(study);
       assertThat(studyHasMemberRepository.findAll()).hasSize(1);
 
-      member = memberRepository.findById(member.getId()).orElseThrow();
-      study = studyRepository.findById(study.getId()).orElseThrow();
       member.leave(study);
 
       em.flush();
@@ -69,10 +67,8 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
 
       StudyHasMemberPK keyA = new StudyHasMemberPK(study.getId(), memberA.getId());
       StudyHasMemberPK keyB = new StudyHasMemberPK(study.getId(), memberB.getId());
-      assertThat(studyHasMemberRepository.findAll()).hasSize(2);
-      // existsById로 하면 throw가 안 돼서 검증이 안 되는데 둘 차이가 뭘까?..
-      assertThat(studyHasMemberRepository.findById(keyA).orElseThrow());
-      assertThat(studyHasMemberRepository.findById(keyB).orElseThrow());
+      assertThat(studyHasMemberRepository.existsById(keyA)).isTrue();
+      assertThat(studyHasMemberRepository.findById(keyB)).isNotEmpty();
 
       study = studyRepository.findById(study.getId()).orElseThrow();
       studyRepository.delete(study);
@@ -80,11 +76,12 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      assertThat(studyHasMemberRepository.findAll()).hasSize(0);
-      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyA).orElseThrow()).isInstanceOf(
-          NoSuchElementException.class);
-      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyB).orElseThrow()).isInstanceOf(
-          NoSuchElementException.class);
+      assertThat(studyHasMemberRepository.existsById(keyA)).isFalse();
+      assertThat(studyHasMemberRepository.findById(keyB)).isEmpty();
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyA).orElseThrow())
+          .isInstanceOf(NoSuchElementException.class);
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyB).orElseThrow())
+          .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -104,8 +101,8 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
 
       StudyHasMemberPK key = new StudyHasMemberPK(study.getId(), member.getId());
 
-      assertThatThrownBy(() -> studyHasMemberRepository.findById(key).orElseThrow()).isInstanceOf(
-          NoSuchElementException.class);
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(key).orElseThrow())
+          .isInstanceOf(NoSuchElementException.class);
     }
   }
 
