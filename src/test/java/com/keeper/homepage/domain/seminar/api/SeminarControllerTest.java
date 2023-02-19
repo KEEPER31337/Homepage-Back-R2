@@ -285,7 +285,6 @@ public class SeminarControllerTest extends IntegrationTest {
 
       var responseSeminarListDescriptors = new FieldDescriptor[]{
           field("seminarList[].id", "세미나 ID"),
-          field("seminarList[].id", "세미나 ID"),
           field("seminarList[].openTime", "세미나 생성 시간"),
           field("seminarList[].attendanceCloseTime", "출석 마감 시간"),
           field("seminarList[].latenessCloseTime", "지각 마감 시간"),
