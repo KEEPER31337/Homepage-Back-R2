@@ -107,6 +107,14 @@ public class SeminarControllerTest extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
+  public Long createSeminarAndGetId() throws Exception {
+    MvcResult mvcResult = createSeminarUsingApi(adminToken)
+        .andExpect(status().isCreated()).andReturn();
+    Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+        SeminarIdResponse.class).id();
+    return seminarId;
+  }
+
   public Attribute customFormat(String value) {
     return key("format").value(value);
   }
@@ -156,10 +164,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("생성된 세미나에 마감 시간을 넣어서 시작한다.")
     public void should_successStartSeminar_when_admin() throws Exception {
-      MvcResult mvcResult = createSeminarUsingApi(adminToken)
-          .andExpect(status().isCreated()).andReturn();
-      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarIdResponse.class).id();
+      Long seminarId = createSeminarAndGetId();
 
       var requestCloseTimeDescriptors = new FieldDescriptor[]{
           field("attendanceCloseTime", "출석 마감 시간", dateTimeFormat()),
@@ -189,10 +194,8 @@ public class SeminarControllerTest extends IntegrationTest {
     public void should_success_when_nullValue() throws Exception {
       String strJson = """
       {"attendanceCloseTime":null, "latenessCloseTime":null}""";
-      MvcResult mvcResult = createSeminarUsingApi(adminToken)
-          .andExpect(status().isCreated()).andReturn();
-      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarIdResponse.class).id();
+      Long seminarId = createSeminarAndGetId();
+
       startSeminarUsingApi(adminToken, seminarId, strJson).andExpect(status().isOk());
       startSeminarUsingApi(adminToken, seminarId, SeminarStartRequest.builder().build()).andDo(print()).andExpect(status().isOk());
     }
@@ -265,10 +268,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @DisplayName("생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
       int beforeLength = validSeminarFindService.findAll().size();
-      MvcResult mvcResult = createSeminarUsingApi(adminToken)
-          .andExpect(status().isCreated()).andReturn();
-      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarIdResponse.class).id();
+      Long seminarId = createSeminarAndGetId();
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       em.flush();
       em.clear();
@@ -322,10 +322,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("id 값으로 세미나 조회를 성공한다.")
     public void should_successSearchSeminarUsingId_when_admin() throws Exception {
-      MvcResult mvcResult = createSeminarUsingApi(adminToken)
-          .andExpect(status().isCreated()).andReturn();
-      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarIdResponse.class).id();
+      Long seminarId = createSeminarAndGetId();
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       em.flush();
       em.clear();
@@ -367,10 +364,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
     public void should_searchSeminar_when_filterDate() throws Exception {
-      MvcResult mvcResult = createSeminarUsingApi(adminToken)
-          .andExpect(status().isCreated()).andReturn();
-      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarIdResponse.class).id();
+      Long seminarId = createSeminarAndGetId();
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       em.flush();
       em.clear();
@@ -449,10 +443,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나 삭제를 성공한다.")
     public void should_successDeleteSeminar_when_admin() throws Exception {
-      MvcResult mvcResult = createSeminarUsingApi(adminToken)
-          .andExpect(status().isCreated()).andReturn();
-      Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-          SeminarIdResponse.class).id();
+      Long seminarId = createSeminarAndGetId();
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       em.flush();
       em.clear();
