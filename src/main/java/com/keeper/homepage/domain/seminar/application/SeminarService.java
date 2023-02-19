@@ -43,7 +43,7 @@ public class SeminarService {
 
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
-    seminar.changeCloseTime(request.attendanceCloseTime(), request.attendanceCloseTime());
+    seminar.changeCloseTime(request.attendanceCloseTime(), request.latenessCloseTime());
     return new SeminarIdResponse(seminarId);
   }
 
