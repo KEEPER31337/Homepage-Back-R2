@@ -294,7 +294,7 @@ public class SeminarControllerTest extends IntegrationTest {
           field("seminarList[].registerTime", "DB 생성 시간"),
           field("seminarList[].updateTime", "DB 업데이트 시간")
       };
-      
+
       int idx = afterLength - 1;
       searchAllSeminarUsingApi(adminToken)
           .andExpect(jsonPath("$.seminarList.length()", is(afterLength)))
@@ -325,122 +325,130 @@ public class SeminarControllerTest extends IntegrationTest {
       createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       searchAllSeminarUsingApi(userToken).andExpect(status().isForbidden());
     }
+    
+    @Nested
+    @DisplayName("세미나 ID 조회 테스트")
+    class SeminarCheckIdTest {
+      @Test
+      @DisplayName("id 값으로 세미나 조회를 성공한다.")
+      public void should_successSearchSeminarUsingId_when_admin() throws Exception {
+        Long seminarId = createSeminarAndGetId();
+        startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+        em.flush();
+        em.clear();
 
-    @Test
-    @DisplayName("id 값으로 세미나 조회를 성공한다.")
-    public void should_successSearchSeminarUsingId_when_admin() throws Exception {
-      Long seminarId = createSeminarAndGetId();
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      em.flush();
-      em.clear();
+        var responseSeminarDescriptors = new FieldDescriptor[]{
+            field("id", "세미나 ID"),
+            field("openTime", "세미나 생성 시간"),
+            field("attendanceCloseTime", "출석 마감 시간"),
+            field("latenessCloseTime", "지각 마감 시간"),
+            field("attendanceCode", "출석 코드"),
+            field("name", "세미나명"),
+            field("registerTime", "DB 생성 시간"),
+            field("updateTime", "DB 업데이트 시간")
+        };
 
-      var responseSeminarDescriptors = new FieldDescriptor[]{
-          field("id", "세미나 ID"),
-          field("openTime", "세미나 생성 시간"),
-          field("attendanceCloseTime", "출석 마감 시간"),
-          field("latenessCloseTime", "지각 마감 시간"),
-          field("attendanceCode", "출석 코드"),
-          field("name", "세미나명"),
-          field("registerTime", "DB 생성 시간"),
-          field("updateTime", "DB 업데이트 시간")
-      };
+        searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
+            .andDo(document("search-seminar",
+                requestCookies(
+                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                pathParameters(
+                    parameterWithName("seminarId").description("검색할 세미나 ID를 입력해주세요.")),
+                responseFields(
+                    responseSeminarDescriptors)
+            ));
+      }
 
-      searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
-          .andDo(document("search-seminar",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
-              pathParameters(
-                  parameterWithName("seminarId").description("검색할 세미나 ID를 입력해주세요.")),
-              responseFields(
-                  responseSeminarDescriptors)
-          ));
+      @Test
+      @DisplayName("존재하지 않는 세미나를 조회했을 때 실패한다.")
+      public void should_failSearchSeminarNotExistId_when_admin() throws Exception {
+        searchSeminarUsingApi(adminToken, 0L).andExpect(status().isNotFound());
+      }
+
+      @Test
+      @DisplayName("관리자 권한이 아니면 id 값으로 세미나 조회를 실패한다.")
+      public void should_failSearchSeminarUsingId_when_notAdmin() throws Exception {
+        searchSeminarUsingApi(userToken, 2L).andExpect(status().isForbidden());
+      }
     }
 
-    @Test
-    @DisplayName("존재하지 않는 세미나를 조회했을 때 실패한다.")
-    public void should_failSearchSeminarNotExistId_when_admin() throws Exception {
-      searchSeminarUsingApi(adminToken, 0L).andExpect(status().isNotFound());
-    }
+    @Nested
+    @DisplayName("세미나 날짜 조회 테스트")
+    class SeminarCheckDateTest {
+      @Test
+      @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
+      public void should_searchSeminar_when_filterDate() throws Exception {
+        Long seminarId = createSeminarAndGetId();
+        startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+        em.flush();
+        em.clear();
 
-    @Test
-    @DisplayName("관리자 권한이 아니면 id 값으로 세미나 조회를 실패한다.")
-    public void should_failSearchSeminarUsingId_when_notAdmin() throws Exception {
-      searchSeminarUsingApi(userToken, 2L).andExpect(status().isForbidden());
-    }
+        var responseSeminarDescriptors = new FieldDescriptor[]{
+            field("id", "세미나 ID"),
+            field("openTime", "세미나 생성 시간"),
+            field("attendanceCloseTime", "출석 마감 시간"),
+            field("latenessCloseTime", "지각 마감 시간"),
+            field("attendanceCode", "출석 코드"),
+            field("name", "세미나명"),
+            field("registerTime", "DB 생성 시간"),
+            field("updateTime", "DB 업데이트 시간")
+        };
 
-    @Test
-    @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
-    public void should_searchSeminar_when_filterDate() throws Exception {
-      Long seminarId = createSeminarAndGetId();
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      em.flush();
-      em.clear();
+        searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.openTime").exists())
+            .andExpect(jsonPath("$.attendanceCloseTime").exists())
+            .andExpect(jsonPath("$.latenessCloseTime").exists())
+            .andExpect(jsonPath("$.attendanceCode").exists())
+            .andExpect(jsonPath("$.name").exists())
+            .andExpect(jsonPath("$.registerTime").exists())
+            .andExpect(jsonPath("$.updateTime").exists())
 
-      var responseSeminarDescriptors = new FieldDescriptor[]{
-          field("id", "세미나 ID"),
-          field("openTime", "세미나 생성 시간"),
-          field("attendanceCloseTime", "출석 마감 시간"),
-          field("latenessCloseTime", "지각 마감 시간"),
-          field("attendanceCode", "출석 코드"),
-          field("name", "세미나명"),
-          field("registerTime", "DB 생성 시간"),
-          field("updateTime", "DB 업데이트 시간")
-      };
+            .andDo(document("search-date-seminar",
+                requestCookies(
+                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                queryParameters(
+                    parameterWithName("date").attributes(dateFormat())
+                        .description("검색할 날짜를 입력해주세요.")),
+                responseFields(
+                    responseSeminarDescriptors)
+            ));
+      }
 
-      searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.openTime").exists())
-          .andExpect(jsonPath("$.attendanceCloseTime").exists())
-          .andExpect(jsonPath("$.latenessCloseTime").exists())
-          .andExpect(jsonPath("$.attendanceCode").exists())
-          .andExpect(jsonPath("$.name").exists())
-          .andExpect(jsonPath("$.registerTime").exists())
-          .andExpect(jsonPath("$.updateTime").exists())
+      @Test
+      @DisplayName("서기는 날짜로 세미나를 조회할 수 없다.")
+      public void should_badRequest_when_clerkSearchDate() throws Exception {
+        searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString()).andExpect(
+            status().isForbidden());
+      }
 
-          .andDo(document("search-date-seminar",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
-              queryParameters(
-                  parameterWithName("date").attributes(dateFormat())
-                      .description("검색할 날짜를 입력해주세요.")),
-              responseFields(
-                  responseSeminarDescriptors)
-          ));
-    }
+      @Test
+      @DisplayName("date 값의 형식은 맞지만 데이터가 없을 때 200 (OK)을 반환한다.")
+      public void should_OK_when_validDate() throws Exception {
+        searchDateSeminarUsingApi(adminToken, "2022-02-02")
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.openTime").isEmpty())
+            .andExpect(jsonPath("$.attendanceCloseTime").isEmpty())
+            .andExpect(jsonPath("$.latenessCloseTime").isEmpty())
+            .andExpect(jsonPath("$.attendanceCode").isEmpty())
+            .andExpect(jsonPath("$.name").isEmpty())
+            .andExpect(jsonPath("$.registerTime").isEmpty())
+            .andExpect(jsonPath("$.updateTime").isEmpty());
+      }
 
-    @Test
-    @DisplayName("서기는 날짜로 세미나를 조회할 수 없다.")
-    public void should_badRequest_when_clerkSearchDate() throws Exception {
-      searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString()).andExpect(
-          status().isForbidden());
-    }
+      @Test
+      @DisplayName("date 값의 형식이 맞지 않으면 400 (Bad Request)을 반환한다.")
+      public void should_badRequest_when_invalidDate() throws Exception {
+        searchDateSeminarUsingApi(adminToken, "20220202").andExpect(status().isBadRequest());
+        searchDateSeminarUsingApi(adminToken, null).andExpect(status().isBadRequest());
+      }
 
-    @Test
-    @DisplayName("date 값의 형식은 맞지만 데이터가 없을 때 200 (OK)을 반환한다.")
-    public void should_OK_when_validDate() throws Exception {
-      searchDateSeminarUsingApi(adminToken, "2022-02-02")
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.openTime").isEmpty())
-          .andExpect(jsonPath("$.attendanceCloseTime").isEmpty())
-          .andExpect(jsonPath("$.latenessCloseTime").isEmpty())
-          .andExpect(jsonPath("$.attendanceCode").isEmpty())
-          .andExpect(jsonPath("$.name").isEmpty())
-          .andExpect(jsonPath("$.registerTime").isEmpty())
-          .andExpect(jsonPath("$.updateTime").isEmpty());
-    }
-
-    @Test
-    @DisplayName("date 값의 형식이 맞지 않으면 400 (Bad Request)을 반환한다.")
-    public void should_badRequest_when_invalidDate() throws Exception {
-      searchDateSeminarUsingApi(adminToken, "20220202").andExpect(status().isBadRequest());
-      searchDateSeminarUsingApi(adminToken, null).andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
-    public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
-      searchDateSeminarUsingApi(userToken, LocalDate.now().toString())
-          .andExpect(status().isForbidden());
+      @Test
+      @DisplayName("관리자 권한이 아니면 날짜로 필터링하여 조회했을 때 실패한다.")
+      public void should_failFilterDateSearchSeminar_when_notAdmin() throws Exception {
+        searchDateSeminarUsingApi(userToken, LocalDate.now().toString())
+            .andExpect(status().isForbidden());
+      }
     }
   }
 
