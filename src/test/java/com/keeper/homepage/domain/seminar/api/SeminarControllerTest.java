@@ -160,13 +160,18 @@ public class SeminarControllerTest extends IntegrationTest {
           .andExpect(status().isCreated()).andReturn();
       Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
           SeminarIdResponse.class).id();
+
+      var requestCloseTimeDescriptors = new FieldDescriptor[]{
+          field("attendanceCloseTime", "출석 마감 시간", dateTimeFormat()),
+          field("latenessCloseTime", "지각 마감 시간", dateTimeFormat())
+      };
+
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk())
           .andDo(document("start-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               requestFields(
-                  field("attendanceCloseTime", "출석 마감 시간", dateTimeFormat()),
-                  field("latenessCloseTime", "지각 마감 시간", dateTimeFormat())),
+                  requestCloseTimeDescriptors),
               responseFields(
                   field("attendanceCode", "세미나 출석 코드")
               )));
@@ -271,6 +276,18 @@ public class SeminarControllerTest extends IntegrationTest {
       int afterLength = validSeminarFindService.findAll().size();
       assertThat(afterLength).isEqualTo(beforeLength + 1);
 
+      var responseSeminarListDescriptors = new FieldDescriptor[]{
+          field("seminarList[].id", "세미나 ID"),
+          field("seminarList[].id", "세미나 ID"),
+          field("seminarList[].openTime", "세미나 생성 시간"),
+          field("seminarList[].attendanceCloseTime", "출석 마감 시간"),
+          field("seminarList[].latenessCloseTime", "지각 마감 시간"),
+          field("seminarList[].attendanceCode", "출석 코드"),
+          field("seminarList[].name", "세미나명"),
+          field("seminarList[].registerTime", "DB 생성 시간"),
+          field("seminarList[].updateTime", "DB 업데이트 시간")
+      };
+
       // 데이터가 추가 되었음을 위 코드에서 검증했기 때문에 추가된 데이터들이 정상적인지 확인
       // 조회된 모든 데이터를 검증하는 것은 비효율적이라고 생각이 들었다.
       int idx = afterLength - 1;
@@ -288,15 +305,7 @@ public class SeminarControllerTest extends IntegrationTest {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
               responseFields(
-                  field("seminarList[].id", "세미나 ID"),
-                  field("seminarList[].id", "세미나 ID"),
-                  field("seminarList[].openTime", "세미나 생성 시간"),
-                  field("seminarList[].attendanceCloseTime", "출석 마감 시간"),
-                  field("seminarList[].latenessCloseTime", "지각 마감 시간"),
-                  field("seminarList[].attendanceCode", "출석 코드"),
-                  field("seminarList[].name", "세미나명"),
-                  field("seminarList[].registerTime", "DB 생성 시간"),
-                  field("seminarList[].updateTime", "DB 업데이트 시간"))
+                  responseSeminarListDescriptors)
           ));
     }
 
@@ -323,6 +332,17 @@ public class SeminarControllerTest extends IntegrationTest {
       em.flush();
       em.clear();
 
+      var responseSeminarDescriptors = new FieldDescriptor[]{
+          field("id", "세미나 ID"),
+          field("openTime", "세미나 생성 시간"),
+          field("attendanceCloseTime", "출석 마감 시간"),
+          field("latenessCloseTime", "지각 마감 시간"),
+          field("attendanceCode", "출석 코드"),
+          field("name", "세미나명"),
+          field("registerTime", "DB 생성 시간"),
+          field("updateTime", "DB 업데이트 시간")
+      };
+
       searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
           .andDo(document("search-seminar",
               requestCookies(
@@ -330,14 +350,7 @@ public class SeminarControllerTest extends IntegrationTest {
               pathParameters(
                   parameterWithName("seminarId").description("검색할 세미나 ID를 입력해주세요.")),
               responseFields(
-                  field("id", "세미나 ID"),
-                  field("openTime", "세미나 생성 시간"),
-                  field("attendanceCloseTime", "출석 마감 시간"),
-                  field("latenessCloseTime", "지각 마감 시간"),
-                  field("attendanceCode", "출석 코드"),
-                  field("name", "세미나명"),
-                  field("registerTime", "DB 생성 시간"),
-                  field("updateTime", "DB 업데이트 시간"))
+                  responseSeminarDescriptors)
           ));
     }
 
@@ -364,6 +377,17 @@ public class SeminarControllerTest extends IntegrationTest {
       em.flush();
       em.clear();
 
+      var responseSeminarDescriptors = new FieldDescriptor[]{
+          field("id", "세미나 ID"),
+          field("openTime", "세미나 생성 시간"),
+          field("attendanceCloseTime", "출석 마감 시간"),
+          field("latenessCloseTime", "지각 마감 시간"),
+          field("attendanceCode", "출석 코드"),
+          field("name", "세미나명"),
+          field("registerTime", "DB 생성 시간"),
+          field("updateTime", "DB 업데이트 시간")
+      };
+
       searchDateSeminarUsingApi(adminToken, LocalDate.now().toString())
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.openTime").exists())
@@ -381,14 +405,7 @@ public class SeminarControllerTest extends IntegrationTest {
                   parameterWithName("date").attributes(dateFormat())
                       .description("검색할 날짜를 입력해주세요.")),
               responseFields(
-                  field("id", "세미나 ID"),
-                  field("openTime", "세미나 생성 시간"),
-                  field("attendanceCloseTime", "출석 마감 시간"),
-                  field("latenessCloseTime", "지각 마감 시간"),
-                  field("attendanceCode", "출석 코드"),
-                  field("name", "세미나명"),
-                  field("registerTime", "DB 생성 시간"),
-                  field("updateTime", "DB 업데이트 시간"))
+                  responseSeminarDescriptors)
           ));
     }
 
