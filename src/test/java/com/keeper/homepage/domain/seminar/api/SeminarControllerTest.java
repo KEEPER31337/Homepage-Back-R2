@@ -92,6 +92,11 @@ public class SeminarControllerTest extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
+  ResultActions searchAvailableSeminarUsingApi(String token) throws Exception {
+    return mockMvc.perform(get("/seminars/available")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+  }
+
   ResultActions searchSeminarUsingApi(String token, Long seminarId) throws Exception {
     return mockMvc.perform(get("/seminars/{seminarId}", seminarId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
@@ -368,6 +373,59 @@ public class SeminarControllerTest extends IntegrationTest {
       @DisplayName("관리자 권한이 아니면 id 값으로 세미나 조회를 실패한다.")
       public void should_failSearchSeminarUsingId_when_notAdmin() throws Exception {
         searchSeminarUsingApi(userToken, 2L).andExpect(status().isForbidden());
+      }
+    }
+
+    @Nested
+    @DisplayName("이용 가능한 세미나 조회 테스트")
+    class SeminarCheckAvailableTest {
+
+      @Test
+      @DisplayName("이용 가능한 세미나를 조회한다.")
+      public void should_search_when_availableSeminar() throws Exception {
+        Long seminarId = createSeminarAndGetId();
+        startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+        em.flush();
+        em.clear();
+
+        var responseSeminarDescriptors = new FieldDescriptor[]{
+            field("id", "세미나 ID"),
+            field("openTime", "세미나 생성 시간"),
+            field("attendanceCloseTime", "출석 마감 시간"),
+            field("latenessCloseTime", "지각 마감 시간"),
+            field("attendanceCode", "출석 코드"),
+            field("name", "세미나명"),
+            field("registerTime", "DB 생성 시간"),
+            field("updateTime", "DB 업데이트 시간")
+        };
+
+        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk())
+                .andDo(document("search-available-seminar",
+                    requestCookies(
+                        cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                    responseFields(
+                        responseSeminarDescriptors)
+                ));
+      }
+      
+      @Test
+      @DisplayName("현재 시간이 지각 마감 시간을 지난 경우 조회 가능한 세미나가 존재하지 않는다.")
+      public void should_notSearch_when_timeOutSeminar() throws Exception {
+        Seminar seminarBuild = seminarTestHelper.builder()
+            .attendanceCloseTime(now.plusMinutes(-2))
+            .latenessCloseTime(now.plusMinutes(-1))
+            .build();
+        em.clear();
+
+        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk()).andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.openTime").isEmpty())
+            .andExpect(jsonPath("$.attendanceCloseTime").isEmpty())
+            .andExpect(jsonPath("$.latenessCloseTime").isEmpty())
+            .andExpect(jsonPath("$.attendanceCode").isEmpty())
+            .andExpect(jsonPath("$.name").isEmpty())
+            .andExpect(jsonPath("$.registerTime").isEmpty())
+            .andExpect(jsonPath("$.updateTime").isEmpty());
       }
     }
 
