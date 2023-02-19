@@ -287,9 +287,7 @@ public class SeminarControllerTest extends IntegrationTest {
           field("seminarList[].registerTime", "DB 생성 시간"),
           field("seminarList[].updateTime", "DB 업데이트 시간")
       };
-
-      // 데이터가 추가 되었음을 위 코드에서 검증했기 때문에 추가된 데이터들이 정상적인지 확인
-      // 조회된 모든 데이터를 검증하는 것은 비효율적이라고 생각이 들었다.
+      
       int idx = afterLength - 1;
       searchAllSeminarUsingApi(adminToken)
           .andExpect(jsonPath("$.seminarList.length()", is(afterLength)))
