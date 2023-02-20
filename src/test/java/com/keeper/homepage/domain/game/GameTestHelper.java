@@ -69,9 +69,9 @@ public class GameTestHelper {
       return gameRepository.save(
           Game.builder().member(member != null ? member : memberTestHelper.generate())
               .lastPlayTime(null)
-              .dice(dice != null ? dice : dice.from(0, 0))
-              .lotto(lotto != null ? lotto : lotto.from(0, 0))
-              .roulette(roulette != null ? roulette : roulette.from(0, 0)).build());
+              .dice(dice != null ? dice : Dice.from(0, 0))
+              .lotto(lotto != null ? lotto : Lotto.from(0, 0))
+              .roulette(roulette != null ? roulette : Roulette.from(0, 0)).build());
     }
   }
 }

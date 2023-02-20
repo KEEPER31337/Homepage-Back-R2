@@ -21,7 +21,7 @@ public class Roulette {
   @Column(name = "roulette_day_point", nullable = false)
   private Integer rouletteDayPoint;
 
-  public Roulette from(Integer roulettePerDay, Integer rouletteDayPoint) {
+  public static Roulette from(Integer roulettePerDay, Integer rouletteDayPoint) {
     return new Roulette(roulettePerDay, roulettePerDay);
   }
 

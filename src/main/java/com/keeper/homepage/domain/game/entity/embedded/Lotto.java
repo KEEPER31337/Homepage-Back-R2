@@ -21,7 +21,7 @@ public class Lotto {
   @Column(name = "lotto_day_point", nullable = false)
   private Integer lottoDayPoint;
 
-  public Lotto from(Integer lottoPerDay, Integer lottoDayPoint) {
+  public static Lotto from(Integer lottoPerDay, Integer lottoDayPoint) {
     return new Lotto(lottoPerDay, lottoDayPoint);
   }
 

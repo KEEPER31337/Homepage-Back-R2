@@ -21,7 +21,7 @@ public class Dice {
   @Column(name = "dice_day_point", nullable = false)
   private Integer diceDayPoint;
 
-  public Dice from(Integer dicePerDay, Integer diceDayPoint) {
+  public static Dice from(Integer dicePerDay, Integer diceDayPoint) {
     return new Dice(dicePerDay, diceDayPoint);
   }
 
