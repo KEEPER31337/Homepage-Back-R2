@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -12,7 +13,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -21,7 +21,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.restdocs.snippet.Attributes.key;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
@@ -37,7 +36,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.JsonPathResultMatchers;
@@ -115,37 +113,17 @@ public class SeminarControllerTest extends IntegrationTest {
     return seminarId;
   }
 
-  public Attribute customFormat(String value) {
-    return key("format").value(value);
-  }
-
-  public Attribute dateTimeFormat() {
-    return key("format").value("yyyy-MM-dd HH:mm:ss");
-  }
-
-  public Attribute dateFormat() {
-    return key("format").value("yyyy-MM-dd");
-  }
-
-  public FieldDescriptor field(String path, String description, Attribute attribute) {
-    return fieldWithPath(path).description(description)
-        .attributes(attribute);
-  }
-
-  public FieldDescriptor field(String path, String description) {
-    return fieldWithPath(path).description(description);
-  }
-
   @Nested
   @DisplayName("세미나 생성 테스트")
   class SeminarCreateTest {
     @Test
     @DisplayName("세미나 생성을 성공한다.")
     public void should_successCreateSeminar_when_admin() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "createSeminar");
       MvcResult mvcResult = createSeminarUsingApi(adminToken).andExpect(status().isCreated())
           .andDo(document("create-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
               responseFields(
                   field("id", "세미나 ID"))
           )).andReturn();
@@ -171,6 +149,7 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("생성된 세미나에 마감 시간을 넣어서 시작한다.")
     public void should_successStartSeminar_when_admin() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "startSeminar");
       Long seminarId = createSeminarAndGetId();
 
       var requestCloseTimeDescriptors = new FieldDescriptor[]{
@@ -181,7 +160,7 @@ public class SeminarControllerTest extends IntegrationTest {
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk())
           .andDo(document("start-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
               requestFields(
                   requestCloseTimeDescriptors),
               responseFields(
@@ -274,6 +253,8 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("생성된 세미나의 개수 및 데이터를 확인한다.")
     public void should_checkCountSeminar_when_admin() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "getAllSeminars");
+
       int beforeLength = validSeminarFindService.findAll().size();
       Long seminarId = createSeminarAndGetId();
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
@@ -307,7 +288,7 @@ public class SeminarControllerTest extends IntegrationTest {
 
           .andDo(document("search-all-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
               responseFields(
                   responseSeminarListDescriptors)
           ));
@@ -331,6 +312,8 @@ public class SeminarControllerTest extends IntegrationTest {
       @Test
       @DisplayName("id 값으로 세미나 조회를 성공한다.")
       public void should_successSearchSeminarUsingId_when_admin() throws Exception {
+        String securedValue = getSecuredValue(SeminarController.class, "getSeminar");
+
         Long seminarId = createSeminarAndGetId();
         startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
         em.flush();
@@ -350,7 +333,7 @@ public class SeminarControllerTest extends IntegrationTest {
         searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
             .andDo(document("search-seminar",
                 requestCookies(
-                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
                 pathParameters(
                     parameterWithName("seminarId").description("검색할 세미나 ID를 입력해주세요.")),
                 responseFields(
@@ -377,6 +360,8 @@ public class SeminarControllerTest extends IntegrationTest {
       @Test
       @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
       public void should_searchSeminar_when_filterDate() throws Exception {
+        String securedValue = getSecuredValue(SeminarController.class, "getSeminarByDate");
+
         Long seminarId = createSeminarAndGetId();
         startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
         em.flush();
@@ -405,7 +390,7 @@ public class SeminarControllerTest extends IntegrationTest {
 
             .andDo(document("search-date-seminar",
                 requestCookies(
-                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
                 queryParameters(
                     parameterWithName("date").attributes(dateFormat())
                         .description("검색할 날짜를 입력해주세요.")),
@@ -457,6 +442,8 @@ public class SeminarControllerTest extends IntegrationTest {
     @Test
     @DisplayName("세미나 삭제를 성공한다.")
     public void should_successDeleteSeminar_when_admin() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "deleteSeminar");
+
       Long seminarId = createSeminarAndGetId();
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       em.flush();
@@ -466,7 +453,7 @@ public class SeminarControllerTest extends IntegrationTest {
       deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isNoContent())
           .andDo(document("delete-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
               pathParameters(
                   parameterWithName("seminarId").description("삭제할 세미나 ID를 입력해주세요."))
           ));
