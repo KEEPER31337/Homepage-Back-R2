@@ -101,9 +101,9 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
-  
+
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
@@ -156,4 +156,5 @@ public class Member {
   public void unfollow(Member other) {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
+
 }
