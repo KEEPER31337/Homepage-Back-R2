@@ -35,7 +35,8 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      assertThat(studyHasMemberRepository.findAll()).hasSize(1);
+      StudyHasMemberPK key = new StudyHasMemberPK(study.getId(), member.getId());
+      assertThat(studyHasMemberRepository.existsById(key)).isTrue();
     }
 
 
@@ -50,7 +51,8 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      assertThat(studyHasMemberRepository.findAll()).hasSize(0);
+      StudyHasMemberPK key = new StudyHasMemberPK(study.getId(), member.getId());
+      assertThat(studyHasMemberRepository.existsById(key)).isFalse();
     }
 
     @Test
@@ -92,16 +94,25 @@ public class StudyHasMemberRepositoryTest extends IntegrationTest {
 
       member.join(studyA);
       member.join(studyB);
-      assertThat(studyHasMemberRepository.findAll()).hasSize(2);
+
+      em.flush();
+      em.clear();
+
+      StudyHasMemberPK keyA = new StudyHasMemberPK(studyA.getId(), member.getId());
+      StudyHasMemberPK keyB = new StudyHasMemberPK(studyB.getId(), member.getId());
+      assertThat(studyHasMemberRepository.existsById(keyA)).isTrue();
+      assertThat(studyHasMemberRepository.findById(keyB)).isNotEmpty();
 
       memberRepository.delete(member);
 
       em.flush();
       em.clear();
 
-      StudyHasMemberPK key = new StudyHasMemberPK(study.getId(), member.getId());
-
-      assertThatThrownBy(() -> studyHasMemberRepository.findById(key).orElseThrow())
+      assertThat(studyHasMemberRepository.existsById(keyA)).isFalse();
+      assertThat(studyHasMemberRepository.findById(keyB)).isEmpty();
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyA).orElseThrow())
+          .isInstanceOf(NoSuchElementException.class);
+      assertThatThrownBy(() -> studyHasMemberRepository.findById(keyB).orElseThrow())
           .isInstanceOf(NoSuchElementException.class);
     }
   }

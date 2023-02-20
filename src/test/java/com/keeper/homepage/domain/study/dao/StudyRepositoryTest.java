@@ -56,8 +56,8 @@ public class StudyRepositoryTest extends IntegrationTest {
       Study savedStudy = studyRepository.findById(studyId).orElseThrow();
       studyRepository.delete(savedStudy);
 
-      assertThatThrownBy(() -> studyRepository.findById(savedStudy.getId()).orElseThrow()).isInstanceOf(
-          NoSuchElementException.class);
+      assertThatThrownBy(() -> studyRepository.findById(savedStudy.getId()).orElseThrow())
+          .isInstanceOf(NoSuchElementException.class);
     }
   }
 }
