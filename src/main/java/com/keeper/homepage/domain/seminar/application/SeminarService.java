@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.error.ErrorCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Random;
@@ -38,6 +39,14 @@ public class SeminarService {
     return new SeminarIdResponse(seminarRepository.save(seminar).getId());
   }
 
+  private String randomAttendanceCode() {
+    final int ATTENDANCE_CODE_LENGTH = 4;
+
+    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
+        .mapToObj(i -> ((Integer) i).toString())
+        .collect(joining());
+  }
+
   @Transactional
   public SeminarAttendanceCodeResponse start(Long seminarId, SeminarStartRequest request) {
     validCloseTime(request);
@@ -52,19 +61,11 @@ public class SeminarService {
     LocalDateTime attendanceCloseTime = request.attendanceCloseTime();
     LocalDateTime latenessCloseTime = request.latenessCloseTime();
 
-    if (attendanceCloseTime == null && latenessCloseTime == null) {
+    if (attendanceCloseTime == null && latenessCloseTime == null)
       return;
-    }
 
-    if (attendanceCloseTime == null) {
-      throw new BusinessException("null", "attendanceCloseTime",
-          SEMINAR_TIME_NOT_AVAILABLE);
-    }
-
-    if (latenessCloseTime == null) {
-      throw new BusinessException("null", "latenessCloseTime",
-          SEMINAR_TIME_NOT_AVAILABLE);
-    }
+    requireNonNull(attendanceCloseTime, "attendanceCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
+    requireNonNull(latenessCloseTime, "latenessCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
 
     if (attendanceCloseTime.isAfter(latenessCloseTime)) {
       throw new BusinessException(attendanceCloseTime, "attendanceCloseTime",
@@ -72,12 +73,9 @@ public class SeminarService {
     }
   }
 
-  private String randomAttendanceCode() {
-    final int ATTENDANCE_CODE_LENGTH = 4;
-
-    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
-        .mapToObj(i -> ((Integer) i).toString())
-        .collect(joining());
+  public static <T> void requireNonNull(T obj, String fieldName, ErrorCode errorCode) {
+    if (obj == null)
+      throw new BusinessException("null", fieldName, errorCode);
   }
 
   @Transactional
