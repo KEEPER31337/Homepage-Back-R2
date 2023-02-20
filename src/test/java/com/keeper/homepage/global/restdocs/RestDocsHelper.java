@@ -12,7 +12,7 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 
 public class RestDocsHelper {
 
-  public Attribute customFormat(String value) {
+  public static Attribute customFormat(String value) {
     return key("format").value(value);
   }
 
