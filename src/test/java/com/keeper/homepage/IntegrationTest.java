@@ -15,11 +15,12 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceExcuseRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
-import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.seminar.application.SeminarService;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
+import com.keeper.homepage.domain.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
@@ -32,18 +33,19 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
-import com.keeper.homepage.domain.member.dao.posting.MemberHasPostingDislikeRepository;
-import com.keeper.homepage.domain.member.dao.posting.MemberHasPostingLikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
-import com.keeper.homepage.domain.posting.CategoryTestHelper;
-import com.keeper.homepage.domain.posting.CommentTestHelper;
-import com.keeper.homepage.domain.posting.PostingTestHelper;
-import com.keeper.homepage.domain.posting.dao.PostingRepository;
-import com.keeper.homepage.domain.posting.dao.category.CategoryRepository;
-import com.keeper.homepage.domain.posting.dao.comment.CommentRepository;
+import com.keeper.homepage.domain.post.CategoryTestHelper;
+import com.keeper.homepage.domain.comment.CommentTestHelper;
+import com.keeper.homepage.domain.post.PostTestHelper;
+import com.keeper.homepage.domain.post.application.PostService;
+import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.study.StudyTestHelper;
 import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
@@ -134,7 +136,7 @@ public class IntegrationTest {
   protected CommentRepository commentRepository;
 
   @SpyBean
-  protected PostingRepository postingRepository;
+  protected PostRepository postRepository;
 
   @SpyBean
   protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
@@ -143,10 +145,10 @@ public class IntegrationTest {
   protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
   @SpyBean
-  protected MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+  protected MemberHasPostDislikeRepository memberHasPostDislikeRepository;
 
   @SpyBean
-  protected MemberHasPostingLikeRepository memberHasPostingLikeRepository;
+  protected MemberHasPostLikeRepository memberHasPostLikeRepository;
 
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
@@ -178,6 +180,12 @@ public class IntegrationTest {
 
   @Autowired
   protected StaticWriteService staticWriteService;
+  
+  @Autowired
+  protected SeminarService seminarService;
+
+  @SpyBean
+  protected PostService postService;
 
   /******* Helper *******/
   @SpyBean
@@ -202,7 +210,7 @@ public class IntegrationTest {
   protected CategoryTestHelper categoryTestHelper;
 
   @Autowired
-  protected PostingTestHelper postingTestHelper;
+  protected PostTestHelper postTestHelper;
 
   @Autowired
   protected CommentTestHelper commentTestHelper;
