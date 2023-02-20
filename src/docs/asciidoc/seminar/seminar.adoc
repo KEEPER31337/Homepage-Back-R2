@@ -2,7 +2,7 @@ ifndef::snippets[]
 :snippets: ./build/generated-snippets
 endif::[]
 
-= POST API 문서
+= SEMINAR API 문서
 :icons: font
 :source-highlighter: highlight.js
 :toc: left
