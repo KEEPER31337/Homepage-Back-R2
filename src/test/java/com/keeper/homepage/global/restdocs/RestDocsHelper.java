@@ -2,7 +2,6 @@ package com.keeper.homepage.global.restdocs;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.security.access.annotation.Secured;
@@ -58,5 +57,4 @@ public class RestDocsHelper {
         .map(i -> new String(i.getBytes()))
         .collect(joining(", ")) + ")";
   }
-
 }
