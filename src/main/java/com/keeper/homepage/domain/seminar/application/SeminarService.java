@@ -61,8 +61,9 @@ public class SeminarService {
     LocalDateTime attendanceCloseTime = request.attendanceCloseTime();
     LocalDateTime latenessCloseTime = request.latenessCloseTime();
 
-    if (attendanceCloseTime == null && latenessCloseTime == null)
+    if (attendanceCloseTime == null && latenessCloseTime == null) {
       return;
+    }
 
     requireNonNull(attendanceCloseTime, "attendanceCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
     requireNonNull(latenessCloseTime, "latenessCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
@@ -74,8 +75,9 @@ public class SeminarService {
   }
 
   public static <T> void requireNonNull(T obj, String fieldName, ErrorCode errorCode) {
-    if (obj == null)
+    if (obj == null) {
       throw new BusinessException("null", fieldName, errorCode);
+    }
   }
 
   @Transactional
