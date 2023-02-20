@@ -1,15 +1,11 @@
 package com.keeper.homepage.domain.game.entity;
 
+import com.keeper.homepage.domain.game.entity.embedded.Dice;
+import com.keeper.homepage.domain.game.entity.embedded.Lotto;
+import com.keeper.homepage.domain.game.entity.embedded.Roulette;
 import com.keeper.homepage.domain.member.entity.Member;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,56 +25,34 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 public class Game {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id", nullable = false)
+  private Member member;
 
-    @Column(name = "last_play_time")
-    private LocalDateTime lastPlayTime;
+  @Column(name = "last_play_time")
+  private LocalDateTime lastPlayTime;
 
-    @Column(name = "dice_per_day", nullable = false)
-    private Integer dicePerDay;
+  @Embedded
+  private Dice dice;
 
-    @Column(name = "roulette_per_day", nullable = false)
-    private Integer roulettePerDay;
+  @Embedded
+  private Lotto lotto;
 
-    @Column(name = "lotto_per_day", nullable = false)
-    private Integer lottoPerDay;
+  @Embedded
+  private Roulette roulette;
 
-    @Column(name = "dice_day_point", nullable = false)
-    private Integer diceDayPoint;
-
-    @Column(name = "roulette_day_point", nullable = false)
-    private Integer rouletteDayPoint;
-
-    @Column(name = "lotto_day_point", nullable = false)
-    private Integer lottoDayPoint;
-
-    public void increaseDiceTimes() {
-        this.dicePerDay += 1;
-    }
-
-    public void increaseRouletteTimes() {
-        this.roulettePerDay += 1;
-    }
-
-    public void increaseLottoTimes() {
-        this.lottoPerDay += 1;
-    }
-
-    public Game reset() {
-        dicePerDay = 0;
-        roulettePerDay = 0;
-        lottoPerDay = 0;
-        diceDayPoint = 0;
-        rouletteDayPoint = 0;
-        lottoDayPoint = 0;
-        return this;
-    }
-
+  public Game reset() {
+    dice.resetDicePerDay();
+    dice.resetDiceDayPoint();
+    lotto.resetLottoPerDay();
+    lotto.resetLottoDayPoint();
+    roulette.resetRoulettePerDay();
+    roulette.resetRouletteDayPoint();
+    return this;
+  }
 }
