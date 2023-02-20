@@ -50,7 +50,7 @@ public class RestDocsHelper {
       return stringArrayToString(annotationClass.value());
     }
 
-    return "None";
+    return "";
   }
 
   public static String stringArrayToString(String[] arr) {
