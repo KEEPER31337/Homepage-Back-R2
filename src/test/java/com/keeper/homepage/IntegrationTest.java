@@ -16,6 +16,7 @@ import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
+import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
@@ -186,6 +187,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected PostService postService;
+
+  @Autowired
+  protected ValidSeminarFindService validSeminarFindService;
 
   /******* Helper *******/
   @SpyBean

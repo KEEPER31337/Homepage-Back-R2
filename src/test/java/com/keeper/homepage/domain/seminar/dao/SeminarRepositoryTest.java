@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,7 +24,6 @@ public class SeminarRepositoryTest extends IntegrationTest {
           .openTime(now)
           .attendanceCloseTime(now.plusMinutes(3))
           .latenessCloseTime(now.plusMinutes(4))
-          .attendanceCode("1234")
           .seminarName("세미나 제목입니다.")
           .build();
 
@@ -73,16 +73,21 @@ public class SeminarRepositoryTest extends IntegrationTest {
       assertThat(afterSeminarLength).isEqualTo(beforeSeminarLength - 1);
     }
   }
-
+  
   @Nested
-  @DisplayName("세미나 유틸 메서드 테스트")
-  class SeminarUtilTest {
+  @DisplayName("세미나 조회 테스트")
+  class SeminarSearchTest {
 
     @Test
-    @DisplayName("출석 코드의 길이가 4인지 확인한다.")
-    public void check_randomAttendanceCode_size() throws Exception {
-      String attendanceCode = Seminar.randomAttendanceCode();
-      assertThat(attendanceCode.length()).isEqualTo(4);
+    @DisplayName("세미나를 날짜로 필터링하여 조회한다.")
+    public void should_filterDate_when_searchSeminar() throws Exception {
+      Seminar seminar = seminarTestHelper.generate();
+      em.clear();
+
+      LocalDate dateNow = LocalDate.now();
+      Seminar findSeminar = seminarRepository.findByOpenTime(dateNow).orElseThrow();
+
+      assertThat(findSeminar.getOpenTime().toLocalDate()).isEqualTo(dateNow);
     }
   }
 }
