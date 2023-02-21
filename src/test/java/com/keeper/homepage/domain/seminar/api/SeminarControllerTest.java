@@ -18,7 +18,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -188,7 +187,8 @@ public class SeminarControllerTest extends IntegrationTest {
       Long seminarId = createSeminarAndGetId();
 
       startSeminarUsingApi(adminToken, seminarId, strJson).andExpect(status().isOk());
-      startSeminarUsingApi(adminToken, seminarId, SeminarStartRequest.builder().build()).andDo(print()).andExpect(status().isOk());
+      startSeminarUsingApi(adminToken, seminarId, SeminarStartRequest.builder().build())
+          .andExpect(status().isOk());
     }
     
     @Test
@@ -402,7 +402,7 @@ public class SeminarControllerTest extends IntegrationTest {
             .build();
         em.clear();
 
-        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk()).andDo(print())
+        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.openTime").isEmpty())
             .andExpect(jsonPath("$.attendanceCloseTime").isEmpty())
