@@ -366,6 +366,8 @@ public class SeminarControllerTest extends IntegrationTest {
       @Test
       @DisplayName("이용 가능한 세미나를 조회한다.")
       public void should_search_when_availableSeminar() throws Exception {
+        String securedValue = getSecuredValue(SeminarController.class, "getSeminarByAvailable");
+
         Long seminarId = createSeminarAndGetId();
         startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
         em.flush();
@@ -385,7 +387,7 @@ public class SeminarControllerTest extends IntegrationTest {
         searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk())
                 .andDo(document("search-available-seminar",
                     requestCookies(
-                        cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                        cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
                     responseFields(
                         responseSeminarDescriptors)
                 ));
