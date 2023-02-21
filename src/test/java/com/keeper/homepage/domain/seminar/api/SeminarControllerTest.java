@@ -18,7 +18,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -188,7 +187,8 @@ public class SeminarControllerTest extends IntegrationTest {
       Long seminarId = createSeminarAndGetId();
 
       startSeminarUsingApi(adminToken, seminarId, strJson).andExpect(status().isOk());
-      startSeminarUsingApi(adminToken, seminarId, SeminarStartRequest.builder().build()).andDo(print()).andExpect(status().isOk());
+      startSeminarUsingApi(adminToken, seminarId, SeminarStartRequest.builder().build())
+          .andExpect(status().isOk());
     }
     
     @Test
@@ -366,6 +366,8 @@ public class SeminarControllerTest extends IntegrationTest {
       @Test
       @DisplayName("이용 가능한 세미나를 조회한다.")
       public void should_search_when_availableSeminar() throws Exception {
+        String securedValue = getSecuredValue(SeminarController.class, "getSeminarByAvailable");
+
         Long seminarId = createSeminarAndGetId();
         startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
         em.flush();
@@ -385,7 +387,7 @@ public class SeminarControllerTest extends IntegrationTest {
         searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk())
                 .andDo(document("search-available-seminar",
                     requestCookies(
-                        cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN")),
+                        cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
                     responseFields(
                         responseSeminarDescriptors)
                 ));
@@ -400,7 +402,7 @@ public class SeminarControllerTest extends IntegrationTest {
             .build();
         em.clear();
 
-        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk()).andDo(print())
+        searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.openTime").isEmpty())
             .andExpect(jsonPath("$.attendanceCloseTime").isEmpty())

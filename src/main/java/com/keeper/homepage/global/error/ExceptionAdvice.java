@@ -42,7 +42,7 @@ public class ExceptionAdvice {
 
   private static ResponseEntity<ErrorResponse> typeMismatchErrorMessage(String errorMessage) {
     return ResponseEntity.badRequest()
-        .body(ErrorResponse.from(String.format("%s 파라미터의 형식이 일치하지 않습니다.", errorMessage)));
+        .body(ErrorResponse.from("%s 파라미터의 형식이 일치하지 않습니다.".formatted(errorMessage)));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)

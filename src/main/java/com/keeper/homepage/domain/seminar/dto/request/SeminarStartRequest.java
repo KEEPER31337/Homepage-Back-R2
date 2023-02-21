@@ -7,7 +7,7 @@ import lombok.Builder;
 import org.springframework.lang.Nullable;
 
 @Builder
-public record SeminarStartRequest (
+public record SeminarStartRequest(
     @Nullable
     @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -16,6 +16,6 @@ public record SeminarStartRequest (
     @Nullable
     @Future
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime latenessCloseTime){
+    LocalDateTime latenessCloseTime) {
 
 }
