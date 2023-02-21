@@ -1,0 +1,180 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= SEMINAR API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *세미나 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-seminar/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-seminar/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/create-seminar/response-fields.adoc[]
+
+== *세미나 시작*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/start-seminar/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/start-seminar/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/start-seminar/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/start-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/start-seminar/response-fields.adoc[]
+
+== *세미나 전부 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-all-seminar/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-all-seminar/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-all-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/search-all-seminar/response-fields.adoc[]
+
+== *세미나 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-seminar/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/search-seminar/path-parameters.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-seminar/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/search-seminar/response-fields.adoc[]
+
+== *이용 가능한 세미나 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-available-seminar/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-available-seminar/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-available-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/search-available-seminar/response-fields.adoc[]
+
+== *세미나 날짜로 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-date-seminar/http-request.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/search-date-seminar/query-parameters.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-date-seminar/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-date-seminar/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/search-date-seminar/response-fields.adoc[]
+
+== *세미나 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-seminar/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-seminar/path-parameters.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-seminar/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-seminar/http-response.adoc[]
