@@ -92,6 +92,12 @@ public class SeminarService {
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
   }
 
+  public SeminarResponse findByAvailable() {
+    LocalDateTime now = LocalDateTime.now();
+    return new SeminarResponse(seminarRepository.findByAvailableCloseTime(now)
+        .orElse(Seminar.builder().build()));
+  }
+
   public SeminarResponse findByDate(LocalDate localDate) {
     return new SeminarResponse(seminarRepository.findByOpenTime(localDate)
         .orElse(Seminar.builder().build()));

@@ -55,6 +55,13 @@ public class SeminarController {
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 
+  @GetMapping("/available")
+  @Secured({"ROLE_회원"})
+  public ResponseEntity<SeminarResponse> getSeminarByAvailable() {
+    SeminarResponse response = seminarService.findByAvailable();
+    return ResponseEntity.status(HttpStatus.OK).body(response);
+  }
+
   // TODO: 2023-02-17 날짜로 조회하는 기능의 권한이 아직 명확하지 않다. 
   // 프론트와 연결하면서 추후에 수정할 예정
   @GetMapping(params = "date")
