@@ -8,8 +8,7 @@ import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REA
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.CascadeType.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.library.entity.Book;
@@ -41,6 +40,7 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -104,7 +104,7 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "member", cascade = PERSIST, orphanRemoval = true)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
