@@ -45,7 +45,7 @@ public class SeminarAttendanceService {
         .seminarAttendanceStatus(getStatus(seminar))
         .build();
 
-    return new SeminarAttendanceResponse(attendanceRepository.save(attendance));
+    return SeminarAttendanceResponse.from(attendanceRepository.save(attendance));
   }
 
   private void validAttendanceCode(Seminar seminar, SeminarAttendanceRequest request) {

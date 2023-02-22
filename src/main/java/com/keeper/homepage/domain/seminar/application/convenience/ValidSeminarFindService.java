@@ -17,7 +17,7 @@ public class ValidSeminarFindService {
 
   public List<SeminarResponse> findAll() {
     return seminarRepository.findAllByIdIsNot(VIRTUAL_SEMINAR_ID).stream()
-        .map(SeminarResponse::new)
+        .map(SeminarResponse::from)
         .toList();
   }
 }

@@ -81,12 +81,12 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
                   field("attendanceCode", "세미나 출석 코드")),
               responseFields(
                   field("id", "세미나 출석 ID"),
-                  field("attendanceStatus", "출석 상태"))
+                  field("statusType", "출석 상태"))
           )).andReturn();
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
-          SeminarAttendanceResponse.class).getAttendanceStatus();
+          SeminarAttendanceResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(ATTENDANCE);
     }
@@ -165,7 +165,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
-          SeminarAttendanceResponse.class).getAttendanceStatus();
+          SeminarAttendanceResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(LATENESS);
     }
@@ -190,7 +190,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
-          SeminarAttendanceResponse.class).getAttendanceStatus();
+          SeminarAttendanceResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(ABSENCE);
     }
