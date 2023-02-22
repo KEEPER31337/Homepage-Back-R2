@@ -94,7 +94,7 @@ public class SeminarService {
 
   public SeminarResponse findByAvailable() {
     LocalDateTime now = LocalDateTime.now();
-    return new SeminarResponse(seminarRepository.findByAvailableSeminar(now)
+    return new SeminarResponse(seminarRepository.findByAvailable(now)
         .orElse(Seminar.builder().build()));
   }
 
