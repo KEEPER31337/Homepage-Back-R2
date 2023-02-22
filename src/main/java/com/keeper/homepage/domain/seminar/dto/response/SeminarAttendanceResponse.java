@@ -16,11 +16,9 @@ public class SeminarAttendanceResponse {
 
   private Long id;
   private SeminarAttendanceStatusType attendanceStatus;
-  private LocalDateTime attendTime;
 
   public SeminarAttendanceResponse(SeminarAttendance seminarAttendance) {
     this.id = seminarAttendance.getId();
     this.attendanceStatus = seminarAttendance.getSeminarAttendanceStatus().getType();
-    this.attendTime = seminarAttendance.getAttendTime();
   }
 }
