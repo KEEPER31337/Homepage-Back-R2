@@ -20,5 +20,5 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
       + "WHERE s.attendanceCloseTime is not null "
       + "AND s.latenessCloseTime is not null "
       + "AND s.latenessCloseTime > :dateTime")
-  Optional<Seminar> findByAvailableCloseTime(@Param("dateTime") LocalDateTime dateTime);
+  Optional<Seminar> findByAvailableSeminar(@Param("dateTime") LocalDateTime dateTime);
 }
