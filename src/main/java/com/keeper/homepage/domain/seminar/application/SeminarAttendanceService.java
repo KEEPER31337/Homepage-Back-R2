@@ -59,7 +59,7 @@ public class SeminarAttendanceService {
   }
 
   private void checkExistsAttendanceSeminar(Seminar seminar, Member member) {
-    if (attendanceRepository.existsBySeminarEqualsAndMemberEquals(seminar, member)) {
+    if (attendanceRepository.existsBySeminarAndMember(seminar, member)) {
       throw new BusinessException(seminar.getName(), "seminar", SEMINAR_ATTENDANCE_DUPLICATE);
     }
   }

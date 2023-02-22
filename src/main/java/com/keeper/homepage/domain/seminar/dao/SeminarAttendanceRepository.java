@@ -8,5 +8,5 @@ import org.springframework.data.repository.query.Param;
 
 public interface SeminarAttendanceRepository extends JpaRepository<SeminarAttendance, Long> {
 
-  boolean existsBySeminarEqualsAndMemberEquals(@Param("seminar") Seminar seminar, @Param("member") Member member);
+  boolean existsBySeminarAndMember(@Param("seminar") Seminar seminar, @Param("member") Member member);
 }
