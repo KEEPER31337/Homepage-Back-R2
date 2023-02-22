@@ -37,7 +37,7 @@ public class SeminarAttendanceService {
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
 
     validAttendanceCode(seminar, request);
-    existsAttendanceSeminar(seminar, member);
+    checkExistsAttendanceSeminar(seminar, member);
 
     SeminarAttendance attendance = SeminarAttendance.builder()
         .seminar(seminar)
@@ -58,7 +58,7 @@ public class SeminarAttendanceService {
     }
   }
 
-  private void existsAttendanceSeminar(Seminar seminar, Member member) {
+  private void checkExistsAttendanceSeminar(Seminar seminar, Member member) {
     if (attendanceRepository.existsBySeminarEqualsAndMemberEquals(seminar, member)) {
       throw new BusinessException(seminar.getName(), "seminar", SEMINAR_ATTENDANCE_DUPLICATE);
     }
