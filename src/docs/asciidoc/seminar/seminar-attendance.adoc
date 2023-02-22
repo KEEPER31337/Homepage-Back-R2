@@ -35,6 +35,6 @@ include::{snippets}/attendance-seminar/request-fields.adoc[]
 
 include::{snippets}/attendance-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/attendance-seminar/response-fields.adoc[]
