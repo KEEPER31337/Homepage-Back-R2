@@ -321,7 +321,7 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       @Test
       @DisplayName("이용 가능한 세미나를 조회한다.")
       public void should_search_when_availableSeminar() throws Exception {
-        String securedValue = getSecuredValue(SeminarController.class, "getSeminarByAvailable");
+        String securedValue = getSecuredValue(SeminarController.class, "availableSeminar");
 
         Long seminarId = createSeminarAndGetId(adminToken);
         startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
