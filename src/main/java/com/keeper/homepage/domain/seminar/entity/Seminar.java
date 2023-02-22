@@ -1,5 +1,10 @@
 package com.keeper.homepage.domain.seminar.entity;
 
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ABSENCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ATTENDANCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +54,22 @@ public class Seminar extends BaseEntity {
   public void changeCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
     this.attendanceCloseTime = attendanceCloseTime;
     this.latenessCloseTime = latenessCloseTime;
+  }
+
+  public SeminarAttendanceStatus getStatus() {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime attendanceCloseTime = this.getAttendanceCloseTime();
+    LocalDateTime latenessCloseTime = this.getLatenessCloseTime();
+
+    if (now.isBefore(attendanceCloseTime)) {
+      return getSeminarAttendanceStatusBy(ATTENDANCE);
+    }
+
+    if (now.isAfter(attendanceCloseTime) && now.isBefore(latenessCloseTime)) {
+      return getSeminarAttendanceStatusBy(LATENESS);
+    }
+
+    return getSeminarAttendanceStatusBy(ABSENCE);
   }
 
   @Builder
