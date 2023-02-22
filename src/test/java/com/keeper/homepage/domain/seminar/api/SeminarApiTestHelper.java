@@ -22,7 +22,7 @@ public class SeminarApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
-  public Long createSeminarAndGetId(String adminToken) throws Exception {
+  Long createSeminarAndGetId(String adminToken) throws Exception {
     MvcResult mvcResult = createSeminarUsingApi(adminToken)
         .andExpect(status().isCreated()).andReturn();
     Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
