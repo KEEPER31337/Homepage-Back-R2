@@ -26,6 +26,6 @@ public class SeminarAttendanceController {
       @LoginMember Member member,
       @RequestBody @Valid SeminarAttendanceRequest request) {
     SeminarAttendanceResponse response = seminarAttendanceService.save(member, request);
-    return ResponseEntity.status(HttpStatus.OK).body(response);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 }

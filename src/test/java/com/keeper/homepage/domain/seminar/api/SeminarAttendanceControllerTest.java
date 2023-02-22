@@ -71,7 +71,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
 
       MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request)
-          .andExpect(status().isOk())
+          .andExpect(status().isCreated())
           .andDo(document("attendance-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
@@ -104,7 +104,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      attendanceSeminarUsingApi(adminToken, request).andExpect(status().isOk());
+      attendanceSeminarUsingApi(adminToken, request).andExpect(status().isCreated());
       em.flush();
       em.clear();
 
@@ -161,7 +161,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request)
-          .andExpect(status().isOk()).andReturn();
+          .andExpect(status().isCreated()).andReturn();
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
@@ -186,7 +186,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request)
-          .andExpect(status().isOk()).andReturn();
+          .andExpect(status().isCreated()).andReturn();
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
