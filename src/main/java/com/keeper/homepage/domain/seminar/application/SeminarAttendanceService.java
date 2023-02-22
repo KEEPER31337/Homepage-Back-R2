@@ -76,10 +76,12 @@ public class SeminarAttendanceService {
 
     if (now.isBefore(attendanceCloseTime)) {
       return getSeminarAttendanceStatusBy(ATTENDANCE);
-    } else if (now.isAfter(attendanceCloseTime) && now.isBefore(latenessCloseTime)) {
-      return getSeminarAttendanceStatusBy(LATENESS);
-    } else {
-      return getSeminarAttendanceStatusBy(ABSENCE);
     }
+
+    if (now.isAfter(attendanceCloseTime) && now.isBefore(latenessCloseTime)) {
+      return getSeminarAttendanceStatusBy(LATENESS);
+    }
+
+    return getSeminarAttendanceStatusBy(ABSENCE);
   }
 }
