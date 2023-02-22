@@ -93,7 +93,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
     @Test
     @DisplayName("세미나 중복 출석을 실패한다.")
-    public void shoud_fail_attendanceSeminarDuplicate() throws Exception {
+    public void should_fail_attendanceSeminarDuplicate() throws Exception {
       Long seminarId = createSeminarAndGetId(adminToken);
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
