@@ -57,7 +57,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
     @Test
     @DisplayName("세미나 출석을 성공한다.")
-    public void 세미나_출석을_성공한다() throws Exception {
+    public void should_success_attendanceSeminar() throws Exception {
       String securedValue = getSecuredValue(SeminarAttendanceController.class, "attendanceSeminar");
 
       Long seminarId = createSeminarAndGetId(adminToken);
@@ -94,7 +94,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
     @Test
     @DisplayName("세미나 중복 출석을 실패한다.")
-    public void 세미나_중복_출석을_실패한다() throws Exception {
+    public void shoud_fail_attendanceSeminarDuplicate() throws Exception {
       Long seminarId = createSeminarAndGetId(adminToken);
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
@@ -114,7 +114,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
     @Test
     @DisplayName("비정상적인 입력을 시도했을 때 실패한다.")
-    public void 비정상적인_입력을_시도했을_때_실패한다() throws Exception {
+    public void should_fail_invalidInputValue() throws Exception {
       Long seminarId = createSeminarAndGetId(adminToken);
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
@@ -148,7 +148,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
     @Test
     @DisplayName("세미나 지각을 성공한다.")
-    public void 세미나_지각을_성공한다() throws Exception {
+    public void should_success_when_attendanceSeminarLateness() throws Exception {
       Long seminarId = seminarTestHelper.builder()
           .attendanceCloseTime(now.plusMinutes(-2))
           .latenessCloseTime(now.plusMinutes(3))
@@ -173,7 +173,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
     @Test
     @DisplayName("세미나 지각 마감 시간이 지나면 결석 처리한다.")
-    public void 세미나_지각_마감_시간이_지나면_결석_처리한다() throws Exception {
+    public void should_success_when_attendanceSeminarAbsence() throws Exception {
       Long seminarId = seminarTestHelper.builder()
           .attendanceCloseTime(now.plusMinutes(-2))
           .latenessCloseTime(now.plusMinutes(-1))
