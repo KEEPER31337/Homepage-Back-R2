@@ -14,7 +14,6 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceRequest;
@@ -71,8 +70,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
 
-      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request).andExpect(
-              status().isOk())
+      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request)
+          .andExpect(status().isOk())
           .andDo(document("attendance-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
@@ -109,7 +108,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       em.flush();
       em.clear();
 
-      attendanceSeminarUsingApi(adminToken, request).andDo(print()).andExpect(status().isConflict());
+      attendanceSeminarUsingApi(adminToken, request).andExpect(status().isConflict());
     }
 
     @Test
@@ -139,7 +138,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       strJsonList.stream().forEach(i -> {
         try {
-          attendanceSeminarUsingApi(adminToken, i).andDo(print()).andExpect(status().isBadRequest());
+          attendanceSeminarUsingApi(adminToken, i).andExpect(status().isBadRequest());
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -161,8 +160,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .attendanceCode(attendanceCode)
           .build();
 
-      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request).andExpect(
-          status().isOk()).andReturn();
+      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request)
+          .andExpect(status().isOk()).andReturn();
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
@@ -186,7 +185,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .attendanceCode(attendanceCode)
           .build();
 
-      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request).andDo(print())
+      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, request)
           .andExpect(status().isOk()).andReturn();
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(

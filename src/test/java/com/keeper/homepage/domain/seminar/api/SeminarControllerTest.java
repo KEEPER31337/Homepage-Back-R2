@@ -159,8 +159,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       startSeminarUsingApi(adminToken, seminarId, strJson4).andExpect(status().isBadRequest());
       startSeminarUsingApi(adminToken, seminarId, strJson5).andExpect(status().isBadRequest());
       startSeminarUsingApi(adminToken, seminarId, "asdf").andExpect(status().isBadRequest());
-      startSeminarUsingApi(adminToken, seminarId, (SeminarStartRequest) null).andExpect(
-          status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, (SeminarStartRequest) null)
+          .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -173,8 +173,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow()
           .getId();
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(
-          status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest)
+          .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -188,8 +188,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow()
           .getId();
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(
-          status().isBadRequest());
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest)
+          .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -198,8 +198,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       createSeminarUsingApi(adminToken).andExpect(status().isCreated());
       Long seminarId = seminarService.findAll().seminarList().stream().findAny().orElseThrow()
           .getId();
-      startSeminarUsingApi(userToken, seminarId, seminarStartRequest).andExpect(
-          status().isForbidden());
+      startSeminarUsingApi(userToken, seminarId, seminarStartRequest)
+          .andExpect(status().isForbidden());
     }
   }
 
@@ -245,8 +245,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
 
           .andDo(document("search-all-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
-                      "ACCESS TOKEN %s".formatted(securedValue))),
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))),
               responseFields(
                   responseSeminarListDescriptors)
           ));
@@ -292,8 +292,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
         searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
             .andDo(document("search-seminar",
                 requestCookies(
-                    cookieWithName(ACCESS_TOKEN.getTokenName()).description(
-                        "ACCESS TOKEN %s".formatted(securedValue))),
+                    cookieWithName(ACCESS_TOKEN.getTokenName())
+                        .description("ACCESS TOKEN %s".formatted(securedValue))),
                 pathParameters(
                     parameterWithName("seminarId").description("검색할 세미나 ID를 입력해주세요.")),
                 responseFields(
@@ -342,8 +342,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
         searchAvailableSeminarUsingApi(adminToken).andExpect(status().isOk())
             .andDo(document("search-available-seminar",
                 requestCookies(
-                    cookieWithName(ACCESS_TOKEN.getTokenName()).description(
-                        "ACCESS TOKEN %s".formatted(securedValue))),
+                    cookieWithName(ACCESS_TOKEN.getTokenName())
+                        .description("ACCESS TOKEN %s".formatted(securedValue))),
                 responseFields(
                     responseSeminarDescriptors)
             ));
@@ -420,8 +420,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
 
             .andDo(document("search-date-seminar",
                 requestCookies(
-                    cookieWithName(ACCESS_TOKEN.getTokenName()).description(
-                        "ACCESS TOKEN %s".formatted(securedValue))),
+                    cookieWithName(ACCESS_TOKEN.getTokenName())
+                        .description("ACCESS TOKEN %s".formatted(securedValue))),
                 queryParameters(
                     parameterWithName("date").attributes(dateFormat())
                         .description("검색할 날짜를 입력해주세요.")),
@@ -433,8 +433,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       @Test
       @DisplayName("서기는 날짜로 세미나를 조회할 수 없다.")
       public void should_badRequest_when_clerkSearchDate() throws Exception {
-        searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString()).andExpect(
-            status().isForbidden());
+        searchDateSeminarUsingApi(clerkToken, LocalDate.now().toString())
+            .andExpect(status().isForbidden());
       }
 
       @Test
@@ -485,16 +485,16 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       deleteSeminarUsingApi(adminToken, seminarId).andExpect(status().isNoContent())
           .andDo(document("delete-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
-                      "ACCESS TOKEN %s".formatted(securedValue))),
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))),
               pathParameters(
                   parameterWithName("seminarId").description("삭제할 세미나 ID를 입력해주세요."))
           ));
 
       int afterLength = validSeminarFindService.findAll().size();
       assertThat(afterLength).isEqualTo(beforeLength - 1);
-      searchAllSeminarUsingApi(adminToken).andExpect(
-          jsonPath("$.seminarList.length()", is(afterLength)));
+      searchAllSeminarUsingApi(adminToken)
+          .andExpect(jsonPath("$.seminarList.length()", is(afterLength)));
     }
 
     @Test
