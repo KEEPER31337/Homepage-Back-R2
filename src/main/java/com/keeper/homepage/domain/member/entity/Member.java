@@ -12,6 +12,7 @@ import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
@@ -37,7 +38,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -157,4 +160,12 @@ public class Member {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
+  public void borrow(Book book, LocalDateTime expireDate) {
+    bookBorrowInfos.add(BookBorrowInfo.builder()
+            .member(this)
+            .book(book)
+            .borrowDate(LocalDateTime.now())
+            .expireDate(expireDate)
+            .build());
+  }
 }
