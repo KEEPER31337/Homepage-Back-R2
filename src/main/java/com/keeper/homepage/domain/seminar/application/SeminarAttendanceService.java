@@ -59,12 +59,7 @@ public class SeminarAttendanceService {
   }
 
   private void existsAttendanceSeminar(Seminar seminar, Member member) {
-    long count = attendanceRepository.findAll().stream()
-        .filter(i -> i.getSeminar().equals(seminar))
-        .filter(i -> i.getMember().equals(member))
-        .count();
-
-    if (count > 0) {
+    if (attendanceRepository.existsByAttendance(seminar, member) > 0) {
       throw new BusinessException(seminar.getName(), "seminar", SEMINAR_ATTENDANCE_DUPLICATE);
     }
   }
