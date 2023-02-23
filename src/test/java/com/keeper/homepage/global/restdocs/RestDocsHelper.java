@@ -1,5 +1,6 @@
 package com.keeper.homepage.global.restdocs;
 
+import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -49,7 +50,7 @@ public class RestDocsHelper {
       return stringArrayToString(annotationClass.value());
     }
 
-    return "(None)";
+    return "(" + MemberJobType.ROLE_회원 + ")";
   }
 
   public static String stringArrayToString(String[] arr) {

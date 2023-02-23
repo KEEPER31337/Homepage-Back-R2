@@ -1,10 +1,19 @@
 package com.keeper.homepage.domain.seminar.dto.response;
 
+import static lombok.AccessLevel.PACKAGE;
+import static lombok.AccessLevel.PRIVATE;
+
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
+@NoArgsConstructor(access = PRIVATE)
+@AllArgsConstructor(access = PACKAGE)
 public class SeminarResponse {
 
   // TODO: 2023-02-13 front-end와 상의 후 필요한 데이터만 선언하고 나머지는 삭제 예정
@@ -17,14 +26,16 @@ public class SeminarResponse {
   private LocalDateTime registerTime;
   private LocalDateTime updateTime;
 
-  public SeminarResponse(Seminar seminar) {
-    this.id = seminar.getId();
-    this.openTime = seminar.getOpenTime();
-    this.attendanceCloseTime = seminar.getAttendanceCloseTime();
-    this.latenessCloseTime = seminar.getLatenessCloseTime();
-    this.attendanceCode = seminar.getAttendanceCode();
-    this.name = seminar.getName();
-    this.registerTime = seminar.getRegisterTime();
-    this.updateTime = seminar.getUpdateTime();
+  public static SeminarResponse from(Seminar seminar) {
+    return SeminarResponse.builder()
+        .id(seminar.getId())
+        .openTime(seminar.getOpenTime())
+        .attendanceCloseTime(seminar.getAttendanceCloseTime())
+        .latenessCloseTime(seminar.getLatenessCloseTime())
+        .attendanceCode(seminar.getAttendanceCode())
+        .name(seminar.getName())
+        .registerTime(seminar.getRegisterTime())
+        .updateTime(seminar.getUpdateTime())
+        .build();
   }
 }

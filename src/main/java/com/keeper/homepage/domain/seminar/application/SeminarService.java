@@ -88,18 +88,18 @@ public class SeminarService {
   }
 
   public SeminarResponse findById(long seminarId) {
-    return new SeminarResponse(seminarRepository.findById(seminarId)
+    return SeminarResponse.from(seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
   }
 
   public SeminarResponse findByAvailable() {
     LocalDateTime now = LocalDateTime.now();
-    return new SeminarResponse(seminarRepository.findByAvailableCloseTime(now)
+    return SeminarResponse.from(seminarRepository.findByAvailable(now)
         .orElse(Seminar.builder().build()));
   }
 
   public SeminarResponse findByDate(LocalDate localDate) {
-    return new SeminarResponse(seminarRepository.findByOpenTime(localDate)
+    return SeminarResponse.from(seminarRepository.findByOpenTime(localDate)
         .orElse(Seminar.builder().build()));
   }
 

@@ -31,7 +31,7 @@ include::{snippets}/create-seminar/request-cookies.adoc[]
 
 include::{snippets}/create-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/create-seminar/response-fields.adoc[]
 
@@ -57,7 +57,7 @@ include::{snippets}/start-seminar/request-fields.adoc[]
 
 include::{snippets}/start-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/start-seminar/response-fields.adoc[]
 
@@ -79,7 +79,7 @@ include::{snippets}/search-all-seminar/request-cookies.adoc[]
 
 include::{snippets}/search-all-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/search-all-seminar/response-fields.adoc[]
 
@@ -105,7 +105,7 @@ include::{snippets}/search-seminar/request-cookies.adoc[]
 
 include::{snippets}/search-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/search-seminar/response-fields.adoc[]
 
@@ -127,7 +127,7 @@ include::{snippets}/search-available-seminar/request-cookies.adoc[]
 
 include::{snippets}/search-available-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/search-available-seminar/response-fields.adoc[]
 
@@ -153,7 +153,7 @@ include::{snippets}/search-date-seminar/request-cookies.adoc[]
 
 include::{snippets}/search-date-seminar/http-response.adoc[]
 
-==== Response Headers
+==== Response Fields
 
 include::{snippets}/search-date-seminar/response-fields.adoc[]
 
@@ -178,3 +178,7 @@ include::{snippets}/delete-seminar/request-cookies.adoc[]
 ==== Response
 
 include::{snippets}/delete-seminar/http-response.adoc[]
+
+== *세미나 출석*
+
+link:seminar-attendance.adoc[API 문서 보기]
