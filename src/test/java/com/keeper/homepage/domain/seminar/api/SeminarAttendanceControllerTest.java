@@ -14,6 +14,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceRequest;
@@ -27,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MvcResult;
 
 public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
@@ -239,23 +241,47 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("출석 사유를 적지 않아도 상태 변경을 성공한다.")
     public void should_success_when_emptyExcuse() throws Exception {
-      //given
+      Long seminarId = createSeminarAndGetId(adminToken);
+      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
+          .getAttendanceCode();
 
-      //when
+      SeminarAttendanceRequest request = SeminarAttendanceRequest.builder()
+          .id(seminarId)
+          .attendanceCode(attendanceCode)
+          .build();
 
-      //then
-      assertThat(true);
+      String strJson1 = """
+          {"id":%s, "excuse": "", "statusType":"LATENESS"}""".formatted(seminarId);
+      String strJson2 = """
+          {"id":%s, "excuse": null, "statusType":"LATENESS"}""".formatted(seminarId);
+
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+      attendanceSeminarUsingApi(adminToken, request).andExpect(status().isCreated());
+      changeAttendanceStatusUsingApi(adminToken, strJson1).andExpect(status().isNoContent());
+      changeAttendanceStatusUsingApi(adminToken, strJson2).andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("비정상적인 값이 들어가면 실패한다.")
     public void should_fail_when_invalidValue() throws Exception {
-      //given
+      Long seminarId = createSeminarAndGetId(adminToken);
+      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
+          .getAttendanceCode();
 
-      //when
+      SeminarAttendanceRequest request = SeminarAttendanceRequest.builder()
+          .id(seminarId)
+          .attendanceCode(attendanceCode)
+          .build();
 
-      //then
-      assertThat(true);
+      String strJson1 = """
+          {"id":%s, "excuse":"", "statusType":"asdf"}""".formatted(seminarId);
+//      String strJson2 = """
+//          {"id":%s, "excuse":"", "statusType":null}""".formatted(seminarId);
+
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+      attendanceSeminarUsingApi(adminToken, request).andExpect(status().isCreated());
+      changeAttendanceStatusUsingApi(adminToken, strJson1).andExpect(status().isBadRequest());
+//      changeAttendanceStatusUsingApi(adminToken, strJson2).andExpect(status().isBadRequest());
     }
   }
 }
