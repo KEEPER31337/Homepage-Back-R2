@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.seminar.api;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,14 +89,14 @@ public class SeminarApiTestHelper extends IntegrationTest {
   }
 
   ResultActions changeAttendanceStatusUsingApi(String token, SeminarAttendanceStatusRequest request) throws Exception {
-    return mockMvc.perform(post("/seminar/attendances/change")
+    return mockMvc.perform(patch("/seminar/attendances/change")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
 
   ResultActions changeAttendanceStatusUsingApi(String token, String strJson) throws Exception {
-    return mockMvc.perform(post("/seminar/attendances/change")
+    return mockMvc.perform(patch("/seminar/attendances/change")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
