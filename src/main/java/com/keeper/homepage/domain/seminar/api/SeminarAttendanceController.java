@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.seminar.api;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.application.SeminarAttendanceService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceRequest;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
@@ -27,5 +28,13 @@ public class SeminarAttendanceController {
       @RequestBody @Valid SeminarAttendanceRequest request) {
     SeminarAttendanceResponse response = seminarAttendanceService.save(member, request);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  @PostMapping("/change")
+  public ResponseEntity<Void> changeSeminarAttendanceStatus(
+      @LoginMember Member member,
+      @RequestBody SeminarAttendanceStatusRequest request) {
+    seminarAttendanceService.changeStatus(member, request);
+    return ResponseEntity.noContent().build();
   }
 }
