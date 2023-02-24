@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class SeminarAttendanceController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @PostMapping("/change")
+  @PatchMapping("/change")
   public ResponseEntity<Void> changeSeminarAttendanceStatus(
       @LoginMember Member member,
       @RequestBody @Valid SeminarAttendanceStatusRequest request) {
