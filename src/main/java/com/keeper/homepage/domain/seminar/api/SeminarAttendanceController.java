@@ -33,7 +33,7 @@ public class SeminarAttendanceController {
   @PostMapping("/change")
   public ResponseEntity<Void> changeSeminarAttendanceStatus(
       @LoginMember Member member,
-      @RequestBody SeminarAttendanceStatusRequest request) {
+      @RequestBody @Valid SeminarAttendanceStatusRequest request) {
     seminarAttendanceService.changeStatus(member, request);
     return ResponseEntity.noContent().build();
   }
