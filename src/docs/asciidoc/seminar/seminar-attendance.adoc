@@ -38,3 +38,25 @@ include::{snippets}/attendance-seminar/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/attendance-seminar/response-fields.adoc[]
+
+== *세미나 출석 상태 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/change-attendance-seminar/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/change-attendance-seminar/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/change-attendance-seminar/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/change-attendance-seminar/http-response.adoc[]
