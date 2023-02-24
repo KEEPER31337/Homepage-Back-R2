@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceRequest;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import jakarta.servlet.http.Cookie;
@@ -81,6 +82,20 @@ public class SeminarApiTestHelper extends IntegrationTest {
 
   ResultActions attendanceSeminarUsingApi(String token, String strJson) throws Exception {
     return mockMvc.perform(post("/seminar/attendances")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(strJson));
+  }
+
+  ResultActions changeAttendanceStatusUsingApi(String token, SeminarAttendanceStatusRequest request) throws Exception {
+    return mockMvc.perform(post("/seminar/attendances/change")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(request)));
+  }
+
+  ResultActions changeAttendanceStatusUsingApi(String token, String strJson) throws Exception {
+    return mockMvc.perform(post("/seminar/attendances/change")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));

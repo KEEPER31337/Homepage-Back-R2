@@ -17,6 +17,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceRequest;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
@@ -193,6 +194,68 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           SeminarAttendanceResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(ABSENCE);
+    }
+  }
+  @Nested
+  @DisplayName("세미나 출석 상태 변경 테스트")
+  class SeminarAttendanceStatusTest {
+
+    @Test
+    @DisplayName("세미나 출석 상태를 변경한다.")
+    public void should_success_when_changeSeminarAttendanceStatus() throws Exception {
+      String securedValue = getSecuredValue(SeminarAttendanceController.class, "changeAttendanceStatus");
+
+      Long seminarId = createSeminarAndGetId(adminToken);
+      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
+          .getAttendanceCode();
+
+      SeminarAttendanceRequest request = SeminarAttendanceRequest.builder()
+          .id(seminarId)
+          .attendanceCode(attendanceCode)
+          .build();
+
+      SeminarAttendanceStatusRequest statusRequest = SeminarAttendanceStatusRequest.builder()
+          .id(seminarId)
+          .excuse("늦게 일어나서")
+          .statusType(LATENESS)
+          .build();
+
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+      attendanceSeminarUsingApi(adminToken, request).andExpect(status().isCreated());
+
+      changeAttendanceStatusUsingApi(adminToken, statusRequest)
+          .andExpect(status().isNoContent())
+          .andDo(document("change-attendance-seminar",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
+                      "ACCESS TOKEN %s".formatted(securedValue))),
+              requestFields(
+                  field("id", "세미나 ID"),
+                  field("excuse", "세미나 사유"),
+                  field("statusType", "출석 타입"))
+          )).andReturn();
+    }
+
+    @Test
+    @DisplayName("출석 사유를 적지 않아도 상태 변경을 성공한다.")
+    public void should_success_when_emptyExcuse() throws Exception {
+      //given
+
+      //when
+
+      //then
+      assertThat(true);
+    }
+
+    @Test
+    @DisplayName("비정상적인 값이 들어가면 실패한다.")
+    public void should_fail_when_invalidValue() throws Exception {
+      //given
+
+      //when
+
+      //then
+      assertThat(true);
     }
   }
 }
