@@ -275,13 +275,20 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       String strJson1 = """
           {"id":%s, "excuse":"", "statusType":"asdf"}""".formatted(seminarId);
-//      String strJson2 = """
-//          {"id":%s, "excuse":"", "statusType":null}""".formatted(seminarId);
+      String strJson2 = """
+          {"id":%s, "excuse":"", "statusType":null}""".formatted(seminarId);
+      String strJson3 = """
+          {"id":null, "excuse":"", "statusType":"asdf"}""".formatted(seminarId);
+      String strJson4 = """
+          {"id":null, "excuse":"", "statusType":null}""".formatted(seminarId);
+
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       attendanceSeminarUsingApi(adminToken, request).andExpect(status().isCreated());
       changeAttendanceStatusUsingApi(adminToken, strJson1).andExpect(status().isBadRequest());
-//      changeAttendanceStatusUsingApi(adminToken, strJson2).andExpect(status().isBadRequest());
+      changeAttendanceStatusUsingApi(adminToken, strJson2).andExpect(status().isBadRequest());
+      changeAttendanceStatusUsingApi(adminToken, strJson3).andExpect(status().isBadRequest());
+      changeAttendanceStatusUsingApi(adminToken, strJson4).andExpect(status().isBadRequest());
     }
   }
 }
