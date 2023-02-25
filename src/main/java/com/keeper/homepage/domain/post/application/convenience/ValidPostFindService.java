@@ -18,14 +18,7 @@ public class ValidPostFindService {
   private final PostRepository postRepository;
 
   public Post findById(long postId) {
-    checkVirtualPostId(postId);
-    return postRepository.findById(postId)
+    return postRepository.findByIdAndIdNot(postId, VIRTUAL_POST_ID)
         .orElseThrow(() -> new BusinessException(postId, "postId", POST_NOT_FOUND));
-  }
-
-  private void checkVirtualPostId(long postId) {
-    if (postId == VIRTUAL_POST_ID) {
-      throw new BusinessException(postId, "postId", POST_NOT_FOUND);
-    }
   }
 }
