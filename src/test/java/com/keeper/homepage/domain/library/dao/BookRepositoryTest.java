@@ -24,6 +24,7 @@ public class BookRepositoryTest extends IntegrationTest {
 
   private Book book;
   private Member member;
+  private LocalDateTime expireDate;
 
   @BeforeEach
   void setUp() {
@@ -89,8 +90,11 @@ public class BookRepositoryTest extends IntegrationTest {
       BookBorrowInfo bookBorrowInfo = BookBorrowInfo.builder()
           .member(member)
           .build();
-      book.addBookBorrowInfo(bookBorrowInfo);
+      member.borrow(book, expireDate);
+      em.flush();
+      em.clear();
 
+      book = bookRepository.findById(book.getId()).orElseThrow();
       bookRepository.delete(book);
 
       assertThat(bookBorrowInfoRepository.findAll()).hasSize(0);
