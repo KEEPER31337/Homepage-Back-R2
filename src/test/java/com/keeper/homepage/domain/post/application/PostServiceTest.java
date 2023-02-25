@@ -100,6 +100,7 @@ public class PostServiceTest extends IntegrationTest {
     private Category virtualCategory, examCategory;
     private Post post;
     private Thumbnail thumbnail;
+    private final long virtualPostId = 1;
 
     private static final LocalDate now = LocalDate.now();
 
@@ -197,7 +198,7 @@ public class PostServiceTest extends IntegrationTest {
     @DisplayName("Virtual Post 데이터는 조회할 수 없다.")
     public void Virtual_Post_데이터는_조회할_수_없다() throws Exception {
       assertThrows(BusinessException.class, () -> {
-        postService.find(bestMember, VIRTUAL_CATEGORY.getId(), null);
+        postService.find(bestMember, virtualPostId, null);
       });
     }
 
