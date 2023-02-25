@@ -110,12 +110,6 @@ public class Member {
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
   private final Set<Friend> friends = new HashSet<>();
 
-  @OneToMany(mappedBy = "member")
-  private final List<Post> posts = new ArrayList<>();
-
-  @OneToMany(mappedBy = "member")
-  private final List<Comment> comments = new ArrayList<>();
-
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasPostLike> postLikes = new HashSet<>();
 
@@ -180,7 +174,6 @@ public class Member {
         .member(this)
         .post(post)
         .build();
-    post.addLike(like);
     postLikes.add(like);
   }
 
@@ -189,7 +182,6 @@ public class Member {
         .member(this)
         .comment(comment)
         .build();
-    comment.addLike(like);
     commentLikes.add(like);
   }
 
@@ -206,7 +198,6 @@ public class Member {
         .member(this)
         .post(post)
         .build();
-    post.addDislike(dislike);
     postDislikes.add(dislike);
   }
 
@@ -215,7 +206,6 @@ public class Member {
         .member(this)
         .comment(comment)
         .build();
-    comment.addDislike(dislike);
     commentDislikes.add(dislike);
   }
 
