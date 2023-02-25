@@ -92,6 +92,9 @@ public class BookRepositoryTest extends IntegrationTest {
       em.clear();
 
       book = bookRepository.findById(book.getId()).orElseThrow();
+      bookRepository.delete(book);
+
+      assertThat(bookBorrowInfoRepository.findAll()).hasSize(0);
     }
   }
 
