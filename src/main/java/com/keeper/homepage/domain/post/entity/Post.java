@@ -17,13 +17,13 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -147,5 +147,29 @@ public class Post extends BaseEntity {
 
   public void addVisitCount() {
     this.visitCount++;
+  }
+
+  public boolean isCategory(long categoryId) {
+    return this.getCategory().getId().equals(categoryId);
+  }
+
+  public boolean isMine(Member member) {
+    return this.getMember().equals(member);
+  }
+
+  public boolean isSamePassword(String password) {
+    return Objects.equals(this.getPassword(), password);
+  }
+
+  public boolean isNotice() {
+    return this.isNotice;
+  }
+
+  public boolean isTemp() {
+    return this.isTemp;
+  }
+
+  public boolean isSecret() {
+    return this.isSecret;
   }
 }
