@@ -83,8 +83,4 @@ public class Book extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
-//  public void addBookBorrowInfo(BookBorrowInfo bookBorrowInfo) {
-//    bookBorrowInfo.registerBook(this);
-//    bookBorrowInfos.add(bookBorrowInfo);
-//  }
 }
