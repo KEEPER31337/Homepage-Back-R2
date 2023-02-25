@@ -272,9 +272,11 @@ public class PostControllerTest extends PostApiTestHelper {
   @DisplayName("게시글 조회")
   class FindPost {
 
+    private static final long virtualPostId = 1;
+
     @Test
     @DisplayName("게시글을 조회하면 성공적으로 조회된다.")
-    public void 게시글을_조회하면_성공적으로_조회된다() throws Exception {
+    public void should_success_when_getPost() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
       Post post = Post.builder()
@@ -322,7 +324,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("비밀 게시글의 경우 패스워드가 일치하면 조회가 성공한다.")
-    public void 비밀_게시글의_경우_패스워드가_일치하면_조회가_성공한다() throws Exception {
+    public void should_success_when_samePassword() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
       Post post = Post.builder()
@@ -374,17 +376,20 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("유효하지 않은 게시글은 조회할 수 없다.")
-    public void 유효하지_않는_게시글은_조회할_수_없다() throws Exception {
-      callFindPostApi(memberToken, 0)
+    public void should_fail_when_getInValidPost() throws Exception {
+      callFindPostApi(memberToken, -1)
           .andExpect(status().isNotFound());
 
       callFindPostApi(memberToken, 0)
+          .andExpect(status().isNotFound());
+
+      callFindPostApi(memberToken, virtualPostId)
           .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("작성자가 내가 아니면 비밀글의 패스워드가 일치해야 한다.")
-    public void 비밀번호가_일치하지_않으면_비밀글은_조회할_수_없다() throws Exception {
+    public void should_fail_whenWrongPassword() throws Exception {
       long postId = postTestHelper.builder()
           .member(member)
           .isSecret(true)

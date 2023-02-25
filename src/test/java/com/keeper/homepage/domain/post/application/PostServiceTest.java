@@ -149,7 +149,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("내가 쓴 비밀글은 비밀번호 없이 조회 가능하다.")
-    public void 내가_쓴_비밀글은_비밀번호_없이_조회_가능하다() throws Exception {
+    public void should_successWithOutPassword_when_writerIsMe() throws Exception {
       post = postTestHelper.builder()
           .member(bestMember)
           .isSecret(true)
@@ -168,7 +168,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("익명 글은 작성자가 익명으로 조회되어야 한다.")
-    public void 익명_글은_작성자가_익명으로_조회되어야_한다() throws Exception {
+    public void should_getAnonymousName_when_getAnonymousPost() throws Exception {
       Category anonymousCategory = categoryRepository.findById(ANONYMOUS_CATEGORY.getId())
           .orElseThrow();
       post = postTestHelper.builder()
@@ -189,14 +189,22 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("게시글 조회수는 하루에 한번만 증가해야 한다.")
-    public void 게시글_조회수는_하루에_한번만_증가해야_한다() throws Exception {
+    public void should_VisitCountIncreaseOncePerDay_when_getPost() throws Exception {
       // TODO: 기능 구현 후 테스트 작성
       assertThat(true);
     }
 
     @Test
     @DisplayName("Virtual Post 데이터는 조회할 수 없다.")
-    public void Virtual_Post_데이터는_조회할_수_없다() throws Exception {
+    public void should_fail_when_getInValidPost() throws Exception {
+      assertThrows(BusinessException.class, () -> {
+        postService.find(bestMember, -1, null);
+      });
+
+      assertThrows(BusinessException.class, () -> {
+        postService.find(bestMember, 0, null);
+      });
+
       assertThrows(BusinessException.class, () -> {
         postService.find(bestMember, virtualPostId, null);
       });
@@ -204,7 +212,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("족보 글은 포인트가 20000점 미만이면 조회할 수 없다.")
-    public void 족보_글은_포인트가_20000점_미만이면_조회할_수_없다() throws Exception {
+    public void should_failGetExamPost_when_pointLessThan20000() throws Exception {
       member = memberTestHelper.builder().point(0).build();
       post = postTestHelper.builder()
           .member(bestMember)
@@ -223,7 +231,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("족보 글은 회원의 댓글 수가 5개 미만이면 조회할 수 없다.")
-    public void 족보_글은_회원의_댓글_수가_5개_미만이면_조회할_수_없다() throws Exception {
+    public void should_failGetExamPost_when_commentLessThan5() throws Exception {
       member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
       commentRepository.deleteAll();
       post = postTestHelper.builder()
@@ -243,7 +251,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("족보 글은 회원의 출석 수가 10회 미만이면 조회할 수 없다.")
-    public void 족보_글은_회원의_출석_수가_10회_미만이면_조회할_수_없다() throws Exception {
+    public void should_failGetExamPost_when_attendanceLessThan10() throws Exception {
       member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
       attendanceRepository.deleteAll();
       post = postTestHelper.builder()
@@ -263,7 +271,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("임시 저장글은 내가 쓴 게 아니면 조회할 수 없다.")
-    public void 임시_저장글은_내가_쓴_게_아니면_조회할_수_없다() throws Exception {
+    public void should_failGetTempPost_when_writerIsNotMe() throws Exception {
       member = memberTestHelper.generate();
       post = postTestHelper.builder()
           .member(member)
@@ -282,7 +290,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("비밀번호가 일치하지 않으면 비밀글은 조회할 수 없다.")
-    public void 비밀번호가_일치하지_않으면_비밀글은_조회할_수_없다() throws Exception {
+    public void should_fail_when_wrongPassword() throws Exception {
       member = memberTestHelper.builder().build();
       post = postTestHelper.builder()
           .member(member)
