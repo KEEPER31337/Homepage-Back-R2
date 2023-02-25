@@ -42,3 +42,59 @@ include::{snippets}/create-post/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/create-post/response-headers.adoc[]
+
+== *게시글 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/find-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-post/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-post/response-fields.adoc[]
+
+== *비밀 게시글 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-secret-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-secret-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/find-secret-post/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/find-secret-post/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-secret-post/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-secret-post/response-fields.adoc[]
