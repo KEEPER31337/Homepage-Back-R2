@@ -12,6 +12,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -52,6 +53,18 @@ public class Category {
     this.name = name;
     this.parent = parent;
     this.href = href;
+  }
+
+  @Getter
+  @RequiredArgsConstructor
+  public enum DefaultCategory {
+    VIRTUAL_CATEGORY(1, "virtual_category"),
+    EXAM_CATEGORY(1377, "시험"),
+    ANONYMOUS_CATEGORY(63908, "익명게시판"),
+    ;
+
+    private final long id;
+    private final String name;
   }
 
   public void addChild(Category child) {
