@@ -87,9 +87,6 @@ public class BookRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("Book을 삭제하면 해당 Book의 BookBorrowInfo도 삭제되어야 한다.")
     void should_deleteBookBorrowInfo_when_deleteBook() {
-      BookBorrowInfo bookBorrowInfo = BookBorrowInfo.builder()
-          .member(member)
-          .build();
       member.borrow(book, expireDate);
       em.flush();
       em.clear();
