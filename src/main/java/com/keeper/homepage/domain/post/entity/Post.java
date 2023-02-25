@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.post.entity;
 
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -24,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -143,5 +143,9 @@ public class Post extends BaseEntity {
 
   public void registerThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
+  }
+
+  public void addVisitCount() {
+    this.visitCount++;
   }
 }
