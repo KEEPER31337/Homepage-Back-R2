@@ -7,9 +7,6 @@ import org.springframework.lang.Nullable;
 
 @Builder
 public record SeminarAttendanceStatusRequest(
-    @NotNull(message = "세미나 ID를 입력해주세요.")
-    Long id,
-
     @Nullable
     String excuse,
 

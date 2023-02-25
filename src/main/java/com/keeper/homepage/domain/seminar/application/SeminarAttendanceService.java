@@ -9,7 +9,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceRequest;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceCodeRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
@@ -28,8 +28,7 @@ public class SeminarAttendanceService {
   private final SeminarRepository seminarRepository;
 
   @Transactional
-  public SeminarAttendanceResponse save(Member member, SeminarAttendanceRequest request){
-    Long seminarId = request.id();
+  public SeminarAttendanceResponse save(Long seminarId, Member member, SeminarAttendanceCodeRequest request){
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
 
@@ -45,7 +44,7 @@ public class SeminarAttendanceService {
     return SeminarAttendanceResponse.from(attendanceRepository.save(attendance));
   }
 
-  private void validAttendanceCode(Seminar seminar, SeminarAttendanceRequest request) {
+  private void validAttendanceCode(Seminar seminar, SeminarAttendanceCodeRequest request) {
     String seminarAttendanceCode = seminar.getAttendanceCode();
     String inputAttendanceCode = request.attendanceCode();
 
@@ -62,8 +61,7 @@ public class SeminarAttendanceService {
   }
 
   @Transactional
-  public void changeStatus(Member member, SeminarAttendanceStatusRequest request) {
-    Long seminarId = request.id();
+  public void changeStatus(Long seminarId, Member member, SeminarAttendanceStatusRequest request) {
     Nickname nickname = member.getProfile().getNickname();
 
     Seminar seminar = seminarRepository.findById(seminarId)
