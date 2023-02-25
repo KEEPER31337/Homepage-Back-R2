@@ -28,7 +28,6 @@ public class SeminarTestHelper {
     private LocalDateTime openTime;
     private LocalDateTime attendanceCloseTime;
     private LocalDateTime latenessCloseTime;
-    private String attendanceCode;
     private String seminarName;
 
     public SeminarBuilder openTime(LocalDateTime sampleTime) {
@@ -46,11 +45,6 @@ public class SeminarTestHelper {
       return this;
     }
 
-    public SeminarBuilder attendanceCode(String attendanceCode) {
-      this.attendanceCode = attendanceCode;
-      return this;
-    }
-
     public SeminarBuilder seminarName(String seminarName) {
       this.seminarName = seminarName;
       return this;
@@ -61,13 +55,13 @@ public class SeminarTestHelper {
           .openTime(openTime)
           .attendanceCloseTime(attendanceCloseTime)
           .latenessCloseTime(latenessCloseTime)
-          .attendanceCode(attendanceCode != null ? attendanceCode : randomAttendanceCode())
+          .attendanceCode(randomAttendanceCode())
           .name(seminarName)
           .build());
     }
 
     private String randomAttendanceCode() {
-      int ATTENDANCE_CODE_LENGTH = 4;
+      final int ATTENDANCE_CODE_LENGTH = 4;
 
       return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
           .mapToObj(i -> ((Integer) i).toString())

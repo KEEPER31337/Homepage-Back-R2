@@ -2,14 +2,21 @@ package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
+import static java.util.stream.Collectors.joining;
 
+import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarSaveRequest;
+import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceCodeResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.error.ErrorCode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,23 +26,57 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SeminarService {
 
+  private static final Random RANDOM = new Random();
+
   private final SeminarRepository seminarRepository;
+  private final ValidSeminarFindService validSeminarFindService;
 
   @Transactional
-  public Long save(SeminarSaveRequest request) {
-    validCloseTime(request);
-
-    Seminar seminar = request.toEntity();
-    return seminarRepository.save(seminar).getId();
+  public SeminarIdResponse save() {
+    Seminar seminar = Seminar.builder()
+        .attendanceCode(randomAttendanceCode())
+        .build();
+    return new SeminarIdResponse(seminarRepository.save(seminar).getId());
   }
 
-  private void validCloseTime(SeminarSaveRequest request) {
-    LocalDateTime attendanceCloseTime = request.getAttendanceCloseTime();
-    LocalDateTime latenessCloseTime = request.getLatenessCloseTime();
+  private String randomAttendanceCode() {
+    final int ATTENDANCE_CODE_LENGTH = 4;
+
+    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
+        .mapToObj(i -> ((Integer) i).toString())
+        .collect(joining());
+  }
+
+  @Transactional
+  public SeminarAttendanceCodeResponse start(Long seminarId, SeminarStartRequest request) {
+    validCloseTime(request);
+
+    Seminar seminar = seminarRepository.findById(seminarId)
+        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
+    seminar.changeCloseTime(request.attendanceCloseTime(), request.latenessCloseTime());
+    return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
+  }
+
+  private void validCloseTime(SeminarStartRequest request) {
+    LocalDateTime attendanceCloseTime = request.attendanceCloseTime();
+    LocalDateTime latenessCloseTime = request.latenessCloseTime();
+
+    if (attendanceCloseTime == null && latenessCloseTime == null) {
+      return;
+    }
+
+    requireNonNull(attendanceCloseTime, "attendanceCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
+    requireNonNull(latenessCloseTime, "latenessCloseTime", SEMINAR_TIME_NOT_AVAILABLE);
 
     if (attendanceCloseTime.isAfter(latenessCloseTime)) {
       throw new BusinessException(attendanceCloseTime, "attendanceCloseTime",
           SEMINAR_TIME_NOT_AVAILABLE);
+    }
+  }
+
+  public static <T> void requireNonNull(T obj, String fieldName, ErrorCode errorCode) {
+    if (obj == null) {
+      throw new BusinessException("null", fieldName, errorCode);
     }
   }
 
@@ -46,15 +87,23 @@ public class SeminarService {
     seminarRepository.delete(seminar);
   }
 
-  // TODO: 2023-02-13 SeminarRepository에서 select query를 사용하는 방법으로 수정할지 고민이다.
-  public List<SeminarResponse> findAll() {
-    return seminarRepository.findAll().stream()
-        .map(SeminarResponse::new)
-        .toList();
+  public SeminarResponse findById(long seminarId) {
+    return SeminarResponse.from(seminarRepository.findById(seminarId)
+        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
   }
 
-  public SeminarResponse findById(long seminarId) {
-    return new SeminarResponse(seminarRepository.findById(seminarId)
-        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
+  public SeminarResponse findByAvailable() {
+    LocalDateTime now = LocalDateTime.now();
+    return SeminarResponse.from(seminarRepository.findByAvailable(now)
+        .orElse(Seminar.builder().build()));
+  }
+
+  public SeminarResponse findByDate(LocalDate localDate) {
+    return SeminarResponse.from(seminarRepository.findByOpenTime(localDate)
+        .orElse(Seminar.builder().build()));
+  }
+
+  public SeminarListResponse findAll() {
+    return new SeminarListResponse(validSeminarFindService.findAll());
   }
 }

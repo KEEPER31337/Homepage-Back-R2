@@ -27,8 +27,11 @@ import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.study.entity.Study;
+import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -121,6 +124,9 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+  private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
@@ -215,5 +221,17 @@ public class Member {
 
   public void cancelDislike(Comment comment) {
     commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
+  }
+
+  public void join(Study study) {
+    StudyHasMember studyMember = StudyHasMember.builder()
+        .study(study)
+        .member(this)
+        .build();
+    studyMembers.add(studyMember);
+  }
+
+  public void leave(Study study) {
+    studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
   }
 }

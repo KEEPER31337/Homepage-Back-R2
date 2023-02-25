@@ -1,6 +1,9 @@
 package com.keeper.homepage.domain.seminar.entity;
 
-import static java.util.stream.Collectors.joining;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ABSENCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ATTENDANCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -10,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Random;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +28,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "seminar")
 public class Seminar extends BaseEntity {
 
-  private static final Random RANDOM = new Random();
   private static final int MAX_ATTENDANCE_CODE_LENGTH = 10;
   private static final int MAX_NAME_LENGTH = 100;
 
@@ -50,12 +51,25 @@ public class Seminar extends BaseEntity {
   @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
-  public static String randomAttendanceCode() {
-    final int ATTENDANCE_CODE_LENGTH = 4;
+  public void changeCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
+    this.attendanceCloseTime = attendanceCloseTime;
+    this.latenessCloseTime = latenessCloseTime;
+  }
 
-    return RANDOM.ints(ATTENDANCE_CODE_LENGTH, 1, 10)
-        .mapToObj(i -> ((Integer) i).toString())
-        .collect(joining());
+  public SeminarAttendanceStatus getStatus() {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime attendanceCloseTime = this.getAttendanceCloseTime();
+    LocalDateTime latenessCloseTime = this.getLatenessCloseTime();
+
+    if (now.isBefore(attendanceCloseTime)) {
+      return getSeminarAttendanceStatusBy(ATTENDANCE);
+    }
+
+    if (now.isAfter(attendanceCloseTime) && now.isBefore(latenessCloseTime)) {
+      return getSeminarAttendanceStatusBy(LATENESS);
+    }
+
+    return getSeminarAttendanceStatusBy(ABSENCE);
   }
 
   @Builder

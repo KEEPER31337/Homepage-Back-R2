@@ -1,9 +1,9 @@
 package com.keeper.homepage.domain.seminar.entity;
 
-import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,8 +64,8 @@ public class SeminarAttendance {
     return Optional.ofNullable(this.getSeminarAttendanceExcuse().getAbsenceExcuse());
   }
 
-  public void changeLatenessStatus(String excuse) {
-    seminarAttendanceStatus = getSeminarAttendanceStatusBy(LATENESS);
+  public void changeStatus(String excuse, SeminarAttendanceStatusType type) {
+    seminarAttendanceStatus = getSeminarAttendanceStatusBy(type);
     if (seminarAttendanceExcuse == null) {
       seminarAttendanceExcuse = SeminarAttendanceExcuse.builder()
           .seminarAttendance(this)

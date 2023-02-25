@@ -10,6 +10,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentConversionNotSupportedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ExceptionAdvice {
@@ -24,6 +26,23 @@ public class ExceptionAdvice {
   public ResponseEntity<ErrorResponse> accessDeniedException(AccessDeniedException e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN)
         .body(ErrorResponse.from("권한이 없습니다."));
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErrorResponse> methodArgumentTypeMismatchException(
+      MethodArgumentTypeMismatchException e) {
+    return typeMismatchErrorMessage(e.getName());
+  }
+
+  @ExceptionHandler(MethodArgumentConversionNotSupportedException.class)
+  public ResponseEntity<ErrorResponse> methodArgumentConversionNotSupportedException(
+      MethodArgumentConversionNotSupportedException e) {
+    return typeMismatchErrorMessage(e.getName());
+  }
+
+  private static ResponseEntity<ErrorResponse> typeMismatchErrorMessage(String errorMessage) {
+    return ResponseEntity.badRequest()
+        .body(ErrorResponse.from("%s 파라미터의 형식이 일치하지 않습니다.".formatted(errorMessage)));
   }
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
