@@ -140,7 +140,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
       assertThat(response.getThumbnailPath())
-          .isEqualTo(thumbnailUtil.getThumbnailURI(POST_THUMBNAIL.getPath()));
+          .isEqualTo(thumbnailUtil.getThumbnailPath(POST_THUMBNAIL.getPath()));
       assertThat(response.getContent()).isEqualTo(post.getContent());
       assertThat(response.getLikeCount()).isEqualTo(post.getLikeCount());
       assertThat(response.getDislikeCount()).isEqualTo(post.getDislikeCount());

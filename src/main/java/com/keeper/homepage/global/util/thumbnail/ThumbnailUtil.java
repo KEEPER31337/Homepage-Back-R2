@@ -66,5 +66,5 @@ public abstract class ThumbnailUtil {
     }
   }
 
-  public abstract String getThumbnailURI(String thumbnailFullPath);
+  public abstract String getThumbnailPath(String thumbnailPath);
 }

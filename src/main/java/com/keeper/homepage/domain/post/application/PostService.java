@@ -168,7 +168,7 @@ public class PostService {
   }
 
   private String getPostThumbnailPath(Thumbnail thumbnail) {
-    return thumbnail != null ? thumbnailUtil.getThumbnailURI(thumbnail.getPath()) :
-        thumbnailUtil.getThumbnailURI(POST_THUMBNAIL.getPath());
+    return thumbnail != null ? thumbnailUtil.getThumbnailPath(thumbnail.getPath()) :
+        thumbnailUtil.getThumbnailPath(POST_THUMBNAIL.getPath());
   }
 }
