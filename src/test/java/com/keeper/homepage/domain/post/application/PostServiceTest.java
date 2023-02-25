@@ -142,7 +142,6 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(response.getThumbnailPath())
           .isEqualTo(thumbnailUtil.getThumbnailURI(POST_THUMBNAIL.getPath()));
       assertThat(response.getContent()).isEqualTo(post.getContent());
-      //assertThat(response.getFiles()).isEqualTo(post.getFiles());
       assertThat(response.getLikeCount()).isEqualTo(post.getLikeCount());
       assertThat(response.getDislikeCount()).isEqualTo(post.getDislikeCount());
     }

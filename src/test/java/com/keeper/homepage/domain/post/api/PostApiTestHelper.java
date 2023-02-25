@@ -16,7 +16,6 @@ import org.springframework.util.MultiValueMap;
 
 public class PostApiTestHelper extends IntegrationTest {
 
-
   ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file,
       MultiValueMap<String, String> params)
       throws Exception {
