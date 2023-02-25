@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.Nickname;
+import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
@@ -43,6 +44,7 @@ public class PostService {
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
   private final CommentRepository commentRepository;
+  private final ValidPostFindService validPostFindService;
 
   public static final String ANONYMOUS_NAME = "익명";
   public static final int EXAM_ACCESSIBLE_POINT = 20000;
@@ -79,10 +81,7 @@ public class PostService {
 
   @Transactional
   public PostResponse find(Member member, long postId, String password) {
-    checkInValidPostId(postId);
-
-    Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new BusinessException(postId, "postId", POST_NOT_FOUND));
+    Post post = validPostFindService.findById(postId);
 
     checkExamPost(member, post);
     checkTempPost(member, post);
@@ -96,27 +95,21 @@ public class PostService {
         .map(FileResponse::from)
         .collect(toList());
 
-    if (post.getCategory().getId().equals(ANONYMOUS_CATEGORY.getId())) {
+    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
       return PostResponse.of(post, Nickname.from(ANONYMOUS_NAME), thumbnailPath, fileResponses);
     }
     return PostResponse.of(post, post.getMember().getProfile().getNickname(), thumbnailPath,
         fileResponses);
   }
 
-  private void checkInValidPostId(long postId) {
-    if (postId == 1) {
-      throw new BusinessException(postId, "postId", POST_NOT_FOUND);
-    }
-  }
-
   private void checkExamPost(Member member, Post post) {
-    if (post.getCategory().getId().equals(EXAM_CATEGORY.getId())) {
+    if (post.isCategory(EXAM_CATEGORY.getId())) {
       checkAccessibleExamPost(member, post);
     }
   }
 
   private void checkAccessibleExamPost(Member member, Post post) {
-    if (post.getIsNotice()) {
+    if (post.isNotice()) {
       return;
     }
     if (member.getPoint() >= EXAM_ACCESSIBLE_POINT
@@ -133,29 +126,29 @@ public class PostService {
   }
 
   private void checkTempPost(Member member, Post post) {
-    if (post.getIsTemp()) {
+    if (post.isTemp()) {
       checkAccessibleTempPost(member, post);
     }
   }
 
-  private void checkAccessibleTempPost(Member me, Post post) {
-    if (post.getMember().equals(me)) {
+  private void checkAccessibleTempPost(Member member, Post post) {
+    if (post.isMine(member)) {
       return;
     }
     throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
   }
 
   private void checkSecretPost(Member member, Post post, String password) {
-    if (post.getIsSecret()) {
+    if (post.isSecret()) {
       checkAccessibleSecretPost(member, post, password);
     }
   }
 
-  private void checkAccessibleSecretPost(Member me, Post post, String password) {
-    if (post.getMember().equals(me)) {
+  private void checkAccessibleSecretPost(Member member, Post post, String password) {
+    if (post.isMine(member)) {
       return;
     }
-    if (Objects.equals(post.getPassword(), password)) {
+    if (post.isSamePassword(password)) {
       return;
     }
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
