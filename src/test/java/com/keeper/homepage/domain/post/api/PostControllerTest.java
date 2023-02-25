@@ -7,6 +7,7 @@ import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCES
 import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.seminar.api.SeminarController;
 import com.keeper.homepage.global.util.web.WebUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -84,6 +86,8 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("썸네일과 파일이 포함된 게시글을 생성하면 게시글 생성이 성공한다.")
     void should_201CREATED_when_createPostWithThumbnailAndFiles() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "createPost");
+
       mockCreatePostService();
       addAllParams();
 
@@ -93,7 +97,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .andDo(document("create-post",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("사용자 인증에 필요한 ACCESS TOKEN")),
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
               queryParameters(
                   parameterWithName("title")
                       .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_TITLE_LENGTH + ")"),
@@ -270,6 +275,8 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("게시글을 조회하면 성공적으로 조회된다.")
     public void 게시글을_조회하면_성공적으로_조회된다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getPost");
+
       Post post = Post.builder()
           .title("게시글 제목")
           .content("게시글 내용")
@@ -287,7 +294,7 @@ public class PostControllerTest extends PostApiTestHelper {
           .andDo(document("find-post",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("사용자 인증에 필요한 ACCESS TOKEN")
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
@@ -316,6 +323,8 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("비밀 게시글의 경우 패스워드가 일치하면 조회가 성공한다.")
     public void 비밀_게시글의_경우_패스워드가_일치하면_조회가_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getPost");
+
       Post post = Post.builder()
           .title("게시글 제목")
           .content("게시글 내용")
@@ -333,7 +342,7 @@ public class PostControllerTest extends PostApiTestHelper {
           .andDo(document("find-secret-post",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("사용자 인증에 필요한 ACCESS TOKEN")
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
