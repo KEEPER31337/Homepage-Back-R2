@@ -8,6 +8,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Slf4j
 public abstract class ThumbnailUtil {
@@ -64,4 +65,6 @@ public abstract class ThumbnailUtil {
       deleteFileAndEntity(thumbnail);
     }
   }
+
+  public abstract String getThumbnailURI(String thumbnailFullPath);
 }
