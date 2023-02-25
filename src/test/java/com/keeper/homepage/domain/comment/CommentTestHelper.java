@@ -44,37 +44,37 @@ public class CommentTestHelper {
 
     }
 
-    private CommentBuilder member(Member member) {
+    public CommentBuilder member(Member member) {
       this.member = member;
       return this;
     }
 
-    private CommentBuilder post(Post post) {
+    public CommentBuilder post(Post post) {
       this.post = post;
       return this;
     }
 
-    private CommentBuilder parent(Comment parent) {
+    public CommentBuilder parent(Comment parent) {
       this.parent = parent;
       return this;
     }
 
-    private CommentBuilder content(String content) {
+    public CommentBuilder content(String content) {
       this.content = content;
       return this;
     }
 
-    private CommentBuilder likeCount(Integer likeCount) {
+    public CommentBuilder likeCount(Integer likeCount) {
       this.likeCount = likeCount;
       return this;
     }
 
-    private CommentBuilder dislikeCount(Integer dislikeCount) {
+    public CommentBuilder dislikeCount(Integer dislikeCount) {
       this.dislikeCount = dislikeCount;
       return this;
     }
 
-    private CommentBuilder ipAddress(String ipAddress) {
+    public CommentBuilder ipAddress(String ipAddress) {
       this.ipAddress = ipAddress;
       return this;
     }

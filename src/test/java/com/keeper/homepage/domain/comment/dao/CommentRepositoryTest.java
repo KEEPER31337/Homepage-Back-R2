@@ -60,6 +60,7 @@ public class CommentRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
+      comment = commentRepository.findById(comment.getId()).orElseThrow();
       commentRepository.delete(comment);
 
       em.flush();
