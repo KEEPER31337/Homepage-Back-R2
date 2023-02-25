@@ -195,7 +195,7 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("Virtual Post 데이터는 조회할 수 없다.")
+    @DisplayName("유효하지 않은 Post 데이터는 조회할 수 없다.")
     public void should_fail_when_getInValidPost() throws Exception {
       assertThrows(BusinessException.class, () -> {
         postService.find(bestMember, -1, null);
