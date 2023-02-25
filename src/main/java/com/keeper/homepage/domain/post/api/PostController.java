@@ -46,7 +46,7 @@ public class PostController {
   @GetMapping("/{postId}")
   public ResponseEntity<PostResponse> getPost(
       @LoginMember Member member,
-      @PathVariable @NotNull long postId,
+      @PathVariable long postId,
       @RequestParam(required = false) String password
   ) {
     PostResponse postResponse = postService.find(member, postId, password);
