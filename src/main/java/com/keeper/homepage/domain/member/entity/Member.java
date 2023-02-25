@@ -168,4 +168,9 @@ public class Member {
             .expireDate(expireDate)
             .build());
   }
+
+  public void returns(Book book) {
+    bookBorrowInfos.removeIf(bookBorrowInfo -> bookBorrowInfo.getBook().equals(book));
+  }
+
 }
