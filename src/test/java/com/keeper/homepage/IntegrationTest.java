@@ -29,6 +29,11 @@ import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
+import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
+import com.keeper.homepage.domain.library.BookTestHelper;
+import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
+import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
@@ -114,6 +119,15 @@ public class IntegrationTest {
 
   @SpyBean
   protected AttendanceRepository attendanceRepository;
+
+  @SpyBean
+  protected BookRepository bookRepository;
+
+  @SpyBean
+  protected BookBorrowInfoRepository bookBorrowInfoRepository;
+
+  @SpyBean
+  protected BookDepartmentRepository bookDepartmentRepository;
 
   @SpyBean
   protected SeminarRepository seminarRepository;
@@ -206,6 +220,12 @@ public class IntegrationTest {
 
   @Autowired
   protected AttendanceTestHelper attendanceTestHelper;
+
+  @Autowired
+  protected BookTestHelper bookTestHelper;
+
+  @Autowired
+  protected BookBorrowInfoTestHelper bookBorrowInfoTestHelper;
 
   @Autowired
   protected SeminarTestHelper seminarTestHelper;
