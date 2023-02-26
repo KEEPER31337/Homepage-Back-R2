@@ -181,7 +181,7 @@ public class IntegrationTest {
 
   @Autowired
   protected StaticWriteService staticWriteService;
-  
+
   @Autowired
   protected SeminarService seminarService;
 

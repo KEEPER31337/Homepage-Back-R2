@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.post.entity;
 
-import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -18,6 +17,7 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -136,14 +136,6 @@ public class Post extends BaseEntity {
     files.add(file);
   }
 
-  public void addLike(MemberHasPostLike like) {
-    postLikes.add(like);
-  }
-
-  public void addDislike(MemberHasPostDislike dislike) {
-    postDislikes.add(dislike);
-  }
-
   public void registerCategory(Category category) {
     this.category = category;
     category.getPosts().add(this);
@@ -151,5 +143,33 @@ public class Post extends BaseEntity {
 
   public void registerThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
+  }
+
+  public void addVisitCount() {
+    this.visitCount++;
+  }
+
+  public boolean isCategory(long categoryId) {
+    return this.getCategory().getId().equals(categoryId);
+  }
+
+  public boolean isMine(Member member) {
+    return this.getMember().equals(member);
+  }
+
+  public boolean isSamePassword(String password) {
+    return Objects.equals(this.getPassword(), password);
+  }
+
+  public boolean isNotice() {
+    return this.isNotice;
+  }
+
+  public boolean isTemp() {
+    return this.isTemp;
+  }
+
+  public boolean isSecret() {
+    return this.isSecret;
   }
 }

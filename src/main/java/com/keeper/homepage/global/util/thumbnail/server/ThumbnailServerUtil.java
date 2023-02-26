@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service
 @RequiredArgsConstructor
@@ -104,5 +105,11 @@ class ThumbnailServerUtil extends ThumbnailUtil {
     } catch (IOException | RuntimeException e) {
       throw new RuntimeException("파일 삭제 도중 문제가 발생했습니다. 파일 삭제 Entity: " + thumbnail);
     }
+  }
+
+  public String getThumbnailPath(String thumbnailPath) {
+    return ServletUriComponentsBuilder.fromCurrentContextPath()
+        .path(thumbnailPath)
+        .toUriString();
   }
 }

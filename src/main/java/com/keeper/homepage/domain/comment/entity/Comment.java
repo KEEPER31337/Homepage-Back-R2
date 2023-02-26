@@ -87,14 +87,6 @@ public class Comment extends BaseEntity {
     this.ipAddress = ipAddress;
   }
 
-  public void addLike(MemberHasCommentLike like) {
-    commentLikes.add(like);
-  }
-
-  public void addDislike(MemberHasCommentDislike dislike) {
-    commentDislikes.add(dislike);
-  }
-
   public void registerPost(Post post) {
     this.post = post;
   }
