@@ -1,0 +1,40 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= MEMBER API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *비밀번호 변경하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/change-password/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/change-password/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/change-password/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/change-password/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/change-password/response-headers.adoc[]

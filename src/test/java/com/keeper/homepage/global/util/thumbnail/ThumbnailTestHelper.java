@@ -31,6 +31,16 @@ public class ThumbnailTestHelper {
     }
   }
 
+  public MockMultipartFile getSmallThumbnailFile() {
+    try {
+      return new MockMultipartFile("thumbnail",
+          "testImage_1x1.png", "image/png",
+          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   public MockMultipartFile getFakeImageFile() {
     try {
       return new MockMultipartFile("thumbnail",

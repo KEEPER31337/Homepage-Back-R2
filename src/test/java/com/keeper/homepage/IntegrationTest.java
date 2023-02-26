@@ -15,11 +15,13 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceExcuseRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarAttendanceStatusRepository;
-import com.keeper.homepage.domain.clerk.dao.seminar.SeminarRepository;
-import com.keeper.homepage.domain.clerk.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.seminar.application.SeminarService;
+import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
+import com.keeper.homepage.domain.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
@@ -34,11 +36,25 @@ import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
+import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
+import com.keeper.homepage.domain.post.CategoryTestHelper;
+import com.keeper.homepage.domain.comment.CommentTestHelper;
+import com.keeper.homepage.domain.post.PostTestHelper;
+import com.keeper.homepage.domain.post.application.PostService;
+import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.study.StudyTestHelper;
+import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
+import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
@@ -128,8 +144,35 @@ public class IntegrationTest {
   @SpyBean
   protected FriendRepository friendRepository;
 
+  @SpyBean
+  protected CategoryRepository categoryRepository;
+
+  @SpyBean
+  protected CommentRepository commentRepository;
+
+  @SpyBean
+  protected PostRepository postRepository;
+
+  @SpyBean
+  protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
+
+  @SpyBean
+  protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
+
+  @SpyBean
+  protected MemberHasPostDislikeRepository memberHasPostDislikeRepository;
+
+  @SpyBean
+  protected MemberHasPostLikeRepository memberHasPostLikeRepository;
+
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
+
+  @SpyBean
+  protected StudyRepository studyRepository;
+
+  @SpyBean
+  protected StudyHasMemberRepository studyHasMemberRepository;
 
   /******* Service *******/
   @SpyBean
@@ -152,6 +195,15 @@ public class IntegrationTest {
 
   @Autowired
   protected StaticWriteService staticWriteService;
+
+  @Autowired
+  protected SeminarService seminarService;
+
+  @SpyBean
+  protected PostService postService;
+
+  @Autowired
+  protected ValidSeminarFindService validSeminarFindService;
 
   /******* Helper *******/
   @SpyBean
@@ -178,6 +230,19 @@ public class IntegrationTest {
   @Autowired
   protected SeminarTestHelper seminarTestHelper;
 
+  @Autowired
+  protected CategoryTestHelper categoryTestHelper;
+
+  @Autowired
+  protected PostTestHelper postTestHelper;
+
+  @Autowired
+  protected CommentTestHelper commentTestHelper;
+
+  @Autowired
+  protected StudyTestHelper studyTestHelper;
+
+  /******* Helper *******/
   @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
 

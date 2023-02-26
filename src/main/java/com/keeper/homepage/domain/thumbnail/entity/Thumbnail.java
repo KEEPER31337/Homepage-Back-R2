@@ -10,12 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Getter
 @Entity
@@ -34,7 +36,7 @@ public class Thumbnail {
   @Column(name = "path", length = MAX_PATH_LENGTH)
   private String path;
 
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "file_id", nullable = false)
   private FileEntity fileEntity;
 
@@ -42,5 +44,16 @@ public class Thumbnail {
   private Thumbnail(String path, FileEntity fileEntity) {
     this.path = path;
     this.fileEntity = fileEntity;
+  }
+
+  @Getter
+  @RequiredArgsConstructor
+  public enum DefaultThumbnail {
+    MEMBER_THUMBNAIL(1, "keeper_files/thumbnail/default/default_thumbnail_member.png"),
+    POST_THUMBNAIL(2, "keeper_files/thumbnail/default/default_thumbnail_posting.png"),
+    ;
+
+    private final long id;
+    private final String path;
   }
 }

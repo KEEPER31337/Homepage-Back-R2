@@ -15,6 +15,8 @@ import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
+import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
+import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.member.entity.embedded.Generation;
 import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -22,10 +24,17 @@ import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
+import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.study.entity.Study;
+import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -113,6 +122,21 @@ public class Member {
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
   private final Set<Friend> friends = new HashSet<>();
 
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasPostLike> postLikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+  private final Set<StudyHasMember> studyMembers = new HashSet<>();
+
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
       Integer totalAttendance) {
@@ -162,15 +186,74 @@ public class Member {
 
   public void borrow(Book book, LocalDateTime expireDate) {
     bookBorrowInfos.add(BookBorrowInfo.builder()
-            .member(this)
-            .book(book)
-            .borrowDate(LocalDateTime.now())
-            .expireDate(expireDate)
-            .build());
+        .member(this)
+        .book(book)
+        .borrowDate(LocalDateTime.now())
+        .expireDate(expireDate)
+        .build());
   }
 
   public void returns(Book book) {
     bookBorrowInfos.removeIf(bookBorrowInfo -> bookBorrowInfo.getBook().equals(book));
   }
 
+  public void like(Post post) {
+    MemberHasPostLike like = MemberHasPostLike.builder()
+        .member(this)
+        .post(post)
+        .build();
+    postLikes.add(like);
+  }
+
+  public void like(Comment comment) {
+    MemberHasCommentLike like = MemberHasCommentLike.builder()
+        .member(this)
+        .comment(comment)
+        .build();
+    commentLikes.add(like);
+  }
+
+  public void cancelLike(Post post) {
+    postLikes.removeIf(postLike -> postLike.getPost().equals(post));
+  }
+
+  public void cancelLike(Comment comment) {
+    commentLikes.removeIf(commentLike -> commentLike.getComment().equals(comment));
+  }
+
+  public void dislike(Post post) {
+    MemberHasPostDislike dislike = MemberHasPostDislike.builder()
+        .member(this)
+        .post(post)
+        .build();
+    postDislikes.add(dislike);
+  }
+
+  public void dislike(Comment comment) {
+    MemberHasCommentDislike dislike = MemberHasCommentDislike.builder()
+        .member(this)
+        .comment(comment)
+        .build();
+    commentDislikes.add(dislike);
+  }
+
+  public void cancelDislike(Post post) {
+    postDislikes.removeIf(postDislike -> postDislike.getPost().equals(post));
+  }
+
+  public void cancelDislike(Comment comment) {
+    commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
+  }
+
+  public void join(Study study) {
+    StudyHasMember studyMember = StudyHasMember.builder()
+        .study(study)
+        .member(this)
+        .build();
+    studyMembers.add(studyMember);
+  }
+
+  public void leave(Study study) {
+    studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
+  }
 }

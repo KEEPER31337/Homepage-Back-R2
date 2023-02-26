@@ -9,10 +9,22 @@ endif::[]
 :toclevels: 1
 :sectlinks:
 
-== *MEMBER API*
+== *AUTH API*
 
 link:auth/auth.html[API 문서 보기]
+
+== *MEMBER API*
+
+link:member/member.html[API 문서 보기]
 
 == *ABOUT API*
 
 link:about/about.html[API 문서 보기]
+
+== *POST API*
+
+link:post/post.html[API 문서 보기]
+
+== *SEMINAR API*
+
+link:seminar/seminar.html[API 문서 보기]

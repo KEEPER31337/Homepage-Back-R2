@@ -1,0 +1,100 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= POST API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *게시글 생성하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-post/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/create-post/query-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/create-post/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-post/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/create-post/response-headers.adoc[]
+
+== *게시글 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/find-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-post/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-post/response-fields.adoc[]
+
+== *비밀 게시글 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-secret-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-secret-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/find-secret-post/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/find-secret-post/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-secret-post/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-secret-post/response-fields.adoc[]

@@ -13,7 +13,7 @@ public class BusinessException extends RuntimeException {
 
   public BusinessException(Object invalidValue, String fieldName, ErrorCode errorCode) {
     super(errorCode.getMessage());
-    this.invalidValue = invalidValue.toString();
+    this.invalidValue = invalidValue != null ? invalidValue.toString() : null;
     this.fieldName = fieldName;
     this.httpStatus = errorCode.getHttpStatus();
     this.message = errorCode.getMessage();
