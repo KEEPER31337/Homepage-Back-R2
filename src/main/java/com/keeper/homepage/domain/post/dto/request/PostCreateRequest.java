@@ -4,8 +4,6 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.post.entity.category.Category;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -14,14 +12,13 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class PostRequest {
+public class PostCreateRequest {
 
   public static final int MAX_REQUEST_TITLE_LENGTH = 50;
   public static final int MAX_REQUEST_PASSWORD_LENGTH = 16;
@@ -53,7 +50,10 @@ public class PostRequest {
   @PositiveOrZero(message = "올바른 카테고리 아이디를 입력해주세요.")
   private Long categoryId;
 
+  @Nullable
   private MultipartFile thumbnail;
+
+  @Nullable
   private List<MultipartFile> files;
 
   public Post toEntity(Member member, String ipAddress) {
