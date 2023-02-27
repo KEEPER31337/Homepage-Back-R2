@@ -193,10 +193,6 @@ public class Member {
         .build());
   }
 
-  public void returns(Book book) {
-    bookBorrowInfos.removeIf(bookBorrowInfo -> bookBorrowInfo.getBook().equals(book));
-  }
-
   public void like(Post post) {
     MemberHasPostLike like = MemberHasPostLike.builder()
         .member(this)
