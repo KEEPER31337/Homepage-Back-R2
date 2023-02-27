@@ -141,7 +141,7 @@ public class Post extends BaseEntity {
     category.getPosts().add(this);
   }
 
-  public void registerThumbnail(Thumbnail thumbnail) {
+  public void changeThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
   }
 
@@ -161,15 +161,31 @@ public class Post extends BaseEntity {
     return Objects.equals(this.getPassword(), password);
   }
 
-  public boolean isNotice() {
-    return this.isNotice;
+  public Boolean isNotice() {
+    return getIsNotice();
   }
 
-  public boolean isTemp() {
-    return this.isTemp;
+  public Boolean isTemp() {
+    return getIsTemp();
   }
 
-  public boolean isSecret() {
-    return this.isSecret;
+  public Boolean isSecret() {
+    return getIsSecret();
+  }
+
+  public Boolean allowComment() {
+    return getAllowComment();
+  }
+
+  public void update(String title, String content, String ipAddress, Boolean allowComment,
+      Boolean isNotice, Boolean isSecret, Boolean isTemp, String password) {
+    this.title = title;
+    this.content = content;
+    this.ipAddress = ipAddress;
+    this.allowComment = allowComment;
+    this.isNotice = isNotice;
+    this.isSecret = isSecret;
+    this.isTemp = isTemp;
+    this.password = password;
   }
 }

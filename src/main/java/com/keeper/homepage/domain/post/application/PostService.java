@@ -45,9 +45,11 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final CategoryRepository categoryRepository;
+  private final CommentRepository commentRepository;
+  private final FileRepository fileRepository;
+
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
-  private final CommentRepository commentRepository;
   private final ValidPostFindService validPostFindService;
 
   public static final String ANONYMOUS_NAME = "익명";
@@ -183,5 +185,51 @@ public class PostService {
       return thumbnailUtil.getThumbnailPath(POST_THUMBNAIL.getPath());
     }
     return thumbnailUtil.getThumbnailPath(thumbnail.getPath());
+  }
+
+  @Transactional
+  public void update(Member member, long postId, PostUpdateRequest request) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    }
+    if (TRUE.equals(request.getIsSecret())) {
+      checkPassword(request.getPassword());
+    }
+
+    updateThumbnail(post, request.getThumbnail());
+    updateFiles(post, request.getFiles());
+    post.update(request.getTitle(), request.getContent(), WebUtil.getUserIP(),
+        request.getAllowComment(), request.getIsNotice(), request.getIsSecret(),
+        request.getIsTemp(), request.getPassword());
+  }
+
+  private void updateThumbnail(Post post, MultipartFile thumbnail) {
+    thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
+    savePostThumbnail(post, thumbnail);
+  }
+
+  private void updateFiles(Post post, List<MultipartFile> files) {
+    List<FileEntity> postFiles = getPostFilesWithoutThumbnailFile(post);
+    postFiles.forEach(fileUtil::deleteFileAndEntity);
+    savePostFiles(post, files);
+  }
+
+  private List<FileEntity> getPostFilesWithoutThumbnailFile(Post post) {
+    if (post.getThumbnail() == null) {
+      return fileRepository.findAllByPost(post);
+    }
+    return fileRepository
+        .findAllByPostAndIdNot(post, post.getThumbnail().getFileEntity().getId());
+  }
+
+  public void delete(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    }
+    postRepository.delete(post);
   }
 }
