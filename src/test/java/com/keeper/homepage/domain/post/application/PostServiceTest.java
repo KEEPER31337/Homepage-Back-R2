@@ -7,21 +7,28 @@ import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCa
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.VIRTUAL_CATEGORY;
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.POST_THUMBNAIL;
+import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
+import static java.io.File.separator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.embedded.Nickname;
+import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
-import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import com.keeper.homepage.global.util.web.WebUtil;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -309,6 +316,125 @@ public class PostServiceTest extends IntegrationTest {
 
       assertThrows(BusinessException.class, () -> {
         postService.find(bestMember, post.getId(), null);
+      });
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 수정")
+  class UpdatePost {
+
+    private Member member;
+    private Category category;
+    private Post post;
+    private MockMultipartFile thumbnail, file1, file2;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
+      category = categoryTestHelper.generate();
+      thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
+      file1 = new MockMultipartFile("file", "testImage_1x1.png", "image/png",
+          new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+      file2 = new MockMultipartFile("file",
+          "testImage_210x210.png", "image/png",
+          new FileInputStream("src/test/resources/images/testImage_210x210.png"));
+      post = Post.builder()
+          .title("게시글 제목")
+          .content("게시글 내용")
+          .member(member)
+          .ipAddress(WebUtil.getUserIP())
+          .build();
+    }
+
+    @Test
+    @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
+    public void 내가_작성한_게시글인_경우_게시글_수정은_성공한다() throws Exception {
+      long postId = postTestHelper.builder().member(member).build().getId();
+
+      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
+          .content("게시글 내용")
+          .build();
+
+      assertDoesNotThrow(() -> {
+        postService.update(member, postId, request);
+      });
+    }
+
+    @Test
+    @DisplayName("게시글 썸네일 수정은 성공한다.")
+    public void 게시글_썸네일_수정은_성공한다() throws Exception {
+      long postId = postService.create(post, category.getId(), thumbnail, null);
+      Thumbnail oldThumbnail = post.getThumbnail();
+
+      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
+          .content("게시글 내용")
+          .thumbnail(thumbnailTestHelper.getThumbnailFile())
+          .build();
+      postService.update(member, postId, request);
+      Thumbnail newThumbnail = post.getThumbnail();
+
+      checkDoesNotExist(oldThumbnail);
+      checkExist(newThumbnail);
+    }
+
+    private void checkDoesNotExist(Thumbnail thumbnail) {
+      long thumbnailId = thumbnail.getId();
+      String filePath = thumbnail.getFileEntity().getFilePath();
+      Path fileFullPath = Path.of(ROOT_PATH + separator + filePath);
+      Path thumbnailFullPath = Path.of(ROOT_PATH + separator + thumbnail.getPath());
+
+      assertThat(Files.exists(fileFullPath)).isFalse();
+      assertThat(Files.exists(thumbnailFullPath)).isFalse();
+      assertThat(thumbnailRepository.findById(thumbnailId)).isEmpty();
+    }
+
+    private void checkExist(Thumbnail thumbnail) {
+      long thumbnailId = post.getThumbnail().getId();
+      String filePath = thumbnail.getFileEntity().getFilePath();
+      Path fileFullPath = Path.of(ROOT_PATH + separator + filePath);
+      Path thumbnailFullPath = Path.of(ROOT_PATH + separator + thumbnail.getPath());
+
+      assertThat(Files.exists(fileFullPath)).isTrue();
+      assertThat(Files.exists(thumbnailFullPath)).isTrue();
+      assertThat(thumbnailRepository.findById(thumbnailId)).isNotEmpty();
+    }
+
+    @Test
+    @DisplayName("게시글 파일 수정은 성공한다.")
+    public void 게시글_파일_수정은_성공한다() throws Exception {
+      long postId = postService.create(post, category.getId(), null, List.of(file1));
+      List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
+
+      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
+          .content("게시글 내용")
+          .files(List.of(file2))
+          .build();
+      postService.update(member, postId, request);
+      List<FileEntity> afterFiles = fileRepository.findAllByPost(post);
+
+      for (FileEntity fileEntity : beforeFiles) {
+        assertThat(new File(fileEntity.getFilePath())).doesNotExist();
+        assertThat(fileRepository.findById(fileEntity.getId())).isEmpty();
+      }
+      for (FileEntity fileEntity : afterFiles) {
+        assertThat(new File(fileEntity.getFilePath())).exists();
+        assertThat(fileRepository.findById(fileEntity.getId())).isNotEmpty();
+      }
+    }
+
+    @Test
+    @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
+    public void 비밀_게시글로_설정한_경우_패스워드가_없으면_게시글_수정은_실패한다() throws Exception {
+      long postId = postTestHelper.builder().member(member).build().getId();
+
+      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
+          .content("게시글 내용")
+          .isSecret(true)
+          .build();
+
+      assertThrows(BusinessException.class, () -> {
+        postService.update(member, postId, request);
       });
     }
   }
