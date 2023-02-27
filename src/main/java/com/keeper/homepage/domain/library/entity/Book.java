@@ -72,7 +72,7 @@ public class Book extends BaseEntity {
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
-  private Book(String title, String author, String information, BookDepartment bookDepartment,
+  public Book(String title, String author, String information, BookDepartment bookDepartment,
       Long totalQuantity, Long currentQuantity, Thumbnail thumbnail) {
     this.title = title;
     this.author = author;
