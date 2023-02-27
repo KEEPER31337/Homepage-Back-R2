@@ -68,7 +68,7 @@ public class Book extends BaseEntity {
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @OneToMany(mappedBy = "book", cascade = REMOVE)
+  @OneToMany(mappedBy = "book")
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
