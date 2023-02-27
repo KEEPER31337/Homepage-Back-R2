@@ -113,7 +113,7 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", cascade = PERSIST, orphanRemoval = true)
+  @OneToMany(mappedBy = "member", cascade = PERSIST)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
