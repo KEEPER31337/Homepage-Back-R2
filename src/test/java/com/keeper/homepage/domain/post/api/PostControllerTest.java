@@ -318,7 +318,11 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("files[].uploadTime").description("게시글 첨부파일 업로드 시간"),
                   fieldWithPath("files[].ipAddress").description("게시글 첨부파일 IP 주소"),
                   fieldWithPath("likeCount").description("게시글의 좋아요 수"),
-                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수")
+                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
+                  fieldWithPath("allowComment").description("댓글 허용 여부"),
+                  fieldWithPath("isNotice").description("공지글 여부"),
+                  fieldWithPath("isSecret").description("비밀글 여부"),
+                  fieldWithPath("isTemp").description("임시 저장글 여부")
               )));
     }
 
