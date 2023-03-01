@@ -25,7 +25,6 @@ public class BookTestHelper {
 
     private String title;
     private String author;
-    private String information;
     private BookDepartment bookDepartment;
     private Long totalQuantity;
     private Long currentQuantity;
@@ -41,11 +40,6 @@ public class BookTestHelper {
 
     public BookBuilder author(String author) {
       this.author = author;
-      return this;
-    }
-
-    public BookBuilder information(String information) {
-      this.information = information;
       return this;
     }
 
@@ -73,7 +67,6 @@ public class BookTestHelper {
       return bookRepository.save(Book.builder()
           .title(title != null ? title : "도서 제목")
           .author(author != null ? author : "도서 저자")
-          .information(information)
           .bookDepartment(bookDepartment)
           .totalQuantity(totalQuantity)
           .currentQuantity(currentQuantity)
