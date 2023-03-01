@@ -27,12 +27,10 @@ class GameRepositoryTest extends IntegrationTest {
     @DisplayName("Game 엔티티 저장")
     public void saveGame() throws Exception {
       // given
-      Game game = gameTestHelper
-          .builder()
-          .dice(new Dice(0, 10000))
-          .lotto(new Lotto(0, 20000))
-          .roulette(new Roulette(0, 30000))
-          .build();
+      Game game = gameTestHelper.builder()
+          .dice(Dice.builder().dicePerDay(1).diceDayPoint(10000).build())
+          .lotto(Lotto.builder().lottoPerDay(2).lottoDayPoint(20000).build())
+          .roulette(Roulette.builder().roulettePerDay(3).rouletteDayPoint(30000).build()).build();
 
       // when
       Long savedId = gameRepository.save(game).getId();
@@ -41,9 +39,9 @@ class GameRepositoryTest extends IntegrationTest {
       Optional<Game> findGame = gameRepository.findById(savedId);
 
       //then
-      assertThat(findGame.get().getDice().getDicePerDay()).isEqualTo(0);
-      assertThat(findGame.get().getLotto().getLottoPerDay()).isEqualTo(0);
-      assertThat(findGame.get().getRoulette().getRoulettePerDay()).isEqualTo(0);
+      assertThat(findGame.get().getDice().getDicePerDay()).isEqualTo(1);
+      assertThat(findGame.get().getLotto().getLottoPerDay()).isEqualTo(2);
+      assertThat(findGame.get().getRoulette().getRoulettePerDay()).isEqualTo(3);
       assertThat(findGame.get().getDice().getDiceDayPoint()).isEqualTo(10000);
       assertThat(findGame.get().getLotto().getLottoDayPoint()).isEqualTo(20000);
       assertThat(findGame.get().getRoulette().getRouletteDayPoint()).isEqualTo(30000);
@@ -124,10 +122,9 @@ class GameRepositoryTest extends IntegrationTest {
     public void gameResetTest() throws Exception {
       // given
       Game game = gameTestHelper.builder()
-          .dice(new Dice(3, 1000))
-          .lotto(new Lotto(3, 2000))
-          .roulette(new Roulette(3, 3000))
-          .build();
+          .dice(Dice.builder().dicePerDay(1).diceDayPoint(10000).build())
+          .lotto(Lotto.builder().lottoPerDay(2).lottoDayPoint(20000).build())
+          .roulette(Roulette.builder().roulettePerDay(3).rouletteDayPoint(30000).build()).build();
 
       // when
       Long savedId = gameRepository.save(game).getId();
