@@ -13,6 +13,7 @@ import static jakarta.persistence.CascadeType.*;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
@@ -184,10 +185,11 @@ public class Member {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
-  public void borrow(Book book, LocalDateTime expireDate) {
+  public void borrow(Book book, BookBorrowStatus borrowStatus, LocalDateTime expireDate) {
     bookBorrowInfos.add(BookBorrowInfo.builder()
         .member(this)
         .book(book)
+            .borrowStatus(borrowStatus)
         .borrowDate(LocalDateTime.now())
         .expireDate(expireDate)
         .build());
