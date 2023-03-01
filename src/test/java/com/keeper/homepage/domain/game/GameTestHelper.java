@@ -53,7 +53,7 @@ public class GameTestHelper {
     public GameBuilder dice(Dice dice) {
       this.dice = dice;
       return this;
-  }
+    }
 
     public GameBuilder lotto(Lotto lotto) {
       this.lotto = lotto;
@@ -71,7 +71,8 @@ public class GameTestHelper {
               .lastPlayTime(null)
               .dice(dice != null ? dice : Dice.from(0, 0))
               .lotto(lotto != null ? lotto : Lotto.from(0, 0))
-              .roulette(roulette != null ? roulette : Roulette.from(0, 0)).build());
+              .roulette(roulette != null ? roulette : Roulette.from(0, 0))
+              .build());
     }
   }
 }
