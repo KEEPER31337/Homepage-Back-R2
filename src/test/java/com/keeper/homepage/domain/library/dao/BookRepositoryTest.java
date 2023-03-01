@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.library.dao;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.ETC;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +9,8 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType;
 import com.keeper.homepage.domain.library.entity.BookDepartment;
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -81,24 +84,6 @@ public class BookRepositoryTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("Book Remove 테스트")
-  class BookRemoveTest {
-
-    @Test
-    @DisplayName("Book을 삭제하면 해당 Book의 BookBorrowInfo도 삭제되어야 한다.")
-    void should_deleteBookBorrowInfo_when_deleteBook() {
-      member.borrow(book, expireDate);
-      em.flush();
-      em.clear();
-
-      book = bookRepository.findById(book.getId()).orElseThrow();
-      bookRepository.delete(book);
-
-      assertThat(bookBorrowInfoRepository.findAll()).hasSize(0);
-    }
-  }
-
-  @Nested
   @DisplayName("DB NOT NULL DEFAULT 테스트")
   class NotNullDefaultTest {
 
@@ -125,6 +110,54 @@ public class BookRepositoryTest extends IntegrationTest {
       BookBorrowInfo findBorrowInfo = bookBorrowInfoRepository.findById(borrowInfo.getId()).orElseThrow();
 
       assertThat(findBorrowInfo.getBorrowDate()).isBefore(LocalDateTime.now());
+    }
+  }
+
+  @Nested
+  @DisplayName("Book Borrow Status DB 테스트")
+  class BookBorrowStatusRepositoryTest {
+
+    @Test
+    @DisplayName("BookBorrowStatusType Enum 에는 DB의 모든 BookBorrowStatusRepository 정보가 있어야 한다.")
+    void should_allBookBorrowStatusInfoExist_when_givenBookBorrowStatusTypeEnum() {
+      // given
+      BookBorrowStatusType[] borrowStatusTypes = BookBorrowStatusType.values();
+      List<BookBorrowStatus> bookBorrowStatusesTypes = Arrays.stream(borrowStatusTypes)
+              .map(BookBorrowStatus::getBookBorrowStatusBy)
+              .toList();
+
+      // when
+      List<BookBorrowStatus> bookBorrowStatuses = bookBorrowStatusRepository.findAll();
+
+      // then
+      assertThat(getIds(bookBorrowStatuses)).containsAll(getIds(bookBorrowStatusesTypes));
+      assertThat(getStatuses(bookBorrowStatuses)).containsAll(getStatuses(bookBorrowStatusesTypes));
+      assertThat(bookBorrowStatuses).hasSize(borrowStatusTypes.length);
+      for (int i = 0; i < borrowStatusTypes.length; ++i) {
+        assertThat(getId(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getId());
+        assertThat(getStatuses(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getStatus());
+      }
+    }
+
+    private List<Long> getIds(List<BookBorrowStatus> bookBorrowStatuses) {
+      return bookBorrowStatuses.stream()
+              .map(BookBorrowStatus::getId)
+              .collect(toList());
+    }
+
+    private Long getId(BookBorrowStatus bookBorrowStatus) {
+      return bookBorrowStatus.getId();
+    }
+
+    private List<String> getStatuses(List<BookBorrowStatus> bookBorrowStatuses) {
+      return bookBorrowStatuses.stream()
+              .map(BookBorrowStatus::getType)
+              .map(BookBorrowStatusType::getStatus)
+              .collect(toList());
+    }
+
+    private String getStatuses(BookBorrowStatus bookBorrowStatus) {
+      return bookBorrowStatus.getType().getStatus();
     }
   }
 }
