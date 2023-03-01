@@ -76,7 +76,7 @@ public class BookBorrowInfoTestHelper {
           .member(member != null ? member : memberTestHelper.generate())
           .book(book != null ? book : bookTestHelper.generate())
           .borrowDate(borrowDate)
-              .borrowStatus(borrowStatus != null ? borrowStatus : getDefaultBorrowStatus())
+          .borrowStatus(borrowStatus != null ? borrowStatus : getDefaultBorrowStatus())
           .expireDate(expireDate)
           .build());
     }

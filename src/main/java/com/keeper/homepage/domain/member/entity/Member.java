@@ -189,7 +189,7 @@ public class Member {
     bookBorrowInfos.add(BookBorrowInfo.builder()
         .member(this)
         .book(book)
-            .borrowStatus(borrowStatus)
+        .borrowStatus(borrowStatus)
         .borrowDate(LocalDateTime.now())
         .expireDate(expireDate)
         .build());

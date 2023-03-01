@@ -48,7 +48,8 @@ public class BookBorrowInfo extends BaseEntity {
   private LocalDateTime expireDate;
 
   @Builder
-  private BookBorrowInfo(Member member, Book book, BookBorrowStatus borrowStatus, LocalDateTime borrowDate,
+  private BookBorrowInfo(Member member, Book book, BookBorrowStatus borrowStatus,
+      LocalDateTime borrowDate,
       LocalDateTime expireDate) {
     this.member = member;
     this.book = book;
