@@ -15,6 +15,7 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
@@ -128,6 +129,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected BookDepartmentRepository bookDepartmentRepository;
+
+  @SpyBean
+  protected BookBorrowStatusRepository bookBorrowStatusRepository;
 
   @SpyBean
   protected SeminarRepository seminarRepository;
