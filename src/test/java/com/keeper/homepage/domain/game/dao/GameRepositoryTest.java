@@ -30,7 +30,8 @@ class GameRepositoryTest extends IntegrationTest {
       Game game = gameTestHelper.builder()
           .dice(Dice.builder().dicePerDay(1).diceDayPoint(10000).build())
           .lotto(Lotto.builder().lottoPerDay(2).lottoDayPoint(20000).build())
-          .roulette(Roulette.builder().roulettePerDay(3).rouletteDayPoint(30000).build()).build();
+          .roulette(Roulette.builder().roulettePerDay(3).rouletteDayPoint(30000).build())
+          .build();
 
       // when
       Long savedId = gameRepository.save(game).getId();
@@ -61,7 +62,7 @@ class GameRepositoryTest extends IntegrationTest {
       Optional<Game> findGame = gameRepository.findById(savedId);
 
       // then
-      assertThat(findGame.isPresent()).isFalse();
+      assertThat(findGame).isEmpty();
     }
 
     @Test
@@ -124,7 +125,8 @@ class GameRepositoryTest extends IntegrationTest {
       Game game = gameTestHelper.builder()
           .dice(Dice.builder().dicePerDay(1).diceDayPoint(10000).build())
           .lotto(Lotto.builder().lottoPerDay(2).lottoDayPoint(20000).build())
-          .roulette(Roulette.builder().roulettePerDay(3).rouletteDayPoint(30000).build()).build();
+          .roulette(Roulette.builder().roulettePerDay(3).rouletteDayPoint(30000).build())
+          .build();
 
       // when
       Long savedId = gameRepository.save(game).getId();
