@@ -135,7 +135,7 @@ public class BookRepositoryTest extends IntegrationTest {
       assertThat(bookBorrowStatuses).hasSize(borrowStatusTypes.length);
       for (int i = 0; i < borrowStatusTypes.length; ++i) {
         assertThat(getId(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getId());
-        assertThat(getStatuses(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getStatus());
+        assertThat(getStatus(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getStatus());
       }
     }
 
@@ -156,7 +156,7 @@ public class BookRepositoryTest extends IntegrationTest {
               .collect(toList());
     }
 
-    private String getStatuses(BookBorrowStatus bookBorrowStatus) {
+    private String getStatus(BookBorrowStatus bookBorrowStatus) {
       return bookBorrowStatus.getType().getStatus();
     }
   }
