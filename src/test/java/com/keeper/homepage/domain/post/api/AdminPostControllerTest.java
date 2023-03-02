@@ -54,7 +54,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("관리자라면 게시글 삭제가 성공한다.")
-    public void 관리자라면_게시글_삭제가_성공한다() throws Exception {
+    public void should_success_when_admin() throws Exception {
       String securedValue = getSecuredValue(AdminPostController.class, "deletePost");
 
       long postId = postService.create(post, category.getId(), null, null);
@@ -74,7 +74,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("일반 회원이라면 게시글 삭제가 실패한다.")
-    public void 일반_회원이라면_게시글_삭제가_실패한다() throws Exception {
+    public void should_fail_when_member() throws Exception {
       long postId = postService.create(post, category.getId(), null, null);
 
       callAdminDeletePostApi(memberToken, postId)

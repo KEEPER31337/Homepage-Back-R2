@@ -349,7 +349,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
-    public void 내가_작성한_게시글인_경우_게시글_수정은_성공한다() throws Exception {
+    public void should_success_when_writerIsMe() throws Exception {
       long postId = postTestHelper.builder().member(member).build().getId();
 
       Post newPost = Post.builder()
@@ -364,7 +364,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("게시글 썸네일 수정은 성공한다.")
-    public void 게시글_썸네일_수정은_성공한다() throws Exception {
+    public void should_success_when_updateThumbnail() throws Exception {
       long postId = postService.create(post, category.getId(), thumbnail, null);
       Thumbnail oldThumbnail = post.getThumbnail();
 
@@ -404,7 +404,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("게시글 파일 수정은 성공한다.")
-    public void 게시글_파일_수정은_성공한다() throws Exception {
+    public void should_success_when_updateFiles() throws Exception {
       long postId = postService.create(post, category.getId(), null, List.of(file1));
       List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
 
@@ -429,7 +429,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
-    public void 비밀_게시글로_설정한_경우_패스워드가_없으면_게시글_수정은_실패한다() throws Exception {
+    public void should_fail_when_secretPostWithoutPassword() throws Exception {
       long postId = postTestHelper.builder().member(member).build().getId();
 
       Post newPost = Post.builder()

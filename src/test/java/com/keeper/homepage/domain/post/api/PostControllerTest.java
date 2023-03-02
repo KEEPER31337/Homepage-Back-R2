@@ -184,7 +184,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("비밀글의 경우 비밀번호가 없으면 게시글 생성은 실패한다.")
-    public void 비밀글의_경우_비밀번호가_없으면_게시글_생성은_실패한다() throws Exception {
+    public void should_fail_when_secretPostWithoutPassword() throws Exception {
       params.add("title", "게시글 제목");
       params.add("content", "게시글 내용");
       params.add("isSecret", "true");
@@ -434,7 +434,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
-    public void 내가_작성한_게시글인_경우_게시글_수정은_성공한다() throws Exception {
+    public void should_success_when_writerIsMe() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "updatePost");
 
       long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
@@ -488,7 +488,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("내가 작성한 게시글이 아닐 경우 게시글 수정은 실패한다.")
-    public void 내가_작성한_게시글이_아닐_경우_게시글_수정은_실패한다() throws Exception {
+    public void should_fail_when_writerIsNotMe() throws Exception {
       long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
       addAllParams();
 
@@ -513,7 +513,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("내가 작성한 게시글인 경우 게시글 삭제는 성공한다.")
-    public void 내가_작성한_게시글인_경우_게시글_삭제는_성공한다() throws Exception {
+    public void should_success_when_writerIsMe() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "deletePost");
 
       long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
@@ -533,7 +533,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
     @Test
     @DisplayName("내가 작성한 게시글이 아닌 경우 게시글 삭제는 실패한다.")
-    public void 내가_작성한_게시글이_아닌_경우_게시글_삭제는_실패한다() throws Exception {
+    public void should_success_when_writerIsNotMe() throws Exception {
       long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
 
       callDeletePostApi(otherToken, postId)
