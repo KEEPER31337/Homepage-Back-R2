@@ -3,6 +3,8 @@ package com.keeper.homepage.domain.post.dto.request;
 import static lombok.AccessLevel.*;
 import static lombok.AccessLevel.PRIVATE;
 
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.entity.Post;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -50,4 +52,17 @@ public class PostUpdateRequest {
 
   @Nullable
   private List<MultipartFile> files;
+
+  public Post toEntity(String ipAddress) {
+    return Post.builder()
+        .title(title)
+        .content(content)
+        .ipAddress(ipAddress)
+        .allowComment(allowComment)
+        .isNotice(isNotice)
+        .isSecret(isSecret)
+        .isTemp(isTemp)
+        .password(password)
+        .build();
+  }
 }

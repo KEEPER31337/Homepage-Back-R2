@@ -177,15 +177,14 @@ public class Post extends BaseEntity {
     return getAllowComment();
   }
 
-  public void update(String title, String content, String ipAddress, Boolean allowComment,
-      Boolean isNotice, Boolean isSecret, Boolean isTemp, String password) {
-    this.title = title;
-    this.content = content;
-    this.ipAddress = ipAddress;
-    this.allowComment = allowComment;
-    this.isNotice = isNotice;
-    this.isSecret = isSecret;
-    this.isTemp = isTemp;
-    this.password = password;
+  public void update(Post post) {
+    this.title = post.getTitle();
+    this.content = post.getContent();
+    this.ipAddress = post.getIpAddress();
+    this.allowComment = post.allowComment();
+    this.isNotice = post.isNotice();
+    this.isSecret = post.isSecret();
+    this.isTemp = post.isTemp();
+    this.password = post.getPassword();
   }
 }

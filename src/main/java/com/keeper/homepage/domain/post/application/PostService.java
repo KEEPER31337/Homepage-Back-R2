@@ -188,21 +188,20 @@ public class PostService {
   }
 
   @Transactional
-  public void update(Member member, long postId, PostUpdateRequest request) {
+  public void update(Member member, long postId, Post newPost, MultipartFile thumbnail,
+      List<MultipartFile> files) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
     }
-    if (TRUE.equals(request.getIsSecret())) {
-      checkPassword(request.getPassword());
+    if (TRUE.equals(newPost.isSecret())) {
+      checkPassword(newPost.getPassword());
     }
 
-    updateThumbnail(post, request.getThumbnail());
-    updateFiles(post, request.getFiles());
-    post.update(request.getTitle(), request.getContent(), WebUtil.getUserIP(),
-        request.getAllowComment(), request.getIsNotice(), request.getIsSecret(),
-        request.getIsTemp(), request.getPassword());
+    updateThumbnail(post, thumbnail);
+    updateFiles(post, files);
+    post.update(newPost);
   }
 
   private void updateThumbnail(Post post, MultipartFile thumbnail) {

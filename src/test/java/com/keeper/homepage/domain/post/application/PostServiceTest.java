@@ -352,12 +352,13 @@ public class PostServiceTest extends IntegrationTest {
     public void 내가_작성한_게시글인_경우_게시글_수정은_성공한다() throws Exception {
       long postId = postTestHelper.builder().member(member).build().getId();
 
-      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
-          .content("게시글 내용")
+      Post newPost = Post.builder()
+          .title("수정 제목")
+          .content("수정 내용")
           .build();
 
       assertDoesNotThrow(() -> {
-        postService.update(member, postId, request);
+        postService.update(member, postId, newPost, null, null);
       });
     }
 
@@ -367,11 +368,12 @@ public class PostServiceTest extends IntegrationTest {
       long postId = postService.create(post, category.getId(), thumbnail, null);
       Thumbnail oldThumbnail = post.getThumbnail();
 
-      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
-          .content("게시글 내용")
-          .thumbnail(thumbnailTestHelper.getThumbnailFile())
+      Post newPost = Post.builder()
+          .title("수정 제목")
+          .content("수정 내용")
           .build();
-      postService.update(member, postId, request);
+
+      postService.update(member, postId, newPost, thumbnailTestHelper.getThumbnailFile(), null);
       Thumbnail newThumbnail = post.getThumbnail();
 
       checkDoesNotExist(oldThumbnail);
@@ -406,11 +408,13 @@ public class PostServiceTest extends IntegrationTest {
       long postId = postService.create(post, category.getId(), null, List.of(file1));
       List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
 
-      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
-          .content("게시글 내용")
-          .files(List.of(file2))
+      Post newPost = Post.builder()
+          .title("수정 제목")
+          .content("수정 내용")
+          .ipAddress(WebUtil.getUserIP())
           .build();
-      postService.update(member, postId, request);
+
+      postService.update(member, postId, newPost, null, List.of(file2));
       List<FileEntity> afterFiles = fileRepository.findAllByPost(post);
 
       for (FileEntity fileEntity : beforeFiles) {
@@ -428,13 +432,14 @@ public class PostServiceTest extends IntegrationTest {
     public void 비밀_게시글로_설정한_경우_패스워드가_없으면_게시글_수정은_실패한다() throws Exception {
       long postId = postTestHelper.builder().member(member).build().getId();
 
-      PostUpdateRequest request = PostUpdateRequest.builder().title("게시글 제목")
-          .content("게시글 내용")
+      Post newPost = Post.builder()
+          .title("수정 제목")
+          .content("수정 내용")
           .isSecret(true)
           .build();
 
       assertThrows(BusinessException.class, () -> {
-        postService.update(member, postId, request);
+        postService.update(member, postId, newPost, null, null);
       });
     }
   }

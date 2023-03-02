@@ -61,7 +61,10 @@ public class PostController {
       @PathVariable long postId,
       @ModelAttribute @Valid PostUpdateRequest request
   ) {
-    postService.update(member, postId, request);
+    postService.update(member, postId,
+        request.toEntity(WebUtil.getUserIP()),
+        request.getThumbnail(),
+        request.getFiles());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))
         .build();
