@@ -176,19 +176,17 @@ public class Member {
   }
 
   public void like(Post post) {
-    MemberHasPostLike like = MemberHasPostLike.builder()
+    postLikes.add(MemberHasPostLike.builder()
         .member(this)
         .post(post)
-        .build();
-    postLikes.add(like);
+        .build());
   }
 
   public void like(Comment comment) {
-    MemberHasCommentLike like = MemberHasCommentLike.builder()
+    commentLikes.add(MemberHasCommentLike.builder()
         .member(this)
         .comment(comment)
-        .build();
-    commentLikes.add(like);
+        .build());
   }
 
   public void cancelLike(Post post) {
@@ -200,19 +198,17 @@ public class Member {
   }
 
   public void dislike(Post post) {
-    MemberHasPostDislike dislike = MemberHasPostDislike.builder()
+    postDislikes.add(MemberHasPostDislike.builder()
         .member(this)
         .post(post)
-        .build();
-    postDislikes.add(dislike);
+        .build());
   }
 
   public void dislike(Comment comment) {
-    MemberHasCommentDislike dislike = MemberHasCommentDislike.builder()
+    commentDislikes.add(MemberHasCommentDislike.builder()
         .member(this)
         .comment(comment)
-        .build();
-    commentDislikes.add(dislike);
+        .build());
   }
 
   public void cancelDislike(Post post) {

@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.post.dto.response;
 
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.POST_THUMBNAIL;
-import static java.util.stream.Collectors.*;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -27,6 +25,10 @@ public class PostResponse {
   private List<FileResponse> files;
   private Integer likeCount;
   private Integer dislikeCount;
+  private Boolean allowComment;
+  private Boolean isNotice;
+  private Boolean isSecret;
+  private Boolean isTemp;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
@@ -48,6 +50,10 @@ public class PostResponse {
         .files(files)
         .likeCount(post.getLikeCount())
         .dislikeCount(post.getDislikeCount())
+        .allowComment(post.allowComment())
+        .isNotice(post.isNotice())
+        .isSecret(post.isSecret())
+        .isTemp(post.isTemp())
         .build();
   }
 }

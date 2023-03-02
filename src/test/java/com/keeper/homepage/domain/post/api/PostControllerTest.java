@@ -4,8 +4,8 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_ATTENDANCE_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_COMMENT_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
-import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_PASSWORD_LENGTH;
-import static com.keeper.homepage.domain.post.dto.request.PostRequest.MAX_REQUEST_TITLE_LENGTH;
+import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.MAX_REQUEST_PASSWORD_LENGTH;
+import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.MAX_REQUEST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,9 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
-import com.keeper.homepage.domain.seminar.api.SeminarController;
 import com.keeper.homepage.global.util.web.WebUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,12 +47,12 @@ import org.springframework.util.MultiValueMap;
 
 public class PostControllerTest extends PostApiTestHelper {
 
-  private final long postId = 1;
   private Category category;
   private MockMultipartFile thumbnail, file;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
   private Member member, other;
   private String memberToken, otherToken;
+  private Post post;
 
   private static final LocalDate now = LocalDate.now();
 
@@ -60,28 +60,25 @@ public class PostControllerTest extends PostApiTestHelper {
   void setUp() throws IOException {
     member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
     other = memberTestHelper.generate();
-    for (int i = 0; i < EXAM_ACCESSIBLE_COMMENT_COUNT; i++) {
-      commentRepository.save(commentTestHelper.builder().member(member).build());
-    }
-    for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
-      attendanceRepository
-          .save(attendanceTestHelper.builder().member(member).date(now.plusDays(i)).build());
-    }
-
-    long memberId = member.getId();
-    long otherId = other.getId();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
-    otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, otherId, ROLE_회원);
-
+    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
     category = categoryTestHelper.generate();
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     file = new MockMultipartFile("files", "testImage_1x1.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+    post = Post.builder()
+        .title("게시글 제목")
+        .content("게시글 내용")
+        .member(member)
+        .ipAddress(WebUtil.getUserIP())
+        .build();
   }
 
   @Nested
   @DisplayName("게시글 생성")
   class CreatePost {
+
+    private final long postId = 1;
 
     @Test
     @DisplayName("썸네일과 파일이 포함된 게시글을 생성하면 게시글 생성이 성공한다.")
@@ -118,7 +115,8 @@ public class PostControllerTest extends PostApiTestHelper {
                       .optional(),
                   parameterWithName("password")
                       .description(
-                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_PASSWORD_LENGTH + ")")
+                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_PASSWORD_LENGTH
+                              + ", 비밀글일 경우 필수값입니다.)")
                       .optional(),
                   parameterWithName("categoryId")
                       .description("게시글 카테고리를 입력해주세요.")
@@ -182,6 +180,18 @@ public class PostControllerTest extends PostApiTestHelper {
       callCreatePostApi(memberToken, params)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId));
+    }
+
+    @Test
+    @DisplayName("비밀글의 경우 비밀번호가 없으면 게시글 생성은 실패한다.")
+    public void should_fail_when_secretPostWithoutPassword() throws Exception {
+      params.add("title", "게시글 제목");
+      params.add("content", "게시글 내용");
+      params.add("isSecret", "true");
+      params.add("categoryId", category.getId().toString());
+
+      callCreatePostApi(memberToken, params)
+          .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -265,7 +275,6 @@ public class PostControllerTest extends PostApiTestHelper {
       params.add("password", "게시글 비밀번호");
       params.add("categoryId", category.getId().toString());
     }
-
   }
 
   @Nested
@@ -274,20 +283,23 @@ public class PostControllerTest extends PostApiTestHelper {
 
     private static final long virtualPostId = 1;
 
+    @BeforeEach
+    void setUp() throws IOException {
+      for (int i = 0; i < EXAM_ACCESSIBLE_COMMENT_COUNT; i++) {
+        commentRepository.save(commentTestHelper.builder().member(member).build());
+      }
+      for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
+        attendanceRepository
+            .save(attendanceTestHelper.builder().member(member).date(now.plusDays(i)).build());
+      }
+    }
+
     @Test
     @DisplayName("게시글을 조회하면 성공적으로 조회된다.")
     public void should_success_when_getPost() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
-      Post post = Post.builder()
-          .title("게시글 제목")
-          .content("게시글 내용")
-          .member(member)
-          .ipAddress(WebUtil.getUserIP())
-          .password("게시글 암호")
-          .build();
-
-      Long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
+      long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
       em.flush();
       em.clear();
 
@@ -318,7 +330,11 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("files[].uploadTime").description("게시글 첨부파일 업로드 시간"),
                   fieldWithPath("files[].ipAddress").description("게시글 첨부파일 IP 주소"),
                   fieldWithPath("likeCount").description("게시글의 좋아요 수"),
-                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수")
+                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
+                  fieldWithPath("allowComment").description("댓글 허용 여부"),
+                  fieldWithPath("isNotice").description("공지글 여부"),
+                  fieldWithPath("isSecret").description("비밀글 여부"),
+                  fieldWithPath("isTemp").description("임시 저장글 여부")
               )));
     }
 
@@ -370,7 +386,11 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("files[].uploadTime").description("게시글 첨부파일 업로드 시간"),
                   fieldWithPath("files[].ipAddress").description("게시글 첨부파일 IP 주소"),
                   fieldWithPath("likeCount").description("게시글의 좋아요 수"),
-                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수")
+                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
+                  fieldWithPath("allowComment").description("댓글 허용 여부"),
+                  fieldWithPath("isNotice").description("공지글 여부"),
+                  fieldWithPath("isSecret").description("비밀글 여부"),
+                  fieldWithPath("isTemp").description("임시 저장글 여부")
               )));
     }
 
@@ -404,6 +424,119 @@ public class PostControllerTest extends PostApiTestHelper {
           .andExpect(status().isForbidden());
 
       callFindPostApiWithPassword(otherToken, postId, "다른 비밀번호")
+          .andExpect(status().isForbidden());
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 수정")
+  class UpdatePost {
+
+    @Test
+    @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
+    public void should_success_when_writerIsMe() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "updatePost");
+
+      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+      addAllParams();
+
+      callUpdatePostApiWithFiles(memberToken, postId, thumbnail, file, params)
+          .andExpect(status().isCreated())
+          .andExpect(header().string("location", "/posts/" + postId))
+          .andDo(document("update-post",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("수정하고자 하는 게시글의 ID")
+              ),
+              queryParameters(
+                  parameterWithName("title")
+                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_TITLE_LENGTH + ")"),
+                  parameterWithName("content")
+                      .description("게시글 내용을 입력해주세요."),
+                  parameterWithName("allowComment")
+                      .description("댓글 허용 여부 (null일 때 default : " + true + ")")
+                      .optional(),
+                  parameterWithName("isNotice")
+                      .description("공지글 여부 (null일 때 default : " + false + ")")
+                      .optional(),
+                  parameterWithName("isSecret")
+                      .description("비밀글 여부 (null일 때 default : " + false + ")")
+                      .optional(),
+                  parameterWithName("isTemp")
+                      .description("임시 저장글 여부 (null일 때 default : " + false + ")")
+                      .optional(),
+                  parameterWithName("password")
+                      .description(
+                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_PASSWORD_LENGTH
+                              + ", 비밀글일 경우 필수값입니다.)")
+                      .optional()
+              ),
+              requestParts(
+                  partWithName("thumbnail").description("게시글의 썸네일")
+                      .optional(),
+                  partWithName("files").description("게시글의 첨부 파일")
+                      .optional()
+              ),
+              responseHeaders(
+                  headerWithName("Location").description("수정한 게시글을 불러오는 URI 입니다.")
+              )));
+    }
+
+    @Test
+    @DisplayName("내가 작성한 게시글이 아닐 경우 게시글 수정은 실패한다.")
+    public void should_fail_when_writerIsNotMe() throws Exception {
+      long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
+      addAllParams();
+
+      callUpdatePostApiWithFiles(otherToken, postId, thumbnail, file, params)
+          .andExpect(status().isForbidden());
+    }
+
+    private void addAllParams() {
+      params.add("title", "게시글 제목");
+      params.add("content", "게시글 내용");
+      params.add("allowComment", "true");
+      params.add("isNotice", "false");
+      params.add("isSecret", "false");
+      params.add("isTemp", "false");
+      params.add("password", "게시글 비밀번호");
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 삭제")
+  class DeletePost {
+
+    @Test
+    @DisplayName("내가 작성한 게시글인 경우 게시글 삭제는 성공한다.")
+    public void should_success_when_writerIsMe() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "deletePost");
+
+      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+
+      callDeletePostApi(memberToken, postId)
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-post",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("삭제하고자 하는 게시글의 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("내가 작성한 게시글이 아닌 경우 게시글 삭제는 실패한다.")
+    public void should_success_when_writerIsNotMe() throws Exception {
+      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+
+      callDeletePostApi(otherToken, postId)
           .andExpect(status().isForbidden());
     }
   }
