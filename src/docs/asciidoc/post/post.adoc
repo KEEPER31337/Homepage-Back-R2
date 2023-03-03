@@ -98,3 +98,81 @@ include::{snippets}/find-secret-post/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/find-secret-post/response-fields.adoc[]
+
+== *게시글 수정하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-post/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/update-post/query-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/update-post/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-post/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/update-post/response-headers.adoc[]
+
+== *게시글 삭제하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-post/http-response.adoc[]
+
+== *관리자 권한으로 게시글 삭제하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/admin-delete-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/admin-delete-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/admin-delete-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/admin-delete-post/http-response.adoc[]
