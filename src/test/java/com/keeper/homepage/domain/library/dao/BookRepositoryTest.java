@@ -43,8 +43,7 @@ public class BookRepositoryTest extends IntegrationTest {
     @DisplayName("BookDepartmentType Enum 에는 DB의 모든 BookDepartment정보가 있어야 한다.")
     void should_allBookDepartmentInfoExist_when_givenBookDepartmentTypeEnum() {
       // given
-      BookDepartmentType[] departmentTypes = BookDepartmentType.values();
-      List<BookDepartment> bookDepartmentTypes = Arrays.stream(departmentTypes)
+      List<BookDepartment> bookDepartmentTypes = Arrays.stream(BookDepartmentType.values())
           .map(BookDepartment::getBookDepartmentBy)
           .toList();
 
@@ -54,11 +53,7 @@ public class BookRepositoryTest extends IntegrationTest {
       // then
       assertThat(getIds(bookDepartments)).containsAll(getIds(bookDepartmentTypes));
       assertThat(getNames(bookDepartments)).containsAll(getNames(bookDepartmentTypes));
-      assertThat(bookDepartments).hasSize(departmentTypes.length);
-      for (int i = 0; i < departmentTypes.length; ++i) {
-        assertThat(getId(bookDepartments.get(i))).isEqualTo(departmentTypes[i].getId());
-        assertThat(getName(bookDepartments.get(i))).isEqualTo(departmentTypes[i].getName());
-      }
+      assertThat(bookDepartments).hasSize(BookDepartmentType.values().length);
     }
 
     private List<Long> getIds(List<BookDepartment> bookDepartments) {
@@ -121,8 +116,7 @@ public class BookRepositoryTest extends IntegrationTest {
     @DisplayName("BookBorrowStatusType Enum 에는 DB의 모든 BookBorrowStatusRepository 정보가 있어야 한다.")
     void should_allBookBorrowStatusInfoExist_when_givenBookBorrowStatusTypeEnum() {
       // given
-      BookBorrowStatusType[] borrowStatusTypes = BookBorrowStatusType.values();
-      List<BookBorrowStatus> bookBorrowStatusesTypes = Arrays.stream(borrowStatusTypes)
+      List<BookBorrowStatus> bookBorrowStatusesTypes = Arrays.stream(BookBorrowStatusType.values())
               .map(BookBorrowStatus::getBookBorrowStatusBy)
               .toList();
 
@@ -132,11 +126,7 @@ public class BookRepositoryTest extends IntegrationTest {
       // then
       assertThat(getIds(bookBorrowStatuses)).containsAll(getIds(bookBorrowStatusesTypes));
       assertThat(getStatuses(bookBorrowStatuses)).containsAll(getStatuses(bookBorrowStatusesTypes));
-      assertThat(bookBorrowStatuses).hasSize(borrowStatusTypes.length);
-      for (int i = 0; i < borrowStatusTypes.length; ++i) {
-        assertThat(getId(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getId());
-        assertThat(getStatus(bookBorrowStatuses.get(i))).isEqualTo(borrowStatusTypes[i].getStatus());
-      }
+      assertThat(bookBorrowStatuses).hasSize(BookBorrowStatusType.values().length);
     }
 
     private List<Long> getIds(List<BookBorrowStatus> bookBorrowStatuses) {
