@@ -5,17 +5,21 @@ import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCa
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.POST_THUMBNAIL;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CATEGORY_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
-import static com.keeper.homepage.global.error.ErrorCode.POST_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
+import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
+import static java.lang.Boolean.TRUE;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -24,11 +28,11 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
+import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +45,11 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final CategoryRepository categoryRepository;
+  private final CommentRepository commentRepository;
+  private final FileRepository fileRepository;
+
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
-  private final CommentRepository commentRepository;
   private final ValidPostFindService validPostFindService;
 
   public static final String ANONYMOUS_NAME = "익명";
@@ -54,13 +60,35 @@ public class PostService {
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail,
       List<MultipartFile> multipartFiles) {
-    Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
-    savePostFiles(multipartFiles, post);
-    return savePost(post, savedThumbnail, categoryId);
+    if (TRUE.equals(post.isSecret())) {
+      checkPassword(post.getPassword());
+    }
+
+    savePostThumbnail(post, thumbnail);
+    savePostFiles(post, multipartFiles);
+    return savePost(post, categoryId);
   }
 
-  private Long savePost(Post post, Thumbnail thumbnail, Long categoryId) {
-    post.registerThumbnail(thumbnail);
+  private void checkPassword(String password) {
+    if (password == null) {
+      throw new BusinessException(password, "password", POST_PASSWORD_NEED);
+    }
+  }
+
+  private void savePostThumbnail(Post post, MultipartFile thumbnail) {
+    Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
+    post.changeThumbnail(savedThumbnail);
+  }
+
+  private void savePostFiles(Post post, List<MultipartFile> multipartFiles) {
+    if (multipartFiles == null) {
+      return;
+    }
+    List<FileEntity> files = fileUtil.saveFiles(multipartFiles.toArray(MultipartFile[]::new));
+    files.forEach(post::addFile);
+  }
+
+  private Long savePost(Post post, Long categoryId) {
     post.registerCategory(getCategoryById(categoryId));
     return postRepository.save(post).getId();
   }
@@ -69,14 +97,6 @@ public class PostService {
     return categoryRepository.findById(categoryId)
         .orElseThrow(
             () -> new BusinessException(categoryId, "categoryId", POST_CATEGORY_NOT_FOUND));
-  }
-
-  private void savePostFiles(List<MultipartFile> multipartFiles, Post post) {
-    if (multipartFiles == null) {
-      return;
-    }
-    List<FileEntity> files = fileUtil.saveFiles(multipartFiles.toArray(MultipartFile[]::new));
-    files.forEach(post::addFile);
   }
 
   @Transactional
@@ -165,5 +185,50 @@ public class PostService {
       return thumbnailUtil.getThumbnailPath(POST_THUMBNAIL.getPath());
     }
     return thumbnailUtil.getThumbnailPath(thumbnail.getPath());
+  }
+
+  @Transactional
+  public void update(Member member, long postId, Post newPost, MultipartFile thumbnail,
+      List<MultipartFile> files) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    }
+    if (TRUE.equals(newPost.isSecret())) {
+      checkPassword(newPost.getPassword());
+    }
+
+    updateThumbnail(post, thumbnail);
+    updateFiles(post, files);
+    post.update(newPost);
+  }
+
+  private void updateThumbnail(Post post, MultipartFile thumbnail) {
+    thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
+    savePostThumbnail(post, thumbnail);
+  }
+
+  private void updateFiles(Post post, List<MultipartFile> files) {
+    List<FileEntity> postFiles = getPostFilesWithoutThumbnailFile(post);
+    postFiles.forEach(fileUtil::deleteFileAndEntity);
+    savePostFiles(post, files);
+  }
+
+  private List<FileEntity> getPostFilesWithoutThumbnailFile(Post post) {
+    if (post.getThumbnail() == null) {
+      return fileRepository.findAllByPost(post);
+    }
+    return fileRepository
+        .findAllByPostAndIdNot(post, post.getThumbnail().getFileEntity().getId());
+  }
+
+  public void delete(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    }
+    postRepository.delete(post);
   }
 }

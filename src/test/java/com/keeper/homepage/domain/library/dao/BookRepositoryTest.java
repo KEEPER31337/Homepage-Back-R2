@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.library.dao;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.ETC;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +9,8 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType;
 import com.keeper.homepage.domain.library.entity.BookDepartment;
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -40,8 +43,7 @@ public class BookRepositoryTest extends IntegrationTest {
     @DisplayName("BookDepartmentType Enum 에는 DB의 모든 BookDepartment정보가 있어야 한다.")
     void should_allBookDepartmentInfoExist_when_givenBookDepartmentTypeEnum() {
       // given
-      BookDepartmentType[] departmentTypes = BookDepartmentType.values();
-      List<BookDepartment> bookDepartmentTypes = Arrays.stream(departmentTypes)
+      List<BookDepartment> bookDepartmentTypes = Arrays.stream(BookDepartmentType.values())
           .map(BookDepartment::getBookDepartmentBy)
           .toList();
 
@@ -51,11 +53,7 @@ public class BookRepositoryTest extends IntegrationTest {
       // then
       assertThat(getIds(bookDepartments)).containsAll(getIds(bookDepartmentTypes));
       assertThat(getNames(bookDepartments)).containsAll(getNames(bookDepartmentTypes));
-      assertThat(bookDepartments).hasSize(departmentTypes.length);
-      for (int i = 0; i < departmentTypes.length; ++i) {
-        assertThat(getId(bookDepartments.get(i))).isEqualTo(departmentTypes[i].getId());
-        assertThat(getName(bookDepartments.get(i))).isEqualTo(departmentTypes[i].getName());
-      }
+      assertThat(bookDepartments).hasSize(BookDepartmentType.values().length);
     }
 
     private List<Long> getIds(List<BookDepartment> bookDepartments) {
@@ -77,24 +75,6 @@ public class BookRepositoryTest extends IntegrationTest {
 
     private String getName(BookDepartment bookDepartment) {
       return bookDepartment.getType().getName();
-    }
-  }
-
-  @Nested
-  @DisplayName("Book Remove 테스트")
-  class BookRemoveTest {
-
-    @Test
-    @DisplayName("Book을 삭제하면 해당 Book의 BookBorrowInfo도 삭제되어야 한다.")
-    void should_deleteBookBorrowInfo_when_deleteBook() {
-      member.borrow(book, expireDate);
-      em.flush();
-      em.clear();
-
-      book = bookRepository.findById(book.getId()).orElseThrow();
-      bookRepository.delete(book);
-
-      assertThat(bookBorrowInfoRepository.findAll()).hasSize(0);
     }
   }
 
@@ -125,6 +105,49 @@ public class BookRepositoryTest extends IntegrationTest {
       BookBorrowInfo findBorrowInfo = bookBorrowInfoRepository.findById(borrowInfo.getId()).orElseThrow();
 
       assertThat(findBorrowInfo.getBorrowDate()).isBefore(LocalDateTime.now());
+    }
+  }
+
+  @Nested
+  @DisplayName("Book Borrow Status DB 테스트")
+  class BookBorrowStatusRepositoryTest {
+
+    @Test
+    @DisplayName("BookBorrowStatusType Enum 에는 DB의 모든 BookBorrowStatusRepository 정보가 있어야 한다.")
+    void should_allBookBorrowStatusInfoExist_when_givenBookBorrowStatusTypeEnum() {
+      // given
+      List<BookBorrowStatus> bookBorrowStatusesTypes = Arrays.stream(BookBorrowStatusType.values())
+              .map(BookBorrowStatus::getBookBorrowStatusBy)
+              .toList();
+
+      // when
+      List<BookBorrowStatus> bookBorrowStatuses = bookBorrowStatusRepository.findAll();
+
+      // then
+      assertThat(getIds(bookBorrowStatuses)).containsAll(getIds(bookBorrowStatusesTypes));
+      assertThat(getStatuses(bookBorrowStatuses)).containsAll(getStatuses(bookBorrowStatusesTypes));
+      assertThat(bookBorrowStatuses).hasSize(BookBorrowStatusType.values().length);
+    }
+
+    private List<Long> getIds(List<BookBorrowStatus> bookBorrowStatuses) {
+      return bookBorrowStatuses.stream()
+              .map(BookBorrowStatus::getId)
+              .collect(toList());
+    }
+
+    private Long getId(BookBorrowStatus bookBorrowStatus) {
+      return bookBorrowStatus.getId();
+    }
+
+    private List<String> getStatuses(List<BookBorrowStatus> bookBorrowStatuses) {
+      return bookBorrowStatuses.stream()
+              .map(BookBorrowStatus::getType)
+              .map(BookBorrowStatusType::getStatus)
+              .collect(toList());
+    }
+
+    private String getStatus(BookBorrowStatus bookBorrowStatus) {
+      return bookBorrowStatus.getType().getStatus();
     }
   }
 }

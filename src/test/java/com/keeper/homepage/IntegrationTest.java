@@ -15,6 +15,14 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.game.GameTestHelper;
+import com.keeper.homepage.domain.game.dao.GameRepository;
+import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
+import com.keeper.homepage.domain.library.BookTestHelper;
+import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
+import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
+import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
@@ -29,11 +37,6 @@ import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
-import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
-import com.keeper.homepage.domain.library.BookTestHelper;
-import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
-import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
-import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
@@ -130,6 +133,9 @@ public class IntegrationTest {
   protected BookDepartmentRepository bookDepartmentRepository;
 
   @SpyBean
+  protected BookBorrowStatusRepository bookBorrowStatusRepository;
+
+  @SpyBean
   protected SeminarRepository seminarRepository;
 
   @SpyBean
@@ -167,6 +173,9 @@ public class IntegrationTest {
 
   @Autowired
   protected EmailAuthRedisRepository emailAuthRedisRepository;
+
+  @Autowired
+  protected GameRepository gameRepository;
 
   @SpyBean
   protected StudyRepository studyRepository;
@@ -239,6 +248,9 @@ public class IntegrationTest {
   @Autowired
   protected CommentTestHelper commentTestHelper;
 
+  @Autowired
+  protected GameTestHelper gameTestHelper;
+  
   @Autowired
   protected StudyTestHelper studyTestHelper;
 

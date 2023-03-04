@@ -13,6 +13,7 @@ import static jakarta.persistence.CascadeType.*;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
@@ -113,7 +114,7 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", cascade = PERSIST, orphanRemoval = true)
+  @OneToMany(mappedBy = "member", cascade = PERSIST)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -184,33 +185,28 @@ public class Member {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
-  public void borrow(Book book, LocalDateTime expireDate) {
+  public void borrow(Book book, BookBorrowStatus borrowStatus, LocalDateTime expireDate) {
     bookBorrowInfos.add(BookBorrowInfo.builder()
-            .member(this)
-            .book(book)
-            .borrowDate(LocalDateTime.now())
-            .expireDate(expireDate)
-            .build());
-  }
-
-  public void returns(Book book) {
-    bookBorrowInfos.removeIf(bookBorrowInfo -> bookBorrowInfo.getBook().equals(book));
+        .member(this)
+        .book(book)
+        .borrowStatus(borrowStatus)
+        .borrowDate(LocalDateTime.now())
+        .expireDate(expireDate)
+        .build());
   }
 
   public void like(Post post) {
-    MemberHasPostLike like = MemberHasPostLike.builder()
+    postLikes.add(MemberHasPostLike.builder()
         .member(this)
         .post(post)
-        .build();
-    postLikes.add(like);
+        .build());
   }
 
   public void like(Comment comment) {
-    MemberHasCommentLike like = MemberHasCommentLike.builder()
+    commentLikes.add(MemberHasCommentLike.builder()
         .member(this)
         .comment(comment)
-        .build();
-    commentLikes.add(like);
+        .build());
   }
 
   public void cancelLike(Post post) {
@@ -222,19 +218,17 @@ public class Member {
   }
 
   public void dislike(Post post) {
-    MemberHasPostDislike dislike = MemberHasPostDislike.builder()
+    postDislikes.add(MemberHasPostDislike.builder()
         .member(this)
         .post(post)
-        .build();
-    postDislikes.add(dislike);
+        .build());
   }
 
   public void dislike(Comment comment) {
-    MemberHasCommentDislike dislike = MemberHasCommentDislike.builder()
+    commentDislikes.add(MemberHasCommentDislike.builder()
         .member(this)
         .comment(comment)
-        .build();
-    commentDislikes.add(dislike);
+        .build());
   }
 
   public void cancelDislike(Post post) {

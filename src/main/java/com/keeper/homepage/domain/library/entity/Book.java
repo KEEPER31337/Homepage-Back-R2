@@ -51,9 +51,6 @@ public class Book extends BaseEntity {
   @Column(name = "author", nullable = false, length = MAX_AUTHOR_LENGTH)
   private String author;
 
-  @Column(name = "information", columnDefinition = "TEXT")
-  private String information;
-
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "book_department_id", nullable = false)
   private BookDepartment bookDepartment;
@@ -68,7 +65,7 @@ public class Book extends BaseEntity {
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @OneToMany(mappedBy = "book", cascade = REMOVE)
+  @OneToMany(mappedBy = "book")
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
@@ -76,7 +73,6 @@ public class Book extends BaseEntity {
       Long totalQuantity, Long currentQuantity, Thumbnail thumbnail) {
     this.title = title;
     this.author = author;
-    this.information = information;
     this.bookDepartment = bookDepartment;
     this.totalQuantity = totalQuantity;
     this.currentQuantity = currentQuantity;
