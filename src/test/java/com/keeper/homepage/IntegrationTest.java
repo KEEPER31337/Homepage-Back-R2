@@ -15,28 +15,24 @@ import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
-import com.keeper.homepage.domain.game.GameTestHelper;
-import com.keeper.homepage.domain.game.dao.GameRepository;
-import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
-import com.keeper.homepage.domain.library.BookTestHelper;
-import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
-import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
-import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
-import com.keeper.homepage.domain.library.dao.BookRepository;
-import com.keeper.homepage.domain.seminar.application.SeminarService;
-import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
-import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
-import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
-import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
-import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
-import com.keeper.homepage.domain.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
+import com.keeper.homepage.domain.comment.CommentTestHelper;
+import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
+import com.keeper.homepage.domain.game.GameTestHelper;
+import com.keeper.homepage.domain.game.dao.GameRepository;
+import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
+import com.keeper.homepage.domain.library.BookTestHelper;
+import com.keeper.homepage.domain.library.application.BookManageService;
+import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
+import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
+import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
@@ -49,12 +45,17 @@ import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.post.CategoryTestHelper;
-import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
-import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.seminar.application.SeminarService;
+import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
+import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.study.StudyTestHelper;
 import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
@@ -66,6 +67,7 @@ import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
+import com.ninjasquad.springmockk.SpykBean;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.io.File;
@@ -214,6 +216,9 @@ public class IntegrationTest {
   @Autowired
   protected ValidSeminarFindService validSeminarFindService;
 
+  @SpykBean
+  protected BookManageService bookManageService;
+
   /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
@@ -250,7 +255,7 @@ public class IntegrationTest {
 
   @Autowired
   protected GameTestHelper gameTestHelper;
-  
+
   @Autowired
   protected StudyTestHelper studyTestHelper;
 

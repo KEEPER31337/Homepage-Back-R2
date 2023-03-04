@@ -1,0 +1,44 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= BOOK MANAGE API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *책 추가*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/assign-book/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/assign-book/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/assign-book/query-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/assign-book/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/assign-book/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/assign-book/response-headers.adoc[]
