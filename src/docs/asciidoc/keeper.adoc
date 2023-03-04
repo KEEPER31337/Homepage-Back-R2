@@ -31,4 +31,4 @@ link:seminar/seminar.html[API 문서 보기]
 
 == *LIBRARY API*
 
-link:library/bookmanage.html[API 문서 보기]
+link:library/book-manage[API 문서 보기]
