@@ -12,16 +12,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PACKAGE)
-public class SeminarAttendanceResponse {
+public class SeminarAttendanceStatusResponse {
 
-  private Float generation;
-  private String username;
+  private Long id;
   private SeminarAttendanceStatusType statusType;
 
-  public static SeminarAttendanceResponse from(SeminarAttendance attendance) {
-    return new SeminarAttendanceResponse(
-        attendance.getMember().getGeneration().getGeneration(),
-        attendance.getMember().getProfile().getRealName().get(),
+  public static SeminarAttendanceStatusResponse from(SeminarAttendance attendance) {
+    return new SeminarAttendanceStatusResponse(attendance.getId(),
         attendance.getSeminarAttendanceStatus().getType());
   }
 }

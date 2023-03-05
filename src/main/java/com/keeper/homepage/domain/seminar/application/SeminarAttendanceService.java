@@ -11,11 +11,15 @@ import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceCodeRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceStatusResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +32,7 @@ public class SeminarAttendanceService {
   private final SeminarRepository seminarRepository;
 
   @Transactional
-  public SeminarAttendanceResponse save(Long seminarId, Member member, SeminarAttendanceCodeRequest request){
+  public SeminarAttendanceStatusResponse save(Long seminarId, Member member, SeminarAttendanceCodeRequest request){
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
 
@@ -41,7 +45,7 @@ public class SeminarAttendanceService {
         .seminarAttendanceStatus(seminar.getStatus())
         .build();
 
-    return SeminarAttendanceResponse.from(attendanceRepository.save(attendance));
+    return SeminarAttendanceStatusResponse.from(attendanceRepository.save(attendance));
   }
 
   private void validAttendanceCode(Seminar seminar, SeminarAttendanceCodeRequest request) {
@@ -71,5 +75,13 @@ public class SeminarAttendanceService {
         .orElseThrow(() -> new BusinessException(nickname, "nickname", MEMBER_NOT_FOUND));
 
     seminarAttendance.changeStatus(request.excuse(), request.statusType());
+  }
+
+  public SeminarAttendanceListResponse findAll(Pageable pageable) {
+    List<SeminarAttendanceResponse> responseList = attendanceRepository.findAll(pageable).stream()
+        .map(SeminarAttendanceResponse::from)
+        .toList();
+
+    return new SeminarAttendanceListResponse(responseList);
   }
 }
