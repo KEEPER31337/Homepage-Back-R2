@@ -27,9 +27,8 @@ public class SeminarApiTestHelper extends IntegrationTest {
   Long createSeminarAndGetId(String adminToken) throws Exception {
     MvcResult mvcResult = createSeminarUsingApi(adminToken)
         .andExpect(status().isCreated()).andReturn();
-    Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+    return objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
         SeminarIdResponse.class).id();
-    return seminarId;
   }
 
   ResultActions startSeminarUsingApi(String token, Long seminarId, SeminarStartRequest request)
@@ -64,7 +63,7 @@ public class SeminarApiTestHelper extends IntegrationTest {
   }
 
   ResultActions searchDateSeminarUsingApi(String token, String date) throws Exception {
-    return mockMvc.perform(get("/seminars?date=" + date)
+    return mockMvc.perform(get("/seminars").param("date", date)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
@@ -100,5 +99,10 @@ public class SeminarApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
+  }
+
+  ResultActions getAllAttendancesUsingApi(String token) throws Exception {
+    return mockMvc.perform(get("/seminars/attendances")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 }
