@@ -14,12 +14,13 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceCodeRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
-import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceStatusResponse;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +89,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
-          SeminarAttendanceResponse.class).getStatusType();
+          SeminarAttendanceStatusResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(ATTENDANCE);
     }
@@ -144,7 +145,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
-          SeminarAttendanceResponse.class).getStatusType();
+          SeminarAttendanceStatusResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(LATENESS);
     }
@@ -168,7 +169,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(
           mvcResult.getResponse().getContentAsString(),
-          SeminarAttendanceResponse.class).getStatusType();
+          SeminarAttendanceStatusResponse.class).getStatusType();
 
       assertThat(statusType).isEqualTo(ABSENCE);
     }
@@ -248,6 +249,36 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       attendanceSeminarUsingApi(adminToken, seminarId, request).andExpect(status().isCreated());
       changeAttendanceStatusUsingApi(adminToken, seminarId, strJson.formatted(statusType)).andExpect(status().isBadRequest());
+    }
+  }
+  
+  @Nested
+  @DisplayName("세미나 출석 조회 테스트")
+  class SearchSeminarAttendanceTest {
+
+    @Test
+    @DisplayName("세미나 출석 정보들을 조회한다.")
+    public void 세미나_출석_정보들을_조회한다() throws Exception {
+      for (int i = 0; i < 5; i++) {
+        Long seminarId = createSeminarAndGetId(adminToken);
+        String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
+            .getAttendanceCode();
+
+        SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
+            .attendanceCode(attendanceCode)
+            .build();
+
+        startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
+        attendanceSeminarUsingApi(userToken, seminarId, request).andDo(print()).andExpect(status().isCreated());
+
+        for (int j = 0; j < 3; j++) {
+          long tmpUserId = memberTestHelper.builder().build().getId();
+          String tmpUserToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, tmpUserId, ROLE_회원);
+          attendanceSeminarUsingApi(tmpUserToken, seminarId, request).andDo(print()).andExpect(status().isCreated());
+        }
+      }
+      
+      getAllAttendancesUsingApi(adminToken).andDo(print());
     }
   }
 }
