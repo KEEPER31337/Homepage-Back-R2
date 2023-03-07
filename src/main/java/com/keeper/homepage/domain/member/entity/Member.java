@@ -219,6 +219,16 @@ public class Member {
     commentDislikes.removeIf(commentDislike -> commentDislike.getComment().equals(comment));
   }
 
+  public boolean isLike(Post post) {
+    return postLikes.stream()
+        .anyMatch(postLike -> postLike.getPost().equals(post));
+  }
+
+  public boolean isDislike(Post post) {
+    return postDislikes.stream()
+        .anyMatch(postLike -> postLike.getPost().equals(post));
+  }
+
   public void join(Study study) {
     StudyHasMember studyMember = StudyHasMember.builder()
         .study(study)
