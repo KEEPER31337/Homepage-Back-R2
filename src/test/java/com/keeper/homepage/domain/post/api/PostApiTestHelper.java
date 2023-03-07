@@ -89,4 +89,17 @@ public class PostApiTestHelper extends IntegrationTest {
     return mockMvc.perform(RestDocumentationRequestBuilders.delete("/admin/posts/{postId}", postId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
   }
+
+  ResultActions callLikePostApi(String memberToken, long postId)
+      throws Exception {
+    return mockMvc.perform(RestDocumentationRequestBuilders.patch("/posts/{postId}/likes", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+  }
+
+  ResultActions callDislikePostApi(String memberToken, long postId)
+      throws Exception {
+    return mockMvc.perform(
+        RestDocumentationRequestBuilders.patch("/posts/{postId}/dislikes", postId)
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+  }
 }

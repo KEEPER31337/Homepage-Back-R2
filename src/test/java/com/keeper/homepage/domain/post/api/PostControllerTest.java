@@ -540,4 +540,53 @@ public class PostControllerTest extends PostApiTestHelper {
           .andExpect(status().isForbidden());
     }
   }
+
+  @Nested
+  @DisplayName("게시글 좋아요 싫어요")
+  class LikeDislikePost {
+
+    private long postId;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      Post post = postTestHelper.generate();
+      postId = post.getId();
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요는 성공한다.")
+    public void 게시글_좋아요는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "likePost");
+
+      callLikePostApi(memberToken, postId)
+          .andExpect(status().isNoContent())
+          .andDo(document("like-post",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("좋아요 또는 좋아요 취소하고자 하는 게시글의 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("게시글 싫어요는 성공한다.")
+    public void 게시글_싫어요는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "dislikePost");
+
+      callDislikePostApi(memberToken, postId)
+          .andExpect(status().isNoContent())
+          .andDo(document("dislike-post",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("싫어요 또는 싫어요 취소하고자 하는 게시글의 ID")
+              )));
+    }
+  }
 }
