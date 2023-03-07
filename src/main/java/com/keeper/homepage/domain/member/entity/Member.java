@@ -246,7 +246,7 @@ public class Member {
 
   public boolean isDislike(Post post) {
     return postDislikes.stream()
-        .anyMatch(postLike -> postLike.getPost().equals(post));
+        .anyMatch(postDislike -> postDislike.getPost().equals(post));
   }
 
   public void join(Study study) {
