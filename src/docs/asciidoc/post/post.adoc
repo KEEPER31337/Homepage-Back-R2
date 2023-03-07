@@ -13,7 +13,7 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
-== *게시글 생성하기*
+== *게시글 생성*
 
 === 요청
 
@@ -43,7 +43,7 @@ include::{snippets}/create-post/http-response.adoc[]
 
 include::{snippets}/create-post/response-headers.adoc[]
 
-== *게시글 조회하기*
+== *게시글 조회*
 
 === 요청
 
@@ -69,7 +69,7 @@ include::{snippets}/find-post/http-response.adoc[]
 
 include::{snippets}/find-post/response-fields.adoc[]
 
-== *비밀 게시글 조회하기*
+== *비밀 게시글 조회*
 
 === 요청
 
@@ -99,7 +99,7 @@ include::{snippets}/find-secret-post/http-response.adoc[]
 
 include::{snippets}/find-secret-post/response-fields.adoc[]
 
-== *게시글 수정하기*
+== *게시글 수정*
 
 === 요청
 
@@ -133,7 +133,7 @@ include::{snippets}/update-post/http-response.adoc[]
 
 include::{snippets}/update-post/response-headers.adoc[]
 
-== *게시글 삭제하기*
+== *게시글 삭제*
 
 === 요청
 
@@ -155,7 +155,7 @@ include::{snippets}/delete-post/path-parameters.adoc[]
 
 include::{snippets}/delete-post/http-response.adoc[]
 
-== *관리자 권한으로 게시글 삭제하기*
+== *[관리자 권한] 게시글 삭제*
 
 === 요청
 
@@ -176,3 +176,47 @@ include::{snippets}/admin-delete-post/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/admin-delete-post/http-response.adoc[]
+
+== *게시글 좋아요 또는 좋아요 취소*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/like-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/like-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/like-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/like-post/http-response.adoc[]
+
+== *게시글 싫어요 또는 싫어요 취소*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/dislike-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/dislike-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/dislike-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/dislike-post/http-response.adoc[]
