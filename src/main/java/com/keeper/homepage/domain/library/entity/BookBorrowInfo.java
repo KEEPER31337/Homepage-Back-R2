@@ -1,9 +1,12 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -82,5 +85,10 @@ public class BookBorrowInfo extends BaseEntity {
 
   public LocalDateTime getExpireDate() {
     return expireDate;
+  }
+
+  public boolean isInBorrowing() {
+    BookBorrowStatusType type = getBorrowStatus().getType();
+    return type.equals(대출승인) || type.equals(반납대기중);
   }
 }

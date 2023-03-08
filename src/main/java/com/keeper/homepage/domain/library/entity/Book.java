@@ -58,7 +58,7 @@ public class Book extends BaseEntity {
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @OneToMany(mappedBy = "book")
+  @OneToMany(mappedBy = "book", cascade = REMOVE)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
@@ -102,5 +102,10 @@ public class Book extends BaseEntity {
 
   public List<BookBorrowInfo> getBookBorrowInfos() {
     return bookBorrowInfos;
+  }
+
+  public boolean isSomeoneInBorrowing() {
+    return getBookBorrowInfos().stream()
+        .anyMatch(BookBorrowInfo::isInBorrowing);
   }
 }
