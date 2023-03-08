@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -76,6 +77,24 @@ public class PostController {
       @PathVariable long postId
   ) {
     postService.delete(member, postId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{postId}/likes")
+  public ResponseEntity<Void> likePost(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    postService.like(member, postId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{postId}/dislikes")
+  public ResponseEntity<Void> dislikePost(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    postService.dislike(member, postId);
     return ResponseEntity.noContent().build();
   }
 }

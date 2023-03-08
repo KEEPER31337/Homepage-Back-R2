@@ -231,4 +231,26 @@ public class PostService {
     }
     postRepository.delete(post);
   }
+
+  @Transactional
+  public void like(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (member.isLike(post)) {
+      member.cancelLike(post);
+      return;
+    }
+    member.like(post);
+  }
+
+  @Transactional
+  public void dislike(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (member.isDislike(post)) {
+      member.cancelDislike(post);
+      return;
+    }
+    member.dislike(post);
+  }
 }

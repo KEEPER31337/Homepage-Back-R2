@@ -1,7 +1,9 @@
 package com.keeper.homepage.domain.post.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
 import com.keeper.homepage.IntegrationTest;
@@ -75,18 +77,29 @@ public class PostApiTestHelper extends IntegrationTest {
         .queryParams(params)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
-
   }
 
   ResultActions callDeletePostApi(String accessToken, long postId)
       throws Exception {
-    return mockMvc.perform(RestDocumentationRequestBuilders.delete("/posts/{postId}", postId)
+    return mockMvc.perform(delete("/posts/{postId}", postId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
   ResultActions callAdminDeletePostApi(String adminToken, long postId)
       throws Exception {
-    return mockMvc.perform(RestDocumentationRequestBuilders.delete("/admin/posts/{postId}", postId)
+    return mockMvc.perform(delete("/admin/posts/{postId}", postId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+  }
+
+  ResultActions callLikePostApi(String memberToken, long postId)
+      throws Exception {
+    return mockMvc.perform(patch("/posts/{postId}/likes", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+  }
+
+  ResultActions callDislikePostApi(String memberToken, long postId)
+      throws Exception {
+    return mockMvc.perform(patch("/posts/{postId}/dislikes", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
   }
 }

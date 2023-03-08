@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -441,6 +442,53 @@ public class PostServiceTest extends IntegrationTest {
       assertThrows(BusinessException.class, () -> {
         postService.update(member, postId, newPost, null, null);
       });
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 좋아요 싫어요")
+  class LikeDislikePost {
+
+    private Post post;
+    private long postId;
+    private Member member;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      post = postTestHelper.generate();
+      postId = post.getId();
+      member = memberTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 싫어요는 성공한다.")
+    public void 게시글_좋아요_싫어요는_성공한다() throws Exception {
+      assertDoesNotThrow(() -> {
+        postService.like(member, postId);
+      });
+      assertDoesNotThrow(() -> {
+        postService.dislike(member, postId);
+      });
+
+      assertThat(member.isLike(post)).isTrue();
+      assertThat(member.isDislike(post)).isTrue();
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 싫어요 취소는 성공한다.")
+    public void 게시글_좋아요_싫어요_취소는_성공한다() throws Exception {
+      postService.like(member, postId);
+      postService.dislike(member, postId);
+
+      assertDoesNotThrow(() -> {
+        postService.like(member, postId);
+      });
+      assertDoesNotThrow(() -> {
+        postService.dislike(member, postId);
+      });
+
+      assertThat(member.isLike(post)).isFalse();
+      assertThat(member.isDislike(post)).isFalse();
     }
   }
 }
