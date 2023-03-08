@@ -32,4 +32,9 @@ class BookManageService(
                 .orElse(null)
         )
     ).id
+
+    @Transactional
+    fun deleteBook(bookId: Long) {
+        TODO("Not yet implemented")
+    }
 }

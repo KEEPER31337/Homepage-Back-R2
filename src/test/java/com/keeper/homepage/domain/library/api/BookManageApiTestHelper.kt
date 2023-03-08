@@ -1,13 +1,17 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_사서
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.http.MediaType
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.test.web.servlet.ResultActions
@@ -72,5 +76,28 @@ class BookManageApiTestHelper : IntegrationTest() {
                     .contentType(MediaType.MULTIPART_FORM_DATA)
             )
         }
+    }
+
+    fun callDeleteBookApi(
+        accessCookies: Array<Cookie> = bookManagerCookies,
+        isMocking: Boolean = false,
+    ): ResultActions {
+        var bookId = 0L
+        if (isMocking) {
+            every { bookManageService.deleteBook(any()) } just Runs
+        } else {
+            bookId = bookManageService.addBook(
+                "삶의 목적을 찾는 45가지 방법",
+                "ChatGPT",
+                10,
+                BookDepartmentType.DOCUMENT,
+                null
+            )
+        }
+
+        return mockMvc.perform(
+            delete("${BOOK_URL}/{bookId}", bookId)
+                .cookie(*accessCookies)
+        )
     }
 }
