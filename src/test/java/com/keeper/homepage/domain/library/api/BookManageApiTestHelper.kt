@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 
-const val ADD_BOOK_URL = "/manage/books"
+const val BOOK_URL = "/manage/books"
 
 fun field(
     path: String,
@@ -58,7 +58,7 @@ class BookManageApiTestHelper : IntegrationTest() {
 
         return if (hasThumbnail) {
             mockMvc.perform(
-                multipart(ADD_BOOK_URL)
+                multipart(BOOK_URL)
                     .file(thumbnailTestHelper.smallThumbnailFile)
                     .queryParams(params)
                     .cookie(*accessCookies)
@@ -66,7 +66,7 @@ class BookManageApiTestHelper : IntegrationTest() {
             )
         } else {
             mockMvc.perform(
-                multipart(ADD_BOOK_URL)
+                multipart(BOOK_URL)
                     .queryParams(params)
                     .cookie(*accessCookies)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
