@@ -3,12 +3,14 @@ package com.keeper.homepage.domain.library.converter;
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType;
 import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.core.convert.converter.Converter;
 
-@Converter
+@jakarta.persistence.Converter
 @Slf4j
-public class BookDepartmentTypeConverter implements AttributeConverter<BookDepartmentType, String> {
+public class BookDepartmentTypeConverter implements Converter<String, BookDepartmentType>,
+    AttributeConverter<BookDepartmentType, String> {
 
   @Override
   public String convertToDatabaseColumn(BookDepartmentType bookDepartmentType) {
@@ -21,10 +23,15 @@ public class BookDepartmentTypeConverter implements AttributeConverter<BookDepar
       return null;
     }
     try {
-      return BookDepartmentType.fromCode(dbData);
+      return convert(dbData);
     } catch (BusinessException e) {
       log.error("failure to convert cause unexpected code [{}]", dbData, e);
       throw e;
     }
+  }
+
+  @Override
+  public BookDepartmentType convert(@NotNull String source) {
+    return BookDepartmentType.fromCode(source);
   }
 }
