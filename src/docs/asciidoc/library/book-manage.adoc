@@ -42,3 +42,30 @@ include::{snippets}/assign-book/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/assign-book/response-headers.adoc[]
+
+
+== *대출 신청 도서 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-borrow-requests/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-borrow-requests/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/get-borrow-requests/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-borrow-requests/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-borrow-requests/response-fields.adoc[]
