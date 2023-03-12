@@ -260,4 +260,12 @@ public class Member {
   public void leave(Study study) {
     studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
   }
+
+  public Long getId() {
+    return this.id;
+  }
+
+  public String getNickname() {
+    return this.profile.getNickname().get();
+  }
 }
