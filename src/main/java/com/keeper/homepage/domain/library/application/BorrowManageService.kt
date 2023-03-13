@@ -42,4 +42,24 @@ class BorrowManageService(
         }
         borrowInfo.changeBorrowStats(대출거부)
     }
+
+    @Transactional
+    fun approveReturn(borrowId: Long) {
+        val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
+        val book = borrowInfo.book
+        if (borrowInfo.borrowStatus.type != 반납대기중) {
+            throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
+        }
+        book.returnBook()
+        borrowInfo.changeBorrowStats(반납)
+    }
+
+    @Transactional
+    fun denyReturn(borrowId: Long) {
+        val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
+        if (borrowInfo.borrowStatus.type != 반납대기중) {
+            throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
+        }
+        borrowInfo.changeBorrowStats(대출승인)
+    }
 }
