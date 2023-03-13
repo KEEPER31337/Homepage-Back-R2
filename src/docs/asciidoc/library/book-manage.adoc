@@ -115,7 +115,7 @@ include::{snippets}/borrow-requests-approve/path-parameters.adoc[]
 
 include::{snippets}/borrow-requests-approve/http-response.adoc[]
 
-== *대출 승인*
+== *대출 거절*
 
 === 요청
 
