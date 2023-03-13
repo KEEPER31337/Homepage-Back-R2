@@ -35,7 +35,9 @@ public enum ErrorCode {
   POST_PASSWORD_MISMATCH("게시글의 비밀번호가 일치하지 않습니다.", HttpStatus.FORBIDDEN),
   POST_PASSWORD_NEED("게시글의 비밀번호를 입력해주세요.", HttpStatus.BAD_REQUEST),
   // BOOK
+  BOOK_NOT_FOUND("존재하지 않는 도서입니다.", HttpStatus.NOT_FOUND),
   BOOK_TYPE_NOT_FOUND("존재하지 않는 도서 타입입니다.", HttpStatus.NOT_FOUND),
+  BOOK_DELETE_FAILED_IN_BORROWING("누군가가 책을 빌리고 있어 책을 삭제할 수 없습니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;

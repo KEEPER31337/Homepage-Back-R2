@@ -1,20 +1,23 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static com.keeper.homepage.global.error.ErrorCode.BOOK_TYPE_NOT_FOUND;
+import static jakarta.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
 import com.keeper.homepage.domain.library.converter.BookBorrowStatusTypeConverter;
 import com.keeper.homepage.global.error.BusinessException;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.util.Arrays;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-
-import static com.keeper.homepage.global.error.ErrorCode.BOOK_TYPE_NOT_FOUND;
-import static jakarta.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
-
-@Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_borrow_status")
@@ -61,5 +64,13 @@ public class BookBorrowStatus {
           .findAny()
           .orElseThrow(() -> new BusinessException(type, "type", BOOK_TYPE_NOT_FOUND));
     }
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public BookBorrowStatusType getType() {
+    return type;
   }
 }

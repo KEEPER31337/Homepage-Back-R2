@@ -19,14 +19,12 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @DynamicInsert
 @DynamicUpdate
-@Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "book")
@@ -60,7 +58,7 @@ public class Book extends BaseEntity {
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
-  @OneToMany(mappedBy = "book")
+  @OneToMany(mappedBy = "book", cascade = REMOVE)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @Builder
@@ -74,4 +72,40 @@ public class Book extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
+  public Long getId() {
+    return id;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public String getAuthor() {
+    return author;
+  }
+
+  public BookDepartment getBookDepartment() {
+    return bookDepartment;
+  }
+
+  public Long getTotalQuantity() {
+    return totalQuantity;
+  }
+
+  public Long getCurrentQuantity() {
+    return currentQuantity;
+  }
+
+  public Thumbnail getThumbnail() {
+    return thumbnail;
+  }
+
+  public List<BookBorrowInfo> getBookBorrowInfos() {
+    return bookBorrowInfos;
+  }
+
+  public boolean isSomeoneInBorrowing() {
+    return getBookBorrowInfos().stream()
+        .anyMatch(BookBorrowInfo::isInBorrowing);
+  }
 }
