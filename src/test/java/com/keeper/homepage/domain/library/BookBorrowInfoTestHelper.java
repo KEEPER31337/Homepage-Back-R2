@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.library;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
+
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.entity.Book;
@@ -7,13 +9,9 @@ import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
-
 import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 
 @Component
 public class BookBorrowInfoTestHelper {
@@ -57,8 +55,8 @@ public class BookBorrowInfoTestHelper {
     }
 
     public BookBorrowInfoBuilder borrowStatus(BookBorrowStatus borrowStatus) {
-        this.borrowStatus = borrowStatus;
-        return this;
+      this.borrowStatus = borrowStatus;
+      return this;
     }
 
     public BookBorrowInfoBuilder borrowDate(LocalDateTime borrowDate) {
@@ -72,12 +70,13 @@ public class BookBorrowInfoTestHelper {
     }
 
     public BookBorrowInfo build() {
+      LocalDateTime now = LocalDateTime.now();
       return bookBorrowInfoRepository.save(BookBorrowInfo.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .book(book != null ? book : bookTestHelper.generate())
-          .borrowDate(borrowDate)
+          .borrowDate(borrowDate != null ? borrowDate : now)
           .borrowStatus(borrowStatus != null ? borrowStatus : getDefaultBorrowStatus())
-          .expireDate(expireDate)
+          .expireDate(expireDate != null ? expireDate : now.plusWeeks(2))
           .build());
     }
 

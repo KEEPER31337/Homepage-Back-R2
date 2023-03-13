@@ -1,5 +1,6 @@
 package com.keeper.homepage.global.error;
 
+import jakarta.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,12 @@ public class ExceptionAdvice {
   public ResponseEntity<ErrorResponse> accessDeniedException(AccessDeniedException e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN)
         .body(ErrorResponse.from("권한이 없습니다."));
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorResponse> constraintViolationException(ConstraintViolationException e) {
+    return ResponseEntity.badRequest()
+        .body(ErrorResponse.from(e.getMessage()));
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
