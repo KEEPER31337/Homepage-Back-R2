@@ -90,3 +90,49 @@ include::{snippets}/get-borrow-requests/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-borrow-requests/response-fields.adoc[]
+
+== *대출 승인*
+
+NOTE: 호출 시 해당 책의 currentQuantity가 1 감소합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/borrow-requests-approve/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/borrow-requests-approve/request-cookies.adoc[]
+
+==== Path Variables
+
+include::{snippets}/borrow-requests-approve/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/borrow-requests-approve/http-response.adoc[]
+
+== *대출 승인*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/borrow-requests-deny/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/borrow-requests-deny/request-cookies.adoc[]
+
+==== Path Variables
+
+include::{snippets}/borrow-requests-deny/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/borrow-requests-deny/http-response.adoc[]

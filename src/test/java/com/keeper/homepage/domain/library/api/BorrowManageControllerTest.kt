@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStat
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy
 import com.keeper.homepage.global.config.security.data.JwtType
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -155,6 +156,60 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `대출 신청 승인 거절` {
+
+        private lateinit var borrowInfo: BookBorrowInfo
+
+        @BeforeEach
+        fun setBorrowInfo() {
+            borrowInfo = bookBorrowInfoTestHelper.generate(대출대기중)
+        }
+
+        @Test
+        fun `유효한 요청이면 책 대여 승인이 성공해야 한다`() {
+            val beforeQuantity = borrowInfo.book.currentQuantity
+            val securedValue = getSecuredValue(BorrowManageController::class.java, "approveBorrow")
+            callApproveBorrowApi(borrowInfo.id)
+                .andExpect(status().isNoContent)
+                .andDo(
+                    document(
+                        "borrow-requests-approve",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("borrowId").description("대출 ID")
+                        )
+                    )
+                )
+            borrowInfo.borrowStatus.type shouldBe 대출승인
+            borrowInfo.book.currentQuantity shouldBe beforeQuantity - 1
+        }
+
+        @Test
+        fun `유효한 요청이면 책 대여 거절이 성공해야 한다`() {
+            val securedValue = getSecuredValue(BorrowManageController::class.java, "denyBorrow")
+            callDenyBorrowApi(borrowInfo.id)
+                .andExpect(status().isNoContent)
+                .andDo(
+                    document(
+                        "borrow-requests-deny",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("borrowId").description("대출 ID")
+                        )
+                    )
+                )
+            borrowInfo.borrowStatus.type shouldBe 대출거부
         }
     }
 }
