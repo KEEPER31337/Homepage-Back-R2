@@ -7,6 +7,8 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
+import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.error.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +20,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -107,5 +110,19 @@ public class Book extends BaseEntity {
   public boolean isSomeoneInBorrowing() {
     return getBookBorrowInfos().stream()
         .anyMatch(BookBorrowInfo::isInBorrowing);
+  }
+
+  public void borrow() {
+    if (this.currentQuantity <= 0) {
+      throw new BusinessException(this.title, "bookTitle", ErrorCode.BOOK_CANNOT_BORROW);
+    }
+    this.currentQuantity--;
+  }
+
+  public void returnBook() {
+    if (Objects.equals(this.currentQuantity, totalQuantity)) {
+      throw new BusinessException(this.title, "bookTitle", ErrorCode.BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY);
+    }
+    this.currentQuantity++;
   }
 }

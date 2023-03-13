@@ -53,7 +53,9 @@ public class BookBorrowStatus {
     대출대기중(1, "대출 대기 중"),
     대출거부(2, "대출 거부"),
     대출승인(3, "대출 승인"),
-    반납대기중(4, "반납 대기 중");
+    반납대기중(4, "반납 대기 중"),
+    반납(5, "반납"),
+    ;
 
     private final long id;
     private final String status;

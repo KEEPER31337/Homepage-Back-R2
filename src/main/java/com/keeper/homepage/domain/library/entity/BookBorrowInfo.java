@@ -91,4 +91,8 @@ public class BookBorrowInfo extends BaseEntity {
     BookBorrowStatusType type = getBorrowStatus().getType();
     return type.equals(대출승인) || type.equals(반납대기중);
   }
+
+  public void changeBorrowStats(BookBorrowStatusType type) {
+    this.borrowStatus = BookBorrowStatus.getBookBorrowStatusBy(type);
+  }
 }

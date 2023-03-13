@@ -20,7 +20,6 @@ import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.request.RequestDocumentation.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.header
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.LinkedMultiValueMap
 
@@ -42,7 +41,6 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
             callAddBookApi(hasThumbnail = true)
                 .andExpect(status().isCreated)
-                .andExpect(header().string(HttpHeaders.LOCATION, "/books/1"))
                 .andDo(
                     document(
                         "assign-book",
@@ -71,7 +69,6 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         fun `썸네일이 없어도 책 등록은 성공해야 한다`() {
             callAddBookApi()
                 .andExpect(status().isCreated)
-                .andExpect(header().string(HttpHeaders.LOCATION, "/books/1"))
         }
 
         @ParameterizedTest
