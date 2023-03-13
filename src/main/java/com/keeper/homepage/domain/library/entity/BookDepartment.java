@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.library.entity;
 
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_TYPE_NOT_FOUND;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static java.lang.String.format;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.library.converter.BookDepartmentTypeConverter;
@@ -19,7 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_department")
@@ -69,5 +67,13 @@ public class BookDepartment {
           .findAny()
           .orElseThrow(() -> new BusinessException(type, "type", BOOK_TYPE_NOT_FOUND));
     }
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public BookDepartmentType getType() {
+    return type;
   }
 }

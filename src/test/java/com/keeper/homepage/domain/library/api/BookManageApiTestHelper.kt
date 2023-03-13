@@ -1,13 +1,17 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_사서
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.http.MediaType
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart
 import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation
@@ -15,7 +19,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 
-const val ADD_BOOK_URL = "/manage/books"
+const val BOOK_URL = "/manage/books"
 
 fun field(
     path: String,
@@ -84,7 +88,7 @@ class BookManageApiTestHelper : IntegrationTest() {
 
         return if (hasThumbnail) {
             mockMvc.perform(
-                multipart(ADD_BOOK_URL)
+                multipart(BOOK_URL)
                     .file(thumbnailTestHelper.smallThumbnailFile)
                     .queryParams(params)
                     .cookie(*accessCookies)
@@ -92,11 +96,34 @@ class BookManageApiTestHelper : IntegrationTest() {
             )
         } else {
             mockMvc.perform(
-                multipart(ADD_BOOK_URL)
+                multipart(BOOK_URL)
                     .queryParams(params)
                     .cookie(*accessCookies)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
             )
         }
+    }
+
+    fun callDeleteBookApi(
+        accessCookies: Array<Cookie> = bookManagerCookies,
+        isMocking: Boolean = false,
+    ): ResultActions {
+        var bookId = 0L
+        if (isMocking) {
+            every { bookManageService.deleteBook(any()) } just Runs
+        } else {
+            bookId = bookManageService.addBook(
+                "삶의 목적을 찾는 45가지 방법",
+                "ChatGPT",
+                10,
+                BookDepartmentType.DOCUMENT,
+                null
+            )
+        }
+
+        return mockMvc.perform(
+            delete("${BOOK_URL}/{bookId}", bookId)
+                .cookie(*accessCookies)
+        )
     }
 }

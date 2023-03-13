@@ -5,10 +5,7 @@ import com.keeper.homepage.domain.library.dto.req.AddBookRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.net.URI
 
 @RequestMapping("/manage/books")
@@ -30,5 +27,11 @@ class BookManageController(
         )
         return ResponseEntity.created(URI.create("/books/${addedBookId}"))
             .build()
+    }
+
+    @DeleteMapping("/{bookId}")
+    fun deleteBook(@PathVariable bookId: Long): ResponseEntity<Void> {
+        bookManageService.deleteBook(bookId)
+        return ResponseEntity.noContent().build()
     }
 }

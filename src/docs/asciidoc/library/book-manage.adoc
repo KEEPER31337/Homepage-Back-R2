@@ -43,6 +43,27 @@ include::{snippets}/assign-book/http-response.adoc[]
 
 include::{snippets}/assign-book/response-headers.adoc[]
 
+== *책 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-book/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-book/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/delete-book/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-book/http-response.adoc[]
 
 == *대출 신청 도서 조회*
 

@@ -105,4 +105,37 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(status().isForbidden)
         }
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `책 삭제` {
+
+        @Test
+        fun `유효한 요청이면 책 삭제는 성공해야 한다`() {
+            val securedValue = getSecuredValue(BookManageController::class.java, "deleteBook")
+            callDeleteBookApi()
+                .andExpect(status().isNoContent)
+                .andDo(
+                    document(
+                        "delete-book",
+                        requestCookies(
+                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("bookId").description("책 id")
+                        )
+                    )
+                )
+        }
+
+        @Test
+        fun `회원 권한의 책 삭제는 실패해야 한다`() {
+            val member = memberTestHelper.generate()
+            member.assignJob(MemberJob.MemberJobType.ROLE_회원)
+
+            callDeleteBookApi(accessCookies = memberTestHelper.getTokenCookies(member))
+                .andExpect(status().isForbidden)
+        }
+    }
 }
