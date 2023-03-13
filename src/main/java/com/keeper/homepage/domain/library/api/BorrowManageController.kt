@@ -11,10 +11,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 const val MIN_SIZE = 3L
 const val MAX_SIZE = 100L
@@ -34,5 +31,17 @@ class BorrowManageController(
     ): ResponseEntity<Page<BorrowResponse>> {
         val borrowRequests = borrowManageService.getBorrowRequests(PageRequest.of(page, size))
         return ResponseEntity.ok(borrowRequests)
+    }
+
+    @PostMapping("/{borrowId}/requests-approve")
+    fun approveBorrow(@PathVariable borrowId: Long): ResponseEntity<Void> {
+        borrowManageService.approveBorrow(borrowId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{borrowId}/requests-deny")
+    fun denyBorrow(@PathVariable borrowId: Long): ResponseEntity<Void> {
+        borrowManageService.denyBorrow(borrowId)
+        return ResponseEntity.noContent().build()
     }
 }
