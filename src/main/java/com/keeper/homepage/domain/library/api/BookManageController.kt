@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.application.BookManageService
-import com.keeper.homepage.domain.library.dto.req.AddBookRequest
+import com.keeper.homepage.domain.library.dto.req.BookRequest
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
@@ -16,7 +16,7 @@ class BookManageController(
 ) {
     @PostMapping
     fun addBook(
-        @ModelAttribute @Valid request: AddBookRequest
+        @ModelAttribute @Valid request: BookRequest
     ): ResponseEntity<Void> {
         val addedBookId = bookManageService.addBook(
             request.title!!,
