@@ -55,7 +55,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                             parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
                         ),
                         requestParts(
-                            partWithName("thumbnail").description("게시글의 썸네일")
+                            partWithName("thumbnail").description("책의 썸네일")
                                 .optional(),
                         ),
                         responseHeaders(
