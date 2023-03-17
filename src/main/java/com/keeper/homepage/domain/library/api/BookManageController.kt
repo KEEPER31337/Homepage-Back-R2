@@ -34,4 +34,20 @@ class BookManageController(
         bookManageService.deleteBook(bookId)
         return ResponseEntity.noContent().build()
     }
+
+    @PutMapping("/{bookId}")
+    fun modifyBook(
+        @PathVariable bookId: Long,
+        @ModelAttribute @Valid request: BookRequest
+    ): ResponseEntity<Void> {
+        bookManageService.modifyBook(
+            bookId,
+            request.title!!,
+            request.author!!,
+            request.totalQuantity!!,
+            request.bookDepartment!!,
+            request.thumbnail
+        )
+        return ResponseEntity.noContent().build()
+    }
 }

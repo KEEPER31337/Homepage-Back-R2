@@ -18,7 +18,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class ExceptionAdvice {
 
   @ExceptionHandler(RuntimeException.class)
-  public ResponseEntity<ErrorResponse> runtimeException() {
+  public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
+    e.printStackTrace();
     return ResponseEntity.internalServerError()
         .body(ErrorResponse.from("서버에 문제가 생겼습니다."));
   }

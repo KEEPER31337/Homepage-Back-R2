@@ -48,4 +48,21 @@ class BookManageService(
 
         bookRepository.delete(book)
     }
+
+    fun modifyBook(
+        bookId: Long,
+        title: String,
+        author: String,
+        totalQuantity: Long,
+        bookDepartment: BookDepartment.BookDepartmentType,
+        thumbnail: MultipartFile?
+    ) = bookRepository.getBookById(bookId)
+        .updateBook(
+            title,
+            author,
+            BookDepartment.getBookDepartmentBy(bookDepartment),
+            totalQuantity,
+            thumbnailUtil.saveThumbnail(thumbnail)
+                .orElse(null)
+        )
 }
