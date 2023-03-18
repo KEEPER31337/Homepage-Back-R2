@@ -22,7 +22,7 @@ import org.springframework.restdocs.headers.HeaderDocumentation.*
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.restdocs.snippet.Attributes.key
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -83,10 +83,13 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional(),
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
-                            parameterWithName("status").description(
-                                """${BorrowStatusDto.values().map(BorrowStatusDto::status)}
-                                        만약 빈 값으로 보낼 경우 대출 관련 정보를 모두 가져옵니다."""
-                            ).optional()
+                            parameterWithName("status")
+                                .attributes(
+                                    key("format").value(
+                                        BorrowStatusDto.values().map(BorrowStatusDto::status).joinToString()
+                                    )
+                                ).description("만약 빈 값으로 보낼 경우 대출 관련 정보를 모두 가져옵니다.")
+                                .optional()
                         ),
                         responseFields(
                             *pageHelper(
