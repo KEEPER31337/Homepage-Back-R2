@@ -66,7 +66,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
@@ -99,7 +99,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 field("author", "대출할 책의 저자"),
                                 field("borrowerId", "대출자의 ID"),
                                 field("borrowerNickname", "대출자의 닉네임"),
-                                field("requestDatetime", "대출 요청을 한 시간")
+                                field("requestDatetime", "대출 요청을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
+                                field("borrowDateTime", "대출 승인을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
+                                field("expiredDateTime", "반납 예정 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
                             )
                         )
                     )
@@ -140,7 +142,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
@@ -185,7 +187,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
