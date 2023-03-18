@@ -22,12 +22,16 @@ import org.springframework.restdocs.headers.HeaderDocumentation.*
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun BookBorrowInfoTestHelper.generate(borrowStatus: BookBorrowStatus.BookBorrowStatusType): BookBorrowInfo {
-    return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).build()
+fun BookBorrowInfoTestHelper.generate(
+    borrowStatus: BookBorrowStatus.BookBorrowStatusType,
+    expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2)
+): BookBorrowInfo {
+    return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).expireDate(expiredDate).build()
 }
 
 fun LocalDateTime.formatting(format: String) = this.format(DateTimeFormatter.ofPattern(format))
@@ -183,6 +187,40 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
+        }
+
+        @Test
+        fun `반납 대기중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "0", "size" to "3"),
+                borrowStatus = BorrowStatusDto.WILL_RETURN
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("3"))
+                .andExpect(jsonPath("$.totalPages").value("3"))
+                .andExpect(jsonPath("$.totalElements").value("8"))
+        }
+
+        @Test
+        fun `연체중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출승인) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(반납대기중) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인, LocalDateTime.now().minusDays(1)) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중, LocalDateTime.now().minusDays(1)) }
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "0", "size" to "5"),
+                borrowStatus = BorrowStatusDto.OVERDUE
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("5"))
+                .andExpect(jsonPath("$.totalElements").value("12"))
+                .andExpect(jsonPath("$.totalPages").value("3"))
         }
     }
 

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 fun BookBorrowInfoRepository.getBorrowById(borrowId: Long) = this.findById(borrowId)
     .orElseThrow { throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_NOT_FOUND) }
@@ -24,6 +25,14 @@ class BorrowManageService(
         return when (borrowStatusDto) {
             BorrowStatusDto.REQUESTS ->
                 borrowInfoRepository.findAllByBorrowStatus(getBookBorrowStatusBy(대출대기중), pageable)
+                    .map(::BorrowResponse)
+
+            BorrowStatusDto.WILL_RETURN ->
+                borrowInfoRepository.findAllByBorrowStatus(getBookBorrowStatusBy(반납대기중), pageable)
+                    .map(::BorrowResponse)
+
+            BorrowStatusDto.OVERDUE ->
+                borrowInfoRepository.findAllOverDue(LocalDateTime.now(), pageable)
                     .map(::BorrowResponse)
 
             null -> borrowInfoRepository.findAll(pageable)
