@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.application.BorrowManageService
+import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.dto.resp.BorrowResponse
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -24,12 +25,13 @@ const val DEFAULT_SIZE = 10
 class BorrowManageController(
     private val borrowManageService: BorrowManageService
 ) {
-    @GetMapping("/requests")
+    @GetMapping
     fun getBorrowRequests(
         @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
         @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
+        @RequestParam status: BorrowStatusDto?
     ): ResponseEntity<Page<BorrowResponse>> {
-        val borrowRequests = borrowManageService.getBorrowRequests(PageRequest.of(page, size))
+        val borrowRequests = borrowManageService.getBorrow(PageRequest.of(page, size), status)
         return ResponseEntity.ok(borrowRequests)
     }
 
@@ -42,6 +44,18 @@ class BorrowManageController(
     @PostMapping("/{borrowId}/requests-deny")
     fun denyBorrow(@PathVariable borrowId: Long): ResponseEntity<Void> {
         borrowManageService.denyBorrow(borrowId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{borrowId}/return-approve")
+    fun approveReturn(@PathVariable borrowId: Long): ResponseEntity<Void> {
+        borrowManageService.approveReturn(borrowId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{borrowId}/return-deny")
+    fun denyReturn(@PathVariable borrowId: Long): ResponseEntity<Void> {
+        borrowManageService.denyReturn(borrowId)
         return ResponseEntity.noContent().build()
     }
 }

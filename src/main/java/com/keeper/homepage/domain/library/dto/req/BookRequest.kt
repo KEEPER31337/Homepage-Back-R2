@@ -11,7 +11,7 @@ const val MAX_TITLE_LENGTH = 200
 const val MAX_AUTHOR_LENGTH = 30
 const val MAX_TOTAL_QUANTITY_LENGTH = 20L
 
-data class AddBookRequest(
+data class BookRequest(
     @field:NotNull
     @field:Length(min = 1, max = MAX_TITLE_LENGTH)
     val title: String?,

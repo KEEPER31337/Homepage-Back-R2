@@ -29,6 +29,7 @@ import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
 import com.keeper.homepage.domain.library.application.BookManageService;
+import com.keeper.homepage.domain.library.application.BorrowManageService;
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
@@ -218,6 +219,9 @@ public class IntegrationTest {
 
   @SpykBean
   protected BookManageService bookManageService;
+
+  @SpykBean
+  protected BorrowManageService borrowManageService;
 
   /******* Helper *******/
   @SpyBean
