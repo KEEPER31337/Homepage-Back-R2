@@ -44,4 +44,16 @@ class BorrowManageController(
         borrowManageService.denyBorrow(borrowId)
         return ResponseEntity.noContent().build()
     }
+
+    @PostMapping("/{borrowId}/return-approve")
+    fun approveReturn(@PathVariable borrowId: Long): ResponseEntity<Void> {
+        borrowManageService.approveReturn(borrowId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{borrowId}/return-deny")
+    fun denyReturn(@PathVariable borrowId: Long): ResponseEntity<Void> {
+        borrowManageService.denyReturn(borrowId)
+        return ResponseEntity.noContent().build()
+    }
 }

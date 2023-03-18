@@ -20,6 +20,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -116,5 +117,12 @@ public class Book extends BaseEntity {
       throw new BusinessException(this.title, "bookTitle", ErrorCode.BOOK_CANNOT_BORROW);
     }
     this.currentQuantity--;
+  }
+
+  public void returnBook() {
+    if (Objects.equals(this.currentQuantity, totalQuantity)) {
+      throw new BusinessException(this.title, "bookTitle", ErrorCode.BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY);
+    }
+    this.currentQuantity++;
   }
 }

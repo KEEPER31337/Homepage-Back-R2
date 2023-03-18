@@ -115,7 +115,7 @@ include::{snippets}/borrow-requests-approve/path-parameters.adoc[]
 
 include::{snippets}/borrow-requests-approve/http-response.adoc[]
 
-== *대출 승인*
+== *대출 거절*
 
 === 요청
 
@@ -136,3 +136,51 @@ include::{snippets}/borrow-requests-deny/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/borrow-requests-deny/http-response.adoc[]
+
+== *반납 승인*
+
+NOTE: 호출 시 해당 책의 currentQuantity가 1 증가합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/borrow-return-approve/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/borrow-return-approve/request-cookies.adoc[]
+
+==== Path Variables
+
+include::{snippets}/borrow-return-approve/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/borrow-return-approve/http-response.adoc[]
+
+== *반납 거절*
+
+NOTE: 호출 시 해당 대여 기록은 "대출" 상태로 남습니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/borrow-return-deny/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/borrow-return-deny/request-cookies.adoc[]
+
+==== Path Variables
+
+include::{snippets}/borrow-return-deny/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/borrow-return-deny/http-response.adoc[]

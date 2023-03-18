@@ -212,4 +212,59 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
             borrowInfo.borrowStatus.type shouldBe 대출거부
         }
     }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `반납 신청 승인 거절` {
+
+        private lateinit var borrowInfo: BookBorrowInfo
+
+        @BeforeEach
+        fun setBorrowInfo() {
+            borrowInfo = bookBorrowInfoTestHelper.generate(반납대기중)
+            borrowInfo.book.borrow()
+        }
+
+        @Test
+        fun `유효한 요청이면 책 반납 승인이 성공해야 한다`() {
+            val beforeQuantity = borrowInfo.book.currentQuantity
+            val securedValue = getSecuredValue(BorrowManageController::class.java, "approveReturn")
+            callApproveReturnApi(borrowInfo.id)
+                .andExpect(status().isNoContent)
+                .andDo(
+                    document(
+                        "borrow-return-approve",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("borrowId").description("대출 ID")
+                        )
+                    )
+                )
+            borrowInfo.borrowStatus.type shouldBe 반납
+            borrowInfo.book.currentQuantity shouldBe beforeQuantity + 1
+        }
+
+        @Test
+        fun `유효한 요청이면 책 반납 거절이 성공해야 한다`() {
+            val securedValue = getSecuredValue(BorrowManageController::class.java, "denyReturn")
+            callDenyReturnApi(borrowInfo.id)
+                .andExpect(status().isNoContent)
+                .andDo(
+                    document(
+                        "borrow-return-deny",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("borrowId").description("대출 ID")
+                        )
+                    )
+                )
+            borrowInfo.borrowStatus.type shouldBe 대출승인
+        }
+    }
 }
