@@ -13,8 +13,7 @@ import io.mockk.just
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.http.MediaType
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
 import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.test.web.servlet.ResultActions
@@ -167,6 +166,14 @@ class BookManageApiTestHelper : IntegrationTest() {
             )
         }
 
+    fun callGetBookDetailApi(
+        bookId: Long,
+        accessCookies: Array<Cookie> = bookManagerCookies,
+    ): ResultActions = mockMvc.perform(
+        get("${BOOK_URL}/{bookId}", bookId)
+            .cookie(*accessCookies)
+    )
+
     fun getBorrowDetailResponseDocs(): Array<FieldDescriptor> {
         return arrayOf(
             field("borrowInfoId", "대출 정보 ID"),
@@ -181,6 +188,19 @@ class BookManageApiTestHelper : IntegrationTest() {
             field(
                 "status", "대출의 현재 상태\r\n\r\n${BookBorrowStatus.BookBorrowStatusType.getAllList()}"
             ),
+        )
+    }
+
+    fun getBookDetailResponseDocs(): Array<FieldDescriptor> {
+        return arrayOf(
+            field("id", "책의 ID"),
+            field("title", "책의 제목"),
+            field("author", "책의 저자"),
+            field("bookDepartment", "책 카테고리"),
+            field("totalCount", "책의 총 권 수"),
+            field("borrowingCount", "현재 대출중인 책 수"),
+            field("thumbnailPath", "썸네일 URL"),
+            *listHelper("borrowInfos", *getBorrowDetailResponseDocs()),
         )
     }
 }
