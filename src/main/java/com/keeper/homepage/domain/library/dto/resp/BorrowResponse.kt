@@ -23,6 +23,6 @@ data class BorrowResponse constructor(
         author = borrowInfo.book.author,
         borrowerId = borrowInfo.member.id,
         borrowerNickname = borrowInfo.member.nickname,
-        requestDatetime = borrowInfo.borrowDate,
+        requestDatetime = borrowInfo.registerTime,
     )
 }
