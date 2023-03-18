@@ -102,6 +102,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 field("requestDatetime", "대출 요청을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
                                 field("borrowDateTime", "대출 승인을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
                                 field("expiredDateTime", "반납 예정 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
+                                field(
+                                    "status", "대출의 현재 상태\r\n\r\n${getAllList()}"
+                                ),
                             )
                         )
                     )

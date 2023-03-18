@@ -19,6 +19,7 @@ data class BorrowResponse constructor(
     val borrowDateTime: LocalDateTime?,
     @JsonFormat(pattern = RESPONSE_DATETIME_FORMAT)
     val expiredDateTime: LocalDateTime?,
+    val status: String
 ) {
     constructor(borrowInfo: BookBorrowInfo) : this(
         borrowInfoId = borrowInfo.id,
@@ -29,6 +30,8 @@ data class BorrowResponse constructor(
         borrowerNickname = borrowInfo.member.nickname,
         requestDatetime = borrowInfo.registerTime,
         borrowDateTime = borrowInfo.borrowDate,
-        expiredDateTime = borrowInfo.expireDate
+        expiredDateTime = borrowInfo.expireDate,
+        status = borrowInfo.borrowStatus.type.name,
     )
 }
+
