@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper
+import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
@@ -21,12 +22,16 @@ import org.springframework.restdocs.headers.HeaderDocumentation.*
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
+import org.springframework.restdocs.snippet.Attributes.key
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun BookBorrowInfoTestHelper.generate(borrowStatus: BookBorrowStatus.BookBorrowStatusType): BookBorrowInfo {
-    return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).build()
+fun BookBorrowInfoTestHelper.generate(
+    borrowStatus: BookBorrowStatus.BookBorrowStatusType,
+    expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2)
+): BookBorrowInfo {
+    return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).expireDate(expiredDate).build()
 }
 
 fun LocalDateTime.formatting(format: String) = this.format(DateTimeFormatter.ofPattern(format))
@@ -35,7 +40,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    inner class `대출 신청 도서 조회` {
+    inner class `대출 정보 조회` {
 
         private lateinit var borrowInfoList: List<BookBorrowInfo>
 
@@ -48,7 +53,10 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         fun `유효한 요청이면 책 대여 정보 가져오기는 성공해야 한다`() {
             val securedValue =
                 getSecuredValue(BorrowManageController::class.java, "getBorrowRequests")
-            callGetBorrowRequestsApi(params = multiValueMapOf("page" to "0", "size" to "3"))
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "0", "size" to "3"),
+                borrowStatus = BorrowStatusDto.REQUESTS
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))
@@ -58,14 +66,14 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
                 .andExpect(jsonPath("$.totalPages").value("7"))
                 .andDo(
                     document(
-                        "get-borrow-requests",
+                        "get-borrow-infos",
                         requestCookies(
                             cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
@@ -75,6 +83,13 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional(),
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
+                            parameterWithName("status")
+                                .attributes(
+                                    key("format").value(
+                                        BorrowStatusDto.values().map(BorrowStatusDto::status).joinToString()
+                                    )
+                                ).description("만약 빈 값으로 보낼 경우 대출 관련 정보를 모두 가져옵니다.")
+                                .optional()
                         ),
                         responseFields(
                             *pageHelper(
@@ -84,7 +99,12 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 field("author", "대출할 책의 저자"),
                                 field("borrowerId", "대출자의 ID"),
                                 field("borrowerNickname", "대출자의 닉네임"),
-                                field("requestDatetime", "대출 요청을 한 시간")
+                                field("requestDatetime", "대출 요청을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
+                                field("borrowDateTime", "대출 승인을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
+                                field("expiredDateTime", "반납 예정 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
+                                field(
+                                    "status", "대출의 현재 상태\r\n\r\n${getAllList()}"
+                                ),
                             )
                         )
                     )
@@ -93,7 +113,10 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `페이지와 사이즈에 해당하는 대여 목록을 가져와야 한다`() {
-            callGetBorrowRequestsApi(params = multiValueMapOf("page" to "1", "size" to "5"))
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "1", "size" to "5"),
+                borrowStatus = BorrowStatusDto.REQUESTS
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[5].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[5].book.id))
@@ -112,7 +135,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `페이지와 사이즈가 인자로 오지 않아도 default 결과를 반환해야 한다`() {
-            callGetBorrowRequestsApi()
+            callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))
@@ -122,7 +145,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
@@ -132,8 +155,24 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         @ParameterizedTest
         @CsvSource("-1, 10", "0, -1", "0, 2", "0, 101")
         fun `올바르지 않은 요청은 실패해야 한다`(page: String, size: String) {
-            callGetBorrowRequestsApi(params = multiValueMapOf("page" to page, "size" to size))
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to page, "size" to size),
+                borrowStatus = BorrowStatusDto.REQUESTS
+            )
                 .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `status 없이 보낼 경우 모든 대출 관련 목록을 가져와야 한다`() {
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            callGetBorrowApi(borrowStatus = null)
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("10"))
+                .andExpect(jsonPath("$.totalPages").value("3"))
+                .andExpect(jsonPath("$.totalElements").value("29"))
         }
 
         @Test
@@ -141,7 +180,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
             (1..3).map { bookBorrowInfoTestHelper.generate(대출거부) }
             (1..3).map { bookBorrowInfoTestHelper.generate(대출승인) }
             (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중) }
-            callGetBorrowRequestsApi()
+            callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))
@@ -151,11 +190,45 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
+        }
+
+        @Test
+        fun `반납 대기중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "0", "size" to "3"),
+                borrowStatus = BorrowStatusDto.WILL_RETURN
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("3"))
+                .andExpect(jsonPath("$.totalPages").value("3"))
+                .andExpect(jsonPath("$.totalElements").value("8"))
+        }
+
+        @Test
+        fun `연체중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출승인) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(반납대기중) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인, LocalDateTime.now().minusDays(1)) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중, LocalDateTime.now().minusDays(1)) }
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "0", "size" to "5"),
+                borrowStatus = BorrowStatusDto.OVERDUE
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("5"))
+                .andExpect(jsonPath("$.totalElements").value("12"))
+                .andExpect(jsonPath("$.totalPages").value("3"))
         }
     }
 

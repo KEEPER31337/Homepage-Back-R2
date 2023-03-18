@@ -23,8 +23,8 @@ import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
-import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.request.RequestDocumentation.*
+import org.springframework.restdocs.snippet.Attributes.key
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.LinkedMultiValueMap
 
@@ -56,7 +56,13 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                         queryParameters(
                             parameterWithName("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
                             parameterWithName("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
-                            parameterWithName("bookDepartment").description("${BookDepartmentType.values()}"),
+                            parameterWithName("bookDepartment")
+                                .attributes(
+                                    key("format")
+                                        .value(
+                                            BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
+                                        )
+                                ).description("책 카테고리"),
                             parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
                         ),
                         requestParts(
@@ -172,7 +178,13 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                         queryParameters(
                             parameterWithName("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
                             parameterWithName("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
-                            parameterWithName("bookDepartment").description("${BookDepartmentType.values()}"),
+                            parameterWithName("bookDepartment")
+                                .attributes(
+                                    key("format")
+                                        .value(
+                                            BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
+                                        )
+                                ).description("책 카테고리"),
                             parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
                         ),
                         requestParts(

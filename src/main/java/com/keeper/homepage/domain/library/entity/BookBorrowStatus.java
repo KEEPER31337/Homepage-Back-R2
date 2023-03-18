@@ -66,6 +66,13 @@ public class BookBorrowStatus {
           .findAny()
           .orElseThrow(() -> new BusinessException(type, "type", BOOK_TYPE_NOT_FOUND));
     }
+
+    public static String getAllList() {
+      return Arrays.stream(BookBorrowStatusType.values())
+          .map(BookBorrowStatusType::name)
+          .toList()
+          .toString();
+    }
   }
 
   public Long getId() {
