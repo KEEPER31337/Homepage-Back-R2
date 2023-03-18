@@ -1,6 +1,8 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_사서
@@ -36,8 +38,7 @@ fun field(
 
 fun pageHelper(vararg fieldDescriptors: FieldDescriptor): Array<FieldDescriptor> =
     arrayOf(
-        *(fieldDescriptors.map { field("content[].${it.path}", it.description.toString(), it.isOptional) }
-            .toTypedArray()),
+        *listHelper("content", *fieldDescriptors),
         field("empty", "가져오는 페이지가 비어 있는 지"),
         field("first", "첫 페이지인지"),
         field("last", "마지막 페이지인지"),
@@ -51,6 +52,10 @@ fun pageHelper(vararg fieldDescriptors: FieldDescriptor): Array<FieldDescriptor>
         field("totalElements", "총 페이지 수"),
         field("size", "한 페이지당 데이터 개수")
     )
+
+fun listHelper(objectName: String, vararg fieldDescriptors: FieldDescriptor): Array<FieldDescriptor> =
+    fieldDescriptors.map { field("${objectName}[].${it.path}", it.description.toString(), it.isOptional) }
+        .toTypedArray()
 
 fun <K, V> multiValueMapOf(
     vararg pairs: Pair<K, V>
@@ -161,4 +166,21 @@ class BookManageApiTestHelper : IntegrationTest() {
                     .contentType(MediaType.MULTIPART_FORM_DATA)
             )
         }
+
+    fun getBorrowResponseDocs(): Array<FieldDescriptor> {
+        return arrayOf(
+            field("borrowInfoId", "대출 정보 ID"),
+            field("bookId", "대출할 책의 ID"),
+            field("bookTitle", "대출할 책의 제목"),
+            field("author", "대출할 책의 저자"),
+            field("borrowerId", "대출자의 ID"),
+            field("borrowerNickname", "대출자의 닉네임"),
+            field("requestDatetime", "대출 요청을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+            field("borrowDateTime", "대출 승인을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+            field("expiredDateTime", "반납 예정 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+            field(
+                "status", "대출의 현재 상태\r\n\r\n${BookBorrowStatus.BookBorrowStatusType.getAllList()}"
+            ),
+        )
+    }
 }
