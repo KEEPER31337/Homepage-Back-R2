@@ -167,7 +167,7 @@ class BookManageApiTestHelper : IntegrationTest() {
             )
         }
 
-    fun getBorrowResponseDocs(): Array<FieldDescriptor> {
+    fun getBorrowDetailResponseDocs(): Array<FieldDescriptor> {
         return arrayOf(
             field("borrowInfoId", "대출 정보 ID"),
             field("bookId", "대출할 책의 ID"),

@@ -92,7 +92,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional()
                         ),
                         responseFields(
-                            *pageHelper(*getBorrowResponseDocs())
+                            *pageHelper(*getBorrowDetailResponseDocs())
                         )
                     )
                 )

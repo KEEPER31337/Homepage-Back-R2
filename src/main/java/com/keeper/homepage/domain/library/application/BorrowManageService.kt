@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.library.application
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
-import com.keeper.homepage.domain.library.dto.resp.BorrowResponse
+import com.keeper.homepage.domain.library.dto.resp.BorrowDetailResponse
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy
 import com.keeper.homepage.global.error.BusinessException
@@ -21,22 +21,22 @@ fun BookBorrowInfoRepository.getBorrowById(borrowId: Long) = this.findById(borro
 class BorrowManageService(
     val borrowInfoRepository: BookBorrowInfoRepository
 ) {
-    fun getBorrow(pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowResponse> {
+    fun getBorrow(pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowDetailResponse> {
         return when (borrowStatusDto) {
             BorrowStatusDto.REQUESTS ->
                 borrowInfoRepository.findAllByBorrowStatus(getBookBorrowStatusBy(대출대기중), pageable)
-                    .map(::BorrowResponse)
+                    .map(::BorrowDetailResponse)
 
             BorrowStatusDto.WILL_RETURN ->
                 borrowInfoRepository.findAllByBorrowStatus(getBookBorrowStatusBy(반납대기중), pageable)
-                    .map(::BorrowResponse)
+                    .map(::BorrowDetailResponse)
 
             BorrowStatusDto.OVERDUE ->
                 borrowInfoRepository.findAllOverDue(LocalDateTime.now(), pageable)
-                    .map(::BorrowResponse)
+                    .map(::BorrowDetailResponse)
 
             null -> borrowInfoRepository.findAll(pageable)
-                .map(::BorrowResponse)
+                .map(::BorrowDetailResponse)
         }
     }
 
