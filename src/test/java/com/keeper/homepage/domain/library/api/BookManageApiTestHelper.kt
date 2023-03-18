@@ -85,7 +85,6 @@ class BookManageApiTestHelper : IntegrationTest() {
         if (isMocking) {
             every { bookManageService.addBook(any(), any(), any(), any(), any()) } returns 1L
         }
-
         return if (hasThumbnail) {
             mockMvc.perform(
                 multipart(BOOK_URL)
@@ -126,4 +125,40 @@ class BookManageApiTestHelper : IntegrationTest() {
                 .cookie(*accessCookies)
         )
     }
+
+    fun callModifyBookApi(
+        params: MultiValueMap<String, String?> = multiValueMapOf(
+            "title" to "삶의 목적을 찾는 45가지 방법",
+            "author" to "ChatGPT",
+            "totalQuantity" to "10",
+            "bookDepartment" to "document"
+        ),
+        bookId: Long,
+        hasThumbnail: Boolean = false,
+        accessCookies: Array<Cookie> = bookManagerCookies,
+    ): ResultActions =
+        if (hasThumbnail) {
+            mockMvc.perform(
+                multipart("${BOOK_URL}/{bookId}", bookId)
+                    .file(thumbnailTestHelper.smallThumbnailFile)
+                    .with { request ->
+                        request.method = "PUT"
+                        request
+                    }
+                    .queryParams(params)
+                    .cookie(*accessCookies)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+            )
+        } else {
+            mockMvc.perform(
+                multipart("${BOOK_URL}/{bookId}", bookId)
+                    .with { request ->
+                        request.method = "PUT"
+                        request
+                    }
+                    .queryParams(params)
+                    .cookie(*accessCookies)
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+            )
+        }
 }

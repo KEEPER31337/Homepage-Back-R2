@@ -3,11 +3,15 @@ package com.keeper.homepage.domain.library.api
 import com.keeper.homepage.domain.library.dto.req.MAX_AUTHOR_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TITLE_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TOTAL_QUANTITY_LENGTH
+import com.keeper.homepage.domain.library.entity.Book
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.job.MemberJob
 import com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN
 import com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -19,6 +23,7 @@ import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.LinkedMultiValueMap
@@ -55,7 +60,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                             parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
                         ),
                         requestParts(
-                            partWithName("thumbnail").description("게시글의 썸네일")
+                            partWithName("thumbnail").description("책의 썸네일")
                                 .optional(),
                         ),
                         responseHeaders(
@@ -132,6 +137,71 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
             callDeleteBookApi(accessCookies = memberTestHelper.getTokenCookies(member))
+                .andExpect(status().isForbidden)
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `책 수정` {
+
+        lateinit var book: Book
+
+        @BeforeEach
+        fun generateNewBook() {
+            book = bookTestHelper.builder()
+                .thumbnail(thumbnailTestHelper.generateThumbnail())
+                .build()
+        }
+
+        @Test
+        fun `유효한 요청이면 책 수정은 성공해야 한다`() {
+            val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
+            callModifyBookApi(bookId = book.id, hasThumbnail = true)
+                .andExpect(status().isNoContent)
+                .andDo(
+                    document(
+                        "modify-book",
+                        requestCookies(
+                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("bookId").description("책 id")
+                        ),
+                        queryParameters(
+                            parameterWithName("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
+                            parameterWithName("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
+                            parameterWithName("bookDepartment").description("${BookDepartmentType.values()}"),
+                            parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
+                        ),
+                        requestParts(
+                            partWithName("thumbnail").description("책의 썸네일 (null 값으로 보낼 경우 썸네일을 바꾸지 않습니다.)")
+                                .optional(),
+                        ),
+                    )
+                )
+        }
+
+        @Test
+        fun `썸네일이 없으면 기존의 썸네일이 유지되어야 한다`() {
+            val beforeThumbnail = book.thumbnail
+            callModifyBookApi(bookId = book.id)
+                .andExpect(status().isNoContent)
+
+            em.flush()
+            em.clear()
+            val afterBook = bookRepository.findById(book.id).orElseThrow()
+            beforeThumbnail shouldNotBe null
+            afterBook.thumbnail shouldBe beforeThumbnail
+        }
+
+        @Test
+        fun `회원 권한의 책 수정은 실패해야 한다`() {
+            val member = memberTestHelper.generate()
+            member.assignJob(MemberJob.MemberJobType.ROLE_회원)
+
+            callModifyBookApi(bookId = book.id, accessCookies = memberTestHelper.getTokenCookies(member))
                 .andExpect(status().isForbidden)
         }
     }

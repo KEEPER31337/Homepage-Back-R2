@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.library.entity.Book
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy
+import com.keeper.homepage.domain.library.entity.BookDepartment
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
@@ -93,6 +94,53 @@ class BookManageServiceTest : IntegrationTest() {
             shouldNotThrowAny { bookManageService.deleteBook(book.id) }
 
             bookBorrowInfoRepository.findAll() shouldHaveSize 0
+        }
+    }
+
+    @Nested
+    inner class `책 수정` {
+
+        lateinit var book: Book
+        lateinit var member: Member
+
+        @BeforeEach
+        fun addBook() {
+            book = bookTestHelper.generate()
+            member = memberTestHelper.generate()
+        }
+
+        @Test
+        fun `현재 대여중인 권 수 이하의 책 수량 수정은 실패해야 한다`() {
+            val bookCount = 2L
+            val book = bookTestHelper.builder()
+                .totalQuantity(bookCount)
+                .currentQuantity(bookCount)
+                .thumbnail(thumbnailTestHelper.generateThumbnail())
+                .build()
+            val member = memberTestHelper.generate()
+
+            (1..bookCount).map { // 모든 책 대여
+                book.borrow()
+                bookBorrowInfoTestHelper.builder()
+                    .book(book)
+                    .member(member)
+                    .borrowStatus(getBookBorrowStatusBy(BookBorrowStatusType.대출승인))
+                    .build()
+            }
+
+            val exception = shouldThrow<BusinessException> {
+                bookManageService.modifyBook(
+                    book.id,
+                    book.title + "_",
+                    book.author + "_",
+                    bookCount - 1,
+                    BookDepartment.BookDepartmentType.ETC,
+                    null
+                )
+            }
+
+            exception.httpStatus shouldBe ErrorCode.BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY.httpStatus
+            exception.message shouldBe ErrorCode.BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY.message
         }
     }
 }

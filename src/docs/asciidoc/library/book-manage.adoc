@@ -65,6 +65,32 @@ include::{snippets}/delete-book/path-parameters.adoc[]
 
 include::{snippets}/delete-book/http-response.adoc[]
 
+== *책 정보 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/modify-book/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/modify-book/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/modify-book/query-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/modify-book/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/modify-book/http-response.adoc[]
+
 == *대출 신청 도서 조회*
 
 === 요청
