@@ -3,6 +3,7 @@ package com.keeper.homepage.global.config.web;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.RESOURCE_PATH;
 
 import com.keeper.homepage.domain.library.converter.BookDepartmentTypeConverter;
+import com.keeper.homepage.domain.library.converter.BorrowStatusDtoConverter;
 import com.keeper.homepage.global.config.security.annotation.LoginMemberArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   @Override
   public void addFormatters(FormatterRegistry registry) {
     registry.addConverter(new BookDepartmentTypeConverter());
+    registry.addConverter(new BorrowStatusDtoConverter());
   }
 }

@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper
+import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
@@ -35,7 +36,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    inner class `대출 신청 도서 조회` {
+    inner class `대출 정보 조회` {
 
         private lateinit var borrowInfoList: List<BookBorrowInfo>
 
@@ -48,7 +49,10 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         fun `유효한 요청이면 책 대여 정보 가져오기는 성공해야 한다`() {
             val securedValue =
                 getSecuredValue(BorrowManageController::class.java, "getBorrowRequests")
-            callGetBorrowRequestsApi(params = multiValueMapOf("page" to "0", "size" to "3"))
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "0", "size" to "3"),
+                borrowStatus = BorrowStatusDto.REQUESTS
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))
@@ -65,7 +69,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.totalPages").value("7"))
                 .andDo(
                     document(
-                        "get-borrow-requests",
+                        "get-borrow-infos",
                         requestCookies(
                             cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
@@ -75,6 +79,10 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional(),
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
+                            parameterWithName("status").description(
+                                """${BorrowStatusDto.values().map(BorrowStatusDto::status)}
+                                        만약 빈 값으로 보낼 경우 대출 관련 정보를 모두 가져옵니다."""
+                            ).optional()
                         ),
                         responseFields(
                             *pageHelper(
@@ -93,7 +101,10 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `페이지와 사이즈에 해당하는 대여 목록을 가져와야 한다`() {
-            callGetBorrowRequestsApi(params = multiValueMapOf("page" to "1", "size" to "5"))
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to "1", "size" to "5"),
+                borrowStatus = BorrowStatusDto.REQUESTS
+            )
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[5].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[5].book.id))
@@ -112,7 +123,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `페이지와 사이즈가 인자로 오지 않아도 default 결과를 반환해야 한다`() {
-            callGetBorrowRequestsApi()
+            callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))
@@ -132,8 +143,24 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         @ParameterizedTest
         @CsvSource("-1, 10", "0, -1", "0, 2", "0, 101")
         fun `올바르지 않은 요청은 실패해야 한다`(page: String, size: String) {
-            callGetBorrowRequestsApi(params = multiValueMapOf("page" to page, "size" to size))
+            callGetBorrowApi(
+                params = multiValueMapOf("page" to page, "size" to size),
+                borrowStatus = BorrowStatusDto.REQUESTS
+            )
                 .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `status 없이 보낼 경우 모든 대출 관련 목록을 가져와야 한다`() {
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            callGetBorrowApi(borrowStatus = null)
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("10"))
+                .andExpect(jsonPath("$.totalPages").value("3"))
+                .andExpect(jsonPath("$.totalElements").value("29"))
         }
 
         @Test
@@ -141,7 +168,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
             (1..3).map { bookBorrowInfoTestHelper.generate(대출거부) }
             (1..3).map { bookBorrowInfoTestHelper.generate(대출승인) }
             (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중) }
-            callGetBorrowRequestsApi()
+            callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))

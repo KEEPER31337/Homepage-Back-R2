@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.application
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository
+import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.dto.resp.BorrowResponse
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy
@@ -19,9 +20,16 @@ fun BookBorrowInfoRepository.getBorrowById(borrowId: Long) = this.findById(borro
 class BorrowManageService(
     val borrowInfoRepository: BookBorrowInfoRepository
 ) {
-    fun getBorrowRequests(pageable: Pageable): Page<BorrowResponse> =
-        borrowInfoRepository.findAllByBorrowStatus(getBookBorrowStatusBy(대출대기중), pageable)
-            .map(::BorrowResponse)
+    fun getBorrow(pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowResponse> {
+        return when (borrowStatusDto) {
+            BorrowStatusDto.REQUESTS ->
+                borrowInfoRepository.findAllByBorrowStatus(getBookBorrowStatusBy(대출대기중), pageable)
+                    .map(::BorrowResponse)
+
+            null -> borrowInfoRepository.findAll(pageable)
+                .map(::BorrowResponse)
+        }
+    }
 
     @Transactional
     fun approveBorrow(borrowId: Long) {
