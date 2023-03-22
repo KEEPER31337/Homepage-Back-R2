@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 const val RESPONSE_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 
-data class BorrowResponse constructor(
+data class BorrowDetailResponse constructor(
     val borrowInfoId: Long,
     val bookId: Long,
     val bookTitle: String,

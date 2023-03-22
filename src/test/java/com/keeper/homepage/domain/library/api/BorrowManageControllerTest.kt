@@ -92,20 +92,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional()
                         ),
                         responseFields(
-                            *pageHelper(
-                                field("borrowInfoId", "대출 정보 ID"),
-                                field("bookId", "대출할 책의 ID"),
-                                field("bookTitle", "대출할 책의 제목"),
-                                field("author", "대출할 책의 저자"),
-                                field("borrowerId", "대출자의 ID"),
-                                field("borrowerNickname", "대출자의 닉네임"),
-                                field("requestDatetime", "대출 요청을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
-                                field("borrowDateTime", "대출 승인을 한 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
-                                field("expiredDateTime", "반납 예정 시간 (양식: ${RESPONSE_DATETIME_FORMAT})"),
-                                field(
-                                    "status", "대출의 현재 상태\r\n\r\n${getAllList()}"
-                                ),
-                            )
+                            *pageHelper(*getBorrowDetailResponseDocs())
                         )
                     )
                 )

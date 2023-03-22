@@ -3,7 +3,11 @@ package com.keeper.homepage.domain.library.api
 import com.keeper.homepage.domain.library.dto.req.MAX_AUTHOR_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TITLE_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TOTAL_QUANTITY_LENGTH
+import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.Book
+import com.keeper.homepage.domain.library.entity.BookBorrowInfo
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.job.MemberJob
 import com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN
@@ -23,8 +27,10 @@ import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Attributes.key
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.LinkedMultiValueMap
 
@@ -215,6 +221,82 @@ class BookManageControllerTest : BookManageApiTestHelper() {
 
             callModifyBookApi(bookId = book.id, accessCookies = memberTestHelper.getTokenCookies(member))
                 .andExpect(status().isForbidden)
+        }
+    }
+
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `책 상세 정보 가져오기` {
+
+        lateinit var book: Book
+        lateinit var borrowList: List<BookBorrowInfo>
+
+        @BeforeEach
+        fun generateNewBook() {
+            book = bookTestHelper.builder()
+                .totalQuantity(3)
+                .currentQuantity(3)
+                .thumbnail(thumbnailTestHelper.generateThumbnail())
+                .build()
+            borrowList = listOf(
+                bookBorrowInfoTestHelper.builder()
+                    .book(book)
+                    .borrowStatus(getBookBorrowStatusBy(대출승인))
+                    .build(),
+                bookBorrowInfoTestHelper.builder()
+                    .book(book)
+                    .borrowStatus(getBookBorrowStatusBy(반납대기중))
+                    .build(),
+                bookBorrowInfoTestHelper.builder()
+                    .book(book)
+                    .borrowStatus(getBookBorrowStatusBy(반납))
+                    .build(),
+            )
+        }
+
+        @Test
+        fun `유효한 요청이면 책 상세 정보 가져 오기는 성공 해야 한다`() {
+            em.flush()
+            em.clear()
+            val securedValue = getSecuredValue(BookManageController::class.java, "getBookDetail")
+            callGetBookDetailApi(bookId = book.id)
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.id").value(book.id))
+                .andExpect(jsonPath("$.title").value(book.title))
+                .andExpect(jsonPath("$.author").value(book.author))
+                .andExpect(jsonPath("$.bookDepartment").value(book.bookDepartment.type.name))
+                .andExpect(jsonPath("$.totalCount").value(3))
+                .andExpect(jsonPath("$.borrowingCount").value(2))
+                .andExpect(jsonPath("$.thumbnailPath").value(book.thumbnail.path))
+                .andExpect(jsonPath("$.borrowInfos[0].borrowInfoId").value(borrowList[0].id))
+                .andExpect(jsonPath("$.borrowInfos[0].bookId").value(borrowList[0].book.id))
+                .andExpect(jsonPath("$.borrowInfos[0].bookTitle").value(borrowList[0].book.title))
+                .andExpect(jsonPath("$.borrowInfos[0].author").value(borrowList[0].book.author))
+                .andExpect(jsonPath("$.borrowInfos[0].borrowerId").value(borrowList[0].member.id))
+                .andExpect(
+                    jsonPath("$.borrowInfos[0].borrowerNickname")
+                        .value(borrowList[0].member.nickname)
+                )
+                .andExpect(
+                    jsonPath("$.borrowInfos[0].requestDatetime")
+                        .value(borrowList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
+                )
+                .andDo(
+                    document(
+                        "get-book-detail",
+                        requestCookies(
+                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("bookId").description("책 id")
+                        ),
+                        responseFields(
+                            *getBookDetailResponseDocs()
+                        ),
+                    )
+                )
         }
     }
 }

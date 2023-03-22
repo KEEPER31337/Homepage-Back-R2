@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.application
 
 import com.keeper.homepage.domain.library.dao.BookRepository
+import com.keeper.homepage.domain.library.dto.resp.BookDetailResponse
 import com.keeper.homepage.domain.library.entity.Book
 import com.keeper.homepage.domain.library.entity.BookDepartment
 import com.keeper.homepage.global.error.BusinessException
@@ -65,4 +66,7 @@ class BookManageService(
             thumbnailUtil.saveThumbnail(thumbnail)
                 .orElse(null)
         )
+
+    fun getBookDetail(bookId: Long): BookDetailResponse =
+        BookDetailResponse(bookRepository.getBookById(bookId))
 }

@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.application.BookManageService
 import com.keeper.homepage.domain.library.dto.req.BookRequest
+import com.keeper.homepage.domain.library.dto.resp.BookDetailResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
@@ -49,5 +50,11 @@ class BookManageController(
             request.thumbnail
         )
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/{bookId}")
+    fun getBookDetail(@PathVariable bookId: Long): ResponseEntity<BookDetailResponse> {
+        val bookDetailResponse = bookManageService.getBookDetail(bookId)
+        return ResponseEntity.ok(bookDetailResponse)
     }
 }

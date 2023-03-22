@@ -91,6 +91,32 @@ include::{snippets}/modify-book/request-parts.adoc[]
 
 include::{snippets}/modify-book/http-response.adoc[]
 
+== *책 상세 정보 보기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-book-detail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-book-detail/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-book/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-book-detail/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-book-detail/response-fields.adoc[]
+
 == *대출 정보 목록 조회*
 
 === 요청

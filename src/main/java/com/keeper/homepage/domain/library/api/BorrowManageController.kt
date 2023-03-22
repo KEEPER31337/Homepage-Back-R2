@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.application.BorrowManageService
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
-import com.keeper.homepage.domain.library.dto.resp.BorrowResponse
+import com.keeper.homepage.domain.library.dto.resp.BorrowDetailResponse
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
@@ -30,7 +30,7 @@ class BorrowManageController(
         @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
         @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
         @RequestParam status: BorrowStatusDto?
-    ): ResponseEntity<Page<BorrowResponse>> {
+    ): ResponseEntity<Page<BorrowDetailResponse>> {
         val borrowRequests = borrowManageService.getBorrow(PageRequest.of(page, size), status)
         return ResponseEntity.ok(borrowRequests)
     }
