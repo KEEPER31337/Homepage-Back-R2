@@ -440,6 +440,70 @@ public class PostServiceTest extends IntegrationTest {
   }
 
   @Nested
+  @DisplayName("게시글 삭제")
+  class DeletePost {
+
+    private Post post;
+    private long postId;
+    private Member member;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.generate();
+      post = postTestHelper.builder().member(member).build();
+      postId = post.getId();
+      member.like(post);
+      member.dislike(post);
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+    }
+
+    @Test
+    @DisplayName("게시글 삭제는 성공한다.")
+    public void 게시글_삭제는_성공한다() throws Exception {
+      postService.delete(member, postId);
+
+      em.flush();
+      em.clear();
+      assertThat(postRepository.findById(postId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 시 좋아요 싫어요도 삭제된다.")
+    public void 게시글_삭제_시_좋아요_싫어요도_삭제된다() throws Exception {
+      postService.delete(member, postId);
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      assertThat(member.getPostLikes()).isEmpty();
+      assertThat(member.getPostDislikes()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 시 댓글과 댓글의 좋아요 싫어요들도 삭제된다.")
+    public void 게시글_삭제_시_댓글과_댓글의_좋아요_싫어요들도_삭제된다() throws Exception {
+      post = postRepository.findById(postId).orElseThrow();
+      Comment comment = commentTestHelper.builder().post(post).member(member).build();
+      long commentId = comment.getId();
+      member.like(comment);
+      member.dislike(comment);
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      postService.delete(member, postId);
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      assertThat(commentRepository.findById(commentId)).isEmpty();
+      assertThat(member.getCommentLikes()).isEmpty();
+    }
+  }
+
+  @Nested
   @DisplayName("게시글 좋아요 싫어요")
   class LikeDislikePost {
 
