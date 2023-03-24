@@ -7,18 +7,14 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -52,7 +48,7 @@ public class Post extends BaseEntity {
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
 
-  @OneToOne(fetch = LAZY, cascade = REMOVE)
+  @OneToOne(fetch = LAZY)
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
 
@@ -64,15 +60,6 @@ public class Post extends BaseEntity {
 
   @Column(name = "visit_count", nullable = false)
   private Integer visitCount;
-
-  @Column(name = "like_count", nullable = false)
-  private Integer likeCount;
-
-  @Column(name = "dislike_count", nullable = false)
-  private Integer dislikeCount;
-
-  @Column(name = "comment_count", nullable = false)
-  private Integer commentCount;
 
   @Column(name = "allow_comment", nullable = false)
   private Boolean allowComment;
@@ -98,24 +85,14 @@ public class Post extends BaseEntity {
   @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<FileEntity> files = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final Set<MemberHasPostLike> postLikes = new HashSet<>();
-
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
-
   @Builder
-  private Post(String title, String content, Member member, Integer visitCount,
-      Integer likeCount, Integer dislikeCount, Integer commentCount, String ipAddress,
+  private Post(String title, String content, Member member, Integer visitCount, String ipAddress,
       Boolean allowComment, Boolean isNotice, Boolean isSecret, Boolean isTemp, String password,
       Category category, Thumbnail thumbnail) {
     this.title = title;
     this.content = content;
     this.member = member;
     this.visitCount = visitCount;
-    this.likeCount = likeCount;
-    this.dislikeCount = dislikeCount;
-    this.commentCount = commentCount;
     this.ipAddress = ipAddress;
     this.allowComment = allowComment;
     this.isNotice = isNotice;
@@ -126,19 +103,13 @@ public class Post extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
-  public void addComment(Comment comment) {
-    comment.registerPost(this);
-    comments.add(comment);
-  }
-
   public void addFile(FileEntity file) {
     file.registerPost(this);
     files.add(file);
   }
 
-  public void registerCategory(Category category) {
+  public void addCategory(Category category) {
     this.category = category;
-    category.getPosts().add(this);
   }
 
   public void changeThumbnail(Thumbnail thumbnail) {
@@ -150,11 +121,11 @@ public class Post extends BaseEntity {
   }
 
   public boolean isCategory(long categoryId) {
-    return this.getCategory().getId().equals(categoryId);
+    return this.category.getId().equals(categoryId);
   }
 
   public boolean isMine(Member member) {
-    return this.getMember().equals(member);
+    return this.member.equals(member);
   }
 
   public boolean isSamePassword(String password) {
@@ -162,19 +133,27 @@ public class Post extends BaseEntity {
   }
 
   public Boolean isNotice() {
-    return getIsNotice();
+    return isNotice;
   }
 
   public Boolean isTemp() {
-    return getIsTemp();
+    return isTemp;
   }
 
   public Boolean isSecret() {
-    return getIsSecret();
+    return isSecret;
   }
 
   public Boolean allowComment() {
-    return getAllowComment();
+    return allowComment;
+  }
+
+  public String getWriterNickname() {
+    return this.member.getNickname();
+  }
+
+  public FileEntity getThumbnailFile() {
+    return this.thumbnail.getFileEntity();
   }
 
   public void update(Post post) {

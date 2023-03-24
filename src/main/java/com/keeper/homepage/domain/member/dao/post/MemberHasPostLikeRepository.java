@@ -8,4 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberHasPostLikeRepository extends JpaRepository<MemberHasPostLike, Long> {
 
   List<MemberHasPostLike> findAllByPost(Post post);
+
+  void deleteAllByPost(Post post);
+
+  Long countByPost(Post post);
 }

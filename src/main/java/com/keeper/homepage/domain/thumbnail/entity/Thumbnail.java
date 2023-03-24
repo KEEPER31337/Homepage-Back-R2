@@ -46,8 +46,8 @@ public class Thumbnail {
   @Getter
   @RequiredArgsConstructor
   public enum DefaultThumbnail {
-    MEMBER_THUMBNAIL(1, "keeper_files/thumbnail/default/default_thumbnail_member.png"),
-    POST_THUMBNAIL(2, "keeper_files/thumbnail/default/default_thumbnail_posting.png"),
+    DEFAULT_MEMBER_THUMBNAIL(1, "keeper_files/thumbnail/default/default_thumbnail_member.png"),
+    DEFAULT_POST_THUMBNAIL(2, "keeper_files/thumbnail/default/default_thumbnail_posting.png"),
     ;
 
     private final long id;

@@ -2,25 +2,25 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.POST_THUMBNAIL;
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CATEGORY_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static java.lang.Boolean.TRUE;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
+import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
+import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
+import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.embedded.Nickname;
+import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
-import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
-import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
@@ -28,7 +28,6 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
-import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,14 +46,17 @@ public class PostService {
   private final CategoryRepository categoryRepository;
   private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
+  private final MemberHasPostLikeRepository postLikeRepository;
+  private final MemberHasPostDislikeRepository postDislikeRepository;
 
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
   private final ValidPostFindService validPostFindService;
+  private final PostDeleteService postDeleteService;
 
   public static final String ANONYMOUS_NAME = "익명";
   public static final int EXAM_ACCESSIBLE_POINT = 20000;
-  public static final int EXAM_ACCESSIBLE_COMMENT_COUNT = 5;
+  public static final long EXAM_ACCESSIBLE_COMMENT_COUNT = 5;
   public static final int EXAM_ACCESSIBLE_ATTENDANCE_COUNT = 10;
 
   @Transactional
@@ -89,14 +91,14 @@ public class PostService {
   }
 
   private Long savePost(Post post, Long categoryId) {
-    post.registerCategory(getCategoryById(categoryId));
+    Category category = getCategoryById(categoryId);
+    post.addCategory(category);
     return postRepository.save(post).getId();
   }
 
   private Category getCategoryById(Long categoryId) {
     return categoryRepository.findById(categoryId)
-        .orElseThrow(
-            () -> new BusinessException(categoryId, "categoryId", POST_CATEGORY_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(categoryId, "categoryId", POST_CATEGORY_NOT_FOUND));
   }
 
   @Transactional
@@ -110,16 +112,11 @@ public class PostService {
     //visitCountValidation(post, request, response); TODO: 게시글 조회수 중복 방지 기능 구현
     post.addVisitCount();
 
-    String thumbnailPath = getPostThumbnailPath(post.getThumbnail());
-    List<FileResponse> fileResponses = post.getFiles().stream()
-        .map(FileResponse::from)
-        .collect(toList());
-
-    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
-      return PostResponse.of(post, Nickname.from(ANONYMOUS_NAME), thumbnailPath, fileResponses);
-    }
-    return PostResponse.of(post, post.getMember().getProfile().getNickname(), thumbnailPath,
-        fileResponses);
+    String writerName = getWriterName(post);
+    String thumbnailPath = getPostThumbnailPath(post);
+    Long likeCount = countLike(post);
+    Long dislikeCount = countDislike(post);
+    return PostResponse.of(post, writerName, thumbnailPath, likeCount, dislikeCount);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -134,15 +131,14 @@ public class PostService {
     }
     if (member.getPoint() >= EXAM_ACCESSIBLE_POINT
         && countMemberComment(member) >= EXAM_ACCESSIBLE_COMMENT_COUNT
-        && member.getMemberAttendance().size()
-        >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
+        && member.getMemberAttendance().size() >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
       return;
     }
     throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
   }
 
-  private int countMemberComment(Member member) {
-    return commentRepository.findAllByMember(member).size();
+  private Long countMemberComment(Member member) {
+    return commentRepository.countByMember(member);
   }
 
   private void checkTempPost(Member member, Post post) {
@@ -174,17 +170,27 @@ public class PostService {
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
   }
 
-  // TODO: 게시글 조회수 중복 방지 기능 추가
-  private void visitCountValidation(Post post, HttpServletRequest request,
-      HttpServletResponse response) {
-    Cookie[] cookies = request.getCookies();
-  }
-
-  private String getPostThumbnailPath(Thumbnail thumbnail) {
+  private String getPostThumbnailPath(Post post) {
+    Thumbnail thumbnail = post.getThumbnail();
     if (thumbnail == null) {
-      return thumbnailUtil.getThumbnailPath(POST_THUMBNAIL.getPath());
+      return thumbnailUtil.getThumbnailPath(DEFAULT_POST_THUMBNAIL.getPath());
     }
     return thumbnailUtil.getThumbnailPath(thumbnail.getPath());
+  }
+
+  private Long countLike(Post post) {
+    return postLikeRepository.countByPost(post);
+  }
+
+  private Long countDislike(Post post) {
+    return postDislikeRepository.countByPost(post);
+  }
+
+  private String getWriterName(Post post) {
+    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
+      return ANONYMOUS_NAME;
+    }
+    return post.getWriterNickname();
   }
 
   @Transactional
@@ -219,8 +225,7 @@ public class PostService {
     if (post.getThumbnail() == null) {
       return fileRepository.findAllByPost(post);
     }
-    return fileRepository
-        .findAllByPostAndIdNot(post, post.getThumbnail().getFileEntity().getId());
+    return fileRepository.findAllByPostAndIdNot(post, post.getThumbnailFile().getId());
   }
 
   public void delete(Member member, long postId) {
@@ -229,6 +234,7 @@ public class PostService {
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
     }
+    postDeleteService.deleteAllLikeAndDislike(post);
     postRepository.delete(post);
   }
 
