@@ -6,7 +6,7 @@ import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCES
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.VIRTUAL_CATEGORY;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.POST_THUMBNAIL;
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
 import static java.io.File.separator;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,10 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
-import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
@@ -75,9 +74,6 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.getContent()).isEqualTo("게시글 내용");
       assertThat(findPost.getMember()).isEqualTo(member);
       assertThat(findPost.getVisitCount()).isEqualTo(0);
-      assertThat(findPost.getLikeCount()).isEqualTo(0);
-      assertThat(findPost.getDislikeCount()).isEqualTo(0);
-      assertThat(findPost.getCommentCount()).isEqualTo(0);
       assertThat(findPost.getIpAddress()).isEqualTo(WebUtil.getUserIP());
       assertThat(findPost.getAllowComment()).isEqualTo(true);
       assertThat(findPost.getIsNotice()).isEqualTo(false);
@@ -124,7 +120,7 @@ public class PostServiceTest extends IntegrationTest {
       }
       virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
       examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
-      thumbnail = thumbnailRepository.findById(POST_THUMBNAIL.getId()).orElseThrow();
+      thumbnail = thumbnailRepository.findById(DEFAULT_POST_THUMBNAIL.getId()).orElseThrow();
     }
 
     @Test
@@ -149,10 +145,8 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
       assertThat(response.getThumbnailPath())
-          .isEqualTo(thumbnailUtil.getThumbnailPath(POST_THUMBNAIL.getPath()));
+          .isEqualTo(thumbnailUtil.getThumbnailPath(DEFAULT_POST_THUMBNAIL.getPath()));
       assertThat(response.getContent()).isEqualTo(post.getContent());
-      assertThat(response.getLikeCount()).isEqualTo(post.getLikeCount());
-      assertThat(response.getDislikeCount()).isEqualTo(post.getDislikeCount());
     }
 
     @Test

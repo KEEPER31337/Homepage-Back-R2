@@ -39,9 +39,6 @@ public class PostTestHelper {
     private String content;
     private Member member;
     private Integer visitCount;
-    private Integer likeCount;
-    private Integer dislikeCount;
-    private Integer commentCount;
     private String ipAddress;
     private Boolean allowComment;
     private Boolean isNotice;
@@ -72,21 +69,6 @@ public class PostTestHelper {
 
     public PostBuilder visitCount(Integer visitCount) {
       this.visitCount = visitCount;
-      return this;
-    }
-
-    public PostBuilder likeCount(Integer likeCount) {
-      this.likeCount = likeCount;
-      return this;
-    }
-
-    public PostBuilder dislikeCount(Integer dislikeCount) {
-      this.dislikeCount = dislikeCount;
-      return this;
-    }
-
-    public PostBuilder commentCount(Integer commentCount) {
-      this.commentCount = commentCount;
       return this;
     }
 
@@ -136,9 +118,6 @@ public class PostTestHelper {
           .content(content != null ? content : "포스팅 컨텐츠")
           .member(member != null ? member : memberTestHelper.generate())
           .visitCount(visitCount)
-          .likeCount(likeCount)
-          .dislikeCount(dislikeCount)
-          .commentCount(commentCount)
           .ipAddress(ipAddress != null ? ipAddress : "0.0.0.0")
           .allowComment(allowComment)
           .isNotice(isNotice)
