@@ -22,6 +22,7 @@ import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
+import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
@@ -29,12 +30,12 @@ import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
 import com.keeper.homepage.domain.library.application.BookManageService;
-import com.keeper.homepage.domain.library.application.BorrowManageService;
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
@@ -220,8 +221,11 @@ public class IntegrationTest {
   @SpykBean
   protected BookManageService bookManageService;
 
-  @SpykBean
-  protected BorrowManageService borrowManageService;
+  @SpyBean
+  protected CommentService commentService;
+
+  @SpyBean
+  protected MemberFindService memberFindService;
 
   /******* Helper *******/
   @SpyBean
