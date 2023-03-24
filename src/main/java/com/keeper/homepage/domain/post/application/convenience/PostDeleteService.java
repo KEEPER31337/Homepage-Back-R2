@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepo
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
+import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PostDeleteService {
 
+  private final PostRepository postRepository;
   private final MemberHasPostLikeRepository postLikeRepository;
   private final MemberHasPostDislikeRepository postDislikeRepository;
   private final MemberHasCommentLikeRepository commentLikeRepository;
   private final MemberHasCommentDislikeRepository commentDislikeRepository;
 
-  public void deleteAllLikeAndDislike(Post post) {
+  public void delete(Post post) {
+    deleteAllLikeAndDislike(post);
+    postRepository.delete(post);
+  }
+
+  private void deleteAllLikeAndDislike(Post post) {
     postLikeRepository.deleteAllByPost(post);
     postDislikeRepository.deleteAllByPost(post);
     commentLikeRepository.deleteAllByComment_Post(post);

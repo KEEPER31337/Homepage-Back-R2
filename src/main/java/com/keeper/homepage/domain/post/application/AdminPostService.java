@@ -17,14 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminPostService {
 
-  private final PostRepository postRepository;
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
 
   public void delete(long postId) {
     Post post = validPostFindService.findById(postId);
 
-    postDeleteService.deleteAllLikeAndDislike(post);
-    postRepository.delete(post);
+    postDeleteService.delete(post);
   }
 }

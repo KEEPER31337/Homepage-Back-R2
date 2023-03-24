@@ -234,8 +234,7 @@ public class PostService {
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
     }
-    postDeleteService.deleteAllLikeAndDislike(post);
-    postRepository.delete(post);
+    postDeleteService.delete(post);
   }
 
   @Transactional
