@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.comment.entity;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -11,12 +9,10 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -56,47 +52,31 @@ public class Comment extends BaseEntity {
   @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
-  @Column(name = "like_count", nullable = false)
-  private Integer likeCount;
-
-  @Column(name = "dislike_count", nullable = false)
-  private Integer dislikeCount;
-
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
 
-  @OneToMany(mappedBy = "comment", cascade = REMOVE)
-  private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
-
-  @OneToMany(mappedBy = "comment", cascade = REMOVE)
-  private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
-
-  @OneToMany(mappedBy = "parent", cascade = PERSIST)
-  private final List<Comment> children = new ArrayList<>();
-
   @Builder
-  private Comment(Member member, Post post, Comment parent, String content,
-      Integer likeCount,
-      Integer dislikeCount, String ipAddress) {
+  private Comment(Member member, Post post, Comment parent, String content, String ipAddress) {
     this.member = member;
     this.post = post;
     this.parent = parent;
     this.content = content;
-    this.likeCount = likeCount;
-    this.dislikeCount = dislikeCount;
     this.ipAddress = ipAddress;
   }
 
-  public void registerPost(Post post) {
-    this.post = post;
+  public void updateContent(String content) {
+    this.content = content;
   }
 
-  public void addChild(Comment child) {
-    child.assignParent(this);
-    children.add(child);
+  public void changeWriter(Member member) {
+    this.member = member;
   }
 
-  public void assignParent(Comment parent) {
-    this.parent = parent;
+  public boolean isMine(Member member) {
+    return this.member.equals(member);
+  }
+
+  public Thumbnail getWriterThumbnail() {
+    return this.member.getProfile().getThumbnail();
   }
 }
