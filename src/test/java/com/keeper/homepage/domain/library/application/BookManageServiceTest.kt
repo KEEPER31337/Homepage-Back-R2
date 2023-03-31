@@ -135,7 +135,6 @@ class BookManageServiceTest : IntegrationTest() {
                     book.author + "_",
                     bookCount - 1,
                     BookDepartment.BookDepartmentType.ETC,
-                    null
                 )
             }
 

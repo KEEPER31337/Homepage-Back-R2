@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
@@ -131,40 +132,33 @@ class BookManageApiTestHelper : IntegrationTest() {
     }
 
     fun callModifyBookApi(
-        params: MultiValueMap<String, String?> = multiValueMapOf(
-            "title" to "삶의 목적을 찾는 45가지 방법",
-            "author" to "ChatGPT",
-            "totalQuantity" to "10",
-            "bookDepartment" to "document"
+        content: ModifyBookRequest = ModifyBookRequest(
+            title = "삶의 목적을 찾는 45가지 방법",
+            author = "ChatGPT",
+            totalQuantity = 10,
+            bookDepartment = BookDepartmentType.DOCUMENT
         ),
         bookId: Long,
-        hasThumbnail: Boolean = false,
         accessCookies: Array<Cookie> = bookManagerCookies,
     ): ResultActions =
-        if (hasThumbnail) {
-            mockMvc.perform(
-                multipart("${BOOK_URL}/{bookId}", bookId)
-                    .file(thumbnailTestHelper.smallThumbnailFile)
-                    .with { request ->
-                        request.method = "PUT"
-                        request
-                    }
-                    .queryParams(params)
-                    .cookie(*accessCookies)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-            )
-        } else {
-            mockMvc.perform(
-                multipart("${BOOK_URL}/{bookId}", bookId)
-                    .with { request ->
-                        request.method = "PUT"
-                        request
-                    }
-                    .queryParams(params)
-                    .cookie(*accessCookies)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-            )
-        }
+        mockMvc.perform(
+            put("${BOOK_URL}/{bookId}", bookId)
+                .content(asJsonString(content))
+                .cookie(*accessCookies)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        )
+
+    fun callModifyBookThumbnailApi(bookId: Long): ResultActions =
+        mockMvc.perform(
+            multipart("${BOOK_URL}/{bookId}/thumbnail", bookId)
+                .file(thumbnailTestHelper.smallThumbnailFile)
+                .with { request ->
+                    request.method = "PATCH"
+                    request
+                }
+                .cookie(*bookManagerCookies)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+        )
 
     fun callGetBookDetailApi(
         bookId: Long,

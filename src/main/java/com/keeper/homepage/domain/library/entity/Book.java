@@ -107,8 +107,11 @@ public class Book extends BaseEntity {
     return bookBorrowInfos;
   }
 
-  public void updateBook(String newTitle, String newAuthor, BookDepartment newBookDepartment, Long newTotalQuantity,
-      Thumbnail thumbnail) {
+  public void setThumbnail(Thumbnail thumbnail) {
+    this.thumbnail = thumbnail;
+  }
+
+  public void updateBook(String newTitle, String newAuthor, BookDepartment newBookDepartment, Long newTotalQuantity) {
     if (this.totalQuantity - currentQuantity > newTotalQuantity) {
       throw new BusinessException(this.id, "bookId", ErrorCode.BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY);
     }
@@ -117,9 +120,6 @@ public class Book extends BaseEntity {
     this.bookDepartment = newBookDepartment;
     this.totalQuantity = newTotalQuantity;
     this.currentQuantity = newTotalQuantity - (this.totalQuantity - currentQuantity);
-    if (thumbnail != null) {
-      this.thumbnail = thumbnail;
-    }
   }
 
   public boolean isSomeoneInBorrowing() {
