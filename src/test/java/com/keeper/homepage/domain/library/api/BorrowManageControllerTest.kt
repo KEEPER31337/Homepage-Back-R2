@@ -34,7 +34,11 @@ fun BookBorrowInfoTestHelper.generate(
     return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).expireDate(expiredDate).build()
 }
 
-fun LocalDateTime.formatting(format: String) = this.format(DateTimeFormatter.ofPattern(format))
+fun LocalDateTime.formatting(format: String) =
+    if (this.nano > 500000000)
+        this.plusSeconds(1).format(DateTimeFormatter.ofPattern(format))
+    else
+        this.format(DateTimeFormatter.ofPattern(format))
 
 class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
