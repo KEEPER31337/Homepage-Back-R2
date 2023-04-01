@@ -134,6 +134,8 @@ public class CommentControllerTest extends CommentApiTestHelper {
     @Test
     @DisplayName("댓글 목록 조회는 성공한다.")
     public void 댓글_목록_조회는_성공한다() throws Exception {
+      em.flush();
+      em.clear();
       String securedValue = getSecuredValue(CommentController.class, "getComments");
 
       callGetCommentsApi(memberToken, postId)

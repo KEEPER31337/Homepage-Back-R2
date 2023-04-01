@@ -1,8 +1,8 @@
 package com.keeper.homepage.domain.comment.application;
 
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_MEMBER_THUMBNAIL;
+import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_WRITER;
-import static java.util.stream.Collectors.toList;
 
 import com.keeper.homepage.domain.comment.application.convenience.CommentDeleteService;
 import com.keeper.homepage.domain.comment.application.convenience.CommentFindService;
@@ -12,8 +12,6 @@ import com.keeper.homepage.domain.comment.dto.response.CommentListResponse;
 import com.keeper.homepage.domain.comment.dto.response.CommentResponse;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
-import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
-import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -31,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
   private final CommentRepository commentRepository;
-  private final MemberHasCommentLikeRepository commentLikeRepository;
-  private final MemberHasCommentDislikeRepository commentDislikeRepository;
 
   private final ValidPostFindService validPostFindService;
   private final CommentFindService commentFindService;
@@ -45,27 +41,30 @@ public class CommentService {
   @Transactional
   public long create(Member member, CommentCreateRequest request) {
     Post post = validPostFindService.findById(request.getPostId());
-    Comment parent = getCommentById(request.getParentId());
+    Comment parent = getParentById(request.getParentId());
     Comment comment = request.toEntity(member, post, parent);
 
     return commentRepository.save(comment).getId();
   }
 
-  private Comment getCommentById(Long commentId) {
-    if (commentId == null) {
+  private Comment getParentById(Long parentId) {
+    if (parentId == null) {
       return null;
     }
-    return commentFindService.findById(commentId);
+    Comment parent = commentFindService.findById(parentId);
+    if (parent.hasParent()){
+      throw new BusinessException(parentId, "parentId", COMMENT_NOT_PARENT);
+    }
+    return parent;
   }
 
   public CommentListResponse getComments(Long postId) {
     Post post = validPostFindService.findById(postId);
-    List<Comment> comments = commentRepository.findAllByPost(post);
+    List<Comment> comments = post.getComments();
 
     List<CommentResponse> commentResponses = comments.stream()
-        .map(comment -> CommentResponse
-            .of(comment, getWriterThumbnailPath(comment), countLike(comment), countDislike(comment)))
-        .collect(toList());
+        .map(comment -> CommentResponse.of(comment, getWriterThumbnailPath(comment)))
+        .toList();
     return new CommentListResponse(commentResponses);
   }
 
@@ -75,14 +74,6 @@ public class CommentService {
       return thumbnailUtil.getThumbnailPath(DEFAULT_MEMBER_THUMBNAIL.getPath());
     }
     return thumbnailUtil.getThumbnailPath(thumbnail.getPath());
-  }
-
-  private Long countLike(Comment comment) {
-    return commentLikeRepository.countByComment(comment);
-  }
-
-  private Long countDislike(Comment comment) {
-    return commentDislikeRepository.countByComment(comment);
   }
 
   @Transactional
