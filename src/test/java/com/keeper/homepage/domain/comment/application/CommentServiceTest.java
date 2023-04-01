@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -74,6 +75,25 @@ public class CommentServiceTest extends IntegrationTest {
       assertThat(comment.getPost()).isEqualTo(post);
       assertThat(comment.getParent()).isEqualTo(null);
       assertThat(comment.getContent()).isEqualTo(request.getContent());
+    }
+
+    @Test
+    @DisplayName("대댓글에 댓글을 달면 댓글 생성은 실패한다.")
+    public void 대댓글에_댓글을_달면_댓글_생성은_실패한다() throws Exception {
+      Comment comment = commentTestHelper.builder().parent(parent).build();
+      long commentId = comment.getId();
+      em.flush();
+      em.clear();
+
+      request = CommentCreateRequest.builder()
+          .postId(post.getId())
+          .parentId(commentId)
+          .content("테스트 댓글 내용")
+          .build();
+
+      assertThrows(BusinessException.class, () -> {
+        commentService.create(member, request);
+      });
     }
   }
 
