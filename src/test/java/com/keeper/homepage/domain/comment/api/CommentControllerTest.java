@@ -149,13 +149,13 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   parameterWithName("postId").description("조회하고자 하는 댓글목록의 게시글 ID")
               ),
               responseFields(
-                  fieldWithPath("commentResponses[].writerName").description("댓글 작성자 이름"),
-                  fieldWithPath("commentResponses[].writerThumbnailPath").description("댓글 작성자의 썸네일 경로"),
-                  fieldWithPath("commentResponses[].content").description("댓글 내용"),
-                  fieldWithPath("commentResponses[].registerTime").description("댓글 등록 시간"),
-                  fieldWithPath("commentResponses[].parentId").description("부모 댓글 ID"),
-                  fieldWithPath("commentResponses[].likeCount").description("댓글 좋아요 개수"),
-                  fieldWithPath("commentResponses[].dislikeCount").description("댓글 싫어요 개수")
+                  fieldWithPath("comments[].writerName").description("댓글 작성자 이름"),
+                  fieldWithPath("comments[].writerThumbnailPath").description("댓글 작성자의 썸네일 경로"),
+                  fieldWithPath("comments[].content").description("댓글 내용"),
+                  fieldWithPath("comments[].registerTime").description("댓글 등록 시간"),
+                  fieldWithPath("comments[].parentId").description("부모 댓글 ID"),
+                  fieldWithPath("comments[].likeCount").description("댓글 좋아요 개수"),
+                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수")
               )));
     }
   }
