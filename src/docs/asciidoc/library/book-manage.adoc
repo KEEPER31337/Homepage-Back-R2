@@ -81,15 +81,27 @@ include::{snippets}/modify-book/request-cookies.adoc[]
 
 include::{snippets}/modify-book/query-parameters.adoc[]
 
+== *책 썸네일 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/modify-book-thumbnail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/modify-book-thumbnail/request-cookies.adoc[]
+
 ==== Request Parts
 
-include::{snippets}/modify-book/request-parts.adoc[]
+include::{snippets}/modify-book-thumbnail/request-parts.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/modify-book/http-response.adoc[]
+include::{snippets}/modify-book-thumbnail/http-response.adoc[]
 
 == *책 상세 정보 보기*
 

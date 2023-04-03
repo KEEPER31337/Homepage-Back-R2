@@ -10,10 +10,7 @@ import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowS
 import com.keeper.homepage.global.config.security.data.JwtType
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
@@ -33,12 +30,6 @@ fun BookBorrowInfoTestHelper.generate(
 ): BookBorrowInfo {
     return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).expireDate(expiredDate).build()
 }
-
-fun LocalDateTime.formatting(format: String) =
-    if (this.nano > 500000000)
-        this.plusSeconds(1).format(DateTimeFormatter.ofPattern(format))
-    else
-        this.format(DateTimeFormatter.ofPattern(format))
 
 class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
@@ -70,7 +61,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.format(DateTimeFormatter.ofPattern((RESPONSE_DATETIME_FORMAT))))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
@@ -117,7 +108,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[5].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[5].borrowDate.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[5].borrowDate.format(DateTimeFormatter.ofPattern((RESPONSE_DATETIME_FORMAT))))
                 )
                 .andExpect(jsonPath("$.number").value("1"))
                 .andExpect(jsonPath("$.size").value("5"))
@@ -136,7 +127,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.format(DateTimeFormatter.ofPattern((RESPONSE_DATETIME_FORMAT))))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
@@ -181,7 +172,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
                 .andExpect(
                     jsonPath("$.content[0].requestDatetime")
-                        .value(borrowInfoList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
+                        .value(borrowInfoList[0].registerTime.format(DateTimeFormatter.ofPattern((RESPONSE_DATETIME_FORMAT))))
                 )
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))

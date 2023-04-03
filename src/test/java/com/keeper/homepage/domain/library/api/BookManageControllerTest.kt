@@ -13,12 +13,7 @@ import com.keeper.homepage.domain.member.entity.job.MemberJob
 import com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN
 import com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
-import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.http.HttpHeaders
@@ -27,12 +22,26 @@ import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Attributes.key
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.LinkedMultiValueMap
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+/**
+ * 0.5ms를 의미합니다.
+ */
+const val HALF_NANOSECOND = 500000000
+
+fun LocalDateTime.formatting(format: String) =
+    if (this.nano > HALF_NANOSECOND)
+        this.plusSeconds(1).format(DateTimeFormatter.ofPattern(format))
+    else
+        this.format(DateTimeFormatter.ofPattern(format))
 
 class BookManageControllerTest : BookManageApiTestHelper() {
 
@@ -169,7 +178,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         @Test
         fun `유효한 요청이면 책 수정은 성공해야 한다`() {
             val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
-            callModifyBookApi(bookId = book.id, hasThumbnail = true)
+            callModifyBookApi(bookId = book.id)
                 .andExpect(status().isNoContent)
                 .andDo(
                     document(
@@ -181,37 +190,43 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                         pathParameters(
                             parameterWithName("bookId").description("책 id")
                         ),
-                        queryParameters(
-                            parameterWithName("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
-                            parameterWithName("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
-                            parameterWithName("bookDepartment")
+                        requestFields(
+                            field("title", "책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
+                            field("author", "저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
+                            field("bookDepartment", "책 카테고리")
                                 .attributes(
                                     key("format")
                                         .value(
                                             BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
                                         )
-                                ).description("책 카테고리"),
-                            parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
-                        ),
-                        requestParts(
-                            partWithName("thumbnail").description("책의 썸네일 (null 값으로 보낼 경우 썸네일을 바꾸지 않습니다.)")
-                                .optional(),
+                                ),
+                            field("totalQuantity", "책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
                         ),
                     )
                 )
         }
 
         @Test
-        fun `썸네일이 없으면 기존의 썸네일이 유지되어야 한다`() {
-            val beforeThumbnail = book.thumbnail
-            callModifyBookApi(bookId = book.id)
+        fun `유효한 요청이면 책 썸네일 수정은 성공해야 한다`() {
+            val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
+            callModifyBookThumbnailApi(bookId = book.id)
                 .andExpect(status().isNoContent)
-
-            em.flush()
-            em.clear()
-            val afterBook = bookRepository.findById(book.id).orElseThrow()
-            beforeThumbnail shouldNotBe null
-            afterBook.thumbnail shouldBe beforeThumbnail
+                .andDo(
+                    document(
+                        "modify-book-thumbnail",
+                        requestCookies(
+                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        pathParameters(
+                            parameterWithName("bookId").description("책 id")
+                        ),
+                        requestParts(
+                            partWithName("thumbnail").description("책의 썸네일 (null 값으로 보낼 경우 기본 썸네일로 지정됩니다.)")
+                                .optional(),
+                        )
+                    )
+                )
         }
 
         @Test

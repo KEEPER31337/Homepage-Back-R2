@@ -2,11 +2,13 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.application.BookManageService
 import com.keeper.homepage.domain.library.dto.req.BookRequest
+import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.BookDetailResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 
 @RequestMapping("/manage/books")
@@ -39,7 +41,7 @@ class BookManageController(
     @PutMapping("/{bookId}")
     fun modifyBook(
         @PathVariable bookId: Long,
-        @ModelAttribute @Valid request: BookRequest
+        @RequestBody @Valid request: ModifyBookRequest
     ): ResponseEntity<Void> {
         bookManageService.modifyBook(
             bookId,
@@ -47,7 +49,18 @@ class BookManageController(
             request.author!!,
             request.totalQuantity!!,
             request.bookDepartment!!,
-            request.thumbnail
+        )
+        return ResponseEntity.noContent().build()
+    }
+
+    @PatchMapping("/{bookId}/thumbnail")
+    fun modifyBookThumbnail(
+        @PathVariable bookId: Long,
+        @ModelAttribute newThumbnail: MultipartFile?
+    ): ResponseEntity<Void> {
+        bookManageService.modifyBookThumbnail(
+            bookId,
+            newThumbnail
         )
         return ResponseEntity.noContent().build()
     }
