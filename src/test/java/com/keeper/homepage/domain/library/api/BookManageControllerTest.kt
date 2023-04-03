@@ -32,8 +32,13 @@ import org.springframework.util.LinkedMultiValueMap
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+/**
+ * 0.5ms를 의미합니다.
+ */
+const val HALF_NANOSECOND = 500000000
+
 fun LocalDateTime.formatting(format: String) =
-    if (this.nano > 500000000)
+    if (this.nano > HALF_NANOSECOND)
         this.plusSeconds(1).format(DateTimeFormatter.ofPattern(format))
     else
         this.format(DateTimeFormatter.ofPattern(format))
