@@ -71,13 +71,15 @@ public class BookBorrowInfoTestHelper {
 
     public BookBorrowInfo build() {
       LocalDateTime now = LocalDateTime.now();
-      return bookBorrowInfoRepository.save(BookBorrowInfo.builder()
+      BookBorrowInfo borrow = bookBorrowInfoRepository.save(BookBorrowInfo.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .book(book != null ? book : bookTestHelper.generate())
           .borrowDate(borrowDate != null ? borrowDate : now)
           .borrowStatus(borrowStatus != null ? borrowStatus : getDefaultBorrowStatus())
           .expireDate(expireDate != null ? expireDate : now.plusWeeks(2))
           .build());
+      borrow.getBook().getBookBorrowInfos().add(borrow);
+      return borrow;
     }
 
     private BookBorrowStatus getDefaultBorrowStatus() {

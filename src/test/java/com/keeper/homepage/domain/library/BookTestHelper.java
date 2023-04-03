@@ -71,7 +71,6 @@ public class BookTestHelper {
           .author(author != null ? author : "도서 저자")
           .bookDepartment(bookDepartment != null ? bookDepartment : BookDepartment.getBookDepartmentBy(ETC))
           .totalQuantity(totalQuantity != null ? totalQuantity : 1)
-          .currentQuantity(currentQuantity != null ? currentQuantity : 1)
           .thumbnail(thumbnail)
           .build());
     }

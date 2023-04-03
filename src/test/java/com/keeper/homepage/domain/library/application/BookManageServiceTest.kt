@@ -120,7 +120,6 @@ class BookManageServiceTest : IntegrationTest() {
             val member = memberTestHelper.generate()
 
             (1..bookCount).map { // 모든 책 대여
-                book.borrow()
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
                     .member(member)
