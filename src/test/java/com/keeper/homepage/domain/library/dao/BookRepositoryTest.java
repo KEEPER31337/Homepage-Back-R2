@@ -1,12 +1,10 @@
 package com.keeper.homepage.domain.library.dao;
 
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType.ETC;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
@@ -17,7 +15,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -92,7 +89,6 @@ public class BookRepositoryTest extends IntegrationTest {
 
       assertThat(findBook.getBookDepartment().getId()).isEqualTo(ETC.getId());
       assertThat(findBook.getTotalQuantity()).isEqualTo(1);
-      assertThat(findBook.getCurrentQuantity()).isEqualTo(1);
     }
 
     @Test
@@ -117,8 +113,8 @@ public class BookRepositoryTest extends IntegrationTest {
     void should_allBookBorrowStatusInfoExist_when_givenBookBorrowStatusTypeEnum() {
       // given
       List<BookBorrowStatus> bookBorrowStatusesTypes = Arrays.stream(BookBorrowStatusType.values())
-              .map(BookBorrowStatus::getBookBorrowStatusBy)
-              .toList();
+          .map(BookBorrowStatus::getBookBorrowStatusBy)
+          .toList();
 
       // when
       List<BookBorrowStatus> bookBorrowStatuses = bookBorrowStatusRepository.findAll();
@@ -131,8 +127,8 @@ public class BookRepositoryTest extends IntegrationTest {
 
     private List<Long> getIds(List<BookBorrowStatus> bookBorrowStatuses) {
       return bookBorrowStatuses.stream()
-              .map(BookBorrowStatus::getId)
-              .collect(toList());
+          .map(BookBorrowStatus::getId)
+          .collect(toList());
     }
 
     private Long getId(BookBorrowStatus bookBorrowStatus) {
@@ -141,9 +137,9 @@ public class BookRepositoryTest extends IntegrationTest {
 
     private List<String> getStatuses(List<BookBorrowStatus> bookBorrowStatuses) {
       return bookBorrowStatuses.stream()
-              .map(BookBorrowStatus::getType)
-              .map(BookBorrowStatusType::getStatus)
-              .collect(toList());
+          .map(BookBorrowStatus::getType)
+          .map(BookBorrowStatusType::getStatus)
+          .collect(toList());
     }
 
     private String getStatus(BookBorrowStatus bookBorrowStatus) {

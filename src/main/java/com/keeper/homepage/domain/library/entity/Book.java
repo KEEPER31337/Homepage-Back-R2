@@ -20,7 +20,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -54,9 +53,6 @@ public class Book extends BaseEntity {
   @Column(name = "total_quantity", nullable = false)
   private Long totalQuantity;
 
-  @Column(name = "current_quantity", nullable = false)
-  private Long currentQuantity;
-
   @OneToOne(fetch = LAZY, cascade = REMOVE)
   @JoinColumn(name = "thumbnail_id")
   private Thumbnail thumbnail;
@@ -66,12 +62,11 @@ public class Book extends BaseEntity {
 
   @Builder
   public Book(String title, String author, BookDepartment bookDepartment,
-      Long totalQuantity, Long currentQuantity, Thumbnail thumbnail) {
+      Long totalQuantity, Thumbnail thumbnail) {
     this.title = title;
     this.author = author;
     this.bookDepartment = bookDepartment;
     this.totalQuantity = totalQuantity;
-    this.currentQuantity = currentQuantity;
     this.thumbnail = thumbnail;
   }
 
@@ -95,10 +90,6 @@ public class Book extends BaseEntity {
     return totalQuantity;
   }
 
-  public Long getCurrentQuantity() {
-    return currentQuantity;
-  }
-
   public Thumbnail getThumbnail() {
     return thumbnail;
   }
@@ -112,32 +103,23 @@ public class Book extends BaseEntity {
   }
 
   public void updateBook(String newTitle, String newAuthor, BookDepartment newBookDepartment, Long newTotalQuantity) {
-    if (this.totalQuantity - currentQuantity > newTotalQuantity) {
+    if (getCountInBorrowing() > newTotalQuantity) {
       throw new BusinessException(this.id, "bookId", ErrorCode.BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY);
     }
     this.title = newTitle;
     this.author = newAuthor;
     this.bookDepartment = newBookDepartment;
     this.totalQuantity = newTotalQuantity;
-    this.currentQuantity = newTotalQuantity - (this.totalQuantity - currentQuantity);
+  }
+
+  public long getCountInBorrowing() {
+    return this.getBookBorrowInfos().stream()
+        .filter(BookBorrowInfo::isInBorrowing)
+        .count();
   }
 
   public boolean isSomeoneInBorrowing() {
     return getBookBorrowInfos().stream()
         .anyMatch(BookBorrowInfo::isInBorrowing);
-  }
-
-  public void borrow() {
-    if (this.currentQuantity <= 0) {
-      throw new BusinessException(this.title, "bookTitle", ErrorCode.BOOK_CANNOT_BORROW);
-    }
-    this.currentQuantity--;
-  }
-
-  public void returnBook() {
-    if (Objects.equals(this.currentQuantity, totalQuantity)) {
-      throw new BusinessException(this.title, "bookTitle", ErrorCode.BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY);
-    }
-    this.currentQuantity++;
   }
 }

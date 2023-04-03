@@ -227,7 +227,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `유효한 요청이면 책 대여 승인이 성공해야 한다`() {
-            val beforeQuantity = borrowInfo.book.currentQuantity
+            val beforeBorrowingQuantity = borrowInfo.book.countInBorrowing
             val securedValue = getSecuredValue(BorrowManageController::class.java, "approveBorrow")
             callApproveBorrowApi(borrowInfo.id)
                 .andExpect(status().isNoContent)
@@ -244,7 +244,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     )
                 )
             borrowInfo.borrowStatus.type shouldBe 대출승인
-            borrowInfo.book.currentQuantity shouldBe beforeQuantity - 1
+            borrowInfo.book.countInBorrowing shouldBe beforeBorrowingQuantity + 1
         }
 
         @Test
@@ -277,12 +277,11 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         @BeforeEach
         fun setBorrowInfo() {
             borrowInfo = bookBorrowInfoTestHelper.generate(반납대기중)
-            borrowInfo.book.borrow()
         }
 
         @Test
         fun `유효한 요청이면 책 반납 승인이 성공해야 한다`() {
-            val beforeQuantity = borrowInfo.book.currentQuantity
+            val beforeBorrowingQuantity = borrowInfo.book.countInBorrowing
             val securedValue = getSecuredValue(BorrowManageController::class.java, "approveReturn")
             callApproveReturnApi(borrowInfo.id)
                 .andExpect(status().isNoContent)
@@ -299,7 +298,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     )
                 )
             borrowInfo.borrowStatus.type shouldBe 반납
-            borrowInfo.book.currentQuantity shouldBe beforeQuantity + 1
+            borrowInfo.book.countInBorrowing shouldBe beforeBorrowingQuantity - 1
         }
 
         @Test

@@ -33,7 +33,6 @@ class BookManageService(
             author,
             BookDepartment.getBookDepartmentBy(bookDepartment),
             totalQuantity,
-            0L,
             thumbnailUtil.saveThumbnail(thumbnail)
                 .orElse(null)
         )
