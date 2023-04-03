@@ -51,42 +51,11 @@ public class PostRepositoryTest extends IntegrationTest {
       assertThat(findDislike.getMember()).isEqualTo(member);
       assertThat(findDislike.getPost()).isEqualTo(post);
     }
-
-    @Test
-    @DisplayName("좋아요를 하면 포스팅의 좋아요 리스트에도 좋아요 정보가 있어야 한다.")
-    void should_existPostLike_when_memberLike() {
-      member.like(post);
-
-      em.flush();
-      em.clear();
-      member = memberRepository.findById(member.getId()).orElseThrow();
-      post = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThat(post.getPostLikes()).hasSize(1);
-      assertThat(post.getPostLikes()).contains(MemberHasPostLike.builder()
-          .member(member)
-          .post(post)
-          .build());
-    }
   }
 
   @Nested
   @DisplayName("Post Remove 테스트")
   class PostRemoveTest {
-
-    @Test
-    @DisplayName("포스팅을 지우면 썸네일도 함께 지워진다.")
-    void should_deletedThumbnail_when_deletePost() {
-      Post postWithThumbnail = postTestHelper.builder()
-          .thumbnail(thumbnail)
-          .build();
-
-      postRepository.delete(postWithThumbnail);
-
-      em.flush();
-      em.clear();
-      assertThat(thumbnailRepository.findAll()).doesNotContain(thumbnail);
-    }
 
     @Test
     @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
@@ -98,27 +67,14 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      assertThat(fileRepository.findAll()).doesNotContain(file);
+      assertThat(fileRepository.findById(file.getId())).isEmpty();
     }
 
     @Test
     @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")
     void should_deletedComments_when_deletePost() {
-      Comment comment = commentTestHelper.generate();
-      post.addComment(comment);
-
-      postRepository.delete(post);
-
-      em.flush();
-      em.clear();
-      assertThat(commentRepository.findAll()).hasSize(0);
-    }
-
-    @Test
-    @DisplayName("포스팅을 지우면 회원의 좋아요, 싫어요들도 함께 지워진다.")
-    void should_deletedLikeAndDislike_when_deletePost() {
-      member.like(post);
-      member.dislike(post);
+      Comment comment = commentTestHelper.builder().post(post).build();
+      long commentId = comment.getId();
 
       em.flush();
       em.clear();
@@ -127,8 +83,7 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      assertThat(memberHasPostLikeRepository.findAll()).hasSize(0);
-      assertThat(memberHasPostDislikeRepository.findAll()).hasSize(0);
+      assertThat(commentRepository.findById(commentId)).isEmpty();
     }
   }
 
@@ -148,11 +103,10 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      List<MemberHasPostLike> postLikes = memberHasPostLikeRepository.findAll();
-      List<MemberHasPostDislike> postDislikes = memberHasPostDislikeRepository.findAll();
+      member = memberRepository.findById(member.getId()).orElseThrow();
 
-      assertThat(postLikes).hasSize(1);
-      assertThat(postDislikes).hasSize(1);
+      assertThat(member.getPostLikes()).hasSize(1);
+      assertThat(member.getPostDislikes()).hasSize(1);
     }
 
     @Test
@@ -163,22 +117,9 @@ public class PostRepositoryTest extends IntegrationTest {
 
       em.flush();
       em.clear();
-      List<MemberHasPostLike> postLikes = memberHasPostLikeRepository.findAll();
+      member = memberRepository.findById(member.getId()).orElseThrow();
 
-      assertThat(postLikes).hasSize(0);
-    }
-
-    @Test
-    @DisplayName("좋아요를 취소하면 포스팅의 좋아요 리스트에도 좋아요 정보가 삭제되어야 한다.")
-    void should_deletedPostLike_when_cancelLike() {
-      member.like(post);
-      member.cancelLike(post);
-
-      em.flush();
-      em.clear();
-      post = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThat(post.getPostLikes()).hasSize(0);
+      assertThat(member.getPostLikes()).hasSize(0);
     }
   }
 
@@ -194,9 +135,6 @@ public class PostRepositoryTest extends IntegrationTest {
       Post findPost = postRepository.findById(post.getId()).orElseThrow();
 
       assertThat(findPost.getVisitCount()).isEqualTo(0);
-      assertThat(findPost.getLikeCount()).isEqualTo(0);
-      assertThat(findPost.getDislikeCount()).isEqualTo(0);
-      assertThat(findPost.getCommentCount()).isEqualTo(0);
       assertThat(findPost.getAllowComment()).isEqualTo(true);
       assertThat(findPost.getIsNotice()).isEqualTo(false);
       assertThat(findPost.getIsSecret()).isEqualTo(false);

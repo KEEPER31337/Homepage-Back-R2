@@ -25,6 +25,10 @@ link:about/about.html[API 문서 보기]
 
 link:post/post.html[API 문서 보기]
 
+== *COMMENT API*
+
+link:comment/comment.html[API 문서 보기]
+
 == *SEMINAR API*
 
 link:seminar/seminar.html[API 문서 보기]

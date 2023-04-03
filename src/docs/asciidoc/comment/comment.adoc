@@ -1,0 +1,162 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= COMMENT API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *댓글 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-comment/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-comment/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-comment/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-comment/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/create-comment/response-headers.adoc[]
+
+== *댓글 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-comments/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-comments/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-comments/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-comments/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-comments/response-fields.adoc[]
+
+== *댓글 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-comment/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-comment/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-comment/path-parameters.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/update-comment/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-comment/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/update-comment/response-headers.adoc[]
+
+== *댓글 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-comment/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-comment/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-comment/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-comment/http-response.adoc[]
+
+== *댓글 좋아요 또는 좋아요 취소*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/like-comment/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/like-comment/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/like-comment/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/like-comment/http-response.adoc[]
+
+== *댓글 싫어요 또는 싫어요 취소*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/dislike-comment/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/dislike-comment/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/dislike-comment/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/dislike-comment/http-response.adoc[]

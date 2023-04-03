@@ -244,9 +244,19 @@ public class Member {
         .anyMatch(postLike -> postLike.getPost().equals(post));
   }
 
+  public boolean isLike(Comment comment) {
+    return commentLikes.stream()
+        .anyMatch(commentLike -> commentLike.getComment().equals(comment));
+  }
+
   public boolean isDislike(Post post) {
     return postDislikes.stream()
         .anyMatch(postDislike -> postDislike.getPost().equals(post));
+  }
+
+  public boolean isDislike(Comment comment) {
+    return commentDislikes.stream()
+        .anyMatch(commentDislike -> commentDislike.getComment().equals(comment));
   }
 
   public void join(Study study) {

@@ -1,12 +1,11 @@
 package com.keeper.homepage.domain.comment;
 
+import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.comment.entity.Comment;
-import com.keeper.homepage.domain.post.entity.category.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,8 +35,6 @@ public class CommentTestHelper {
     private Post post;
     private Comment parent;
     private String content;
-    private Integer likeCount;
-    private Integer dislikeCount;
     private String ipAddress;
 
     private CommentBuilder() {
@@ -64,16 +61,6 @@ public class CommentTestHelper {
       return this;
     }
 
-    public CommentBuilder likeCount(Integer likeCount) {
-      this.likeCount = likeCount;
-      return this;
-    }
-
-    public CommentBuilder dislikeCount(Integer dislikeCount) {
-      this.dislikeCount = dislikeCount;
-      return this;
-    }
-
     public CommentBuilder ipAddress(String ipAddress) {
       this.ipAddress = ipAddress;
       return this;
@@ -85,8 +72,6 @@ public class CommentTestHelper {
           .post(post != null ? post : postTestHelper.generate())
           .parent(parent)
           .content(content != null ? content : "댓글내용")
-          .likeCount(likeCount)
-          .dislikeCount(dislikeCount)
           .ipAddress(ipAddress != null ? ipAddress : "0.0.0.0")
           .build());
     }
