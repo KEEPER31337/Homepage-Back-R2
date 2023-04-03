@@ -65,7 +65,7 @@ public class CommentService {
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> CommentResponse.of(comment, getWriterThumbnailPath(comment)))
         .toList();
-    return new CommentListResponse(commentResponses);
+    return CommentListResponse.from(commentResponses);
   }
 
   private String getWriterThumbnailPath(Comment comment) {
