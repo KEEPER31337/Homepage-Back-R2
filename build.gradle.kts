@@ -56,12 +56,12 @@ tasks {
     }
     register<Copy>("copyDocs") {
         dependsOn(asciidoctor)
-        from("${asciidoctor.get().outputDir}/html5")
+        from("${asciidoctor.get().outputDir}")
         into("src/main/resources/static/docs")
     }
     bootJar {
         dependsOn(asciidoctor)
-        from("${asciidoctor.get().outputDir}/html5") {
+        from("${asciidoctor.get().outputDir}") {
             into("static/docs")
         }
     }
