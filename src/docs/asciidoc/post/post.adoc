@@ -133,6 +133,32 @@ include::{snippets}/update-post/http-response.adoc[]
 
 include::{snippets}/update-post/response-headers.adoc[]
 
+== *게시글 썸네일 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-post-thumbnail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-post-thumbnail/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-post-thumbnail/path-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/update-post-thumbnail/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-post-thumbnail/http-response.adoc[]
+
 == *게시글 삭제*
 
 === 요청
