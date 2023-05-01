@@ -63,18 +63,28 @@ public class PostApiTestHelper extends IntegrationTest {
   }
 
   ResultActions callUpdatePostApiWithFiles(String accessToken, long postId,
-      MockMultipartFile thumbnail,
       MockMultipartFile file,
       MultiValueMap<String, String> params)
       throws Exception {
     return mockMvc.perform(RestDocumentationRequestBuilders.multipart("/posts/{postId}", postId)
-        .file(thumbnail)
         .file(file)
         .with(request -> {
           request.setMethod("PUT");
           return request;
         })
         .queryParams(params)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .contentType(MediaType.MULTIPART_FORM_DATA));
+  }
+
+  ResultActions callUpdatePostThumbnail(String accessToken, long postId, MockMultipartFile thumbnail)
+      throws Exception {
+    return mockMvc.perform(RestDocumentationRequestBuilders.multipart("/posts/{postId}", postId)
+        .file(thumbnail)
+        .with(request -> {
+          request.setMethod("PATCH");
+          return request;
+        })
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }

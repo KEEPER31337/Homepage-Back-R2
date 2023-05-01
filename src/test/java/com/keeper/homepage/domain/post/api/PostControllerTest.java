@@ -440,7 +440,7 @@ public class PostControllerTest extends PostApiTestHelper {
       long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
       addAllParams();
 
-      callUpdatePostApiWithFiles(memberToken, postId, thumbnail, file, params)
+      callUpdatePostApiWithFiles(memberToken, postId, file, params)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("update-post",
@@ -476,8 +476,6 @@ public class PostControllerTest extends PostApiTestHelper {
                       .optional()
               ),
               requestParts(
-                  partWithName("thumbnail").description("게시글의 썸네일")
-                      .optional(),
                   partWithName("files").description("게시글의 첨부 파일")
                       .optional()
               ),
@@ -487,12 +485,38 @@ public class PostControllerTest extends PostApiTestHelper {
     }
 
     @Test
+    @DisplayName("유효한 요청일 경우 게시글 썸네일 수정은 성공해야 한다.")
+    public void 유효한_요청일_경우_게시글_썸네일_수정은_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "updatePostThumbnail");
+
+      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+
+      MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
+
+      callUpdatePostThumbnail(memberToken, postId, newThumbnailFile)
+          .andExpect(status().isNoContent())
+          .andDo(document("update-post-thumbnail",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("썸네일을 수정하고자 하는 게시글의 ID")
+              ),
+              requestParts(
+                  partWithName("thumbnail").description("게시글의 썸네일")
+                      .optional()
+              )));
+    }
+
+    @Test
     @DisplayName("내가 작성한 게시글이 아닐 경우 게시글 수정은 실패한다.")
     public void should_fail_when_writerIsNotMe() throws Exception {
       long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
       addAllParams();
 
-      callUpdatePostApiWithFiles(otherToken, postId, thumbnail, file, params)
+      callUpdatePostApiWithFiles(otherToken, postId, file, params)
           .andExpect(status().isForbidden());
     }
 
