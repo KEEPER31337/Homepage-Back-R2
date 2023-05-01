@@ -48,9 +48,6 @@ public class PostUpdateRequest {
   private String password;
 
   @Nullable
-  private MultipartFile thumbnail;
-
-  @Nullable
   private List<MultipartFile> files;
 
   public Post toEntity(String ipAddress) {

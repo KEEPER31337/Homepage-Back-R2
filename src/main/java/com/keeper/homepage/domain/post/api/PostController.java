@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -64,11 +65,20 @@ public class PostController {
   ) {
     postService.update(member, postId,
         request.toEntity(WebUtil.getUserIP()),
-        request.getThumbnail(),
         request.getFiles());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))
         .build();
+  }
+
+  @PatchMapping("/{postId}")
+  public ResponseEntity<Void> updatePostThumbnail(
+      @LoginMember Member member,
+      @PathVariable long postId,
+      @ModelAttribute MultipartFile thumbnail
+  ) {
+    postService.updatePostThumbnail(member, postId, thumbnail);
+    return ResponseEntity.noContent().build();
   }
 
   @DeleteMapping("/{postId}")
