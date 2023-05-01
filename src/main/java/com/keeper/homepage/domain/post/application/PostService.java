@@ -12,8 +12,6 @@ import static java.lang.Boolean.TRUE;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
-import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
-import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -28,9 +26,6 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -194,8 +189,7 @@ public class PostService {
   }
 
   @Transactional
-  public void update(Member member, long postId, Post newPost, MultipartFile thumbnail,
-      List<MultipartFile> files) {
+  public void update(Member member, long postId, Post newPost, List<MultipartFile> files) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
@@ -205,12 +199,17 @@ public class PostService {
       checkPassword(newPost.getPassword());
     }
 
-    updateThumbnail(post, thumbnail);
     updateFiles(post, files);
     post.update(newPost);
   }
 
-  private void updateThumbnail(Post post, MultipartFile thumbnail) {
+  public void updatePostThumbnail(Member member, long postId, MultipartFile thumbnail) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    }
+
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
     savePostThumbnail(post, thumbnail);
   }
