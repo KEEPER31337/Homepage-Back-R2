@@ -18,15 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor(access = PRIVATE)
 public class StudyCreateRequest {
 
-  public static final int MAX_REQUEST_STUDY_TITLE_LENGTH = 45;
-  public static final int MAX_REQUEST_STUDY_INFORMATION_LENGTH = 100;
+  public static final int STUDY_TITLE_LENGTH = 45;
+  public static final int STUDY_INFORMATION_LENGTH = 100;
 
   @NotBlank(message = "스터디 이름을 입력해주세요.")
-  @Size(max = MAX_REQUEST_STUDY_TITLE_LENGTH, message = "스터디 이름은 {max}자 이하로 입력해주세요.")
+  @Size(max = STUDY_TITLE_LENGTH, message = "스터디 이름은 {max}자 이하로 입력해주세요.")
   private String title;
 
   @NotBlank(message = "스터디 설명을 입력해주세요.")
-  @Size(max = MAX_REQUEST_STUDY_INFORMATION_LENGTH, message = "스터디 설명은 {max}자 이하로 입력해주세요.")
+  @Size(max = STUDY_INFORMATION_LENGTH, message = "스터디 설명은 {max}자 이하로 입력해주세요.")
   private String information;
 
   @NotNull(message = "스터디 년도를 입력해주세요.")
