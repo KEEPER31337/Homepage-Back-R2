@@ -14,12 +14,17 @@ import org.junit.jupiter.api.Test;
 public class SurveyMemberReplyRepositoryTest extends IntegrationTest {
 
   private SurveyMemberReply memberReply;
+  private SurveyReplyExcuse excuse;
   private long memberReplyId;
 
   @BeforeEach
   void setUp() {
     memberReply = surveyMemberReplyTestHelper.generate();
     memberReplyId = memberReply.getId();
+    excuse = SurveyReplyExcuse.builder()
+        .restExcuse("BOB 합격을 하게되어 휴면 신청합니다.")
+        .build();
+    memberReply.changeReplyExcuse(excuse);
   }
 
   @Nested
@@ -29,11 +34,6 @@ public class SurveyMemberReplyRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("활동조사 기타 사유는 활동 조사 응답이 관리한다.")
     public void 활동조사_기타_사유는_활동_조사_응답이_관리한다() throws Exception {
-      SurveyReplyExcuse excuse = SurveyReplyExcuse.builder()
-          .restExcuse("BOB 합격을 하게되어 휴면 신청합니다.")
-          .build();
-      memberReply.changeReplyExcuse(excuse);
-
       em.flush();
       em.clear();
       SurveyMemberReply memberReply = surveyMemberReplyRepository.findById(memberReplyId).orElseThrow();
@@ -45,11 +45,6 @@ public class SurveyMemberReplyRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("활동조사 응답 삭제 시 기타 사유도 지워진다.")
     public void 활동조사_응답_삭제_시_기타_사유도_지워진다() throws Exception {
-      SurveyReplyExcuse excuseBuild = SurveyReplyExcuse.builder()
-          .restExcuse("BOB 합격을 하게되어 휴면 신청합니다.")
-          .build();
-      memberReply.changeReplyExcuse(excuseBuild);
-
       em.flush();
       em.clear();
       surveyMemberReplyRepository.deleteById(memberReplyId);
