@@ -353,7 +353,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertDoesNotThrow(() -> {
-        postService.update(member, postId, newPost, null, null);
+        postService.update(member, postId, newPost, null);
       });
     }
 
@@ -363,12 +363,8 @@ public class PostServiceTest extends IntegrationTest {
       long postId = postService.create(post, category.getId(), thumbnail, null);
       Thumbnail oldThumbnail = post.getThumbnail();
 
-      Post newPost = Post.builder()
-          .title("수정 제목")
-          .content("수정 내용")
-          .build();
-
-      postService.update(member, postId, newPost, thumbnailTestHelper.getThumbnailFile(), null);
+      MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
+      postService.updatePostThumbnail(member, postId, newThumbnailFile);
       Thumbnail newThumbnail = post.getThumbnail();
 
       checkDoesNotExist(oldThumbnail);
@@ -409,7 +405,7 @@ public class PostServiceTest extends IntegrationTest {
           .ipAddress(WebUtil.getUserIP())
           .build();
 
-      postService.update(member, postId, newPost, null, List.of(file2));
+      postService.update(member, postId, newPost, List.of(file2));
       List<FileEntity> afterFiles = fileRepository.findAllByPost(post);
 
       for (FileEntity fileEntity : beforeFiles) {
@@ -434,7 +430,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertThrows(BusinessException.class, () -> {
-        postService.update(member, postId, newPost, null, null);
+        postService.update(member, postId, newPost, null);
       });
     }
   }
