@@ -1,8 +1,8 @@
 package com.keeper.homepage.domain.study.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.MAX_REQUEST_STUDY_INFORMATION_LENGTH;
-import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.MAX_REQUEST_STUDY_TITLE_LENGTH;
+import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_INFORMATION_LENGTH;
+import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -47,7 +47,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     void should_201CREATED_when_createPostWithThumbnailAndFiles() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "createStudy");
 
-      addAllParams();
+      addAllParams(params);
 
       callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
           .andExpect(status().isCreated())
@@ -58,9 +58,9 @@ public class StudyControllerTest extends StudyApiTestHelper {
               ),
               queryParameters(
                   parameterWithName("title")
-                      .description("스터디 이름을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_STUDY_TITLE_LENGTH + ")"),
+                      .description("스터디 이름을 입력해주세요. (최대 가능 길이 : " + STUDY_TITLE_LENGTH + ")"),
                   parameterWithName("information")
-                      .description("스터디 설명을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_STUDY_INFORMATION_LENGTH + ")"),
+                      .description("스터디 설명을 입력해주세요. (최대 가능 길이 : " + STUDY_INFORMATION_LENGTH + ")"),
                   parameterWithName("year")
                       .description("스터디 년도를 입력해주세요."),
                   parameterWithName("season")
@@ -78,7 +78,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
               )));
     }
 
-    private void addAllParams() {
+    private void addAllParams(MultiValueMap<String, String> params) {
       params.add("title", "자바 스터디");
       params.add("information", "자바 스터디 입니다");
       params.add("year", "2023");
