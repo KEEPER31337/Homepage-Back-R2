@@ -10,6 +10,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,16 +27,19 @@ import org.springframework.util.MultiValueMap;
 
 public class StudyControllerTest extends StudyApiTestHelper {
 
-  private Member member;
   private MockMultipartFile thumbnail;
-  private String memberToken;
+  private String memberToken, otherToken;
+  private long studyId;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
   @BeforeEach
   void setUp() throws IOException {
-    member = memberTestHelper.builder().build();
+    Member member = memberTestHelper.builder().build();
+    Member other = memberTestHelper.builder().build();
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
+    studyId = studyTestHelper.builder().headMember(member).build().getId();
   }
 
   @Nested
@@ -86,6 +90,36 @@ public class StudyControllerTest extends StudyApiTestHelper {
       params.add("gitLink", "github.com");
       params.add("noteLink", "notion.com");
       params.add("etcLink", "etc.com");
+    }
+  }
+
+  @Nested
+  @DisplayName("스터디 삭제")
+  class DeleteStudy {
+
+    @Test
+    @DisplayName("유효한 요청 시 스터디 삭제는 성공한다.")
+    public void 유효한_요청_시_스터디_삭제는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "deleteStudy");
+
+      callDeleteStudyApi(memberToken, studyId)
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-study",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("studyId")
+                      .description("삭제하고자 하는 스터디의 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("스터디장이 아닐 경우 스터디 삭제는 실패한다.")
+    public void 스터디장이_아닐_경우_스터디_삭제는_실패한다() throws Exception {
+      callDeleteStudyApi(otherToken, studyId)
+          .andExpect(status().isForbidden());
     }
   }
 }
