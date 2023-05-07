@@ -38,3 +38,25 @@ include::{snippets}/create-study/request-parts.adoc[]
 ==== Response
 
 include::{snippets}/create-study/http-response.adoc[]
+
+== *스터디 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-study/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-study/http-response.adoc[]
