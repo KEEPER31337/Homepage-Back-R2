@@ -31,4 +31,13 @@ public class StudyController {
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }
+
+  @DeleteMapping("/{studyId}")
+  public ResponseEntity<Void> deleteStudy(
+      @LoginMember Member member,
+      @PathVariable long studyId
+  ) {
+    studyService.delete(member, studyId);
+    return ResponseEntity.noContent().build();
+  }
 }
