@@ -109,7 +109,7 @@ public class PostService {
     post.addVisitCount();
 
     String writerName = getWriterName(post);
-    String thumbnailPath = thumbnailUtil.getThumbnailPath(getPostThumbnailPath(post));
+    String thumbnailPath = getPostThumbnailPath(post);
     return PostWriteResponse.of(post, writerName, thumbnailPath);
   }
 
@@ -162,9 +162,10 @@ public class PostService {
 
   private String getPostThumbnailPath(Post post) {
     Thumbnail thumbnail = post.getThumbnail();
-    return Optional.ofNullable(thumbnail)
+    String thumbnailPath = Optional.ofNullable(thumbnail)
         .map(Thumbnail::getPath)
         .orElse(DEFAULT_POST_THUMBNAIL.getPath());
+    return thumbnailUtil.getThumbnailPath(thumbnailPath);
   }
 
   private String getWriterName(Post post) {
