@@ -74,7 +74,7 @@ public class Study extends BaseEntity {
   private Member headMember;
 
   @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE)
-  private Set<StudyHasMember> studyMembers = new HashSet<>();
+  private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
   private Study(String title, String information, Integer memberNumber,
@@ -90,5 +90,9 @@ public class Study extends BaseEntity {
       this.etcLink = etcLink;
       this.thumbnail = thumbnail;
       this.headMember = headMember;
+  }
+
+  public void changeThumbnail(Thumbnail thumbnail) {
+    this.thumbnail = thumbnail;
   }
 }

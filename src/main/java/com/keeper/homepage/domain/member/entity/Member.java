@@ -14,8 +14,6 @@ import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import jakarta.persistence.CascadeType;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.member.entity.embedded.Generation;
@@ -35,7 +33,6 @@ import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -50,7 +47,6 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -135,7 +131,7 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
 
-  @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
@@ -277,5 +273,9 @@ public class Member {
 
   public String getNickname() {
     return this.profile.getNickname().get();
+  }
+
+  public boolean isHeadMember(Study study) {
+    return study.getHeadMember().equals(this);
   }
 }

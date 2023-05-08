@@ -1,0 +1,62 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= STUDY API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *스터디 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-study/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/create-study/query-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/create-study/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-study/http-response.adoc[]
+
+== *스터디 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-study/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-study/http-response.adoc[]

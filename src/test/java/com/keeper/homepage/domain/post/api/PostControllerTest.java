@@ -4,8 +4,8 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_ATTENDANCE_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_COMMENT_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
-import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.MAX_REQUEST_PASSWORD_LENGTH;
-import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.MAX_REQUEST_TITLE_LENGTH;
+import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_PASSWORD_LENGTH;
+import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.global.util.web.WebUtil;
@@ -98,7 +97,7 @@ public class PostControllerTest extends PostApiTestHelper {
               ),
               queryParameters(
                   parameterWithName("title")
-                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_TITLE_LENGTH + ")"),
+                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
                   parameterWithName("content")
                       .description("게시글 내용을 입력해주세요."),
                   parameterWithName("allowComment")
@@ -115,7 +114,7 @@ public class PostControllerTest extends PostApiTestHelper {
                       .optional(),
                   parameterWithName("password")
                       .description(
-                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_PASSWORD_LENGTH
+                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
                               + ", 비밀글일 경우 필수값입니다.)")
                       .optional(),
                   parameterWithName("categoryId")
@@ -219,7 +218,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("게시글 제목이 최대 글자를 넘은 경우 게시글 생성은 실패한다.")
     void should_400BadRequest_when_tooLongTitle() throws Exception {
-      params.add("title", "a".repeat(MAX_REQUEST_TITLE_LENGTH + 1));
+      params.add("title", "a".repeat(POST_TITLE_LENGTH + 1));
       params.add("content", "게시글 내용");
       params.add("categoryId", category.getId().toString());
 
@@ -232,7 +231,7 @@ public class PostControllerTest extends PostApiTestHelper {
     void should_400BadRequest_when_tooLongPassword() throws Exception {
       params.add("title", "게시글 제목");
       params.add("content", "게시글 내용");
-      params.add("password", "a".repeat(MAX_REQUEST_PASSWORD_LENGTH + 1));
+      params.add("password", "a".repeat(POST_PASSWORD_LENGTH + 1));
       params.add("categoryId", category.getId().toString());
 
       callCreatePostApi(memberToken, params)
@@ -454,7 +453,7 @@ public class PostControllerTest extends PostApiTestHelper {
               ),
               queryParameters(
                   parameterWithName("title")
-                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_TITLE_LENGTH + ")"),
+                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
                   parameterWithName("content")
                       .description("게시글 내용을 입력해주세요."),
                   parameterWithName("allowComment")
@@ -471,7 +470,7 @@ public class PostControllerTest extends PostApiTestHelper {
                       .optional(),
                   parameterWithName("password")
                       .description(
-                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + MAX_REQUEST_PASSWORD_LENGTH
+                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
                               + ", 비밀글일 경우 필수값입니다.)")
                       .optional()
               ),
