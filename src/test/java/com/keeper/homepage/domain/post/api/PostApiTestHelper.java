@@ -112,4 +112,10 @@ public class PostApiTestHelper extends IntegrationTest {
     return mockMvc.perform(patch("/posts/{postId}/dislikes", postId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
   }
+
+  ResultActions callGetNoticePostsApi(String memberToken, long categoryId) throws Exception {
+    return mockMvc.perform(get("/posts/notices")
+        .param("categoryId", String.valueOf(categoryId))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+  }
 }

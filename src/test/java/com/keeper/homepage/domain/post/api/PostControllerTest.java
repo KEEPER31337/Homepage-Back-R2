@@ -613,4 +613,47 @@ public class PostControllerTest extends PostApiTestHelper {
               )));
     }
   }
+
+  @Nested
+  @DisplayName("게시글 목록 조회")
+  class FindPosts {
+
+    @BeforeEach
+    void setUp() {
+      postTestHelper.builder()
+          .isNotice(true)
+          .category(category)
+          .build();
+      em.flush();
+      em.clear();
+    }
+
+    @Test
+    @DisplayName("공지글 목록 조회는 성공한다.")
+    public void 공지글_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getNoticePosts");
+
+      callGetNoticePostsApi(memberToken, category.getId())
+          .andExpect(status().isOk())
+          .andDo(document("get-notice-posts",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("categoryId")
+                      .description("조회하고자 하는 공지글 목록의 카테고리 ID")
+              ),
+              responseFields(
+                  fieldWithPath("posts[].id").description("게시글 ID"),
+                  fieldWithPath("posts[].title").description("게시글 제목"),
+                  fieldWithPath("posts[].writerName").description("게시글 작성자 닉네임"),
+                  fieldWithPath("posts[].visitCount").description("게시글 조회수"),
+                  fieldWithPath("posts[].commentCount").description("게시글 댓글 개수"),
+                  fieldWithPath("posts[].isSecret").description("개시글 비밀글 여부"),
+                  fieldWithPath("posts[].thumbnailPath").description("개시글 썸네일 주소"),
+                  fieldWithPath("posts[].registerTime").description("개시글 작성 시간")
+              )));
+    }
+  }
 }
