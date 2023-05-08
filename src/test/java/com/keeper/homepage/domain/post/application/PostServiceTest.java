@@ -18,7 +18,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.PostWriteResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -39,33 +39,29 @@ import org.springframework.mock.web.MockMultipartFile;
 
 public class PostServiceTest extends IntegrationTest {
 
+  private Member member;
+  private Category category;
+  private MockMultipartFile thumbnail;
+  private Post post;
+  private long postId;
+
+  @BeforeEach
+  void setUp() {
+    member = memberTestHelper.generate();
+    category = categoryTestHelper.generate();
+    thumbnail = thumbnailTestHelper.getThumbnailFile();
+    post = postTestHelper.builder().member(member).category(category).build();
+    postId = post.getId();
+  }
+
   @Nested
   @DisplayName("게시글 생성")
   class CreatePost {
 
-    private Member member;
-    private Category category;
-    private MockMultipartFile thumbnail;
-
-    @BeforeEach
-    void setUp() {
-      member = memberTestHelper.generate();
-      category = categoryTestHelper.generate();
-      thumbnail = thumbnailTestHelper.getThumbnailFile();
-    }
-
     @Test
     @DisplayName("게시글을 생성하면 성공적으로 저장된다.")
     void should_success_when_createPost() {
-      Post post = Post.builder()
-          .title("게시글 제목")
-          .content("게시글 내용")
-          .member(member)
-          .ipAddress(WebUtil.getUserIP())
-          .password("게시글 암호")
-          .build();
-
-      Long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
+      postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
       em.flush();
       em.clear();
       Post findPost = postRepository.findById(postId).orElseThrow();
@@ -79,7 +75,6 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.getIsNotice()).isEqualTo(false);
       assertThat(findPost.getIsSecret()).isEqualTo(false);
       assertThat(findPost.getIsTemp()).isEqualTo(false);
-      assertThat(findPost.getPassword()).isEqualTo("게시글 암호");
       assertThat(findPost.getCategory().getId()).isEqualTo(category.getId());
       assertThat(findPost.getThumbnail()).isNotNull();
       assertThat(findPost.getFiles()).isNotEmpty();
@@ -88,8 +83,6 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("요청한 카테고리를 찾을 수 없는 경우 BusinessException 던진다.")
     void should_throwBusinessException_when_requestNotFoundCategory() {
-      Post post = Post.builder().build();
-
       assertThatThrownBy(() -> postService.create(post, 0L, thumbnail, List.of(thumbnail)))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining("존재하지 않는 게시글 카테고리입니다.");
@@ -100,13 +93,10 @@ public class PostServiceTest extends IntegrationTest {
   @DisplayName("게시글 조회")
   class FindPost {
 
-    private Member bestMember, member;
+    private Member bestMember;
     private Category virtualCategory, examCategory;
-    private Post post;
     private Thumbnail thumbnail;
     private final long virtualPostId = 1;
-
-    private static final LocalDate now = LocalDate.now();
 
     @BeforeEach
     void setUp() {
@@ -116,7 +106,7 @@ public class PostServiceTest extends IntegrationTest {
       }
       for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
         attendanceRepository
-            .save(attendanceTestHelper.builder().member(bestMember).date(now.plusDays(i)).build());
+            .save(attendanceTestHelper.builder().member(bestMember).date(LocalDate.now().plusDays(i)).build());
       }
       virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
       examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
@@ -137,7 +127,7 @@ public class PostServiceTest extends IntegrationTest {
       em.clear();
       bestMember = memberRepository.findById(bestMember.getId()).orElseThrow();
       post = postRepository.findById(post.getId()).orElseThrow();
-      PostResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
+      PostWriteResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
 
       assertThat(response.getCategoryName()).isEqualTo(VIRTUAL_CATEGORY.getName());
       assertThat(response.getTitle()).isEqualTo(post.getTitle());
@@ -184,7 +174,7 @@ public class PostServiceTest extends IntegrationTest {
       bestMember = memberRepository.findById(bestMember.getId()).orElseThrow();
       post = postRepository.findById(post.getId()).orElseThrow();
 
-      PostResponse response = postService.find(bestMember, post.getId(), null);
+      PostWriteResponse response = postService.find(bestMember, post.getId(), null);
 
       assertThat(response.getWriterName()).isEqualTo("익명");
     }
@@ -319,33 +309,22 @@ public class PostServiceTest extends IntegrationTest {
   @DisplayName("게시글 수정")
   class UpdatePost {
 
-    private Member member;
-    private Category category;
-    private Post post;
-    private MockMultipartFile thumbnail, file1, file2;
+    private MockMultipartFile file1, file2;
 
     @BeforeEach
     void setUp() throws IOException {
       member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      category = categoryTestHelper.generate();
-      thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
       file1 = new MockMultipartFile("file", "testImage_1x1.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_1x1.png"));
       file2 = new MockMultipartFile("file",
           "testImage_210x210.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_210x210.png"));
-      post = Post.builder()
-          .title("게시글 제목")
-          .content("게시글 내용")
-          .member(member)
-          .ipAddress(WebUtil.getUserIP())
-          .build();
     }
 
     @Test
     @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
     public void should_success_when_writerIsMe() throws Exception {
-      long postId = postTestHelper.builder().member(member).build().getId();
+      postId = postTestHelper.builder().member(member).build().getId();
 
       Post newPost = Post.builder()
           .title("수정 제목")
@@ -360,7 +339,8 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("게시글 썸네일 수정은 성공한다.")
     public void should_success_when_updateThumbnail() throws Exception {
-      long postId = postService.create(post, category.getId(), thumbnail, null);
+      post = postTestHelper.builder().member(member).build();
+      postId = postService.create(post, category.getId(), thumbnail, null);
       Thumbnail oldThumbnail = post.getThumbnail();
 
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
@@ -396,7 +376,8 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("게시글 파일 수정은 성공한다.")
     public void should_success_when_updateFiles() throws Exception {
-      long postId = postService.create(post, category.getId(), null, List.of(file1));
+      post = postTestHelper.builder().member(member).build();
+      postId = postService.create(post, category.getId(), null, List.of(file1));
       List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
 
       Post newPost = Post.builder()
@@ -421,7 +402,7 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_secretPostWithoutPassword() throws Exception {
-      long postId = postTestHelper.builder().member(member).build().getId();
+      postId = postTestHelper.builder().member(member).build().getId();
 
       Post newPost = Post.builder()
           .title("수정 제목")
@@ -439,15 +420,8 @@ public class PostServiceTest extends IntegrationTest {
   @DisplayName("게시글 삭제")
   class DeletePost {
 
-    private Post post;
-    private long postId;
-    private Member member;
-
     @BeforeEach
     void setUp() throws IOException {
-      member = memberTestHelper.generate();
-      post = postTestHelper.builder().member(member).build();
-      postId = post.getId();
       member.like(post);
       member.dislike(post);
       em.flush();
@@ -502,17 +476,6 @@ public class PostServiceTest extends IntegrationTest {
   @Nested
   @DisplayName("게시글 좋아요 싫어요")
   class LikeDislikePost {
-
-    private Post post;
-    private long postId;
-    private Member member;
-
-    @BeforeEach
-    void setUp() throws IOException {
-      post = postTestHelper.generate();
-      postId = post.getId();
-      member = memberTestHelper.generate();
-    }
 
     @Test
     @DisplayName("게시글 좋아요 싫어요는 성공한다.")

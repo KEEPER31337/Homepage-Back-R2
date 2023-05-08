@@ -8,7 +8,6 @@ import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.MAX_
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.MAX_REQUEST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -24,15 +23,12 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
-import com.keeper.homepage.global.util.web.WebUtil;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -53,8 +49,8 @@ public class PostControllerTest extends PostApiTestHelper {
   private Member member, other;
   private String memberToken, otherToken;
   private Post post;
-
-  private static final LocalDate now = LocalDate.now();
+  private static final long virtualPostId = 1;
+  private long postId;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -66,12 +62,8 @@ public class PostControllerTest extends PostApiTestHelper {
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     file = new MockMultipartFile("files", "testImage_1x1.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_1x1.png"));
-    post = Post.builder()
-        .title("게시글 제목")
-        .content("게시글 내용")
-        .member(member)
-        .ipAddress(WebUtil.getUserIP())
-        .build();
+    post = postTestHelper.builder().member(member).build();
+    postId = post.getId();
   }
 
   @Nested
@@ -281,8 +273,6 @@ public class PostControllerTest extends PostApiTestHelper {
   @DisplayName("게시글 조회")
   class FindPost {
 
-    private static final long virtualPostId = 1;
-
     @BeforeEach
     void setUp() throws IOException {
       for (int i = 0; i < EXAM_ACCESSIBLE_COMMENT_COUNT; i++) {
@@ -290,7 +280,7 @@ public class PostControllerTest extends PostApiTestHelper {
       }
       for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
         attendanceRepository
-            .save(attendanceTestHelper.builder().member(member).date(now.plusDays(i)).build());
+            .save(attendanceTestHelper.builder().member(member).date(LocalDate.now().plusDays(i)).build());
       }
     }
 
@@ -299,7 +289,7 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_success_when_getPost() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
-      long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
+      postId = postService.create(post, category.getId(), thumbnail, List.of(file));
       em.flush();
       em.clear();
 
@@ -343,15 +333,8 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_success_when_samePassword() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
-      Post post = Post.builder()
-          .title("게시글 제목")
-          .content("게시글 내용")
-          .member(other)
-          .ipAddress(WebUtil.getUserIP())
-          .password("비밀비밀")
-          .build();
-
-      Long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
+      post = postTestHelper.builder().member(other).password("비밀비밀").build();
+      postId = postService.create(post, category.getId(), thumbnail, List.of(file));
       em.flush();
       em.clear();
 
@@ -410,7 +393,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("작성자가 내가 아니면 비밀글의 패스워드가 일치해야 한다.")
     public void should_fail_whenWrongPassword() throws Exception {
-      long postId = postTestHelper.builder()
+      postId = postTestHelper.builder()
           .member(member)
           .isSecret(true)
           .password("비밀비밀")
@@ -436,8 +419,6 @@ public class PostControllerTest extends PostApiTestHelper {
     @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
     public void should_success_when_writerIsMe() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "updatePost");
-
-      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
       addAllParams();
 
       callUpdatePostApiWithFiles(memberToken, postId, file, params)
@@ -488,9 +469,6 @@ public class PostControllerTest extends PostApiTestHelper {
     @DisplayName("유효한 요청일 경우 게시글 썸네일 수정은 성공해야 한다.")
     public void 유효한_요청일_경우_게시글_썸네일_수정은_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "updatePostThumbnail");
-
-      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
-
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
 
       callUpdatePostThumbnail(memberToken, postId, newThumbnailFile)
@@ -513,7 +491,6 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("내가 작성한 게시글이 아닐 경우 게시글 수정은 실패한다.")
     public void should_fail_when_writerIsNotMe() throws Exception {
-      long postId = postService.create(post, category.getId(), thumbnail, List.of(thumbnail));
       addAllParams();
 
       callUpdatePostApiWithFiles(otherToken, postId, file, params)
@@ -540,8 +517,6 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_success_when_writerIsMe() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "deletePost");
 
-      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
-
       callDeletePostApi(memberToken, postId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-post",
@@ -558,8 +533,6 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("내가 작성한 게시글이 아닌 경우 게시글 삭제는 실패한다.")
     public void should_success_when_writerIsNotMe() throws Exception {
-      long postId = postService.create(post, category.getId(), thumbnail, List.of(file));
-
       callDeletePostApi(otherToken, postId)
           .andExpect(status().isForbidden());
     }
@@ -568,14 +541,6 @@ public class PostControllerTest extends PostApiTestHelper {
   @Nested
   @DisplayName("게시글 좋아요 싫어요")
   class LikeDislikePost {
-
-    private long postId;
-
-    @BeforeEach
-    void setUp() throws IOException {
-      Post post = postTestHelper.generate();
-      postId = post.getId();
-    }
 
     @Test
     @DisplayName("게시글 좋아요는 성공한다.")

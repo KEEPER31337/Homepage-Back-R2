@@ -8,12 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.keeper.homepage.IntegrationTest;
 import jakarta.servlet.http.Cookie;
-import java.util.Collection;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
