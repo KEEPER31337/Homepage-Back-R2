@@ -107,4 +107,13 @@ public class PostController {
     postService.dislike(member, postId);
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/notices")
+  public ResponseEntity<PostListResponse> getNoticePosts(
+      @RequestParam Long categoryId
+  ) {
+    PostListResponse response = postService.getNoticePosts(categoryId);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(response);
+  }
 }

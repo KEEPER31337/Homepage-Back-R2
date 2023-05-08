@@ -257,4 +257,13 @@ public class PostService {
     }
     member.dislike(post);
   }
+
+  public PostListResponse getNoticePosts(Long categoryId) {
+    Category category = categoryFindService.findById(categoryId);
+    List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
+    List<PostResponse> postResponses = posts.stream()
+        .map(post -> PostResponse.of(post, getPostThumbnailPath(post)))
+        .collect(toList());
+    return PostListResponse.from(postResponses);
+  }
 }
