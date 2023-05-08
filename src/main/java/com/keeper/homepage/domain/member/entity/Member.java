@@ -138,6 +138,9 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
+  @OneToMany(mappedBy = "member")
+  private final List<Comment> comments = new ArrayList<>();
+
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
       Integer totalAttendance) {

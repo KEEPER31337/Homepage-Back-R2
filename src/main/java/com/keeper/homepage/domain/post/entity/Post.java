@@ -7,14 +7,18 @@ import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
+import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -84,6 +88,12 @@ public class Post extends BaseEntity {
 
   @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<FileEntity> files = new ArrayList<>();
+
+  @OneToMany(mappedBy = "post")
+  private final Set<MemberHasPostLike> postLikes = new HashSet<>();
+
+  @OneToMany(mappedBy = "post")
+  private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @Builder
   private Post(String title, String content, Member member, Integer visitCount, String ipAddress,
