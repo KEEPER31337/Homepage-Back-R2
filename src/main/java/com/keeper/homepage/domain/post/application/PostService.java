@@ -45,10 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostService {
 
   private final PostRepository postRepository;
-  private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
-  private final MemberHasPostLikeRepository postLikeRepository;
-  private final MemberHasPostDislikeRepository postDislikeRepository;
 
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
