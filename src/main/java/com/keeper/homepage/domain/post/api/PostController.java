@@ -111,7 +111,7 @@ public class PostController {
 
   @GetMapping("/notices")
   public ResponseEntity<PostListResponse> getNoticePosts(
-      @RequestParam Long categoryId
+      @RequestParam long categoryId
   ) {
     PostListResponse response = postService.getNoticePosts(categoryId);
     return ResponseEntity.status(HttpStatus.OK)

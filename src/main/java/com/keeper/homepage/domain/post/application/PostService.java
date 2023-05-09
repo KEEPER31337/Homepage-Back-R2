@@ -245,7 +245,7 @@ public class PostService {
     member.dislike(post);
   }
 
-  public PostListResponse getNoticePosts(Long categoryId) {
+  public PostListResponse getNoticePosts(long categoryId) {
     Category category = categoryFindService.findById(categoryId);
     List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
     List<PostResponse> postResponses = posts.stream()
