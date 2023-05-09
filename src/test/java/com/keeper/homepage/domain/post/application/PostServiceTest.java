@@ -105,8 +105,9 @@ public class PostServiceTest extends IntegrationTest {
         commentRepository.save(commentTestHelper.builder().member(bestMember).build());
       }
       for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
+        LocalDate attendanceDate = LocalDate.now().plusDays(i);
         attendanceRepository
-            .save(attendanceTestHelper.builder().member(bestMember).date(LocalDate.now().plusDays(i)).build());
+            .save(attendanceTestHelper.builder().member(bestMember).date(attendanceDate).build());
       }
       virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
       examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
