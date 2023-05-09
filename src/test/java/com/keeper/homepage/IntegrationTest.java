@@ -60,6 +60,8 @@ import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.study.StudyTestHelper;
+import com.keeper.homepage.domain.study.application.StudyService;
+import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.survey.SurveyMemberReplyTestHelper;
@@ -248,6 +250,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected MemberFindService memberFindService;
+
+  @SpyBean
+  protected StudyService studyService;
 
   /******* Helper *******/
   @SpyBean
