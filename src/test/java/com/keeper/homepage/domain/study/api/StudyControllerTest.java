@@ -5,9 +5,12 @@ import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.ST
 import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -16,7 +19,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.api.PostController;
 import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -120,6 +125,64 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 스터디장이_아닐_경우_스터디_삭제는_실패한다() throws Exception {
       callDeleteStudyApi(otherToken, studyId)
           .andExpect(status().isForbidden());
+    }
+  }
+
+  @Nested
+  @DisplayName("스터디 조회")
+  class GetStudy {
+
+    @BeforeEach
+    void setUp() {
+      studyTestHelper.builder().year(2023).season(1).build();
+    }
+
+    @Test
+    @DisplayName("스터디 조회는 성공해야 한다.")
+    public void 스터디_조회는_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "getStudy");
+
+      callGetStudyApi(memberToken, studyId)
+          .andExpect(status().isOk())
+          .andDo(document("get-study",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("studyId").description("조회하고자 하는 스터디의 ID")
+              ),
+              responseFields(
+                  fieldWithPath("information").description("스터디 정보"),
+                  fieldWithPath("members[]").description("스터디원 실명 리스트"),
+                  fieldWithPath("gitLink").description("스터디 깃허브 링크 주소"),
+                  fieldWithPath("noteLink").description("스터디 노트(노션) 링크 주소"),
+                  fieldWithPath("etcLink").description("스터디 기타 링크 주소")
+              )));
+    }
+
+    @Test
+    @DisplayName("스터디 목록 조회는 성공해야 한다.")
+    public void 스터디_목록_조회는_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "getStudies");
+
+      callGetStudiesApi(memberToken, 2023, 1)
+          .andExpect(status().isOk())
+          .andDo(document("get-studies",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("year").description("조회하고자 하는 스터디 년도"),
+                  parameterWithName("season").description("조회하고자 하는 스터디 학기")
+              ),
+              responseFields(
+                  fieldWithPath("studies[].studyId").description("스터디 ID"),
+                  fieldWithPath("studies[].title").description("스터디 이름"),
+                  fieldWithPath("studies[].headName").description("스터디장 이름 (실명)"),
+                  fieldWithPath("studies[].memberCount").description("스터디원 수")
+              )));
     }
   }
 }

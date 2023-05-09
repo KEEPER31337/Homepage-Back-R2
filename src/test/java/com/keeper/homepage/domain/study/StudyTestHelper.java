@@ -96,9 +96,9 @@ public class StudyTestHelper {
           .memberNumber(memberNumber)
           .year(year)
           .season(season)
-          .gitLink(gitLink)
-          .noteLink(noteLink)
-          .etcLink(etcLink)
+          .gitLink(gitLink != null ? gitLink : "github.com")
+          .noteLink(noteLink != null ? noteLink : "notion.com")
+          .etcLink(etcLink != null ? etcLink : "etc.com")
           .thumbnail(thumbnail)
           .headMember(headMember != null ? headMember : memberTestHelper.generate())
           .build());
