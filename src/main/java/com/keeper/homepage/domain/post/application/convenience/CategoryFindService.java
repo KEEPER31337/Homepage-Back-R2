@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CategoryFindService {
 
-  private final long VIRTUAL_CATEGORY_ID = 1;
+  private static final long VIRTUAL_CATEGORY_ID = 1;
   private final CategoryRepository categoryRepository;
 
   public Category findById(long categoryId) {
