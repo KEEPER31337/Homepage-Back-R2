@@ -275,6 +275,10 @@ public class Member {
     return this.profile.getNickname().get();
   }
 
+  public String getRealName() {
+    return this.profile.getRealName().get();
+  }
+
   public boolean isHeadMember(Study study) {
     return study.getHeadMember().equals(this);
   }

@@ -6,10 +6,14 @@ import static com.keeper.homepage.global.error.ErrorCode.STUDY_CANNOT_ACCESSIBLE
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
+import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
+import com.keeper.homepage.domain.study.dto.response.StudyListResponse;
+import com.keeper.homepage.domain.study.dto.response.StudyResponse;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +45,18 @@ public class StudyService {
       throw new BusinessException(study.getId(), "study", STUDY_CANNOT_ACCESSIBLE);
     }
     studyRepository.delete(study);
+  }
+
+  public StudyDetailResponse getStudy(long studyId) {
+    Study study = studyFindService.findById(studyId);
+    return StudyDetailResponse.from(study);
+  }
+
+  public StudyListResponse getStudies(int year, int season) {
+    List<Study> studies = studyRepository.findAllByYearAndSeason(year, season);
+    List<StudyResponse> studyResponses = studies.stream()
+        .map(StudyResponse::from)
+        .toList();
+    return StudyListResponse.from(studyResponses);
   }
 }
