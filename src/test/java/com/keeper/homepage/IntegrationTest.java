@@ -64,6 +64,12 @@ import com.keeper.homepage.domain.study.application.StudyService;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
+import com.keeper.homepage.domain.survey.SurveyMemberReplyTestHelper;
+import com.keeper.homepage.domain.survey.SurveyTestHelper;
+import com.keeper.homepage.domain.survey.dao.SurveyMemberReplyRepository;
+import com.keeper.homepage.domain.survey.dao.SurveyReplyExcuseRepository;
+import com.keeper.homepage.domain.survey.dao.SurveyReplyRepository;
+import com.keeper.homepage.domain.survey.dao.SurveyRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
@@ -190,6 +196,18 @@ public class IntegrationTest {
   @SpyBean
   protected StudyHasMemberRepository studyHasMemberRepository;
 
+  @SpyBean
+  protected SurveyRepository surveyRepository;
+
+  @SpyBean
+  protected SurveyReplyRepository surveyReplyRepository;
+
+  @SpyBean
+  protected SurveyMemberReplyRepository surveyMemberReplyRepository;
+
+  @SpyBean
+  protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
+
   /******* Service *******/
   @SpyBean
   protected EmailAuthService emailAuthService;
@@ -276,9 +294,14 @@ public class IntegrationTest {
   @Autowired
   protected StudyTestHelper studyTestHelper;
 
-  /******* Helper *******/
   @Autowired
   protected ThumbnailTestHelper thumbnailTestHelper;
+
+  @Autowired
+  protected SurveyTestHelper surveyTestHelper;
+
+  @Autowired
+  protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
 
   /******* Util *******/
   @SpyBean

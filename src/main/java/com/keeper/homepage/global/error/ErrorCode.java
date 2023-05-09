@@ -48,6 +48,8 @@ public enum ErrorCode {
   BORROW_NOT_FOUND("존재하지 않는 대출 기록입니다.", HttpStatus.NOT_FOUND),
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
+  // SURVEY
+  SURVEY_REPLY_TYPE_NOT_FOUND("존재하지 않는 응답 종류입니다.", HttpStatus.NOT_FOUND),
   // STUDY
   STUDY_NOT_FOUND("존재하지 않는 스터디입니다.", HttpStatus.NOT_FOUND),
   STUDY_CANNOT_ACCESSIBLE("스터디에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
