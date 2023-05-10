@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
@@ -26,7 +25,6 @@ import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,8 +97,7 @@ public class PostService {
     post.addVisitCount();
 
     String writerName = getWriterName(post);
-    String thumbnailPath = getPostThumbnailPath(post);
-    return PostDetailResponse.of(post, writerName, thumbnailPath);
+    return PostDetailResponse.of(post, writerName);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -148,14 +145,6 @@ public class PostService {
       return;
     }
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
-  }
-
-  private String getPostThumbnailPath(Post post) {
-    Thumbnail thumbnail = post.getThumbnail();
-    String thumbnailPath = Optional.ofNullable(thumbnail)
-        .map(Thumbnail::getPath)
-        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
-    return thumbnailUtil.getThumbnailPath(thumbnailPath);
   }
 
   private String getWriterName(Post post) {
@@ -239,8 +228,8 @@ public class PostService {
     Category category = categoryFindService.findById(categoryId);
     List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
     List<PostResponse> postResponses = posts.stream()
-        .map(post -> PostResponse.of(post, getPostThumbnailPath(post)))
-        .collect(toList());
+        .map(PostResponse::from)
+        .toList();
     return PostListResponse.from(postResponses);
   }
 }

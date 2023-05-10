@@ -36,7 +36,7 @@ public class PostDetailResponse {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime updateTime;
 
-  public static PostDetailResponse of(Post post, String writerName, String thumbnailPath) {
+  public static PostDetailResponse of(Post post, String writerName) {
     return PostDetailResponse.builder()
         .categoryName(post.getCategory().getName())
         .title(post.getTitle())
@@ -44,7 +44,7 @@ public class PostDetailResponse {
         .registerTime(post.getRegisterTime())
         .updateTime(post.getUpdateTime())
         .visitCount(post.getVisitCount())
-        .thumbnailPath(thumbnailPath)
+        .thumbnailPath(post.getThumbnailPath())
         .content(post.getContent())
         .files(post.getFiles().stream()
             .map(FileResponse::from)

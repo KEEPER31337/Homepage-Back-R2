@@ -25,7 +25,7 @@ public class PostResponse {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
 
-  public static PostResponse of(Post post, String thumbnailPath) {
+  public static PostResponse from(Post post) {
     return PostResponse.builder()
         .id(post.getId())
         .title(post.getTitle())
@@ -33,7 +33,7 @@ public class PostResponse {
         .visitCount(post.getVisitCount())
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())
-        .thumbnailPath(thumbnailPath)
+        .thumbnailPath(post.getThumbnailPath())
         .registerTime(post.getRegisterTime())
         .build();
   }

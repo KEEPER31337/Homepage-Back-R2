@@ -20,10 +20,10 @@ public class CommentResponse {
   private Integer likeCount;
   private Integer dislikeCount;
 
-  public static CommentResponse of(Comment comment, String writerThumbnailPath) {
+  public static CommentResponse from(Comment comment) {
     return CommentResponse.builder()
         .writerName(comment.getMember().getNickname())
-        .writerThumbnailPath(writerThumbnailPath)
+        .writerThumbnailPath(comment.getWriterThumbnailPath())
         .content(comment.getContent())
         .registerTime(comment.getRegisterTime())
         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)

@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.post.entity;
 
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -175,5 +177,11 @@ public class Post extends BaseEntity {
     this.isSecret = post.isSecret();
     this.isTemp = post.isTemp();
     this.password = post.getPassword();
+  }
+
+  public String getThumbnailPath() {
+    return Optional.ofNullable(this.thumbnail)
+        .map(Thumbnail::getPath)
+        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
   }
 }

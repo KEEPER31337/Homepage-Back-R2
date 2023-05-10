@@ -135,8 +135,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getNickname().get());
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
-      assertThat(response.getThumbnailPath())
-          .isEqualTo(thumbnailUtil.getThumbnailPath(DEFAULT_POST_THUMBNAIL.getPath()));
+      assertThat(response.getThumbnailPath()).isEqualTo(DEFAULT_POST_THUMBNAIL.getPath());
       assertThat(response.getContent()).isEqualTo(post.getContent());
     }
 
