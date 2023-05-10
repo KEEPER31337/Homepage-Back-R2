@@ -1,9 +1,11 @@
 package com.keeper.homepage.domain.study.application;
 
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_CANNOT_ACCESSIBLE;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
@@ -14,6 +16,7 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

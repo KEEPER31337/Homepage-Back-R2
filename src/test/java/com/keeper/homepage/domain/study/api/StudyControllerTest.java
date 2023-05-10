@@ -179,6 +179,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
               ),
               responseFields(
                   fieldWithPath("studies[].studyId").description("스터디 ID"),
+                  fieldWithPath("studies[].thumbnailPath").description("스터디 썸네일 경로"),
                   fieldWithPath("studies[].title").description("스터디 이름"),
                   fieldWithPath("studies[].headName").description("스터디장 이름 (실명)"),
                   fieldWithPath("studies[].memberCount").description("스터디원 수")

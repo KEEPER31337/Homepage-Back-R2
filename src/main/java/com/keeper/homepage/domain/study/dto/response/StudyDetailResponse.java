@@ -7,7 +7,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

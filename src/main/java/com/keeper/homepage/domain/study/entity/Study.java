@@ -1,6 +1,8 @@
 package com.keeper.homepage.domain.study.entity;
 
 
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
+
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
@@ -16,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -80,19 +83,25 @@ public class Study extends BaseEntity {
   private Study(String title, String information, Integer memberNumber,
       Integer year, Integer season, String gitLink, String noteLink, String etcLink,
       Thumbnail thumbnail, Member headMember) {
-      this.title = title;
-      this.information = information;
-      this.memberNumber = memberNumber;
-      this.year = year;
-      this.season = season;
-      this.gitLink = gitLink;
-      this.noteLink = noteLink;
-      this.etcLink = etcLink;
-      this.thumbnail = thumbnail;
-      this.headMember = headMember;
+    this.title = title;
+    this.information = information;
+    this.memberNumber = memberNumber;
+    this.year = year;
+    this.season = season;
+    this.gitLink = gitLink;
+    this.noteLink = noteLink;
+    this.etcLink = etcLink;
+    this.thumbnail = thumbnail;
+    this.headMember = headMember;
   }
 
   public void changeThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
+  }
+
+  public String getThumbnailPath() {
+    return Optional.ofNullable(this.thumbnail)
+        .map(Thumbnail::getPath)
+        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
   }
 }
