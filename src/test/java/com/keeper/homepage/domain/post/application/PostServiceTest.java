@@ -18,7 +18,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.dto.response.PostWriteResponse;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -128,7 +128,7 @@ public class PostServiceTest extends IntegrationTest {
       em.clear();
       bestMember = memberRepository.findById(bestMember.getId()).orElseThrow();
       post = postRepository.findById(post.getId()).orElseThrow();
-      PostWriteResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
+      PostDetailResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
 
       assertThat(response.getCategoryName()).isEqualTo(VIRTUAL_CATEGORY.getName());
       assertThat(response.getTitle()).isEqualTo(post.getTitle());
@@ -175,7 +175,7 @@ public class PostServiceTest extends IntegrationTest {
       bestMember = memberRepository.findById(bestMember.getId()).orElseThrow();
       post = postRepository.findById(post.getId()).orElseThrow();
 
-      PostWriteResponse response = postService.find(bestMember, post.getId(), null);
+      PostDetailResponse response = postService.find(bestMember, post.getId(), null);
 
       assertThat(response.getWriterName()).isEqualTo("익명");
     }

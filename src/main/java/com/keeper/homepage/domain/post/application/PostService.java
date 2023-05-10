@@ -3,27 +3,22 @@ package com.keeper.homepage.domain.post.application;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
-import static com.keeper.homepage.global.error.ErrorCode.POST_CATEGORY_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static java.lang.Boolean.TRUE;
 import static java.util.stream.Collectors.toList;
 
-import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
-import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
-import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
-import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
-import com.keeper.homepage.domain.post.dto.response.PostWriteResponse;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -32,8 +27,6 @@ import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +88,7 @@ public class PostService {
   }
 
   @Transactional
-  public PostWriteResponse find(Member member, long postId, String password) {
+  public PostDetailResponse find(Member member, long postId, String password) {
     Post post = validPostFindService.findById(postId);
 
     checkExamPost(member, post);
@@ -107,7 +100,7 @@ public class PostService {
 
     String writerName = getWriterName(post);
     String thumbnailPath = getPostThumbnailPath(post);
-    return PostWriteResponse.of(post, writerName, thumbnailPath);
+    return PostDetailResponse.of(post, writerName, thumbnailPath);
   }
 
   private void checkExamPost(Member member, Post post) {

@@ -14,7 +14,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class PostWriteResponse {
+public class PostDetailResponse {
 
   private String categoryName;
   private String title;
@@ -36,8 +36,8 @@ public class PostWriteResponse {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime updateTime;
 
-  public static PostWriteResponse of(Post post, String writerName, String thumbnailPath) {
-    return PostWriteResponse.builder()
+  public static PostDetailResponse of(Post post, String writerName, String thumbnailPath) {
+    return PostDetailResponse.builder()
         .categoryName(post.getCategory().getName())
         .title(post.getTitle())
         .writerName(writerName)

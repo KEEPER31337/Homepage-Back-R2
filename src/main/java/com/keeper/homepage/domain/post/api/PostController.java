@@ -5,7 +5,7 @@ import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
-import com.keeper.homepage.domain.post.dto.response.PostWriteResponse;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
@@ -48,14 +48,14 @@ public class PostController {
   }
 
   @GetMapping("/{postId}")
-  public ResponseEntity<PostWriteResponse> getPost(
+  public ResponseEntity<PostDetailResponse> getPost(
       @LoginMember Member member,
       @PathVariable long postId,
       @RequestParam(required = false) String password
   ) {
-    PostWriteResponse postWriteResponse = postService.find(member, postId, password);
+    PostDetailResponse postDetailResponse = postService.find(member, postId, password);
     return ResponseEntity.status(HttpStatus.OK)
-        .body(postWriteResponse);
+        .body(postDetailResponse);
   }
 
   @PutMapping("/{postId}")
