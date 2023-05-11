@@ -1,0 +1,152 @@
+name: Deploy Keeper Development Server
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy_development:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Create Cache Docker Image Directory
+        run: mkdir -p ~/db-docker-image
+
+      - name: Check Gradle Cache
+        id: cache
+        run: |
+          RESULT=$(curl \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
+            "${{ secrets.GRADLE_CACHE_PATH }}-1")
+
+          if [[ $RESULT == *"created_at"* ]]
+          then
+            echo "new=2" >> $GITHUB_OUTPUT
+            echo "old=1" >> $GITHUB_OUTPUT
+          else
+            echo "new=1" >> $GITHUB_OUTPUT
+            echo "old=2" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache DB Docker Image
+        id: db-docker-image
+        uses: actions/cache@v3
+        with:
+          path: ~/db-docker-image
+          key: db-docker-image-${{ runner.os }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ steps.cache.outputs.new }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Pull DB Image From ECR
+        if: steps.db-docker-image.outputs.cache-hit != 'true'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker pull $ECR_REGISTRY/keeper-homepage-db:${{ secrets.KEEPER_DB_TAG }}
+          docker save -o \
+            ~/db-docker-image/keeper-homepage-db.tar \
+            $ECR_REGISTRY/keeper-homepage-db:${{ secrets.KEEPER_DB_TAG }}
+
+      - name: Create Docker Env File
+        working-directory: ./docker
+        run: |
+          echo '${{ secrets.DOCKER_ENV }}' >> .env
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> .env
+
+      - name: Create application.yml
+        working-directory: ./src/main/resources
+        env:
+          APPLICATION_YML: ${{ secrets.APPLICATION_YML }}
+        run: |
+          echo '${{ secrets.APPLICATION_YML }}' >> application.yml
+          echo '${{ secrets.APPLICATION_DEPLOY_YML }}' >> application-deploy.yml
+
+      - name: Start Containers
+        working-directory: ./docker
+        run: docker-compose -p keeper up -d
+
+      - name: Build & Test
+        run: |
+          ./gradlew build --daemon --build-cache --parallel
+          java -Djarmode=layertools -jar build/libs/homepage-0.0.1-SNAPSHOT.jar extract
+
+      - name: Compress
+        run: |
+          tar -zcf ${GITHUB_SHA::8}.tar.gz \
+            dependencies \
+            snapshot-dependencies \
+            spring-boot-loader \
+            application
+
+      - name: Upload to S3
+        run: |
+          aws s3 mv --region ${{ secrets.AWS_REGION }} \
+          ${GITHUB_SHA::8}.tar.gz \
+          ${{ secrets.S3_DEV_BACK_LOCATION }}/${GITHUB_SHA::8}.tar.gz
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST_DEV }}
+          username: ${{ secrets.SSH_USERNAME_DEV }}
+          port: ${{ secrets.SSH_PORT_DEV }}
+          key: ${{ secrets.SSH_KEY_DEV }}
+          envs: GITHUB_SHA
+          script: |
+            cd ~/keeper/renewal/deploy
+            ./deploy_server.sh ${GITHUB_SHA::8} dev
+
+      - name: Delete Previous Gradle Cache
+        run: |
+          curl \
+            -X DELETE \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.API_GITHUB_TOKEN }}" \
+            "${{ secrets.GRADLE_CACHE_PATH }}-${{ steps.cache.outputs.old }}"
+
+      - name: Update Test Result
+        if: failure()
+        run: |
+          aws s3 cp --region ${{ secrets.AWS_REGION }} --recursive \
+          build/reports/tests/test \
+          ${{ secrets.S3_TEST_REPORT }} --recursive
+
+      - name: Notify Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          author_name: Keeper Devlopment Backend CICD
+          fields: repo, commit, message, author, action, took
