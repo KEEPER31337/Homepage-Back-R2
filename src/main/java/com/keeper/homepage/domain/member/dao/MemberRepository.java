@@ -24,5 +24,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
   boolean existsByProfileStudentId(StudentId profileStudentId);
 
-  Page<Member> findAllByOrderByPointAsc(Pageable pageable);
+  Page<Member> findAllByIdIsNotOrderByPointDesc(long virtualId, Pageable pageable);
 }

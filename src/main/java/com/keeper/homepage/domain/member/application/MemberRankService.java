@@ -13,10 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberRankService {
 
+  private static final long VIRTUAL_MEMBER_ID = 1;
   private final MemberRepository memberRepository;
 
   public Page<MemberPointRankResponse> getPointRanking(Pageable pageable) {
-    return memberRepository.findAllByOrderByPointAsc(pageable)
+    return memberRepository.findAllByIdIsNotOrderByPointDesc(VIRTUAL_MEMBER_ID, pageable)
         .map(MemberPointRankResponse::from);
   }
 }
