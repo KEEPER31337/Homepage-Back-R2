@@ -38,3 +38,29 @@ include::{snippets}/change-password/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/change-password/response-headers.adoc[]
+
+== *포인트 랭킹 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-point-ranking/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-point-ranking/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/get-point-ranking/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-point-ranking/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-point-ranking/response-fields.adoc[]
