@@ -275,6 +275,10 @@ public class Member {
     return this.profile.getNickname().get();
   }
 
+  public Float getGeneration() {
+    return this.generation.getGeneration();
+  }
+
   public boolean isHeadMember(Study study) {
     return study.getHeadMember().equals(this);
   }

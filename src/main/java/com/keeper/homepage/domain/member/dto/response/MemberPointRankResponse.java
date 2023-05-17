@@ -19,7 +19,7 @@ public class MemberPointRankResponse {
   public static MemberPointRankResponse from(Member member) {
     return MemberPointRankResponse.builder()
         .nickName(member.getNickname())
-        .generation(member.getGeneration().getGeneration())
+        .generation(member.getGeneration())
         .point(member.getPoint())
         .build();
   }
