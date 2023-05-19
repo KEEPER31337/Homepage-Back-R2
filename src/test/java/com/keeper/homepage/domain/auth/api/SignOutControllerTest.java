@@ -51,7 +51,7 @@ class SignOutControllerTest extends IntegrationTest {
                   cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
               )));
 
-      assertThat(redisUtil.getData(String.valueOf(member.getId()))).isEmpty();
+      assertThat(redisUtil.getData(String.valueOf(member.getId()), String.class)).isEmpty();
     }
   }
 }

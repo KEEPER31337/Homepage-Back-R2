@@ -199,7 +199,7 @@ class AuthTestControllerTest extends IntegrationTest {
 
         jwtTokenProvider.getAuthId(newAccessToken);
         assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
-        assertThat(redisUtil.getData("0")).isNotEmpty();
+        assertThat(redisUtil.getData("0", String.class)).isNotEmpty();
       }
 
       @Test
