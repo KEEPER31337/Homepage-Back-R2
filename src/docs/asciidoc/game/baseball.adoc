@@ -1,0 +1,59 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= BASEBALL GAME API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:./game.html[GAME API 목록으로 돌아가기]
+
+== *플레이 했는지 확인하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/baseball-is-already-played/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/baseball-is-already-played/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/baseball-is-already-played/http-response.adoc[]
+
+NOTE: body에 boolean값으로 true, false가 반환됩니다.
+
+== *야구 게임 START*
+
+NOTE: 이 API를 호출하면 게임 플레이 횟수가 차감되고 베팅 포인트만큼 member의 포인트가 차감됩니다.
+게임 종료 후 베팅 포인트에 비례해서 포인트를 부여합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/baseball-start/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/baseball-start/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/baseball-start/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/baseball-start/http-response.adoc[]

@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.game;
 
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.game.entity.Game;
+import com.keeper.homepage.domain.game.entity.embedded.Baseball;
 import com.keeper.homepage.domain.game.entity.embedded.Dice;
 import com.keeper.homepage.domain.game.entity.embedded.Lotto;
 import com.keeper.homepage.domain.game.entity.embedded.Roulette;
@@ -36,6 +37,7 @@ public class GameTestHelper {
     private Dice dice;
     private Lotto lotto;
     private Roulette roulette;
+    private Baseball baseball;
 
     private GameBuilder() {
     }
@@ -72,6 +74,7 @@ public class GameTestHelper {
               .dice(dice != null ? dice : Dice.from(0, 0))
               .lotto(lotto != null ? lotto : Lotto.from(0, 0))
               .roulette(roulette != null ? roulette : Roulette.from(0, 0))
+              .baseball(baseball != null ? baseball : Baseball.from(0, 0))
               .build());
     }
   }

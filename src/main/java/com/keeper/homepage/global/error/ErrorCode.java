@@ -53,6 +53,10 @@ public enum ErrorCode {
   // STUDY
   STUDY_NOT_FOUND("존재하지 않는 스터디입니다.", HttpStatus.NOT_FOUND),
   STUDY_CANNOT_ACCESSIBLE("스터디에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+  // GAME
+  IS_ALREADY_PLAYED("이미 게임 플레이 가능 횟수만큼 플레이 하였습니다.", HttpStatus.BAD_REQUEST),
+  NOT_ENOUGH_POINT("베팅 포인트는 보유한 포인트보다 많을 수 없습니다.", HttpStatus.BAD_REQUEST),
+  POINT_MUST_BE_POSITIVE("베팅 포인트는 양수여야 합니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;
