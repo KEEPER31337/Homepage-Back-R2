@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -20,6 +21,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
@@ -90,8 +92,18 @@ public class Book extends BaseEntity {
     return totalQuantity;
   }
 
+  public Long getCurrentQuantity() {
+    return totalQuantity - getCountInBorrowing();
+  }
+
   public Thumbnail getThumbnail() {
     return thumbnail;
+  }
+
+  public String getThumbnailPath() {
+    return Optional.ofNullable(this.thumbnail)
+        .map(Thumbnail::getPath)
+        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
   }
 
   public List<BookBorrowInfo> getBookBorrowInfos() {
@@ -102,9 +114,11 @@ public class Book extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
-  public void updateBook(String newTitle, String newAuthor, BookDepartment newBookDepartment, Long newTotalQuantity) {
+  public void updateBook(String newTitle, String newAuthor, BookDepartment newBookDepartment,
+      Long newTotalQuantity) {
     if (getCountInBorrowing() > newTotalQuantity) {
-      throw new BusinessException(this.id, "bookId", ErrorCode.BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY);
+      throw new BusinessException(this.id, "bookId",
+          ErrorCode.BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY);
     }
     this.title = newTitle;
     this.author = newAuthor;
