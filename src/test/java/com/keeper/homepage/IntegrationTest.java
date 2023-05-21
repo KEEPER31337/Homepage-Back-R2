@@ -26,6 +26,7 @@ import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
+import com.keeper.homepage.domain.game.application.BaseballService;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
@@ -61,7 +62,6 @@ import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceStatusRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.study.StudyTestHelper;
 import com.keeper.homepage.domain.study.application.StudyService;
-import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.survey.SurveyMemberReplyTestHelper;
@@ -253,6 +253,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected StudyService studyService;
+
+  @SpyBean
+  protected BaseballService baseballService;
 
   /******* Helper *******/
   @SpyBean

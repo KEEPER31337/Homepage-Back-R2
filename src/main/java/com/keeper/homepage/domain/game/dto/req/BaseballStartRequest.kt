@@ -8,5 +8,5 @@ const val MAX_TITLE_LENGTH = 10000L
 data class BaseballStartRequest(
     @field:Positive
     @field:Max(MAX_TITLE_LENGTH)
-    val bettingPoint: Long,
+    val bettingPoint: Int,
 )

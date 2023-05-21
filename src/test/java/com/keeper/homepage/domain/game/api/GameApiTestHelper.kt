@@ -1,10 +1,13 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.game.dto.BaseballResult
+import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob
 import jakarta.servlet.http.Cookie
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
@@ -25,6 +28,11 @@ class GameApiTestHelper : IntegrationTest() {
         playerCookies = memberTestHelper.getTokenCookies(player)
     }
 
+    @AfterEach
+    fun flushAll() {
+        redisUtil.flushAll()
+    }
+
     fun callBaseballIsAlreadyPlayed(
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
@@ -35,12 +43,28 @@ class GameApiTestHelper : IntegrationTest() {
     }
 
     fun callBaseballStart(
-        bettingPoint: Long,
+        bettingPoint: Int,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
             post("$GAME_URL/baseball/start")
                 .content(asJsonString(BaseballStartRequest(bettingPoint)))
+                .contentType(APPLICATION_JSON)
+                .cookie(*accessCookies)
+        )
+    }
+
+    fun callBaseballGuess(
+        guessNumber: String,
+        correctNumber: String,
+        bettingPoint: Int,
+        results: MutableList<BaseballResult.StrikeBall?> = mutableListOf(),
+        accessCookies: Array<Cookie> = playerCookies
+    ): ResultActions {
+        baseballService.saveBaseballResultInRedis(player.id, BaseballResult(correctNumber, bettingPoint, results))
+        return mockMvc.perform(
+            post("$GAME_URL/baseball/guess")
+                .content(asJsonString(BaseballGuessRequest(guessNumber)))
                 .contentType(APPLICATION_JSON)
                 .cookie(*accessCookies)
         )

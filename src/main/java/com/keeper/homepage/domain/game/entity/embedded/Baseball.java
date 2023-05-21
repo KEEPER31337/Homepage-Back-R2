@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Getter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
@@ -25,6 +24,18 @@ public class Baseball {
 
   public static Baseball from(Integer baseballPerDay, Integer baseballDayPoint) {
     return new Baseball(baseballPerDay, baseballPerDay);
+  }
+
+  public Integer getBaseballPerDay() {
+    return baseballPerDay;
+  }
+
+  public Integer getBaseballDayPoint() {
+    return baseballDayPoint;
+  }
+
+  public void setBaseballDayPoint(Integer baseballDayPoint) {
+    this.baseballDayPoint = baseballDayPoint;
   }
 
   public boolean isAlreadyPlayed() {
