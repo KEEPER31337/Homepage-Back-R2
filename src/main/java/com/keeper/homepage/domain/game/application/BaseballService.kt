@@ -10,10 +10,11 @@ import com.keeper.homepage.global.util.redis.RedisUtil
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneOffset.UTC
 import java.time.temporal.ChronoUnit
 
 const val REDIS_KEY_PREFIX = "baseball_"
+const val GUESS_NUMBER_LENGTH = 4
 
 @Service
 @Transactional(readOnly = true)
@@ -50,7 +51,10 @@ class BaseballService(
         requestMember.minusPoint(bettingPoint.toInt())
         game.baseball.increaseBaseballTimes()
 
-        val baseballResult = BaseballResult(bettingPoint = bettingPoint)
+        val baseballResult = BaseballResult(
+            correctNumber = generateDistinctRandomNumber(GUESS_NUMBER_LENGTH),
+            bettingPoint = bettingPoint
+        )
         redisUtil.setDataExpire(
             REDIS_KEY_PREFIX + requestMember.id.toString(),
             baseballResult,
@@ -58,9 +62,15 @@ class BaseballService(
         ) // 다음날 자정에 redis data expired
     }
 
+    private fun generateDistinctRandomNumber(length: Int): String {
+        return (0..9).shuffled()
+            .take(length)
+            .joinToString(separator = "")
+    }
+
     private fun toMidNight(): Long {
         return (LocalDateTime.now().plusDays(1)
             .truncatedTo(ChronoUnit.DAYS)
-            .toEpochSecond(ZoneOffset.UTC) - LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)) * 1000
+            .toEpochSecond(UTC) - LocalDateTime.now().toEpochSecond(UTC)) * 1000
     }
 }

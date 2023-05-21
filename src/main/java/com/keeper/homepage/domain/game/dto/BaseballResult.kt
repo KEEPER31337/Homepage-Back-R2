@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.game.dto
 import java.time.LocalDateTime
 
 class BaseballResult(
+    val correctNumber: String,
     val bettingPoint: Long,
     val results: MutableList<StrikeBall> = mutableListOf()
 ) {

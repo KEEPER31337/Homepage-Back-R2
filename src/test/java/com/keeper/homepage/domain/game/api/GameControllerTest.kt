@@ -60,6 +60,8 @@ class GameControllerTest : GameApiTestHelper() {
             assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
             val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResult::class.java)
             assertThat(data).isNotEmpty
+            assertThat(data.get().correctNumber).hasSize(4)
+            assertThat(data.get().correctNumber).containsOnlyDigits()
             assertThat(data.get().bettingPoint).isEqualTo(1000)
             assertThat(data.get().finalGetPoint).isEqualTo(0)
             assertThat(data.get().results).isEmpty()
