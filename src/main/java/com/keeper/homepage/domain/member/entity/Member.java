@@ -8,6 +8,7 @@ import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REA
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_MEMBER_THUMBNAIL;
 import static jakarta.persistence.CascadeType.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
@@ -31,6 +32,7 @@ import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
+import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -50,6 +52,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -133,6 +136,9 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
+
+  @OneToMany(mappedBy = "member")
+  private final List<Comment> comments = new ArrayList<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
@@ -273,6 +279,12 @@ public class Member {
 
   public String getNickname() {
     return this.profile.getNickname().get();
+  }
+
+  public String getThumbnailPath() {
+    return Optional.ofNullable(this.profile.getThumbnail())
+        .map(Thumbnail::getPath)
+        .orElse(DEFAULT_MEMBER_THUMBNAIL.getPath());
   }
 
   public boolean isHeadMember(Study study) {

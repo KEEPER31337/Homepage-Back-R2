@@ -8,12 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.keeper.homepage.IntegrationTest;
 import jakarta.servlet.http.Cookie;
-import java.util.Collection;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
@@ -110,6 +108,12 @@ public class PostApiTestHelper extends IntegrationTest {
   ResultActions callDislikePostApi(String memberToken, long postId)
       throws Exception {
     return mockMvc.perform(patch("/posts/{postId}/dislikes", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+  }
+
+  ResultActions callGetNoticePostsApi(String memberToken, long categoryId) throws Exception {
+    return mockMvc.perform(get("/posts/notices")
+        .param("categoryId", String.valueOf(categoryId))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
   }
 }

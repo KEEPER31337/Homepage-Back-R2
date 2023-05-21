@@ -2,24 +2,22 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
-import static com.keeper.homepage.global.error.ErrorCode.POST_CATEGORY_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static java.lang.Boolean.TRUE;
+import static java.util.stream.Collectors.toList;
 
-import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
-import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
-import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
-import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -38,25 +36,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostService {
 
   private final PostRepository postRepository;
-  private final CategoryRepository categoryRepository;
-  private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
-  private final MemberHasPostLikeRepository postLikeRepository;
-  private final MemberHasPostDislikeRepository postDislikeRepository;
 
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
+  private final CategoryFindService categoryFindService;
 
   public static final String ANONYMOUS_NAME = "익명";
   public static final int EXAM_ACCESSIBLE_POINT = 20000;
-  public static final long EXAM_ACCESSIBLE_COMMENT_COUNT = 5;
+  public static final int EXAM_ACCESSIBLE_COMMENT_COUNT = 5;
   public static final int EXAM_ACCESSIBLE_ATTENDANCE_COUNT = 10;
 
   @Transactional
-  public Long create(Post post, Long categoryId, MultipartFile thumbnail,
-      List<MultipartFile> multipartFiles) {
+  public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
     if (TRUE.equals(post.isSecret())) {
       checkPassword(post.getPassword());
     }
@@ -86,18 +80,13 @@ public class PostService {
   }
 
   private Long savePost(Post post, Long categoryId) {
-    Category category = getCategoryById(categoryId);
+    Category category = categoryFindService.findById(categoryId);
     post.addCategory(category);
     return postRepository.save(post).getId();
   }
 
-  private Category getCategoryById(Long categoryId) {
-    return categoryRepository.findById(categoryId)
-        .orElseThrow(() -> new BusinessException(categoryId, "categoryId", POST_CATEGORY_NOT_FOUND));
-  }
-
   @Transactional
-  public PostResponse find(Member member, long postId, String password) {
+  public PostDetailResponse find(Member member, long postId, String password) {
     Post post = validPostFindService.findById(postId);
 
     checkExamPost(member, post);
@@ -108,10 +97,7 @@ public class PostService {
     post.addVisitCount();
 
     String writerName = getWriterName(post);
-    String thumbnailPath = getPostThumbnailPath(post);
-    Long likeCount = countLike(post);
-    Long dislikeCount = countDislike(post);
-    return PostResponse.of(post, writerName, thumbnailPath, likeCount, dislikeCount);
+    return PostDetailResponse.of(post, writerName);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -125,15 +111,11 @@ public class PostService {
       return;
     }
     if (member.getPoint() >= EXAM_ACCESSIBLE_POINT
-        && countMemberComment(member) >= EXAM_ACCESSIBLE_COMMENT_COUNT
+        && member.getComments().size() >= EXAM_ACCESSIBLE_COMMENT_COUNT
         && member.getMemberAttendance().size() >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
       return;
     }
     throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
-  }
-
-  private Long countMemberComment(Member member) {
-    return commentRepository.countByMember(member);
   }
 
   private void checkTempPost(Member member, Post post) {
@@ -163,22 +145,6 @@ public class PostService {
       return;
     }
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
-  }
-
-  private String getPostThumbnailPath(Post post) {
-    Thumbnail thumbnail = post.getThumbnail();
-    if (thumbnail == null) {
-      return thumbnailUtil.getThumbnailPath(DEFAULT_POST_THUMBNAIL.getPath());
-    }
-    return thumbnailUtil.getThumbnailPath(thumbnail.getPath());
-  }
-
-  private Long countLike(Post post) {
-    return postLikeRepository.countByPost(post);
-  }
-
-  private Long countDislike(Post post) {
-    return postDislikeRepository.countByPost(post);
   }
 
   private String getWriterName(Post post) {
@@ -256,5 +222,14 @@ public class PostService {
       return;
     }
     member.dislike(post);
+  }
+
+  public PostListResponse getNoticePosts(long categoryId) {
+    Category category = categoryFindService.findById(categoryId);
+    List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
+    List<PostResponse> postResponses = posts.stream()
+        .map(PostResponse::from)
+        .toList();
+    return PostListResponse.from(postResponses);
   }
 }

@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.comment.entity;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -83,8 +81,8 @@ public class Comment extends BaseEntity {
     return this.member.equals(member);
   }
 
-  public Thumbnail getWriterThumbnail() {
-    return this.member.getProfile().getThumbnail();
+  public String getWriterThumbnailPath() {
+    return this.member.getThumbnailPath();
   }
 
   public boolean hasParent(){
