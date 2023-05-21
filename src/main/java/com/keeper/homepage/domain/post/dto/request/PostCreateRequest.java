@@ -20,11 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor(access = PRIVATE)
 public class PostCreateRequest {
 
-  public static final int MAX_REQUEST_TITLE_LENGTH = 50;
-  public static final int MAX_REQUEST_PASSWORD_LENGTH = 16;
+  public static final int POST_TITLE_LENGTH = 50;
+  public static final int POST_PASSWORD_LENGTH = 16;
 
   @NotBlank(message = "게시글 제목을 입력해주세요.")
-  @Size(max = MAX_REQUEST_TITLE_LENGTH, message = "게시글 제목은 {max}자 이하로 입력해주세요.")
+  @Size(max = POST_TITLE_LENGTH, message = "게시글 제목은 {max}자 이하로 입력해주세요.")
   private String title;
 
   @NotBlank(message = "게시글 본문을 입력해주세요.")
@@ -43,7 +43,7 @@ public class PostCreateRequest {
   private Boolean isTemp;
 
   @Nullable
-  @Size(max = MAX_REQUEST_PASSWORD_LENGTH, message = "비밀번호는 {max}자 이하로 입력해주세요.")
+  @Size(max = POST_PASSWORD_LENGTH, message = "비밀번호는 {max}자 이하로 입력해주세요.")
   private String password;
 
   @NotNull(message = "카테고리 아이디를 입력해주세요.")
