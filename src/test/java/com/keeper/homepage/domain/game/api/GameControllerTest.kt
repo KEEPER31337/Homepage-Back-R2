@@ -39,7 +39,7 @@ class GameControllerTest : GameApiTestHelper() {
                     )
                 )
 
-            gameRepository.findAllByMember(player)
+            gameRepository.findByMember(player)
                 .get()
                 .baseball
                 .increaseBaseballTimes()
@@ -57,7 +57,7 @@ class GameControllerTest : GameApiTestHelper() {
             val result = callBaseballStart(1000)
                 .andExpect(status().isNoContent)
 
-            val baseball = gameRepository.findAllByMember(player).get().baseball
+            val baseball = gameRepository.findByMember(player).get().baseball
             assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
             val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResult::class.java)
             assertThat(data).isNotEmpty

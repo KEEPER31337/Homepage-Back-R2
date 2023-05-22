@@ -26,13 +26,13 @@ class BaseballService(
 ) {
     fun isAlreadyPlayed(requestMember: Member): Boolean {
         initWhenNotExistGameMemberInfo(requestMember)
-        return gameRepository.findAllByMember(requestMember)
+        return gameRepository.findByMember(requestMember)
             .map { game -> game.baseball.isAlreadyPlayed }
             .orElse(true)
     }
 
     fun initWhenNotExistGameMemberInfo(requestMember: Member) {
-        if (gameRepository.findAllByMember(requestMember).isEmpty) {
+        if (gameRepository.findByMember(requestMember).isEmpty) {
             gameRepository.save(Game.newInstance(requestMember))
         }
     }
@@ -49,7 +49,7 @@ class BaseballService(
             throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_ENOUGH_POINT)
         }
 
-        val game = gameRepository.findAllByMember(requestMember).get()
+        val game = gameRepository.findByMember(requestMember).get()
         requestMember.minusPoint(bettingPoint)
         game.baseball.increaseBaseballTimes()
 
@@ -87,7 +87,7 @@ class BaseballService(
             BaseballResult::class.java
         ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
 
-        val gameEntity = gameRepository.findAllByMember(requestMember).orElseThrow()
+        val gameEntity = gameRepository.findByMember(requestMember).orElseThrow()
         if (baseballResult.results.size >= TRY_COUNT || isAlreadyCorrect(baseballResult)) {
             return BaseballGuessResponse(guessNumber, baseballResult.results, gameEntity.baseball.baseballDayPoint)
         }

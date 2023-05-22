@@ -17,8 +17,7 @@ class RedisUtilTest extends IntegrationTest {
 
     Optional<TestDto> getTestDto = redisUtil.getData("0", TestDto.class);
     assertThat(getTestDto).isNotEmpty();
-    assertThat(getTestDto.get().a).isEqualTo(1);
-    assertThat(getTestDto.get().b).isEqualTo("AA");
+    assertThat(getTestDto.get()).usingRecursiveComparison().isEqualTo(testDto);
 
     testDto.a = 2;
     testDto.b = "BB";
