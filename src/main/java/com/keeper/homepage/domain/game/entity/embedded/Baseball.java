@@ -23,7 +23,7 @@ public class Baseball {
   private Integer baseballDayPoint;
 
   public static Baseball from(Integer baseballPerDay, Integer baseballDayPoint) {
-    return new Baseball(baseballPerDay, baseballPerDay);
+    return new Baseball(baseballPerDay, baseballDayPoint);
   }
 
   public Integer getBaseballPerDay() {
