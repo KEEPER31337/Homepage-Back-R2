@@ -34,6 +34,6 @@ public class MemberRankController {
 
   @GetMapping("/game")
   public void getGameRanking() {
-
+    // TODO: 게임 포인트 랭킹 구현
   }
 }
