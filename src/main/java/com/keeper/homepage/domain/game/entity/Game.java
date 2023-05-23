@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,6 +40,9 @@ public class Game {
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
+  @Column(name = "play_date", nullable = false)
+  private LocalDate playDate;
+
   @Column(name = "last_play_time")
   private LocalDateTime lastPlayTime;
 
@@ -54,10 +58,11 @@ public class Game {
   @Embedded
   private Baseball baseball;
 
-  public Game(Long id, Member member, LocalDateTime lastPlayTime, Dice dice, Lotto lotto, Roulette roulette,
+  public Game(Long id, Member member, LocalDate playDate, LocalDateTime lastPlayTime, Dice dice, Lotto lotto, Roulette roulette,
       Baseball baseball) {
     this.id = id;
     this.member = member;
+    this.playDate = playDate;
     this.lastPlayTime = lastPlayTime;
     this.dice = dice;
     this.lotto = lotto;
@@ -66,7 +71,7 @@ public class Game {
   }
 
   public static Game newInstance(Member member) {
-    return new Game(null, member, null,
+    return new Game(null, member, LocalDate.now(), null,
         Dice.from(0, 0), Lotto.from(0, 0),
         Roulette.from(0, 0), Baseball.from(0, 0));
   }

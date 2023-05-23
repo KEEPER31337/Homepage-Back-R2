@@ -9,6 +9,7 @@ import com.keeper.homepage.domain.game.entity.embedded.Roulette;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ public class GameTestHelper {
   public final class GameBuilder {
 
     private Member member;
+    private LocalDate playDate;
     private LocalDateTime lastPlayTime;
     private Dice dice;
     private Lotto lotto;
@@ -44,6 +46,11 @@ public class GameTestHelper {
 
     public GameBuilder member(Member member) {
       this.member = member;
+      return this;
+    }
+
+    public GameBuilder playDate(LocalDate playDate) {
+      this.playDate = playDate;
       return this;
     }
 
@@ -70,6 +77,7 @@ public class GameTestHelper {
     public Game build() {
       return gameRepository.save(
           Game.builder().member(member != null ? member : memberTestHelper.generate())
+              .playDate(playDate != null ? playDate : LocalDate.now())
               .lastPlayTime(null)
               .dice(dice != null ? dice : Dice.from(0, 0))
               .lotto(lotto != null ? lotto : Lotto.from(0, 0))
