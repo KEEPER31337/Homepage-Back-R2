@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.game.application
 import com.keeper.homepage.domain.game.dao.GameRepository
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessResponse
-import com.keeper.homepage.domain.game.entity.Game
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
@@ -22,19 +21,12 @@ const val TRY_COUNT = 9
 @Transactional(readOnly = true)
 class BaseballService(
     val redisUtil: RedisUtil,
-    val gameRepository: GameRepository
+    val gameFindService: GameFindService
 ) {
     fun isAlreadyPlayed(requestMember: Member): Boolean {
-        initWhenNotExistGameMemberInfo(requestMember)
-        return gameRepository.findByMember(requestMember)
-            .map { game -> game.baseball.isAlreadyPlayed }
-            .orElse(true)
-    }
-
-    fun initWhenNotExistGameMemberInfo(requestMember: Member) {
-        if (gameRepository.findByMember(requestMember).isEmpty) {
-            gameRepository.save(Game.newInstance(requestMember))
-        }
+        return gameFindService.findByMemberOrInit(requestMember)
+            .baseball
+            .isAlreadyPlayed
     }
 
     @Transactional
@@ -49,7 +41,7 @@ class BaseballService(
             throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_ENOUGH_POINT)
         }
 
-        val game = gameRepository.findByMember(requestMember).get()
+        val game = gameFindService.findByMemberOrInit(requestMember)
         requestMember.minusPoint(bettingPoint)
         game.baseball.increaseBaseballTimes()
 
@@ -87,7 +79,7 @@ class BaseballService(
             BaseballResult::class.java
         ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
 
-        val gameEntity = gameRepository.findByMember(requestMember).orElseThrow()
+        val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         if (baseballResult.results.size >= TRY_COUNT || isAlreadyCorrect(baseballResult)) {
             return BaseballGuessResponse(guessNumber, baseballResult.results, gameEntity.baseball.baseballDayPoint)
         }

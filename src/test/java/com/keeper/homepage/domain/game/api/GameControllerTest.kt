@@ -24,7 +24,7 @@ class GameControllerTest : GameApiTestHelper() {
     @Nested
     inner class `야구 게임` {
         @Test
-        fun `야구게임을 오늘 했으면 true 아니면 false가 나와야 한다`() {
+        fun `야구게임을 오늘 안했으면 false가 나와야 한다`() {
             callBaseballIsAlreadyPlayed()
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
@@ -38,9 +38,11 @@ class GameControllerTest : GameApiTestHelper() {
                         ),
                     )
                 )
+        }
 
-            gameRepository.findByMember(player)
-                .get()
+        @Test
+        fun `야구게임을 오늘 했으면 true가 나와야 한다`() {
+            gameFindService.findByMemberOrInit(player)
                 .baseball
                 .increaseBaseballTimes()
 
@@ -57,7 +59,7 @@ class GameControllerTest : GameApiTestHelper() {
             val result = callBaseballStart(1000)
                 .andExpect(status().isNoContent)
 
-            val baseball = gameRepository.findByMember(player).get().baseball
+            val baseball = gameFindService.findByMemberOrInit(player).baseball
             assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
             val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResult::class.java)
             assertThat(data).isNotEmpty
@@ -101,8 +103,6 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `valid한 request면 guess는 성공해야 한다`() {
-            baseballService.initWhenNotExistGameMemberInfo(player)
-
             val result = callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(StrikeBall(0, 0), StrikeBall(2, 2), StrikeBall(3, 0))
@@ -135,7 +135,6 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `guessNumber가 4자가 아니면 guess는 실패한다`() {
-            baseballService.initWhenNotExistGameMemberInfo(player)
             callBaseballGuess(guessNumber = "123", correctNumber = "1234", bettingPoint = 1000)
                 .andExpect(status().isBadRequest)
             callBaseballGuess(guessNumber = "12345", correctNumber = "1234", bettingPoint = 1000)
@@ -144,7 +143,6 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `맞췄으면 guess는 포인트를 부여해야 한다`() {
-            baseballService.initWhenNotExistGameMemberInfo(player)
             val beforePlayerPoint = player.point
 
             callBaseballGuess(
@@ -157,7 +155,6 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `이미 맞췄으면 guess는 더이상 포인트 부여를 하지 않는다`() {
-            baseballService.initWhenNotExistGameMemberInfo(player)
             val beforePlayerPoint = player.point
 
             callBaseballGuess(
@@ -170,7 +167,6 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `시도 회수를 초과했을 경우 guess는 더이상 포인트 부여를 하지 않는다`() {
-            baseballService.initWhenNotExistGameMemberInfo(player)
             val beforePlayerPoint = player.point
 
             callBaseballGuess(

@@ -27,6 +27,7 @@ import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
+import com.keeper.homepage.domain.game.application.GameFindService;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
@@ -256,6 +257,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected BaseballService baseballService;
+
+  @SpykBean
+  protected GameFindService gameFindService;
 
   /******* Helper *******/
   @SpyBean
