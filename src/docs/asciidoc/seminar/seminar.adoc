@@ -181,4 +181,4 @@ include::{snippets}/delete-seminar/http-response.adoc[]
 
 == *세미나 출석*
 
-link:seminar-attendance.adoc[API 문서 보기]
+link:seminar-attendance.html[API 문서 보기]
