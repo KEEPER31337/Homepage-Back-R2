@@ -40,3 +40,7 @@ link:library/book-manage[API 문서 보기]
 == *STUDY API*
 
 link:study/study.html[API 문서 보기]
+
+== *GAME API*
+
+link:game/game.html[API 문서 보기]
