@@ -2,12 +2,14 @@ package com.keeper.homepage.domain.game;
 
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.game.entity.Game;
+import com.keeper.homepage.domain.game.entity.embedded.Baseball;
 import com.keeper.homepage.domain.game.entity.embedded.Dice;
 import com.keeper.homepage.domain.game.entity.embedded.Lotto;
 import com.keeper.homepage.domain.game.entity.embedded.Roulette;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,16 +34,23 @@ public class GameTestHelper {
   public final class GameBuilder {
 
     private Member member;
+    private LocalDate playDate;
     private LocalDateTime lastPlayTime;
     private Dice dice;
     private Lotto lotto;
     private Roulette roulette;
+    private Baseball baseball;
 
     private GameBuilder() {
     }
 
     public GameBuilder member(Member member) {
       this.member = member;
+      return this;
+    }
+
+    public GameBuilder playDate(LocalDate playDate) {
+      this.playDate = playDate;
       return this;
     }
 
@@ -68,10 +77,12 @@ public class GameTestHelper {
     public Game build() {
       return gameRepository.save(
           Game.builder().member(member != null ? member : memberTestHelper.generate())
+              .playDate(playDate != null ? playDate : LocalDate.now())
               .lastPlayTime(null)
               .dice(dice != null ? dice : Dice.from(0, 0))
               .lotto(lotto != null ? lotto : Lotto.from(0, 0))
               .roulette(roulette != null ? roulette : Roulette.from(0, 0))
+              .baseball(baseball != null ? baseball : Baseball.from(0, 0))
               .build());
     }
   }

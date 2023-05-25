@@ -12,6 +12,7 @@ import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumb
 import static jakarta.persistence.CascadeType.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
@@ -29,7 +30,6 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -46,7 +46,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -279,6 +278,18 @@ public class Member {
 
   public String getNickname() {
     return this.profile.getNickname().get();
+  }
+
+  public Integer getPoint() {
+    return this.point;
+  }
+
+  public void addPoint(int point) {
+    this.point += point;
+  }
+
+  public void minusPoint(int point) {
+    this.point -= point;
   }
 
   public String getThumbnailPath() {
