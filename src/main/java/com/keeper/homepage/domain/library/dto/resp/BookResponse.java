@@ -6,9 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter // get
-@Builder // 생성자
-@AllArgsConstructor(access = AccessLevel.PRIVATE) //
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BookResponse {
 
   private Long bookId;
