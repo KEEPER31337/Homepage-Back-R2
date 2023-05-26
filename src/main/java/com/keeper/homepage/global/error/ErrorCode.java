@@ -46,6 +46,7 @@ public enum ErrorCode {
   BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY("전체 수량을 초과하여 책을 반납할 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY("현재 대여중인 수량보다 적은 수량으로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_SEARCH_TYPE_NOT_FOUND("올바르지 않은 검색 타입입니다.", HttpStatus.BAD_REQUEST),
+  BOOK_BORROWING_COUNT_OVER("대출 신청 가능 수량을 초과했습니다.", HttpStatus.BAD_REQUEST),
   BORROW_NOT_FOUND("존재하지 않는 대출 기록입니다.", HttpStatus.NOT_FOUND),
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),

@@ -1,8 +1,11 @@
 package com.keeper.homepage.domain.library.dao;
 
+import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
+import com.keeper.homepage.domain.member.entity.Member;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +22,6 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
       + "or borrow.borrowStatus.id = 4) " // 반납대기중
       + "and borrow.expireDate <= current_timestamp")
   Page<BookBorrowInfo> findAllOverDue(@Param("now") LocalDateTime now, Pageable pageable);
+
+  Optional<BookBorrowInfo> findByMemberAndBook(Member member, Book book);
 }
