@@ -289,6 +289,9 @@ public class Member {
   }
 
   public void minusPoint(int point) {
+    if (this.point < point && point < 0) {
+      throw new IllegalArgumentException();
+    }
     this.point -= point;
   }
 
