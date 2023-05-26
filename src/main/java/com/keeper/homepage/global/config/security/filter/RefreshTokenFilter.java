@@ -61,7 +61,7 @@ public class RefreshTokenFilter extends GenericFilterBean {
 
   private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto) {
     long authId = jwtTokenProvider.getAuthId(refreshTokenDto.getToken());
-    Optional<String> tokenInRedis = redisUtil.getData(String.valueOf(authId));
+    Optional<String> tokenInRedis = redisUtil.getData(String.valueOf(authId), String.class);
     return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
   }
 

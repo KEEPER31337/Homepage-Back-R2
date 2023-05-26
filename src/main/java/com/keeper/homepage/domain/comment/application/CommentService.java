@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.comment.application;
 
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_MEMBER_THUMBNAIL;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_WRITER;
 
@@ -15,7 +14,6 @@ import com.keeper.homepage.domain.member.application.convenience.MemberFindServi
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
@@ -52,7 +50,7 @@ public class CommentService {
       return null;
     }
     Comment parent = commentFindService.findById(parentId);
-    if (parent.hasParent()){
+    if (parent.hasParent()) {
       throw new BusinessException(parentId, "parentId", COMMENT_NOT_PARENT);
     }
     return parent;
@@ -63,17 +61,9 @@ public class CommentService {
     List<Comment> comments = post.getComments();
 
     List<CommentResponse> commentResponses = comments.stream()
-        .map(comment -> CommentResponse.of(comment, getWriterThumbnailPath(comment)))
+        .map(CommentResponse::from)
         .toList();
     return CommentListResponse.from(commentResponses);
-  }
-
-  private String getWriterThumbnailPath(Comment comment) {
-    Thumbnail thumbnail = comment.getWriterThumbnail();
-    if (thumbnail == null) {
-      return thumbnailUtil.getThumbnailPath(DEFAULT_MEMBER_THUMBNAIL.getPath());
-    }
-    return thumbnailUtil.getThumbnailPath(thumbnail.getPath());
   }
 
   @Transactional

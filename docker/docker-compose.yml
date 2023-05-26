@@ -1,0 +1,22 @@
+version: "3.5"
+
+services:
+  db:
+    container_name: db
+    image: ${ECR_REGISTRY}/keeper-homepage-db:${KEEPER_DB_TAG}
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - 3306:3306
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine3.17
+    ports:
+      - 6379:6379

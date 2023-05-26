@@ -45,6 +45,7 @@ public enum ErrorCode {
   BOOK_CANNOT_BORROW("책을 빌릴 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY("전체 수량을 초과하여 책을 반납할 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY("현재 대여중인 수량보다 적은 수량으로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
+  BOOK_SEARCH_TYPE_NOT_FOUND("올바르지 않은 검색 타입입니다.", HttpStatus.BAD_REQUEST),
   BORROW_NOT_FOUND("존재하지 않는 대출 기록입니다.", HttpStatus.NOT_FOUND),
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
@@ -53,6 +54,11 @@ public enum ErrorCode {
   // STUDY
   STUDY_NOT_FOUND("존재하지 않는 스터디입니다.", HttpStatus.NOT_FOUND),
   STUDY_CANNOT_ACCESSIBLE("스터디에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+  // GAME
+  IS_ALREADY_PLAYED("이미 게임 플레이 가능 횟수만큼 플레이 하였습니다.", HttpStatus.BAD_REQUEST),
+  NOT_ENOUGH_POINT("베팅 포인트는 보유한 포인트보다 많을 수 없습니다.", HttpStatus.BAD_REQUEST),
+  POINT_MUST_BE_POSITIVE("베팅 포인트는 양수여야 합니다.", HttpStatus.BAD_REQUEST),
+  NOT_PLAYED_YET("아직 게임을 시작하지 않았습니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;

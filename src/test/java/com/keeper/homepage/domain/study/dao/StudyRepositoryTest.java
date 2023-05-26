@@ -25,6 +25,7 @@ public class StudyRepositoryTest extends IntegrationTest {
   @Nested
   @DisplayName("DB 스터디 관리 테스트")
   class StudyTest {
+
     @Test
     @DisplayName("default 값이 있는 컬럼을 비워도 스터디 등록을 성공해야 한다.")
     public void should_successfullyRegister_when_defaultColumnIsNull() {
@@ -34,7 +35,6 @@ public class StudyRepositoryTest extends IntegrationTest {
           .headMember(member)
           .build();
 
-      assertThat(studyBeforeSave.getMemberNumber()).isNull();
       assertThat(studyBeforeSave.getThumbnail()).isNull();
       assertThat(studyBeforeSave.getRegisterTime()).isNull();
       assertThat(studyBeforeSave.getUpdateTime()).isNull();
@@ -44,12 +44,12 @@ public class StudyRepositoryTest extends IntegrationTest {
       em.clear();
       Study savedStudy = studyRepository.findById(studyId).orElseThrow();
 
-      assertThat(savedStudy.getMemberNumber()).isEqualTo(0L);
       assertThat(savedStudy.getThumbnail().getId()).isEqualTo(1L);
     }
+
     @Test
     @DisplayName("등록된 스터디인 경우 성공적으로 삭제되어야 한다.")
-    public void should_successfullyDelete_study(){
+    public void should_successfullyDelete_study() {
       Long studyId = studyRepository.save(study).getId();
       em.flush();
       em.clear();

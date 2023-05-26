@@ -47,9 +47,6 @@ public class Study extends BaseEntity {
   @Column(name = "information", nullable = false, length = MAX_INFORMATION_LENGTH)
   private String information;
 
-  @Column(name = "member_number", nullable = false)
-  private Integer memberNumber;
-
   @Column(name = "year")
   private Integer year;
 
@@ -77,19 +74,17 @@ public class Study extends BaseEntity {
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
-  private Study(String title, String information, Integer memberNumber,
-      Integer year, Integer season, String gitLink, String noteLink, String etcLink,
-      Thumbnail thumbnail, Member headMember) {
-      this.title = title;
-      this.information = information;
-      this.memberNumber = memberNumber;
-      this.year = year;
-      this.season = season;
-      this.gitLink = gitLink;
-      this.noteLink = noteLink;
-      this.etcLink = etcLink;
-      this.thumbnail = thumbnail;
-      this.headMember = headMember;
+  private Study(String title, String information, Integer year, Integer season, String gitLink, String noteLink,
+      String etcLink, Thumbnail thumbnail, Member headMember) {
+    this.title = title;
+    this.information = information;
+    this.year = year;
+    this.season = season;
+    this.gitLink = gitLink;
+    this.noteLink = noteLink;
+    this.etcLink = etcLink;
+    this.thumbnail = thumbnail;
+    this.headMember = headMember;
   }
 
   public void changeThumbnail(Thumbnail thumbnail) {
