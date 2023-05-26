@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.game.support
 
-import com.keeper.homepage.domain.game.dto.BaseballResult
+import com.keeper.homepage.domain.game.dto.BaseballResult.StrikeBall
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ class BaseballSupportTest {
     inner class `timeout 테스트` {
         @Test
         fun `시간안에 플레이 했으면 null인 게임은 없어야 한다`() {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
+            val results: MutableList<StrikeBall?> = mutableListOf()
             val lastGuessTime = LocalDateTime.now().minusSeconds(15)
             BaseballSupport.updateTimeoutGames(results, lastGuessTime)
             assertThat(results).hasSize(0)
@@ -25,7 +25,7 @@ class BaseballSupportTest {
 
         @Test
         fun `34초가 지난 후면 1게임은 null이 되어야 한다`() {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
+            val results: MutableList<StrikeBall?> = mutableListOf()
             val lastGuessTime = LocalDateTime.now().minusSeconds(34)
             BaseballSupport.updateTimeoutGames(results, lastGuessTime)
             assertThat(results).hasSize(1)
@@ -33,9 +33,18 @@ class BaseballSupportTest {
         }
 
         @Test
-        fun `100초가 지난 후면 3게임은 null이 되어야 한다`() {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
-            val lastGuessTime = LocalDateTime.now().minusSeconds(100)
+        fun `90초가 지난 후면 2게임은 null이 되어야 한다`() {
+            val results: MutableList<StrikeBall?> = mutableListOf()
+            val lastGuessTime = LocalDateTime.now().minusSeconds(90)
+            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
+            assertThat(results).hasSize(2)
+            assertThat(results).containsExactly(null, null)
+        }
+
+        @Test
+        fun `92초가 지난 후면 3게임은 null이 되어야 한다`() {
+            val results: MutableList<StrikeBall?> = mutableListOf()
+            val lastGuessTime = LocalDateTime.now().minusSeconds(92)
             BaseballSupport.updateTimeoutGames(results, lastGuessTime)
             assertThat(results).hasSize(3)
             assertThat(results).containsExactly(null, null, null)
@@ -43,7 +52,7 @@ class BaseballSupportTest {
 
         @Test
         fun `300초가 지난 후면 9게임은 null이 되어야 한다`() {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
+            val results: MutableList<StrikeBall?> = mutableListOf()
             val lastGuessTime = LocalDateTime.now().minusSeconds(300)
             BaseballSupport.updateTimeoutGames(results, lastGuessTime)
             assertThat(results).hasSize(9)
@@ -52,11 +61,25 @@ class BaseballSupportTest {
 
         @Test
         fun `1000초가 지났더라도 9게임만 null이 되어야 한다`() {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
+            val results: MutableList<StrikeBall?> = mutableListOf()
             val lastGuessTime = LocalDateTime.now().minusSeconds(1000)
             BaseballSupport.updateTimeoutGames(results, lastGuessTime)
             assertThat(results).hasSize(9)
             assertThat(results).containsExactly(null, null, null, null, null, null, null, null, null)
+        }
+
+        @Test
+        fun `기존에 플레이 하던 게임에서 1000초가 지났더라도 나머지 게임만 null이 되어야 한다`() {
+            val results: MutableList<StrikeBall?> = mutableListOf(StrikeBall(1, 2), StrikeBall(3, 1))
+            val lastGuessTime = LocalDateTime.now().minusSeconds(1000)
+            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
+            assertThat(results).hasSize(9)
+            assertThat(results).containsExactly(
+                StrikeBall(1, 2),
+                StrikeBall(3, 1),
+                null, null, null, null,
+                null, null, null
+            )
         }
     }
 
@@ -71,7 +94,7 @@ class BaseballSupportTest {
             expectedStrike: Int,
             expectedBall: Int
         ) {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
+            val results: MutableList<StrikeBall?> = mutableListOf()
             BaseballSupport.updateResults(results, correctNumber, guessNumber)
             assertThat(results).hasSize(1)
             assertThat(results.last()!!.strike).isEqualTo(expectedStrike)
@@ -91,7 +114,7 @@ class BaseballSupportTest {
 
         @Test
         fun `guessNumber 길이가 4가 아니면 무의미한 결과를 줘야 한다`() {
-            val results: MutableList<BaseballResult.StrikeBall?> = mutableListOf()
+            val results: MutableList<StrikeBall?> = mutableListOf()
             BaseballSupport.updateResults(results, "1234", "456")
             assertThat(results).hasSize(1)
             assertThat(results.last()!!.strike).isEqualTo(0)

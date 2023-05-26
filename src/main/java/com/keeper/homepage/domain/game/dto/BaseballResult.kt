@@ -5,7 +5,7 @@ import com.keeper.homepage.domain.game.application.TRY_COUNT
 import com.keeper.homepage.domain.game.support.BaseballSupport
 import java.time.LocalDateTime
 
-const val SECOND_PER_GAME = 32 // 시간제한: 30s, 모달 띄워주는시간: 2s
+const val SECOND_PER_GAME = 30 // 시간제한: 30s
 
 class BaseballResult(
     val correctNumber: String,
@@ -27,7 +27,7 @@ class BaseballResult(
         return End.get(results.last())
     }
 
-    class StrikeBall(val strike: Int, val ball: Int)
+    data class StrikeBall(val strike: Int, val ball: Int)
     enum class End {
         CORRECT {
             override fun getEarnedPoint(bettingPoint: Int): Int {
