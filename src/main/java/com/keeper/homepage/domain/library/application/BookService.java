@@ -20,16 +20,20 @@ public class BookService {
 
   public Page<BookResponse> getBooks(String searchType, String search, PageRequest pageable) {
     if (searchType == null) {
-      return bookRepository.findAll(pageable).map(BookResponse::from);
+      return bookRepository.findAll(pageable)
+          .map(BookResponse::from);
     }
     if (searchType.equals("title")) {
-      return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable).map(BookResponse::from);
+      return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
+          .map(BookResponse::from);
     }
-    if(searchType.equals("author")) {
-      return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable).map(BookResponse::from);
+    if (searchType.equals("author")) {
+      return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
+          .map(BookResponse::from);
     }
-    if(searchType.equals("all")) {
-      return bookRepository.findAllByTitleOrAuthor(search, pageable).map(BookResponse::from);
+    if (searchType.equals("all")) {
+      return bookRepository.findAllByTitleOrAuthor(search, pageable)
+          .map(BookResponse::from);
     }
     throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
   }
