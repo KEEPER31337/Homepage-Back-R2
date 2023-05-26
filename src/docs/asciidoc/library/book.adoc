@@ -1,0 +1,40 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= BOOK MANAGE API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *도서 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-books/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-books/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/get-books/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-books/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-books/response-fields.adoc[]

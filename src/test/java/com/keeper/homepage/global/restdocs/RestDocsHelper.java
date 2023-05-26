@@ -39,13 +39,10 @@ public class RestDocsHelper {
 
   public static FieldDescriptor field(String path, String description, boolean optional) {
     if (optional) {
-      return fieldWithPath(path)
-          .description(description)
+      return fieldWithPath(path).description(description)
           .optional();
-    } else {
-      return fieldWithPath(path)
-          .description(description);
     }
+    return fieldWithPath(path).description(description);
   }
 
   public static FieldDescriptor[] pageHelper(FieldDescriptor... fieldDescriptors) {
