@@ -8,6 +8,7 @@ import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -610,14 +611,7 @@ public class PostControllerTest extends PostApiTestHelper {
                       .description("조회하고자 하는 공지글 목록의 카테고리 ID")
               ),
               responseFields(
-                  fieldWithPath("posts[].id").description("게시글 ID"),
-                  fieldWithPath("posts[].title").description("게시글 제목"),
-                  fieldWithPath("posts[].writerName").description("게시글 작성자 닉네임"),
-                  fieldWithPath("posts[].visitCount").description("게시글 조회수"),
-                  fieldWithPath("posts[].commentCount").description("게시글 댓글 개수"),
-                  fieldWithPath("posts[].isSecret").description("개시글 비밀글 여부"),
-                  fieldWithPath("posts[].thumbnailPath").description("개시글 썸네일 주소"),
-                  fieldWithPath("posts[].registerTime").description("개시글 작성 시간")
+                  listHelper("list", getPostResponse())
               )));
     }
   }

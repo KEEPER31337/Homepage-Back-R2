@@ -4,13 +4,15 @@ import static com.keeper.homepage.domain.comment.dto.request.CommentCreateReques
 
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
-import com.keeper.homepage.domain.comment.dto.response.CommentListResponse;
+import com.keeper.homepage.domain.comment.dto.response.CommentResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
+import com.keeper.homepage.global.util.response.ListResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,11 +46,11 @@ public class CommentController {
   }
 
   @GetMapping("/posts/{postId}")
-  public ResponseEntity<CommentListResponse> getComments(
+  public ResponseEntity<ListResponse<List<CommentResponse>>> getComments(
       @PathVariable Long postId
   ) {
-    CommentListResponse comments = commentService.getComments(postId);
-    return ResponseEntity.ok(comments);
+    List<CommentResponse> responses = commentService.getComments(postId);
+    return ResponseEntity.ok(new ListResponse<>(responses));
   }
 
   @PutMapping("/{commentId}")

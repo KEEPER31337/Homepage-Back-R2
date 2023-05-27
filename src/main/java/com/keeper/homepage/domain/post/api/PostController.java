@@ -4,12 +4,14 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
-import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
+import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
+import com.keeper.homepage.global.util.response.ListResponse;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,11 +112,10 @@ public class PostController {
   }
 
   @GetMapping("/notices")
-  public ResponseEntity<PostListResponse> getNoticePosts(
+  public ResponseEntity<ListResponse<List<PostResponse>>> getNoticePosts(
       @RequestParam long categoryId
   ) {
-    PostListResponse response = postService.getNoticePosts(categoryId);
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(response);
+    List<PostResponse> responses = postService.getNoticePosts(categoryId);
+    return ResponseEntity.ok(new ListResponse<>(responses));
   }
 }

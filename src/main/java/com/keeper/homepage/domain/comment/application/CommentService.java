@@ -7,7 +7,6 @@ import com.keeper.homepage.domain.comment.application.convenience.CommentDeleteS
 import com.keeper.homepage.domain.comment.application.convenience.CommentFindService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
-import com.keeper.homepage.domain.comment.dto.response.CommentListResponse;
 import com.keeper.homepage.domain.comment.dto.response.CommentResponse;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
@@ -32,7 +31,6 @@ public class CommentService {
   private final CommentFindService commentFindService;
   private final MemberFindService memberFindService;
   private final CommentDeleteService commentDeleteService;
-  private final ThumbnailUtil thumbnailUtil;
 
   public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
 
@@ -56,14 +54,11 @@ public class CommentService {
     return parent;
   }
 
-  public CommentListResponse getComments(Long postId) {
+  public List<CommentResponse> getComments(Long postId) {
     Post post = validPostFindService.findById(postId);
-    List<Comment> comments = post.getComments();
-
-    List<CommentResponse> commentResponses = comments.stream()
+    return post.getComments().stream()
         .map(CommentResponse::from)
         .toList();
-    return CommentListResponse.from(commentResponses);
   }
 
   @Transactional

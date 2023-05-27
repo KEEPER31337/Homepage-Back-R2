@@ -6,7 +6,6 @@ import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static java.lang.Boolean.TRUE;
-import static java.util.stream.Collectors.toList;
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
@@ -15,7 +14,6 @@ import com.keeper.homepage.domain.post.application.convenience.CategoryFindServi
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
-import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -224,12 +222,10 @@ public class PostService {
     member.dislike(post);
   }
 
-  public PostListResponse getNoticePosts(long categoryId) {
+  public List<PostResponse> getNoticePosts(long categoryId) {
     Category category = categoryFindService.findById(categoryId);
-    List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
-    List<PostResponse> postResponses = posts.stream()
+    return postRepository.findAllByCategoryAndIsNoticeTrue(category).stream()
         .map(PostResponse::from)
         .toList();
-    return PostListResponse.from(postResponses);
   }
 }
