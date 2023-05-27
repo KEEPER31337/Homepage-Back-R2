@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.dto.response;
+package com.keeper.homepage.domain.rank.dto.response;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -10,14 +10,14 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class MemberPointRankResponse {
+public class PointRankResponse {
 
   private String nickName;
   private Float generation;
   private Integer point;
 
-  public static MemberPointRankResponse from(Member member) {
-    return MemberPointRankResponse.builder()
+  public static PointRankResponse from(Member member) {
+    return PointRankResponse.builder()
         .nickName(member.getNickname())
         .generation(member.getGeneration())
         .point(member.getPoint())

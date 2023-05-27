@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.api;
+package com.keeper.homepage.domain.rank.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
@@ -11,11 +11,11 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
-public class MemberRankApiTestHelper extends IntegrationTest {
+public class RankApiTestHelper extends IntegrationTest {
 
   ResultActions callGetPointRankingApi(String accessToken, MultiValueMap<String, String> params)
       throws Exception {
-    return mockMvc.perform(get("/members/ranking/point")
+    return mockMvc.perform(get("/ranking/point")
         .params(params)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
@@ -28,4 +28,18 @@ public class MemberRankApiTestHelper extends IntegrationTest {
     };
   }
 
+  ResultActions callGetContinuousAttendanceRankingApi(String accessToken)
+      throws Exception {
+    return mockMvc.perform(get("/ranking/perfect-attendance")
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
+  FieldDescriptor[] getContinuousAttendanceResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("nickname").description("회원의 닉네임"),
+        fieldWithPath("generation").description("회원의 기수"),
+        fieldWithPath("continuousDay").description("회원의 연속 출석 일수"),
+        fieldWithPath("thumbnailPath").description("회원의 썸네일 경로")
+    };
+  }
 }
