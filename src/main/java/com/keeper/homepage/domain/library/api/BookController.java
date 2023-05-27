@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class BookController {
   public ResponseEntity<Void> requestBorrow(
       @LoginMember Member member,
       @PathVariable long bookId
-  ){
+  ) {
     bookService.requestBorrow(member, bookId);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();

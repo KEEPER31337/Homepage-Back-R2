@@ -281,7 +281,7 @@ public class Member {
   public Float getGeneration() {
     return this.generation.getGeneration();
   }
-  
+
   public Integer getPoint() {
     return this.point;
   }
@@ -307,7 +307,7 @@ public class Member {
     return study.getHeadMember().equals(this);
   }
 
-  public long getCountInBorrowing(){
+  public long getCountInBorrowing() {
     return this.bookBorrowInfos.stream()
         .filter(BookBorrowInfo::isInBorrowing)
         .count();

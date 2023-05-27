@@ -30,12 +30,14 @@ public class BookService {
       return bookRepository.findAll(pageable).map(BookResponse::from);
     }
     if (searchType.equals("title")) {
-      return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable).map(BookResponse::from);
+      return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
+          .map(BookResponse::from);
     }
-    if(searchType.equals("author")) {
-      return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable).map(BookResponse::from);
+    if (searchType.equals("author")) {
+      return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
+          .map(BookResponse::from);
     }
-    if(searchType.equals("all")) {
+    if (searchType.equals("all")) {
       return bookRepository.findAllByTitleOrAuthor(search, pageable).map(BookResponse::from);
     }
     throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
@@ -45,13 +47,13 @@ public class BookService {
     checkBorrowBookCount(member);
 
     Book book = bookRepository.findById(bookId)
-        .orElseThrow(()->new BusinessException(bookId, "bookId", BOOK_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(bookId, "bookId", BOOK_NOT_FOUND));
     member.borrow(book, getBookBorrowStatusBy(대출대기중));
   }
 
-  private void checkBorrowBookCount(Member member){
+  private void checkBorrowBookCount(Member member) {
     long countInBorrowing = member.getCountInBorrowing();
-    if(countInBorrowing < MAX_BORROWING_COUNT){
+    if (countInBorrowing < MAX_BORROWING_COUNT) {
       return;
     }
     throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);

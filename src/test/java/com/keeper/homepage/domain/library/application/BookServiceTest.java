@@ -21,28 +21,28 @@ public class BookServiceTest extends IntegrationTest {
 
   @Nested
   @DisplayName("도서 대출 신청")
-  class RequestBookBorrow{
+  class RequestBookBorrow {
 
     private Member member;
     private Book book;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
       member = memberTestHelper.generate();
       book = bookTestHelper.generate();
     }
 
     @Test
     @DisplayName("도서 대출중인 권수가 5권 이하면 도서 대출은 성공해야 한다.")
-    public void 도서_대출중인_권수가_5권_이하면_도서_대출은_성공해야_한다() throws Exception{
+    public void 도서_대출중인_권수가_5권_이하면_도서_대출은_성공해야_한다() throws Exception {
       assertDoesNotThrow(() -> bookService.requestBorrow(member, book.getId()));
       assertThat(bookBorrowInfoRepository.findByMemberAndBook(member, book)).isNotEmpty();
     }
 
     @Test
     @DisplayName("도서 대출중인 권수가 5권 초과면 도서 대출은 실패해야 한다.")
-    public void 도서_대출중인_권수가_5권_초과면_도서_대출은_실패해야_한다() throws Exception{
-      for(int i = 0; i<5; i++){
+    public void 도서_대출중인_권수가_5권_초과면_도서_대출은_실패해야_한다() throws Exception {
+      for (int i = 0; i < 5; i++) {
         bookBorrowInfoTestHelper.builder()
             .member(member)
             .book(book)
