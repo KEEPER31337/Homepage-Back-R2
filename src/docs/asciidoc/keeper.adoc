@@ -17,6 +17,10 @@ link:auth/auth.html[API 문서 보기]
 
 link:member/member.html[API 문서 보기]
 
+== *RANK API*
+
+link:rank/rank.html[API 문서 보기]
+
 == *ABOUT API*
 
 link:about/about.html[API 문서 보기]
