@@ -38,7 +38,7 @@ public class RankController {
     // TODO: 게임 포인트 랭킹 구현
   }
 
-  @GetMapping("/perfect-attendance")
+  @GetMapping("/continuous-attendance")
   public ResponseEntity<ListResponse<List<ContinuousAttendanceResponse>>> getContinuousAttendance() {
     List<ContinuousAttendanceResponse> responses = memberRankService.getContinuousAttendance();
     return ResponseEntity.ok(new ListResponse<>(responses));

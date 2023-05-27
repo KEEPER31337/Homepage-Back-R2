@@ -30,7 +30,7 @@ public class RankApiTestHelper extends IntegrationTest {
 
   ResultActions callGetContinuousAttendanceRankingApi(String accessToken)
       throws Exception {
-    return mockMvc.perform(get("/ranking/perfect-attendance")
+    return mockMvc.perform(get("/ranking/continuous-attendance")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
