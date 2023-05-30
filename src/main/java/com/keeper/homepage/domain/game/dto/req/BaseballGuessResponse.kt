@@ -6,4 +6,8 @@ data class BaseballGuessResponse(
     val guessNumber: String,
     val result: List<BaseballResult.StrikeBall?>,
     val earnedPoint: Int,
-)
+) {
+    companion object {
+        val EMPTY = BaseballGuessResponse("", listOf(), 0)
+    }
+}

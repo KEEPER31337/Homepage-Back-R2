@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.game.application
 
-import com.keeper.homepage.domain.game.dao.GameRepository
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessResponse
 import com.keeper.homepage.domain.member.entity.Member
@@ -102,5 +101,18 @@ class BaseballService(
             return false
         }
         return baseballResult.results.last()!!.strike == GUESS_NUMBER_LENGTH
+    }
+
+    fun getResult(requestMember: Member): BaseballGuessResponse {
+        if (!isAlreadyPlayed(requestMember)) {
+            return BaseballGuessResponse.EMPTY
+        }
+        val baseballResult = redisUtil.getData(
+            REDIS_KEY_PREFIX + requestMember.id.toString(),
+            BaseballResult::class.java
+        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
+
+        val gameEntity = gameFindService.findByMemberOrInit(requestMember)
+        return BaseballGuessResponse("", baseballResult.results, gameEntity.baseball.baseballDayPoint)
     }
 }

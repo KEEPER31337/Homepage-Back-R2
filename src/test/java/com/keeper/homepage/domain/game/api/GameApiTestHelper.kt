@@ -69,4 +69,21 @@ class GameApiTestHelper : IntegrationTest() {
                 .cookie(*accessCookies)
         )
     }
+
+    fun callGetBaseballResult(
+        results: MutableList<BaseballResult.StrikeBall?> = mutableListOf(),
+        accessCookies: Array<Cookie> = playerCookies
+    ): ResultActions {
+        baseballService.saveBaseballResultInRedis(player.id, BaseballResult("1234", 1000, results))
+        return mockMvc.perform(
+            get("$GAME_URL/baseball/result")
+                .cookie(*accessCookies)
+        )
+    }
+
+    fun gameStart() {
+        gameFindService.findByMemberOrInit(player)
+            .baseball
+            .increaseBaseballTimes()
+    }
 }

@@ -36,4 +36,11 @@ class GameController(
     ): ResponseEntity<BaseballGuessResponse> {
         return ResponseEntity.ok(baseballService.guess(requestMember, request.guessNumber))
     }
+
+    @GetMapping("/baseball/result")
+    fun getBaseballResult(
+        @LoginMember requestMember: Member
+    ): ResponseEntity<BaseballGuessResponse> {
+        return ResponseEntity.ok(baseballService.getResult(requestMember))
+    }
 }
