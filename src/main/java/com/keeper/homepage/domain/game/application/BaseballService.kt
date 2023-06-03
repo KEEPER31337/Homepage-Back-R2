@@ -112,6 +112,8 @@ class BaseballService(
             BaseballResult::class.java
         ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
 
+        baseballResult.updateTimeoutGames()
+
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         return BaseballGuessResponse("", baseballResult.results, gameEntity.baseball.baseballDayPoint)
     }

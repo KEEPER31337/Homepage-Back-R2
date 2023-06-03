@@ -14,11 +14,13 @@ class BaseballResult(
 ) {
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
 
+    fun updateTimeoutGames() = BaseballSupport.updateTimeoutGames(results, lastGuessTime)
+
     /**
      * @return: 4스트라이크나 timeout으로 게임이 끝났는지 여부
      */
     fun update(guessNumber: String): End {
-        BaseballSupport.updateTimeoutGames(results, lastGuessTime)
+        updateTimeoutGames()
         lastGuessTime = LocalDateTime.now()
         if (results.size >= TRY_COUNT) {
             return End.TIMEOUT

@@ -33,12 +33,12 @@ class BaseballSupportTest {
         }
 
         @Test
-        fun `90초가 지난 후면 2게임은 null이 되어야 한다`() {
+        fun `90초가 지난 후면 3게임은 null이 되어야 한다`() {
             val results: MutableList<StrikeBall?> = mutableListOf()
             val lastGuessTime = LocalDateTime.now().minusSeconds(90)
             BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(2)
-            assertThat(results).containsExactly(null, null)
+            assertThat(results).hasSize(3)
+            assertThat(results).containsExactly(null, null, null)
         }
 
         @Test

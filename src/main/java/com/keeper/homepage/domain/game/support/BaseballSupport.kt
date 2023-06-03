@@ -7,8 +7,6 @@ import com.keeper.homepage.domain.game.dto.SECOND_PER_GAME
 import java.time.LocalDateTime
 import java.time.ZoneOffset.UTC
 
-const val RTT_SECOND = 1 // RTT 넉넉하게 1s
-
 class BaseballSupport {
     companion object {
         fun updateTimeoutGames(
@@ -16,7 +14,7 @@ class BaseballSupport {
             lastGuessTime: LocalDateTime,
         ) {
             val now = LocalDateTime.now()
-            val passedSecond = now.toEpochSecond(UTC) - lastGuessTime.toEpochSecond(UTC) - RTT_SECOND
+            val passedSecond = now.toEpochSecond(UTC) - lastGuessTime.toEpochSecond(UTC)
             // 마지막으로 플레이 한 시간이 너무 오래 지나 list에 너무 많은 값이 들어가는걸 방지
             val passedGameCount = passedSecond / SECOND_PER_GAME
             val finallyPassedGameCount = if (passedGameCount < TRY_COUNT) passedGameCount.toInt() else TRY_COUNT
