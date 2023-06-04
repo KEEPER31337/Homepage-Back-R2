@@ -42,9 +42,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `야구게임을 오늘 했으면 true가 나와야 한다`() {
-            gameFindService.findByMemberOrInit(player)
-                .baseball
-                .increaseBaseballTimes()
+            gameStart()
 
             callBaseballIsAlreadyPlayed()
                 .andExpect(status().isOk)
@@ -178,6 +176,41 @@ class GameControllerTest : GameApiTestHelper() {
             ).andExpect(status().isOk)
 
             assertThat(beforePlayerPoint).isEqualTo(player.point)
+        }
+
+        @Test
+        fun `플레이 한 결과를 보여주어야 한다`() {
+            gameStart()
+
+            callGetBaseballResult(
+                results = mutableListOf(
+                    StrikeBall(2, 2), null, StrikeBall(1, 0),
+                    null, null, StrikeBall(3, 0)
+                )
+            ).andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.guessNumber").value(""))
+                .andExpect(jsonPath("$.result[0]").value(linkedMapOf("strike" to 2, "ball" to 2)))
+                .andExpect(jsonPath("$.result[1]").value(null))
+                .andExpect(jsonPath("$.result[2]").value(linkedMapOf("strike" to 1, "ball" to 0)))
+                .andExpect(jsonPath("$.result[3]").value(null))
+                .andExpect(jsonPath("$.result[4]").value(null))
+                .andExpect(jsonPath("$.result[5]").value(linkedMapOf("strike" to 3, "ball" to 0)))
+                .andExpect(jsonPath("$.earnedPoint").value(0))
+                .andDo(
+                    document(
+                        "get-baseball-result",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        ),
+                        responseFields(
+                            fieldWithPath("guessNumber").description("항상 빈 문자열 \"\"로 내려갑니다"),
+                            subsectionWithPath("result").description("타임아웃난 round는 null"),
+                            fieldWithPath("earnedPoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
+                        ),
+                    )
+                )
         }
     }
 }

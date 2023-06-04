@@ -5,20 +5,21 @@ import com.keeper.homepage.domain.game.application.TRY_COUNT
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.SECOND_PER_GAME
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneOffset.UTC
 
 class BaseballSupport {
     companion object {
-        fun updateTimeoutGames(results: MutableList<BaseballResult.StrikeBall?>, lastGuessTime: LocalDateTime) {
+        fun updateTimeoutGames(
+            results: MutableList<BaseballResult.StrikeBall?>,
+            lastGuessTime: LocalDateTime,
+        ) {
             val now = LocalDateTime.now()
-            val passedSecond =
-                now.toEpochSecond(ZoneOffset.UTC) - lastGuessTime.toEpochSecond(ZoneOffset.UTC) - 1 // RTT 넉넉하게 1s
+            val passedSecond = now.toEpochSecond(UTC) - lastGuessTime.toEpochSecond(UTC)
             // 마지막으로 플레이 한 시간이 너무 오래 지나 list에 너무 많은 값이 들어가는걸 방지
-            println("${now.toEpochSecond(ZoneOffset.UTC)}, ${lastGuessTime.toEpochSecond(ZoneOffset.UTC)}, $passedSecond")
-            val passedGameCount =
-                if (passedSecond / SECOND_PER_GAME < TRY_COUNT) (passedSecond / SECOND_PER_GAME).toInt() else TRY_COUNT
+            val passedGameCount = passedSecond / SECOND_PER_GAME
+            val finallyPassedGameCount = if (passedGameCount < TRY_COUNT) passedGameCount.toInt() else TRY_COUNT
             if (passedSecond > SECOND_PER_GAME) {
-                (1..passedGameCount).forEach { _ -> results.add(null) }
+                (1..finallyPassedGameCount).forEach { _ -> if (results.size < TRY_COUNT) results.add(null) }
             }
         }
 

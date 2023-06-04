@@ -98,3 +98,25 @@ NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null�
   "earnedPoint" : 2000
 }
 ----
+
+== *야구 게임 결과 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-baseball-result/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-baseball-result/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-baseball-result/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-baseball-result/response-fields.adoc[]
