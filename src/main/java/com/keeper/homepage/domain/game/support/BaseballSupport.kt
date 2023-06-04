@@ -10,7 +10,7 @@ import java.time.ZoneOffset.UTC
 class BaseballSupport {
     companion object {
         fun updateTimeoutGames(
-            results: MutableList<BaseballResult.StrikeBall?>,
+            results: MutableList<BaseballResult.GuessResult?>,
             lastGuessTime: LocalDateTime,
         ) {
             val now = LocalDateTime.now()
@@ -24,25 +24,25 @@ class BaseballSupport {
         }
 
         fun updateResults(
-            results: MutableList<BaseballResult.StrikeBall?>,
+            results: MutableList<BaseballResult.GuessResult?>,
             correctNumber: String,
             guessNumber: String
         ) {
             if (guessNumber.length != GUESS_NUMBER_LENGTH) {
-                results.add(BaseballResult.StrikeBall(0, 0))
+                results.add(BaseballResult.GuessResult(guessNumber, 0, 0))
                 return
             }
             results.add(guess(correctNumber, guessNumber))
         }
 
-        private fun guess(correctNumber: String, guessNumber: String): BaseballResult.StrikeBall {
+        private fun guess(correctNumber: String, guessNumber: String): BaseballResult.GuessResult {
             var strike = 0
             var ball = 0
             for (i in guessNumber.indices) {
                 if (correctNumber[i] == guessNumber[i]) strike++
                 else if (correctNumber.contains(guessNumber[i])) ball++
             }
-            return BaseballResult.StrikeBall(strike, ball)
+            return BaseballResult.GuessResult(guessNumber, strike, ball)
         }
     }
 }

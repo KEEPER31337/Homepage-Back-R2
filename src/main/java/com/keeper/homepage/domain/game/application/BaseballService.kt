@@ -80,7 +80,7 @@ class BaseballService(
 
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         if (baseballResult.results.size >= TRY_COUNT || isAlreadyCorrect(baseballResult)) {
-            return BaseballGuessResponse(guessNumber, baseballResult.results, gameEntity.baseball.baseballDayPoint)
+            return BaseballGuessResponse(baseballResult.results, gameEntity.baseball.baseballDayPoint)
         }
 
         val end = baseballResult.update(guessNumber)
@@ -90,7 +90,7 @@ class BaseballService(
         requestMember.addPoint(earnedPoint)
         gameEntity.baseball.baseballDayPoint = earnedPoint
 
-        return BaseballGuessResponse(guessNumber, baseballResult.results, earnedPoint)
+        return BaseballGuessResponse(baseballResult.results, earnedPoint)
     }
 
     private fun isAlreadyCorrect(baseballResult: BaseballResult): Boolean {
@@ -115,6 +115,6 @@ class BaseballService(
         baseballResult.updateTimeoutGames()
 
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        return BaseballGuessResponse("", baseballResult.results, gameEntity.baseball.baseballDayPoint)
+        return BaseballGuessResponse(baseballResult.results, gameEntity.baseball.baseballDayPoint)
     }
 }
