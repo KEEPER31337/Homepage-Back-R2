@@ -39,7 +39,7 @@ public class RankController {
   }
 
   @GetMapping("/continuous-attendance")
-  public ResponseEntity<ListResponse<List<ContinuousAttendanceResponse>>> getContinuousAttendance() {
+  public ResponseEntity<ListResponse<ContinuousAttendanceResponse>> getContinuousAttendance() {
     List<ContinuousAttendanceResponse> responses = memberRankService.getContinuousAttendance();
     return ResponseEntity.ok(new ListResponse<>(responses));
   }

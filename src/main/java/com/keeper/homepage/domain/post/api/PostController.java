@@ -112,7 +112,7 @@ public class PostController {
   }
 
   @GetMapping("/notices")
-  public ResponseEntity<ListResponse<List<PostResponse>>> getNoticePosts(
+  public ResponseEntity<ListResponse<PostResponse>> getNoticePosts(
       @RequestParam long categoryId
   ) {
     List<PostResponse> responses = postService.getNoticePosts(categoryId);

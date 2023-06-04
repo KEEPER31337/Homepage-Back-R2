@@ -1,5 +1,9 @@
 package com.keeper.homepage.global.util.response;
 
-public record ListResponse<T>(T list) {
+import java.util.List;
+
+public record ListResponse<T>(
+    List<T> list
+) {
 
 }
