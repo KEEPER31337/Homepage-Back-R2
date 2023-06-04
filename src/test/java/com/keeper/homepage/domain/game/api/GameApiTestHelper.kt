@@ -58,7 +58,7 @@ class GameApiTestHelper : IntegrationTest() {
         guessNumber: String,
         correctNumber: String,
         bettingPoint: Int,
-        results: MutableList<BaseballResult.StrikeBall?> = mutableListOf(),
+        results: MutableList<BaseballResult.GuessResult?> = mutableListOf(),
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         baseballService.saveBaseballResultInRedis(player.id, BaseballResult(correctNumber, bettingPoint, results))
@@ -71,7 +71,7 @@ class GameApiTestHelper : IntegrationTest() {
     }
 
     fun callGetBaseballResult(
-        results: MutableList<BaseballResult.StrikeBall?> = mutableListOf(),
+        results: MutableList<BaseballResult.GuessResult?> = mutableListOf(),
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         baseballService.saveBaseballResultInRedis(player.id, BaseballResult("1234", 1000, results))

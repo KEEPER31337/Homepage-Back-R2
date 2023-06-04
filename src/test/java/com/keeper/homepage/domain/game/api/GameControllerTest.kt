@@ -3,7 +3,7 @@ package com.keeper.homepage.domain.game.api
 import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
 import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
 import com.keeper.homepage.domain.game.dto.BaseballResult
-import com.keeper.homepage.domain.game.dto.BaseballResult.StrikeBall
+import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -103,9 +103,8 @@ class GameControllerTest : GameApiTestHelper() {
         fun `valid한 request면 guess는 성공해야 한다`() {
             val result = callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(StrikeBall(0, 0), StrikeBall(2, 2), StrikeBall(3, 0))
+                results = mutableListOf(GuessResult("1357", 0, 0), GuessResult("2468", 2, 2), GuessResult("7890", 3, 0))
             ).andExpect(status().isOk)
-                .andExpect(jsonPath("$.guessNumber").value("1234"))
                 .andExpect(jsonPath("$.result").isArray)
                 .andExpect(jsonPath("$.result[0]").exists())
                 .andExpect(jsonPath("$.earnedPoint").isNumber)
@@ -121,8 +120,8 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("guessNumber").description("추측한 숫자 (반드시 ${GUESS_NUMBER_LENGTH}자 여야 합니다)"),
                     ),
                     responseFields(
-                        fieldWithPath("guessNumber").description("사용자가 입력한 추측 숫자"),
                         fieldWithPath("result").description("타임아웃난 round는 null"),
+                        fieldWithPath("result[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
                         fieldWithPath("result[].strike").description("strike"),
                         fieldWithPath("result[].ball").description("ball"),
                         fieldWithPath("earnedPoint").description("획득한 포인트 (마지막 게임이 아니면 0)"),
@@ -145,7 +144,7 @@ class GameControllerTest : GameApiTestHelper() {
 
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(StrikeBall(2, 2), null, StrikeBall(3, 0))
+                results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 3, 0))
             ).andExpect(status().isOk)
 
             assertThat(beforePlayerPoint + 2000).isEqualTo(player.point)
@@ -157,7 +156,7 @@ class GameControllerTest : GameApiTestHelper() {
 
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(StrikeBall(2, 2), null, StrikeBall(4, 0))
+                results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 4, 0))
             ).andExpect(status().isOk)
 
             assertThat(beforePlayerPoint).isEqualTo(player.point)
@@ -170,7 +169,7 @@ class GameControllerTest : GameApiTestHelper() {
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(
-                    StrikeBall(2, 2), null, StrikeBall(4, 0),
+                    GuessResult("1234", 2, 2), null, GuessResult("5678", 4, 0),
                     null, null, null, null, null, null
                 )
             ).andExpect(status().isOk)
@@ -184,18 +183,42 @@ class GameControllerTest : GameApiTestHelper() {
 
             callGetBaseballResult(
                 results = mutableListOf(
-                    StrikeBall(2, 2), null, StrikeBall(1, 0),
-                    null, null, StrikeBall(3, 0)
+                    GuessResult("1234", 2, 2),
+                    null, GuessResult("3456", 1, 0),
+                    null, null, GuessResult("5678", 3, 0)
                 )
             ).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.guessNumber").value(""))
-                .andExpect(jsonPath("$.result[0]").value(linkedMapOf("strike" to 2, "ball" to 2)))
+                .andExpect(
+                    jsonPath("$.result[0]").value(
+                        linkedMapOf(
+                            "guessNumber" to "1234",
+                            "strike" to 2,
+                            "ball" to 2
+                        )
+                    )
+                )
                 .andExpect(jsonPath("$.result[1]").value(null))
-                .andExpect(jsonPath("$.result[2]").value(linkedMapOf("strike" to 1, "ball" to 0)))
+                .andExpect(
+                    jsonPath("$.result[2]").value(
+                        linkedMapOf(
+                            "guessNumber" to "3456",
+                            "strike" to 1,
+                            "ball" to 0
+                        )
+                    )
+                )
                 .andExpect(jsonPath("$.result[3]").value(null))
                 .andExpect(jsonPath("$.result[4]").value(null))
-                .andExpect(jsonPath("$.result[5]").value(linkedMapOf("strike" to 3, "ball" to 0)))
+                .andExpect(
+                    jsonPath("$.result[5]").value(
+                        linkedMapOf(
+                            "guessNumber" to "5678",
+                            "strike" to 3,
+                            "ball" to 0
+                        )
+                    )
+                )
                 .andExpect(jsonPath("$.earnedPoint").value(0))
                 .andDo(
                     document(
@@ -205,7 +228,6 @@ class GameControllerTest : GameApiTestHelper() {
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                         ),
                         responseFields(
-                            fieldWithPath("guessNumber").description("항상 빈 문자열 \"\"로 내려갑니다"),
                             subsectionWithPath("result").description("타임아웃난 round는 null"),
                             fieldWithPath("earnedPoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
                         ),
