@@ -88,12 +88,11 @@ NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null�
 [source,json,options="nowrap"]
 ----
 {
-  "guessNumber" : "1234",
   "result" : [
-        {"strike" : 0, "ball" : 0},
+        { "guessNumber" : "1234", "strike" : 0, "ball" : 0 },
         null,
         null,
-        { "strike" : 4, "ball" : 0 }
+        { "guessNumber" : "5678", "strike" : 4, "ball" : 0 }
   ],
   "earnedPoint" : 2000
 }

@@ -10,7 +10,7 @@ const val SECOND_PER_GAME = 30 // 시간제한: 30s
 class BaseballResult(
     val correctNumber: String,
     val bettingPoint: Int,
-    val results: MutableList<StrikeBall?> = mutableListOf()
+    val results: MutableList<GuessResult?> = mutableListOf()
 ) {
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
 
@@ -29,7 +29,7 @@ class BaseballResult(
         return End.get(results.last())
     }
 
-    data class StrikeBall(val strike: Int, val ball: Int)
+    data class GuessResult(val guessNumber: String, val strike: Int, val ball: Int)
     enum class End {
         CORRECT {
             override fun getEarnedPoint(bettingPoint: Int): Int {
@@ -47,7 +47,7 @@ class BaseballResult(
         abstract fun getEarnedPoint(bettingPoint: Int): Int
 
         companion object {
-            fun get(last: StrikeBall?): End =
+            fun get(last: GuessResult?): End =
                 if (last == null) TIMEOUT
                 else if (last.strike == GUESS_NUMBER_LENGTH) CORRECT
                 else MISMATCH
