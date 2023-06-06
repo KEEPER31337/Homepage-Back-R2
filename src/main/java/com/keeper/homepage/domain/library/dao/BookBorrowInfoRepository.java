@@ -24,4 +24,6 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
   Page<BookBorrowInfo> findAllOverDue(@Param("now") LocalDateTime now, Pageable pageable);
 
   Optional<BookBorrowInfo> findByMemberAndBook(Member member, Book book);
+
+  Optional<BookBorrowInfo> findByMemberAndBookAndBorrowStatus(Member member, Book book, BookBorrowStatus borrowStatus);
 }

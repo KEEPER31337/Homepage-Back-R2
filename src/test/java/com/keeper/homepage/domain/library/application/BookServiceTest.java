@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.application;
 
 import static com.keeper.homepage.domain.library.application.BookService.MAX_BORROWING_COUNT;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,6 +55,38 @@ public class BookServiceTest extends IntegrationTest {
       member = memberRepository.findById(member.getId()).get();
 
       assertThat(member.getCountInBorrowing()).isEqualTo(MAX_BORROWING_COUNT);
+      assertThrows(BusinessException.class, () -> bookService.requestBorrow(member, book.getId()));
+    }
+
+    @Test
+    @DisplayName("현재 수량이 없는 책은 도서 대출이 실패해야 한다.")
+    public void 현재_수량이_없는_책은_도서_대출이_실패해야_한다() throws Exception {
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .book(book)
+          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .build();
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).get();
+
+      assertThrows(BusinessException.class, () -> bookService.requestBorrow(member, book.getId()));
+    }
+
+    @Test
+    @DisplayName("이미 신청한 책은 도서 대출이 실패해야 한다.")
+    public void 이미_신청한_책은_도서_대출이_실패해야_한다() throws Exception {
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .book(book)
+          .borrowStatus(getBookBorrowStatusBy(대출대기중))
+          .build();
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).get();
+
       assertThrows(BusinessException.class, () -> bookService.requestBorrow(member, book.getId()));
     }
   }
