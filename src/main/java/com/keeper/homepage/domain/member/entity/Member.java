@@ -186,13 +186,11 @@ public class Member {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
-  public void borrow(Book book, BookBorrowStatus borrowStatus, LocalDateTime expireDate) {
+  public void borrow(Book book, BookBorrowStatus borrowStatus) {
     bookBorrowInfos.add(BookBorrowInfo.builder()
         .member(this)
         .book(book)
         .borrowStatus(borrowStatus)
-        .borrowDate(LocalDateTime.now())
-        .expireDate(expireDate)
         .build());
   }
 
@@ -283,7 +281,7 @@ public class Member {
   public Float getGeneration() {
     return this.generation.getGeneration();
   }
-  
+
   public Integer getPoint() {
     return this.point;
   }
@@ -307,5 +305,11 @@ public class Member {
 
   public boolean isHeadMember(Study study) {
     return study.getHeadMember().equals(this);
+  }
+
+  public long getCountInBorrowing() {
+    return this.bookBorrowInfos.stream()
+        .filter(BookBorrowInfo::isInBorrowing)
+        .count();
   }
 }
