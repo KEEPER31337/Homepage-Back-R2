@@ -105,7 +105,7 @@ class SignInControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("유효한 이메일과 로그인 아이디일 경우 임시 비밀번호가 전송되야 한다.")
+    @DisplayName("유효한 이메일과 로그인 아이디일 경우 비밀번호 인증코드가 전송되야 한다.")
     void should_successfullySendTmpPassword_when_validRequest() throws Exception {
       doNothing().when(signInService)
           .sendPasswordChangeAuthCode(any(EmailAddress.class), any(LoginId.class));
