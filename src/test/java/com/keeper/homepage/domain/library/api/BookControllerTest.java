@@ -12,9 +12,12 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.keeper.homepage.domain.library.entity.Book;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +42,7 @@ public class BookControllerTest extends BookApiTestHelper {
 
     @BeforeEach
     void setUp() {
-      for(int i=0 ; i<5 ; i++) {
+      for (int i = 0; i < 5; i++) {
         bookTestHelper.generate();
       }
     }
@@ -93,6 +96,31 @@ public class BookControllerTest extends BookApiTestHelper {
                   field("totalPages", "총 페이지 수"),
                   field("totalElements", "총 페이지 수"),
                   field("size", "한 페이지당 데이터 개수")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("도서 대출 신청")
+  class RequestBorrow {
+
+    @Test
+    @DisplayName("유효한 요청은 도서 대출 신청이 성공해야 한다.")
+    public void 유효한_요청은_도서_대출_신청이_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(BookController.class, "requestBorrow");
+
+      Book book = bookTestHelper.generate();
+
+      callRequestBorrowBookApi(memberToken, book.getId())
+          .andExpect(status().isCreated())
+          .andDo(document("request-book-borrow",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("bookId")
+                      .description("대출하고자 하는 도서 ID")
               )));
     }
   }
