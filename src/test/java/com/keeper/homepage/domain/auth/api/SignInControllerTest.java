@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -10,6 +11,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -22,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.auth.dto.request.ChangePasswordForMissingRequest;
 import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
 import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
@@ -157,6 +160,35 @@ class SignInControllerTest extends IntegrationTest {
               responseFields(
                   fieldWithPath("auth").description("authCode가 일치하면 true, 아니면 false")
               )));
+    }
+
+    @Test
+    @DisplayName("인증코드가 일치하면 비밀번호 변경은 성공한다")
+    void should_changePassword_when_validAuthCode() throws Exception {
+      signInService.sendPasswordChangeAuthCode(member.getProfile().getEmailAddress(),
+          member.getProfile().getLoginId());
+      String authCode = redisUtil.getData("PW_AUTH_" + member.getId(), String.class).orElseThrow();
+      String newPassword = "newPassword123";
+
+      mockMvc.perform(patch("/sign-in/change-password-for-missing")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(ChangePasswordForMissingRequest.builder()
+                  .loginId(member.getProfile().getLoginId().get())
+                  .email(member.getProfile().getEmailAddress().get())
+                  .authCode(authCode)
+                  .rawPassword(newPassword)
+                  .build())))
+          .andDo(print())
+          .andExpect(status().isNoContent())
+          .andDo(document("change-password-for-missing",
+              requestFields(
+                  fieldWithPath("email").description("이메일"),
+                  fieldWithPath("loginId").description("로그인 아이디"),
+                  fieldWithPath("authCode").description("인증 코드"),
+                  fieldWithPath("password").description("새로운 비밀번호")
+              )));
+
+      assertThat(member.getProfile().getPassword().isWrongPassword(newPassword)).isFalse();
     }
   }
 }

@@ -224,3 +224,21 @@ include::{snippets}/check-auth-code/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/check-auth-code/response-fields.adoc[]
+
+== *비밀번호 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/change-password-for-missing/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/change-password-for-missing/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/change-password-for-missing/http-response.adoc[]

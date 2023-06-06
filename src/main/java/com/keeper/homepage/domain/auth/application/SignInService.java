@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
@@ -82,11 +83,21 @@ public class SignInService {
         .toString();
   }
 
-  public boolean checkAuthCode(EmailAddress email, LoginId loginId, String requestAuthCode) {
+  public boolean isAuthenticated(EmailAddress email, LoginId loginId, String requestAuthCode) {
     Member member = memberRepository.findByProfileEmailAddressAndProfileLoginId(email, loginId)
         .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
 
     Optional<String> data = redisUtil.getData(PASSWORD_AUTH_CODE_KEY + member.getId(), String.class);
     return data.map(correctAuthCode -> correctAuthCode.equals(requestAuthCode)).orElse(false);
+  }
+
+  @Transactional
+  public void changePassword(String authCode, LoginId loginId, EmailAddress email, String rawPassword) {
+    if (!isAuthenticated(email, loginId, authCode)) {
+      throw new BusinessException(authCode, "authCode", ErrorCode.AUTH_CODE_MISMATCH);
+    }
+    Member member = memberRepository.findByProfileEmailAddressAndProfileLoginId(email, loginId)
+        .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
+    member.getProfile().changePassword(rawPassword);
   }
 }

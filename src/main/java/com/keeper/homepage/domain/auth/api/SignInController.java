@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.auth.api;
 
 import com.keeper.homepage.domain.auth.application.SignInService;
+import com.keeper.homepage.domain.auth.dto.request.ChangePasswordForMissingRequest;
 import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
 import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
@@ -13,6 +14,7 @@ import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +51,15 @@ public class SignInController {
 
   @GetMapping("/check-auth-code")
   public ResponseEntity<CheckAuthCodeResponse> checkAuthCode(String email, String loginId, String authCode) {
-    boolean isAuth = signInService.checkAuthCode(EmailAddress.from(email), LoginId.from(loginId), authCode);
+    boolean isAuth = signInService.isAuthenticated(EmailAddress.from(email), LoginId.from(loginId), authCode);
     return ResponseEntity.ok(CheckAuthCodeResponse.from(isAuth));
+  }
+
+  @PatchMapping("/change-password-for-missing")
+  public ResponseEntity<Void> changePassword(
+      @RequestBody @Valid ChangePasswordForMissingRequest request) {
+    signInService.changePassword(request.getAuthCode(),
+        LoginId.from(request.getLoginId()), EmailAddress.from(request.getEmail()), request.getRawPassword());
+    return ResponseEntity.noContent().build();
   }
 }
