@@ -38,3 +38,25 @@ include::{snippets}/get-books/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-books/response-fields.adoc[]
+
+== *도서 대출 신청*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/request-book-borrow/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/request-book-borrow/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/request-book-borrow/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/request-book-borrow/http-response.adoc[]
