@@ -13,6 +13,7 @@ import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -79,5 +80,13 @@ public class SignInService {
         .limit(MAX_PASSWORD_AUTH_CODE_LENGTH)
         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
         .toString();
+  }
+
+  public boolean checkAuthCode(EmailAddress email, LoginId loginId, String requestAuthCode) {
+    Member member = memberRepository.findByProfileEmailAddressAndProfileLoginId(email, loginId)
+        .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
+
+    Optional<String> data = redisUtil.getData(PASSWORD_AUTH_CODE_KEY + member.getId(), String.class);
+    return data.map(correctAuthCode -> correctAuthCode.equals(requestAuthCode)).orElse(false);
   }
 }

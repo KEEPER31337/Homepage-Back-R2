@@ -9,11 +9,16 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
@@ -29,6 +34,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
 
 class SignInControllerTest extends IntegrationTest {
 
@@ -123,6 +129,33 @@ class SignInControllerTest extends IntegrationTest {
               requestFields(
                   fieldWithPath("email").description("이메일"),
                   fieldWithPath("loginId").description("로그인 아이디")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 인증코드일 경우 true를 반환한다.")
+    void should_returnTrue_when_validAuthCode() throws Exception {
+      signInService.sendPasswordChangeAuthCode(member.getProfile().getEmailAddress(),
+          member.getProfile().getLoginId());
+      String authCode = redisUtil.getData("PW_AUTH_" + member.getId(), String.class).orElseThrow();
+      var params = new LinkedMultiValueMap<String, String>();
+      params.add("email", member.getProfile().getEmailAddress().get());
+      params.add("loginId", member.getProfile().getLoginId().get());
+      params.add("authCode", authCode);
+
+      mockMvc.perform(get("/sign-in/check-auth-code")
+              .params(params))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.auth").value(true))
+          .andDo(document("check-auth-code",
+              queryParameters(
+                  parameterWithName("email").description("이메일"),
+                  parameterWithName("loginId").description("로그인 아이디"),
+                  parameterWithName("authCode").description("인증 코드")
+              ),
+              responseFields(
+                  fieldWithPath("auth").description("authCode가 일치하면 true, 아니면 false")
               )));
     }
   }
