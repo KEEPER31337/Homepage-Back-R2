@@ -9,7 +9,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.responseCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -19,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
-import com.keeper.homepage.domain.auth.dto.request.IssueTmpPasswordRequest;
+import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
@@ -109,18 +108,18 @@ class SignInControllerTest extends IntegrationTest {
     @DisplayName("유효한 이메일과 로그인 아이디일 경우 임시 비밀번호가 전송되야 한다.")
     void should_successfullySendTmpPassword_when_validRequest() throws Exception {
       doNothing().when(signInService)
-          .issueTemporaryPassword(any(EmailAddress.class), any(LoginId.class));
-      IssueTmpPasswordRequest request = IssueTmpPasswordRequest.builder()
+          .sendPasswordChangeAuthCode(any(EmailAddress.class), any(LoginId.class));
+      MemberIdAndEmailRequest request = MemberIdAndEmailRequest.builder()
           .email(member.getProfile().getEmailAddress().get())
           .loginId(member.getProfile().getLoginId().get())
           .build();
 
-      mockMvc.perform(patch("/sign-in/issue-tmp-password")
+      mockMvc.perform(post("/sign-in/send-password-change-auth-code")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
           .andExpect(status().isNoContent())
-          .andDo(document("issue-tmp-password",
+          .andDo(document("send-password-change-auth-code",
               requestFields(
                   fieldWithPath("email").description("이메일"),
                   fieldWithPath("loginId").description("로그인 아이디")
