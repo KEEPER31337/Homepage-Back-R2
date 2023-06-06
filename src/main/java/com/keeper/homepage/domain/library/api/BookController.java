@@ -29,8 +29,8 @@ public class BookController {
   public ResponseEntity<Page<BookResponse>> getBooks(
       @RequestParam(required = false) String searchType,
       @RequestParam(required = false) String search,
-      @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull int page,
-      @RequestParam(defaultValue = "10") @PositiveOrZero @NotNull int size
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
     Page<BookResponse> listResponse = bookService.getBooks(searchType, search,
         PageRequest.of(page, size));
