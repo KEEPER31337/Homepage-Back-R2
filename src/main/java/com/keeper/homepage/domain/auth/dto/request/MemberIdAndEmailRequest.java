@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PACKAGE)
 @Builder
-public class IssueTmpPasswordRequest {
+public class MemberIdAndEmailRequest {
 
   @Email
   private String email;
