@@ -31,26 +31,28 @@ public class BookService {
   private final BookBorrowInfoRepository bookBorrowInfoRepository;
   public static final long MAX_BORROWING_COUNT = 5;
 
-  public Page<BookResponse> getBooks(String searchType, String search, PageRequest pageable) {
+  public Page<BookResponse> getBooks(Member member, String searchType, String search, PageRequest pageable) {
+    boolean canBorrow = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
     if (searchType == null) {
       return bookRepository.findAll(pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow));
     }
     if (searchType.equals("title")) {
       return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow));
     }
     if (searchType.equals("author")) {
       return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow));
     }
     if (searchType.equals("all")) {
       return bookRepository.findAllByTitleOrAuthor(search, pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow));
     }
     throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
   }
 
+  @Transactional
   public void requestBorrow(Member member, long bookId) {
     checkCountInBorrowing(member);
 
@@ -63,10 +65,9 @@ public class BookService {
 
   private void checkCountInBorrowing(Member member) {
     long countInBorrowing = member.getCountInBorrowing();
-    if (countInBorrowing < MAX_BORROWING_COUNT) {
-      return;
+    if (countInBorrowing == MAX_BORROWING_COUNT) {
+      throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
     }
-    throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
   }
 
   private void checkCurrentQuantity(Book book) {

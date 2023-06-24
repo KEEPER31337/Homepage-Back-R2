@@ -27,12 +27,13 @@ public class BookController {
 
   @GetMapping
   public ResponseEntity<Page<BookResponse>> getBooks(
+      @LoginMember Member member,
       @RequestParam(required = false) String searchType,
       @RequestParam(required = false) String search,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
-    Page<BookResponse> listResponse = bookService.getBooks(searchType, search,
+    Page<BookResponse> listResponse = bookService.getBooks(member, searchType, search,
         PageRequest.of(page, size));
     return ResponseEntity.ok(listResponse);
   }

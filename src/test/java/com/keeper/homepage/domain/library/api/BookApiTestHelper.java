@@ -27,7 +27,8 @@ public class BookApiTestHelper extends IntegrationTest {
         fieldWithPath("title").description("책 이름"),
         fieldWithPath("author").description("책 저자"),
         fieldWithPath("currentQuantity").description("책 현재 수량"),
-        fieldWithPath("totalQuantity").description("책 전체 수량")
+        fieldWithPath("totalQuantity").description("책 전체 수량"),
+        fieldWithPath("canBorrow").description("책 대여 가능 여부")
     };
   }
 

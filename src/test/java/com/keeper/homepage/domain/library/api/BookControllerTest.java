@@ -66,7 +66,8 @@ public class BookControllerTest extends BookApiTestHelper {
               ),
               queryParameters(
                   parameterWithName("searchType")
-                      .description("검색 타입 (title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회)")
+                      .attributes(new Attribute("format", "title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회"))
+                      .description("검색 타입")
                       .optional(),
                   parameterWithName("search").description("검색할 단어")
                       .optional(),
