@@ -4,6 +4,8 @@ import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
 import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
+import com.keeper.homepage.domain.game.dto.req.MAX_BETTING_POINT
+import com.keeper.homepage.domain.game.dto.req.MIN_BETTING_POINT
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -50,7 +52,7 @@ class GameControllerTest : GameApiTestHelper() {
         }
 
         @Test
-        fun `베팅 포인트가 양수면 게임이 시작된다`() {
+        fun `베팅 포인트가 10포인트 이상, 1000포인트 이하면 게임이 시작된다`() {
             player.addPoint(1000)
             memberRepository.save(player)
 
@@ -75,19 +77,34 @@ class GameControllerTest : GameApiTestHelper() {
                         cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                     ),
                     requestFields(
-                        fieldWithPath("bettingPoint").description("베팅을 할 포인트"),
+                        fieldWithPath("bettingPoint").description("베팅을 할 포인트 (${MIN_BETTING_POINT}이상 ${MAX_BETTING_POINT}이하)"),
                     ),
                 )
             )
         }
 
         @Test
-        fun `베팅 포인트가 음수거나 0이면 게임을 플레이 할 수 없다`() {
+        fun `베팅 포인트가 1000포인트보다 크면 게임을 플레이할 수 없다`() {
+            player.addPoint(1000)
+            memberRepository.save(player)
+            callBaseballStart(1001)
+                .andExpect(status().isBadRequest)
+            callBaseballStart(2000)
+                .andExpect(status().isBadRequest)
+            @Suppress("INTEGER_OVERFLOW")
+            callBaseballStart(Int.MAX_VALUE + 1)
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `베팅 포인트가 음수거나 10포인트보다 작으면 게임을 플레이 할 수 없다`() {
             player.addPoint(1000)
             memberRepository.save(player)
             callBaseballStart(-1000)
                 .andExpect(status().isBadRequest)
             callBaseballStart(0)
+                .andExpect(status().isBadRequest)
+            callBaseballStart(9)
                 .andExpect(status().isBadRequest)
         }
 
