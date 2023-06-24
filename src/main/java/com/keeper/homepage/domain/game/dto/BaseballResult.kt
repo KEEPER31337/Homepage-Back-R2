@@ -32,19 +32,19 @@ class BaseballResult(
     data class GuessResult(val guessNumber: String, val strike: Int, val ball: Int)
     enum class End {
         CORRECT {
-            override fun getEarnedPoint(bettingPoint: Int): Int {
+            override fun getEarnablePoints(bettingPoint: Int): Int {
                 // TODO 정답 시 포인트 부여 어떻게 할 지 기획 나오면 다시 로직 작성
                 return bettingPoint * 2
             }
         },
         TIMEOUT {
-            override fun getEarnedPoint(bettingPoint: Int): Int = 0
+            override fun getEarnablePoints(bettingPoint: Int): Int = 0
         },
         MISMATCH {
-            override fun getEarnedPoint(bettingPoint: Int): Int = 0
+            override fun getEarnablePoints(bettingPoint: Int): Int = 0
         };
 
-        abstract fun getEarnedPoint(bettingPoint: Int): Int
+        abstract fun getEarnablePoints(bettingPoint: Int): Int
 
         companion object {
             fun get(last: GuessResult?): End =

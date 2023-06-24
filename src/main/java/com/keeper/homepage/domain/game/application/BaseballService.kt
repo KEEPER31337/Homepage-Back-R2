@@ -97,11 +97,11 @@ class BaseballService(
         val end = baseballResult.update(guessNumber)
         saveBaseballResultInRedis(requestMember.id, baseballResult)
 
-        val earnedPoint = end.getEarnedPoint(baseballResult.bettingPoint)
-        requestMember.addPoint(earnedPoint)
-        gameEntity.baseball.baseballDayPoint = earnedPoint
+        val earnablePoints = end.getEarnablePoints(baseballResult.bettingPoint)
+        requestMember.addPoint(earnablePoints)
+        gameEntity.baseball.baseballDayPoint = earnablePoints
 
-        return BaseballGuessResponse(baseballResult.results, earnedPoint)
+        return BaseballGuessResponse(baseballResult.results, earnablePoints)
     }
 
     private fun isAlreadyCorrect(baseballResult: BaseballResult): Boolean {

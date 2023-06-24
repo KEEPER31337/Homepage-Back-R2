@@ -117,7 +117,7 @@ NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null�
         null,
         { "guessNumber" : "5678", "strike" : 4, "ball" : 0 }
   ],
-  "earnedPoint" : 2000
+  "earnablePoints" : 2000
 }
 ----
 

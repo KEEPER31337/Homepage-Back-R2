@@ -150,7 +150,7 @@ class GameControllerTest : GameApiTestHelper() {
             ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.result").isArray)
                 .andExpect(jsonPath("$.result[0]").exists())
-                .andExpect(jsonPath("$.earnedPoint").isNumber)
+                .andExpect(jsonPath("$.earnablePoints").isNumber)
 
             result.andDo(
                 document(
@@ -167,7 +167,7 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("result[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
                         fieldWithPath("result[].strike").description("strike"),
                         fieldWithPath("result[].ball").description("ball"),
-                        fieldWithPath("earnedPoint").description("획득한 포인트 (마지막 게임이 아니면 0)"),
+                        fieldWithPath("earnablePoints").description("획득한 포인트 (마지막 게임이 아니면 0)"),
                     ),
                 )
             )
@@ -262,7 +262,7 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.earnedPoint").value(0))
+                .andExpect(jsonPath("$.earnablePoints").value(0))
                 .andDo(
                     document(
                         "get-baseball-result",
@@ -272,7 +272,7 @@ class GameControllerTest : GameApiTestHelper() {
                         ),
                         responseFields(
                             subsectionWithPath("result").description("타임아웃난 round는 null"),
-                            fieldWithPath("earnedPoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
+                            fieldWithPath("earnablePoints").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
                         ),
                     )
                 )
