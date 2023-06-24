@@ -4,8 +4,8 @@ import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
 import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
-import com.keeper.homepage.domain.game.dto.req.MAX_BETTING_POINT
-import com.keeper.homepage.domain.game.dto.req.MIN_BETTING_POINT
+import com.keeper.homepage.domain.game.application.MAX_BETTING_POINT
+import com.keeper.homepage.domain.game.application.MIN_BETTING_POINT
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
