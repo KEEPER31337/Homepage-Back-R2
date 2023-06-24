@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.game.application
 
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessResponse
+import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
@@ -24,6 +25,14 @@ class BaseballService(
     val redisUtil: RedisUtil,
     val gameFindService: GameFindService
 ) {
+    fun getBaseballGameInfoByMember(): GameInfoByMemberResponse =
+        GameInfoByMemberResponse(
+            guessNumberLength = GUESS_NUMBER_LENGTH,
+            tryCount = TRY_COUNT,
+            maxBettingPoint = MAX_BETTING_POINT,
+            minBettingPoint = MIN_BETTING_POINT,
+        )
+
     fun isAlreadyPlayed(requestMember: Member): Boolean {
         return gameFindService.findByMemberOrInit(requestMember)
             .baseball

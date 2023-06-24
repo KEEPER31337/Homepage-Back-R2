@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.game.application.BaseballService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessResponse
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
+import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.config.security.annotation.LoginMember
 import jakarta.validation.Valid
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.*
 class GameController(
     private val baseballService: BaseballService
 ) {
+    @GetMapping("/baseball/game-info")
+    fun baseballGameInfoByMember(): ResponseEntity<GameInfoByMemberResponse> {
+        return ResponseEntity.ok(baseballService.getBaseballGameInfoByMember())
+    }
+
     @GetMapping("/baseball/is-already-played")
     fun baseballIsAlreadyPlayed(@LoginMember requestMember: Member): ResponseEntity<Boolean> {
         return ResponseEntity.ok(baseballService.isAlreadyPlayed(requestMember))

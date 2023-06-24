@@ -1,11 +1,11 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
+import com.keeper.homepage.domain.game.application.MAX_BETTING_POINT
+import com.keeper.homepage.domain.game.application.MIN_BETTING_POINT
 import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
 import com.keeper.homepage.domain.game.dto.BaseballResult
 import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
-import com.keeper.homepage.domain.game.application.MAX_BETTING_POINT
-import com.keeper.homepage.domain.game.application.MIN_BETTING_POINT
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -25,6 +25,32 @@ class GameControllerTest : GameApiTestHelper() {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
     inner class `야구 게임` {
+        @Test
+        fun `야구게임 정보를 불러온다`() {
+            callBaseballGameInfo()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.guessNumberLength").value(4))
+                .andExpect(jsonPath("$.tryCount").value(9))
+                .andExpect(jsonPath("$.maxBettingPoint").value(1000L))
+                .andExpect(jsonPath("$.minBettingPoint").value(10L))
+                .andDo(
+                    document(
+                        "baseball-game-info",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        ),
+                        responseFields(
+                            fieldWithPath("guessNumberLength").description("추측할 숫자 길이"),
+                            fieldWithPath("tryCount").description("라운드 수"),
+                            fieldWithPath("maxBettingPoint").description("최대 베팅 포인트"),
+                            fieldWithPath("minBettingPoint").description("최소 베팅 포인트"),
+
+                            )
+                    )
+                )
+        }
+
         @Test
         fun `야구게임을 오늘 안했으면 false가 나와야 한다`() {
             callBaseballIsAlreadyPlayed()

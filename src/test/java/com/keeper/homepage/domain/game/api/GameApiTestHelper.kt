@@ -33,6 +33,15 @@ class GameApiTestHelper : IntegrationTest() {
         redisUtil.flushAll()
     }
 
+    fun callBaseballGameInfo(
+        accessCookies: Array<Cookie> = playerCookies
+    ): ResultActions {
+        return mockMvc.perform(
+            get("$GAME_URL/baseball/game-info")
+                .cookie(*accessCookies)
+        )
+    }
+
     fun callBaseballIsAlreadyPlayed(
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
