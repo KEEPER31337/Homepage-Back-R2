@@ -1,14 +1,26 @@
 package com.keeper.homepage.domain.library.api;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
+
+import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
+import com.keeper.homepage.domain.member.api.MemberController;
+import com.keeper.homepage.domain.member.entity.Member;
+import jakarta.servlet.http.Cookie;
+import org.springframework.restdocs.snippet.Attributes;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -17,6 +29,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto;
 import com.keeper.homepage.domain.library.entity.Book;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -103,6 +116,52 @@ public class BookControllerTest extends BookApiTestHelper {
               pathParameters(
                   parameterWithName("bookId")
                       .description("대출하고자 하는 도서 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("대여 도서 조회")
+  class GetBorrowCount {
+
+    private Member member;
+    private Book book;
+    private String memberToken;
+
+    @BeforeEach
+    void setup() {
+      member = memberTestHelper.generate();
+      book = bookTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("회원의 빌린 책의 개수를 성공적으로 반환해야 한다.")
+    public void 회원의_빌린_책의_개수를_성공적으로_반환해야_한다() throws Exception {
+      String securedValue = getSecuredValue(BookController.class, "getBookBorrows");
+
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .book(book)
+          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .build();
+      params.add("page", "0");
+      params.add("size", "3");
+      callGetBorrowBooksApi(memberToken, params)
+          .andExpect(status().isOk())
+          .andDo(document("get-book-borrows",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getBorrowBooksResponse())
               )));
     }
   }

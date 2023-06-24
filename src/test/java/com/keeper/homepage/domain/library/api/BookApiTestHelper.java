@@ -37,4 +37,22 @@ public class BookApiTestHelper extends IntegrationTest {
     return mockMvc.perform(post("/books/{bookId}/request-borrow", bookId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
+
+  ResultActions callGetBorrowBooksApi(String accessToken, MultiValueMap<String, String> params)
+      throws Exception {
+    return mockMvc.perform(get("/books/book-borrows")
+        .params(params)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
+  FieldDescriptor[] getBorrowBooksResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("borrowInfoId").description("빌린 전보 ID"),
+        fieldWithPath("title").description("빌린 책 이름"),
+        fieldWithPath("author").description("빌린 책 저자"),
+        fieldWithPath("overdue").description("연체 여부"),
+        fieldWithPath("borrowDate").description("빌린 날짜"),
+        fieldWithPath("expireDate").description("반납 날짜")
+    };
+  }
 }

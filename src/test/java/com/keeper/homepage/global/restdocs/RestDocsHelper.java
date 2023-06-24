@@ -57,7 +57,7 @@ public class RestDocsHelper {
     descriptorList.add(field("sort.sorted", "정렬이 되었는지"));
     descriptorList.add(field("sort.unsorted", "정렬이 되지 않았는지"));
     descriptorList.add(field("totalPages", "총 페이지 수"));
-    descriptorList.add(field("totalElements", "총 페이지 수"));
+    descriptorList.add(field("totalElements", "총 요소 수"));
     descriptorList.add(field("size", "한 페이지당 데이터 개수"));
     return descriptorList.toArray(new FieldDescriptor[0]);
   }

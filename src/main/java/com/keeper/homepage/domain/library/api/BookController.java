@@ -2,9 +2,9 @@ package com.keeper.homepage.domain.library.api;
 
 import com.keeper.homepage.domain.library.application.BookService;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
+import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,5 +46,14 @@ public class BookController {
     bookService.requestBorrow(member, bookId);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
+  }
+
+  @GetMapping("/book-borrows")
+  public ResponseEntity<Page<BookBorrowResponse>> getBookBorrows(
+      @LoginMember Member member,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    return ResponseEntity.ok(bookService.getBookBorrows(member, PageRequest.of(page, size)));
   }
 }

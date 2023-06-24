@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.Optional;
@@ -83,5 +84,10 @@ public class BookService {
     if (bookBorrowInfo.isPresent()) {
       throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
     }
+  }
+
+  public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {
+    return bookBorrowInfoRepository.findAllByMemberAndInBorrowing(member, pageable)
+        .map(BookBorrowResponse::from);
   }
 }
