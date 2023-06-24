@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.domain.game.application.BaseballService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
-import com.keeper.homepage.domain.game.dto.req.BaseballGuessResponse
+import com.keeper.homepage.domain.game.dto.res.BaseballGuessResponse
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.member.entity.Member

@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.game.dto.req
+package com.keeper.homepage.domain.game.dto.res
 
 import com.keeper.homepage.domain.game.dto.BaseballResult
 
