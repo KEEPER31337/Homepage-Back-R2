@@ -4,9 +4,7 @@ import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.study.entity.Study;
-import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +28,6 @@ public class StudyTestHelper {
 
     private String title;
     private String information;
-    private Integer memberNumber;
     private Integer year;
     private Integer season;
     private String gitLink;
@@ -46,11 +43,6 @@ public class StudyTestHelper {
 
     public StudyBuilder information(String information) {
       this.information = information;
-      return this;
-    }
-
-    public StudyBuilder withMemberNumber(Integer memberNumber) {
-      this.memberNumber = memberNumber;
       return this;
     }
 
@@ -93,7 +85,6 @@ public class StudyTestHelper {
       return studyRepository.save(Study.builder()
           .title(title != null ? title : "스터디명")
           .information(information != null ? information : "스터디 소개")
-          .memberNumber(memberNumber)
           .year(year)
           .season(season)
           .gitLink(gitLink != null ? gitLink : "github.com")

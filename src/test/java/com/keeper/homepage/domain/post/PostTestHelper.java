@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
+import com.keeper.homepage.global.util.web.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -114,11 +115,11 @@ public class PostTestHelper {
 
     public Post build() {
       return postRepository.save(Post.builder()
-          .title(title != null ? title : "포스팅 타이틀")
-          .content(content != null ? content : "포스팅 컨텐츠")
+          .title(title != null ? title : "게시글 제목")
+          .content(content != null ? content : "게시글 내용")
           .member(member != null ? member : memberTestHelper.generate())
           .visitCount(visitCount)
-          .ipAddress(ipAddress != null ? ipAddress : "0.0.0.0")
+          .ipAddress(ipAddress != null ? ipAddress : WebUtil.getUserIP())
           .allowComment(allowComment)
           .isNotice(isNotice)
           .isSecret(isSecret)

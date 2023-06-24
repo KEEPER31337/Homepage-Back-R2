@@ -8,9 +8,11 @@ import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REA
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
+import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_MEMBER_THUMBNAIL;
 import static jakarta.persistence.CascadeType.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
@@ -28,9 +30,9 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
+import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -44,12 +46,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -134,6 +136,9 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
+  @OneToMany(mappedBy = "member")
+  private final List<Comment> comments = new ArrayList<>();
+
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
       Integer totalAttendance) {
@@ -181,13 +186,11 @@ public class Member {
     friends.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
-  public void borrow(Book book, BookBorrowStatus borrowStatus, LocalDateTime expireDate) {
+  public void borrow(Book book, BookBorrowStatus borrowStatus) {
     bookBorrowInfos.add(BookBorrowInfo.builder()
         .member(this)
         .book(book)
         .borrowStatus(borrowStatus)
-        .borrowDate(LocalDateTime.now())
-        .expireDate(expireDate)
         .build());
   }
 
@@ -279,7 +282,38 @@ public class Member {
     return this.profile.getRealName().get();
   }
 
+  public Float getGeneration() {
+    return this.generation.getGeneration();
+  }
+
+  public Integer getPoint() {
+    return this.point;
+  }
+
+  public void addPoint(int point) {
+    this.point += point;
+  }
+
+  public void minusPoint(int point) {
+    if (this.point < point && point < 0) {
+      throw new IllegalArgumentException();
+    }
+    this.point -= point;
+  }
+
+  public String getThumbnailPath() {
+    return Optional.ofNullable(this.profile.getThumbnail())
+        .map(Thumbnail::getPath)
+        .orElse(DEFAULT_MEMBER_THUMBNAIL.getPath());
+  }
+
   public boolean isHeadMember(Study study) {
     return study.getHeadMember().equals(this);
+  }
+
+  public long getCountInBorrowing() {
+    return this.bookBorrowInfos.stream()
+        .filter(BookBorrowInfo::isInBorrowing)
+        .count();
   }
 }

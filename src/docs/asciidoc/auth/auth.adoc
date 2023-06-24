@@ -183,24 +183,62 @@ include::{snippets}/find-login-id/request-fields.adoc[]
 
 include::{snippets}/find-login-id/http-response.adoc[]
 
-== *비밀번호 찾기*
+== *비밀번호 변경용 인증 코드 발송*
 
-NOTE: "임시 비밀번호 발행"과 같은 동작을 합니다.
-
-IMPORTANT: 이 API를 호출하고 나면 비밀번호가 바뀌므로 주의해야 합니다.
+IMPORTANT: 이 API는 임시 인증 코드를 메일로 발송하기만 하고 비밀번호를 바꾸진 않습니다.
 
 === 요청
 
 ==== Request
 
-include::{snippets}/issue-tmp-password/http-request.adoc[]
+include::{snippets}/send-password-change-auth-code/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/issue-tmp-password/request-fields.adoc[]
+include::{snippets}/send-password-change-auth-code/request-fields.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/issue-tmp-password/http-response.adoc[]
+include::{snippets}/send-password-change-auth-code/http-response.adoc[]
+
+== *인증 코드 확인*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/check-auth-code/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/check-auth-code/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/check-auth-code/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/check-auth-code/response-fields.adoc[]
+
+== *비밀번호 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/change-password-for-missing/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/change-password-for-missing/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/change-password-for-missing/http-response.adoc[]

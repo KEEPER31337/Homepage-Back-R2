@@ -4,7 +4,8 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
-import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.PostListResponse;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
@@ -47,14 +48,14 @@ public class PostController {
   }
 
   @GetMapping("/{postId}")
-  public ResponseEntity<PostResponse> getPost(
+  public ResponseEntity<PostDetailResponse> getPost(
       @LoginMember Member member,
       @PathVariable long postId,
       @RequestParam(required = false) String password
   ) {
-    PostResponse postResponse = postService.find(member, postId, password);
+    PostDetailResponse postDetailResponse = postService.find(member, postId, password);
     return ResponseEntity.status(HttpStatus.OK)
-        .body(postResponse);
+        .body(postDetailResponse);
   }
 
   @PutMapping("/{postId}")
@@ -106,5 +107,14 @@ public class PostController {
   ) {
     postService.dislike(member, postId);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/notices")
+  public ResponseEntity<PostListResponse> getNoticePosts(
+      @RequestParam long categoryId
+  ) {
+    PostListResponse response = postService.getNoticePosts(categoryId);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(response);
   }
 }

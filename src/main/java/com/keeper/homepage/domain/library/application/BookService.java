@@ -1,0 +1,86 @@
+package com.keeper.homepage.domain.library.application;
+
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
+import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
+import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
+import static com.keeper.homepage.global.error.ErrorCode.BOOK_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
+
+import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookRepository;
+import com.keeper.homepage.domain.library.dto.resp.BookResponse;
+import com.keeper.homepage.domain.library.entity.Book;
+import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.global.error.BusinessException;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class BookService {
+
+  private final BookRepository bookRepository;
+  private final BookBorrowInfoRepository bookBorrowInfoRepository;
+  public static final long MAX_BORROWING_COUNT = 5;
+
+  public Page<BookResponse> getBooks(String searchType, String search, PageRequest pageable) {
+    if (searchType == null) {
+      return bookRepository.findAll(pageable)
+          .map(BookResponse::from);
+    }
+    if (searchType.equals("title")) {
+      return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
+          .map(BookResponse::from);
+    }
+    if (searchType.equals("author")) {
+      return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
+          .map(BookResponse::from);
+    }
+    if (searchType.equals("all")) {
+      return bookRepository.findAllByTitleOrAuthor(search, pageable)
+          .map(BookResponse::from);
+    }
+    throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
+  }
+
+  public void requestBorrow(Member member, long bookId) {
+    checkCountInBorrowing(member);
+
+    Book book = bookRepository.findById(bookId)
+        .orElseThrow(() -> new BusinessException(bookId, "bookId", BOOK_NOT_FOUND));
+    checkCurrentQuantity(book);
+    checkBorrowRequestAlready(member, book);
+    member.borrow(book, getBookBorrowStatusBy(대출대기중));
+  }
+
+  private void checkCountInBorrowing(Member member) {
+    long countInBorrowing = member.getCountInBorrowing();
+    if (countInBorrowing < MAX_BORROWING_COUNT) {
+      return;
+    }
+    throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
+  }
+
+  private void checkCurrentQuantity(Book book) {
+    Long currentQuantity = book.getCurrentQuantity();
+    if (currentQuantity == 0L) {
+      throw new BusinessException(currentQuantity, "currentQuantity", BOOK_CURRENT_QUANTITY_IS_ZERO);
+    }
+  }
+
+  private void checkBorrowRequestAlready(Member member, Book book) {
+    Optional<BookBorrowInfo> bookBorrowInfo = bookBorrowInfoRepository
+        .findByMemberAndBookAndBorrowStatus(member, book, getBookBorrowStatusBy(대출대기중));
+    if (bookBorrowInfo.isPresent()) {
+      throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
+    }
+  }
+}
