@@ -27,7 +27,7 @@ public class BookResponse {
         .author(book.getAuthor())
         .currentQuantity(book.getCurrentQuantity())
         .totalQuantity(book.getTotalQuantity())
-        .canBorrow(book.getCurrentQuantity() != 0L && canBorrow)
+        .canBorrow(canBorrow)
         .build();
   }
 }

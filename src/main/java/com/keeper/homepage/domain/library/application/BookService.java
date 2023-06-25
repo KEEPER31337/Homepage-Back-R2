@@ -33,24 +33,28 @@ public class BookService {
   public static final long MAX_BORROWING_COUNT = 5;
 
   public Page<BookResponse> getBooks(Member member, String searchType, String search, PageRequest pageable) {
-    boolean canBorrow = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
+    boolean isUnderBorrowingLimit = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
     if (searchType == null) {
       return bookRepository.findAll(pageable)
-          .map(book -> BookResponse.of(book, canBorrow));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     if (searchType.equals("title")) {
       return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     if (searchType.equals("author")) {
       return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     if (searchType.equals("all")) {
       return bookRepository.findAllByTitleOrAuthor(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
+  }
+
+  private boolean canBorrow(boolean isUnderBorrowingLimit, Book book) {
+    return book.getCurrentQuantity() != 0L && isUnderBorrowingLimit;
   }
 
   @Transactional
