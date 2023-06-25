@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.IntegrationTest
-import com.keeper.homepage.domain.game.dto.BaseballResult
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.member.entity.Member
@@ -67,11 +67,11 @@ class GameApiTestHelper : IntegrationTest() {
         guessNumber: String,
         correctNumber: String,
         bettingPoint: Int,
-        results: MutableList<BaseballResult.GuessResult?> = mutableListOf(),
+        results: MutableList<BaseballResultEntity.GuessResult?> = mutableListOf(),
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
-        baseballService.saveBaseballResultInRedis(player.id, BaseballResult(correctNumber, bettingPoint, results, earnablePoints))
+        baseballService.saveBaseballResultInRedis(player.id, BaseballResultEntity(correctNumber, bettingPoint, results, earnablePoints))
         return mockMvc.perform(
             post("$GAME_URL/baseball/guess")
                 .content(asJsonString(BaseballGuessRequest(guessNumber)))
@@ -81,11 +81,11 @@ class GameApiTestHelper : IntegrationTest() {
     }
 
     fun callGetBaseballResult(
-        results: MutableList<BaseballResult.GuessResult?> = mutableListOf(),
+        results: MutableList<BaseballResultEntity.GuessResult?> = mutableListOf(),
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
-        baseballService.saveBaseballResultInRedis(player.id, BaseballResult("1234", 1000, results, earnablePoints))
+        baseballService.saveBaseballResultInRedis(player.id, BaseballResultEntity("1234", 1000, results, earnablePoints))
         return mockMvc.perform(
             get("$GAME_URL/baseball/result")
                 .cookie(*accessCookies)

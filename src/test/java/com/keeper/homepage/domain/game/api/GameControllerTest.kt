@@ -4,8 +4,8 @@ import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
 import com.keeper.homepage.domain.game.application.MAX_BETTING_POINT
 import com.keeper.homepage.domain.game.application.MIN_BETTING_POINT
 import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
-import com.keeper.homepage.domain.game.dto.BaseballResult
-import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResult
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -87,7 +87,7 @@ class GameControllerTest : GameApiTestHelper() {
 
             val baseball = gameFindService.findByMemberOrInit(player).baseball
             assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
-            val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResult::class.java)
+            val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResultEntity::class.java)
             assertThat(data).isNotEmpty
             assertThat(data.get().correctNumber).hasSize(4)
             assertThat(data.get().correctNumber).containsOnlyDigits()

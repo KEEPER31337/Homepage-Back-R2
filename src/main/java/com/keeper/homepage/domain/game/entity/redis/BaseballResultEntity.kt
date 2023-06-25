@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.game.dto
+package com.keeper.homepage.domain.game.entity.redis
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 const val SECOND_PER_GAME = 30 // 시간제한: 30s
 
-class BaseballResult(
+class BaseballResultEntity(
     val correctNumber: String,
     val bettingPoint: Int,
     val results: MutableList<GuessResult?> = mutableListOf(),

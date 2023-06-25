@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.game.support
 
-import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResult
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
