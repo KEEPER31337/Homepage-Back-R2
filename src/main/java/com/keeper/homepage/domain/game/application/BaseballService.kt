@@ -57,7 +57,8 @@ class BaseballService(
 
         val baseballResult = BaseballResult(
             correctNumber = generateDistinctRandomNumber(GUESS_NUMBER_LENGTH),
-            bettingPoint = bettingPoint
+            bettingPoint = bettingPoint,
+            earnablePoints = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
         )
         saveBaseballResultInRedis(requestMember.id, baseballResult)
     }
@@ -94,10 +95,10 @@ class BaseballService(
             return BaseballGuessResponse(baseballResult.results, gameEntity.baseball.baseballDayPoint)
         }
 
-        val end = baseballResult.update(guessNumber)
+        baseballResult.update(guessNumber)
         saveBaseballResultInRedis(requestMember.id, baseballResult)
 
-        val earnablePoints = end.getEarnablePoints(baseballResult.bettingPoint)
+        val earnablePoints = baseballResult.earnablePoints
         requestMember.addPoint(earnablePoints)
         gameEntity.baseball.baseballDayPoint = earnablePoints
 

@@ -68,9 +68,10 @@ class GameApiTestHelper : IntegrationTest() {
         correctNumber: String,
         bettingPoint: Int,
         results: MutableList<BaseballResult.GuessResult?> = mutableListOf(),
+        earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
-        baseballService.saveBaseballResultInRedis(player.id, BaseballResult(correctNumber, bettingPoint, results))
+        baseballService.saveBaseballResultInRedis(player.id, BaseballResult(correctNumber, bettingPoint, results, earnablePoints))
         return mockMvc.perform(
             post("$GAME_URL/baseball/guess")
                 .content(asJsonString(BaseballGuessRequest(guessNumber)))
@@ -81,9 +82,10 @@ class GameApiTestHelper : IntegrationTest() {
 
     fun callGetBaseballResult(
         results: MutableList<BaseballResult.GuessResult?> = mutableListOf(),
+        earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
-        baseballService.saveBaseballResultInRedis(player.id, BaseballResult("1234", 1000, results))
+        baseballService.saveBaseballResultInRedis(player.id, BaseballResult("1234", 1000, results, earnablePoints))
         return mockMvc.perform(
             get("$GAME_URL/baseball/result")
                 .cookie(*accessCookies)

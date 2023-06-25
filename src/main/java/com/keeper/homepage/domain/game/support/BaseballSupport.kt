@@ -9,30 +9,29 @@ import java.time.ZoneOffset.UTC
 
 class BaseballSupport {
     companion object {
-        fun updateTimeoutGames(
-            results: MutableList<BaseballResult.GuessResult?>,
+        fun getPassedGameCount(
+            playedRoundCount: Int,
             lastGuessTime: LocalDateTime,
-        ) {
+        ): Int {
             val now = LocalDateTime.now()
             val passedSecond = now.toEpochSecond(UTC) - lastGuessTime.toEpochSecond(UTC)
             // 마지막으로 플레이 한 시간이 너무 오래 지나 list에 너무 많은 값이 들어가는걸 방지
             val passedGameCount = passedSecond / SECOND_PER_GAME
-            val finallyPassedGameCount = if (passedGameCount < TRY_COUNT) passedGameCount.toInt() else TRY_COUNT
-            if (passedSecond > SECOND_PER_GAME) {
-                (1..finallyPassedGameCount).forEach { _ -> if (results.size < TRY_COUNT) results.add(null) }
+            return if (passedGameCount < TRY_COUNT - playedRoundCount) {
+                passedGameCount.toInt()
+            } else {
+                TRY_COUNT - playedRoundCount
             }
         }
 
-        fun updateResults(
-            results: MutableList<BaseballResult.GuessResult?>,
+        fun guessAndGetResult(
             correctNumber: String,
             guessNumber: String
-        ) {
+        ): BaseballResult.GuessResult {
             if (guessNumber.length != GUESS_NUMBER_LENGTH) {
-                results.add(BaseballResult.GuessResult(guessNumber, 0, 0))
-                return
+                return BaseballResult.GuessResult(guessNumber, 0, 0)
             }
-            results.add(guess(correctNumber, guessNumber))
+            return guess(correctNumber, guessNumber)
         }
 
         private fun guess(correctNumber: String, guessNumber: String): BaseballResult.GuessResult {

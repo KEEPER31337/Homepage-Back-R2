@@ -182,15 +182,16 @@ class GameControllerTest : GameApiTestHelper() {
         }
 
         @Test
-        fun `맞췄으면 guess는 포인트를 부여해야 한다`() {
+        fun `맞췄으면 guess는 earnablePoints만큼 포인트를 부여해야 한다`() {
             val beforePlayerPoint = player.point
+            val earnablePoints = 3000
 
             callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
+                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000, earnablePoints = earnablePoints,
                 results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 3, 0))
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint + 2000).isEqualTo(player.point)
+            assertThat(beforePlayerPoint + earnablePoints).isEqualTo(player.point)
         }
 
         @Test
