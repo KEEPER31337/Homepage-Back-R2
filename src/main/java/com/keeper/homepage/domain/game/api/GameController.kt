@@ -3,7 +3,7 @@ package com.keeper.homepage.domain.game.api
 import com.keeper.homepage.domain.game.application.BaseballService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
-import com.keeper.homepage.domain.game.dto.res.BaseballGuessResponse
+import com.keeper.homepage.domain.game.dto.res.BaseballResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.config.security.annotation.LoginMember
@@ -39,20 +39,20 @@ class GameController(
     fun baseballGuess(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballGuessRequest
-    ): ResponseEntity<BaseballGuessResponse> {
+    ): ResponseEntity<BaseballResponse> {
         val (results, earnablePoints) = baseballService.guess(requestMember, request.guessNumber)
-        return ResponseEntity.ok(BaseballGuessResponse(results.map { i ->
-            if (i == null) null else BaseballGuessResponse.GuessResultResponse(i)
+        return ResponseEntity.ok(BaseballResponse(results.map { i ->
+            if (i == null) null else BaseballResponse.GuessResultResponse(i)
         }, earnablePoints))
     }
 
     @GetMapping("/baseball/result")
     fun getBaseballResult(
         @LoginMember requestMember: Member
-    ): ResponseEntity<BaseballGuessResponse> {
+    ): ResponseEntity<BaseballResponse> {
         val (results, earnablePoints) = baseballService.getResult(requestMember)
-        return ResponseEntity.ok(BaseballGuessResponse(results.map { i ->
-            if (i == null) null else BaseballGuessResponse.GuessResultResponse(i)
+        return ResponseEntity.ok(BaseballResponse(results.map { i ->
+            if (i == null) null else BaseballResponse.GuessResultResponse(i)
         }, earnablePoints))
     }
 }

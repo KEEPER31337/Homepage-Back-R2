@@ -146,10 +146,14 @@ class GameControllerTest : GameApiTestHelper() {
         fun `valid한 request면 guess는 성공해야 한다`() {
             val result = callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(GuessResultEntity("1357", 0, 0), GuessResultEntity("2468", 2, 2), GuessResultEntity("7890", 3, 0))
+                results = mutableListOf(
+                    GuessResultEntity("1357", 0, 0),
+                    GuessResultEntity("2468", 2, 2),
+                    GuessResultEntity("7890", 3, 0)
+                )
             ).andExpect(status().isOk)
-                .andExpect(jsonPath("$.result").isArray)
-                .andExpect(jsonPath("$.result[0]").exists())
+                .andExpect(jsonPath("$.results").isArray)
+                .andExpect(jsonPath("$.results[0]").exists())
                 .andExpect(jsonPath("$.earnablePoints").isNumber)
 
             result.andDo(
@@ -163,10 +167,10 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("guessNumber").description("추측한 숫자 (반드시 ${GUESS_NUMBER_LENGTH}자 여야 합니다)"),
                     ),
                     responseFields(
-                        fieldWithPath("result").description("타임아웃난 round는 null"),
-                        fieldWithPath("result[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
-                        fieldWithPath("result[].strike").description("strike"),
-                        fieldWithPath("result[].ball").description("ball"),
+                        fieldWithPath("results").description("타임아웃난 round는 null"),
+                        fieldWithPath("results[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
+                        fieldWithPath("results[].strike").description("strike"),
+                        fieldWithPath("results[].ball").description("ball"),
                         fieldWithPath("earnablePoints").description("획득한 포인트 (마지막 게임이 아니면 0)"),
                     ),
                 )
@@ -234,7 +238,7 @@ class GameControllerTest : GameApiTestHelper() {
             ).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
                 .andExpect(
-                    jsonPath("$.result[0]").value(
+                    jsonPath("$.results[0]").value(
                         linkedMapOf(
                             "guessNumber" to "1234",
                             "strike" to 2,
@@ -242,9 +246,9 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.result[1]").value(null))
+                .andExpect(jsonPath("$.results[1]").value(null))
                 .andExpect(
-                    jsonPath("$.result[2]").value(
+                    jsonPath("$.results[2]").value(
                         linkedMapOf(
                             "guessNumber" to "3456",
                             "strike" to 1,
@@ -252,10 +256,10 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.result[3]").value(null))
-                .andExpect(jsonPath("$.result[4]").value(null))
+                .andExpect(jsonPath("$.results[3]").value(null))
+                .andExpect(jsonPath("$.results[4]").value(null))
                 .andExpect(
-                    jsonPath("$.result[5]").value(
+                    jsonPath("$.results[5]").value(
                         linkedMapOf(
                             "guessNumber" to "5678",
                             "strike" to 3,
@@ -266,13 +270,13 @@ class GameControllerTest : GameApiTestHelper() {
                 .andExpect(jsonPath("$.earnablePoints").value(0))
                 .andDo(
                     document(
-                        "get-baseball-result",
+                        "get-baseball-results",
                         requestCookies(
                             cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                         ),
                         responseFields(
-                            subsectionWithPath("result").description("타임아웃난 round는 null"),
+                            subsectionWithPath("results").description("타임아웃난 round는 null"),
                             fieldWithPath("earnablePoints").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
                         ),
                     )

@@ -111,7 +111,7 @@ NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null�
 [source,json,options="nowrap"]
 ----
 {
-  "result" : [
+  "results" : [
         { "guessNumber" : "1234", "strike" : 0, "ball" : 0 },
         null,
         null,
@@ -127,18 +127,18 @@ NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null�
 
 ==== Request
 
-include::{snippets}/get-baseball-result/http-request.adoc[]
+include::{snippets}/get-baseball-results/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/get-baseball-result/request-cookies.adoc[]
+include::{snippets}/get-baseball-results/request-cookies.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/get-baseball-result/http-response.adoc[]
+include::{snippets}/get-baseball-results/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/get-baseball-result/response-fields.adoc[]
+include::{snippets}/get-baseball-results/response-fields.adoc[]

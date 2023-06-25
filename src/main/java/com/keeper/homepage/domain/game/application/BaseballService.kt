@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.game.application
 
-import com.keeper.homepage.domain.game.dto.res.BaseballGuessResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.member.entity.Member
