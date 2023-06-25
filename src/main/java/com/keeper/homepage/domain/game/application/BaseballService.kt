@@ -90,7 +90,7 @@ class BaseballService(
         ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
 
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        if (baseballResultEntity.results.size >= TRY_COUNT || isAlreadyCorrect(baseballResultEntity)) {
+        if (baseballResultEntity.results.size >= TRY_COUNT || baseballResultEntity.isAlreadyCorrect()) {
             return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
         }
 
@@ -102,16 +102,6 @@ class BaseballService(
         gameEntity.baseball.baseballDayPoint = earnablePoints
 
         return Pair(baseballResultEntity.results, earnablePoints)
-    }
-
-    private fun isAlreadyCorrect(baseballResultEntity: BaseballResultEntity): Boolean {
-        if (baseballResultEntity.results.isEmpty()) {
-            return false
-        }
-        if (baseballResultEntity.results.last() == null) {
-            return false
-        }
-        return baseballResultEntity.results.last()!!.strike == GUESS_NUMBER_LENGTH
     }
 
     fun getResult(requestMember: Member): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {

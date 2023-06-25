@@ -43,7 +43,7 @@ class BaseballResultEntity(
         results.add(result)
     }
 
-    private fun isAlreadyCorrect(): Boolean {
+    fun isAlreadyCorrect(): Boolean {
         return results.isNotEmpty() && results.last() != null && results.last()!!.isCorrect()
     }
 
