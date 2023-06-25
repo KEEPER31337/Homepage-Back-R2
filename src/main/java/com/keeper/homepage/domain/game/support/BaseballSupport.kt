@@ -27,21 +27,21 @@ class BaseballSupport {
         fun guessAndGetResult(
             correctNumber: String,
             guessNumber: String
-        ): BaseballResultEntity.GuessResult {
+        ): BaseballResultEntity.GuessResultEntity {
             if (guessNumber.length != GUESS_NUMBER_LENGTH) {
-                return BaseballResultEntity.GuessResult(guessNumber, 0, 0)
+                return BaseballResultEntity.GuessResultEntity(guessNumber, 0, 0)
             }
             return guess(correctNumber, guessNumber)
         }
 
-        private fun guess(correctNumber: String, guessNumber: String): BaseballResultEntity.GuessResult {
+        private fun guess(correctNumber: String, guessNumber: String): BaseballResultEntity.GuessResultEntity {
             var strike = 0
             var ball = 0
             for (i in guessNumber.indices) {
                 if (correctNumber[i] == guessNumber[i]) strike++
                 else if (correctNumber.contains(guessNumber[i])) ball++
             }
-            return BaseballResultEntity.GuessResult(guessNumber, strike, ball)
+            return BaseballResultEntity.GuessResultEntity(guessNumber, strike, ball)
         }
     }
 }

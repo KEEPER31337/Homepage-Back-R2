@@ -11,7 +11,7 @@ const val SECOND_PER_GAME = 30 // 시간제한: 30s
 class BaseballResultEntity(
     val correctNumber: String,
     val bettingPoint: Int,
-    val results: MutableList<GuessResult?> = mutableListOf(),
+    val results: MutableList<GuessResultEntity?> = mutableListOf(),
     var earnablePoints: Int,
 ) {
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
@@ -47,15 +47,14 @@ class BaseballResultEntity(
         return results.isNotEmpty() && results.last() != null && results.last()!!.isCorrect()
     }
 
-    private fun updateEarnedPointsByResult(result: GuessResult) {
+    private fun updateEarnedPointsByResult(result: GuessResultEntity) {
         if (result.isCorrect()) {
             return
         }
         this.earnablePoints -= this.earnablePoints / 10
     }
 
-    data class GuessResult(val guessNumber: String, val strike: Int, val ball: Int) {
-        @JsonIgnore
+    data class GuessResultEntity(val guessNumber: String, val strike: Int, val ball: Int) {
         fun isCorrect() = this.strike == GUESS_NUMBER_LENGTH
     }
 }

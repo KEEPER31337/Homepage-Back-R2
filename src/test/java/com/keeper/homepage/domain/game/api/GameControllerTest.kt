@@ -5,7 +5,7 @@ import com.keeper.homepage.domain.game.application.MAX_BETTING_POINT
 import com.keeper.homepage.domain.game.application.MIN_BETTING_POINT
 import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
-import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResult
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -146,7 +146,7 @@ class GameControllerTest : GameApiTestHelper() {
         fun `valid한 request면 guess는 성공해야 한다`() {
             val result = callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(GuessResult("1357", 0, 0), GuessResult("2468", 2, 2), GuessResult("7890", 3, 0))
+                results = mutableListOf(GuessResultEntity("1357", 0, 0), GuessResultEntity("2468", 2, 2), GuessResultEntity("7890", 3, 0))
             ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.result").isArray)
                 .andExpect(jsonPath("$.result[0]").exists())
@@ -188,7 +188,7 @@ class GameControllerTest : GameApiTestHelper() {
 
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000, earnablePoints = earnablePoints,
-                results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 3, 0))
+                results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 3, 0))
             ).andExpect(status().isOk)
 
             assertThat(beforePlayerPoint + earnablePoints).isEqualTo(player.point)
@@ -200,7 +200,7 @@ class GameControllerTest : GameApiTestHelper() {
 
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 4, 0))
+                results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0))
             ).andExpect(status().isOk)
 
             assertThat(beforePlayerPoint).isEqualTo(player.point)
@@ -213,7 +213,7 @@ class GameControllerTest : GameApiTestHelper() {
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(
-                    GuessResult("1234", 2, 2), null, GuessResult("5678", 4, 0),
+                    GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0),
                     null, null, null, null, null, null
                 )
             ).andExpect(status().isOk)
@@ -227,9 +227,9 @@ class GameControllerTest : GameApiTestHelper() {
 
             callGetBaseballResult(
                 results = mutableListOf(
-                    GuessResult("1234", 2, 2),
-                    null, GuessResult("3456", 1, 0),
-                    null, null, GuessResult("5678", 3, 0)
+                    GuessResultEntity("1234", 2, 2),
+                    null, GuessResultEntity("3456", 1, 0),
+                    null, null, GuessResultEntity("5678", 3, 0)
                 )
             ).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)

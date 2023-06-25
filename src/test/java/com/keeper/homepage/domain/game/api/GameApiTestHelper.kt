@@ -67,7 +67,7 @@ class GameApiTestHelper : IntegrationTest() {
         guessNumber: String,
         correctNumber: String,
         bettingPoint: Int,
-        results: MutableList<BaseballResultEntity.GuessResult?> = mutableListOf(),
+        results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
@@ -81,7 +81,7 @@ class GameApiTestHelper : IntegrationTest() {
     }
 
     fun callGetBaseballResult(
-        results: MutableList<BaseballResultEntity.GuessResult?> = mutableListOf(),
+        results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {

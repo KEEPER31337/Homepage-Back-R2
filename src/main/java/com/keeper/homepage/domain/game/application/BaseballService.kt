@@ -1,8 +1,8 @@
 package com.keeper.homepage.domain.game.application
 
-import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.dto.res.BaseballGuessResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
@@ -84,7 +84,7 @@ class BaseballService(
     }
 
     @Transactional
-    fun guess(requestMember: Member, guessNumber: String): BaseballGuessResponse {
+    fun guess(requestMember: Member, guessNumber: String): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
         val baseballResultEntity = redisUtil.getData(
             REDIS_KEY_PREFIX + requestMember.id.toString(),
             BaseballResultEntity::class.java
@@ -92,7 +92,7 @@ class BaseballService(
 
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         if (baseballResultEntity.results.size >= TRY_COUNT || isAlreadyCorrect(baseballResultEntity)) {
-            return BaseballGuessResponse(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+            return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
         }
 
         baseballResultEntity.update(guessNumber)
@@ -102,7 +102,7 @@ class BaseballService(
         requestMember.addPoint(earnablePoints)
         gameEntity.baseball.baseballDayPoint = earnablePoints
 
-        return BaseballGuessResponse(baseballResultEntity.results, earnablePoints)
+        return Pair(baseballResultEntity.results, earnablePoints)
     }
 
     private fun isAlreadyCorrect(baseballResultEntity: BaseballResultEntity): Boolean {
@@ -115,9 +115,9 @@ class BaseballService(
         return baseballResultEntity.results.last()!!.strike == GUESS_NUMBER_LENGTH
     }
 
-    fun getResult(requestMember: Member): BaseballGuessResponse {
+    fun getResult(requestMember: Member): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
         if (!isAlreadyPlayed(requestMember)) {
-            return BaseballGuessResponse.EMPTY
+            return Pair(listOf(), 0)
         }
         val baseballResultEntity = redisUtil.getData(
             REDIS_KEY_PREFIX + requestMember.id.toString(),
@@ -127,6 +127,6 @@ class BaseballService(
         baseballResultEntity.updateTimeoutGames()
 
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        return BaseballGuessResponse(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+        return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
     }
 }

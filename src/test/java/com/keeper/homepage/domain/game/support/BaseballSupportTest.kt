@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.game.support
 
-import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResult
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -59,7 +59,7 @@ class BaseballSupportTest {
 
         @Test
         fun `2게임을 플레이했으면 1000초가 지났더라도 7 게임만 pass 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf(GuessResult("1234", 1, 2), GuessResult("5678", 3, 1))
+            val results: MutableList<GuessResultEntity?> = mutableListOf(GuessResultEntity("1234", 1, 2), GuessResultEntity("5678", 3, 1))
             val lastGuessTime = LocalDateTime.now().minusSeconds(1000)
             val passedGameCount = BaseballSupport.getPassedGameCount(results.size, lastGuessTime)
             assertThat(passedGameCount).isEqualTo(7)
