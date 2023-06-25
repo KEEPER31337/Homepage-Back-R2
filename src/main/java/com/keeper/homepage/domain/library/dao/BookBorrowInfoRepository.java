@@ -26,4 +26,12 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
   Optional<BookBorrowInfo> findByMemberAndBook(Member member, Book book);
 
   Optional<BookBorrowInfo> findByMemberAndBookAndBorrowStatus(Member member, Book book, BookBorrowStatus borrowStatus);
+
+  @Query(value = "SELECT borrow "
+      + "FROM BookBorrowInfo borrow "
+      + "WHERE (borrow.borrowStatus.id = 3 " // 대출승인
+      + "OR borrow.borrowStatus.id = 4) " // 반납대기중
+      + "AND borrow.member = :member ")
+  Page<BookBorrowInfo> findAllByMemberAndInBorrowing(@Param("member") Member member, Pageable pageable);
+
 }

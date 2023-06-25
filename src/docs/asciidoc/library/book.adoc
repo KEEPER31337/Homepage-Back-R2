@@ -60,3 +60,27 @@ include::{snippets}/request-book-borrow/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/request-book-borrow/http-response.adoc[]
+
+== *도서 대여 목록 조회*
+
+NOTE: 회원이 빌린 책 중 ``대출중``인 도서와 ``반납대기중``인 도서 대여 목록을 불러옵니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-book-borrows/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-book-borrows/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-book-borrows/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-book-borrows/response-fields.adoc[]

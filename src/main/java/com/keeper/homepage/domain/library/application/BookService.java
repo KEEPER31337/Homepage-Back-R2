@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.Optional;
@@ -31,26 +32,32 @@ public class BookService {
   private final BookBorrowInfoRepository bookBorrowInfoRepository;
   public static final long MAX_BORROWING_COUNT = 5;
 
-  public Page<BookResponse> getBooks(String searchType, String search, PageRequest pageable) {
+  public Page<BookResponse> getBooks(Member member, String searchType, String search, PageRequest pageable) {
+    boolean isUnderBorrowingLimit = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
     if (searchType == null) {
       return bookRepository.findAll(pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     if (searchType.equals("title")) {
       return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     if (searchType.equals("author")) {
       return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     if (searchType.equals("all")) {
       return bookRepository.findAllByTitleOrAuthor(search, pageable)
-          .map(BookResponse::from);
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
     }
     throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
   }
 
+  private boolean canBorrow(boolean isUnderBorrowingLimit, Book book) {
+    return book.getCurrentQuantity() != 0L && isUnderBorrowingLimit;
+  }
+
+  @Transactional
   public void requestBorrow(Member member, long bookId) {
     checkCountInBorrowing(member);
 
@@ -63,10 +70,9 @@ public class BookService {
 
   private void checkCountInBorrowing(Member member) {
     long countInBorrowing = member.getCountInBorrowing();
-    if (countInBorrowing < MAX_BORROWING_COUNT) {
-      return;
+    if (countInBorrowing >= MAX_BORROWING_COUNT) {
+      throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
     }
-    throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
   }
 
   private void checkCurrentQuantity(Book book) {
@@ -82,5 +88,10 @@ public class BookService {
     if (bookBorrowInfo.isPresent()) {
       throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
     }
+  }
+
+  public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {
+    return bookBorrowInfoRepository.findAllByMemberAndInBorrowing(member, pageable)
+        .map(BookBorrowResponse::from);
   }
 }

@@ -17,8 +17,9 @@ public class BookResponse {
   private String author;
   private Long currentQuantity;
   private Long totalQuantity;
+  private boolean canBorrow;
 
-  public static BookResponse from(Book book) {
+  public static BookResponse of(Book book, boolean canBorrow) {
     return BookResponse.builder()
         .bookId(book.getId())
         .thumbnailPath(book.getThumbnailPath())
@@ -26,6 +27,7 @@ public class BookResponse {
         .author(book.getAuthor())
         .currentQuantity(book.getCurrentQuantity())
         .totalQuantity(book.getTotalQuantity())
+        .canBorrow(canBorrow)
         .build();
   }
 }
