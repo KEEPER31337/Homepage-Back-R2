@@ -66,7 +66,7 @@ public class BookService {
 
   private void checkCountInBorrowing(Member member) {
     long countInBorrowing = member.getCountInBorrowing();
-    if (countInBorrowing == MAX_BORROWING_COUNT) {
+    if (countInBorrowing >= MAX_BORROWING_COUNT) {
       throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
     }
   }
