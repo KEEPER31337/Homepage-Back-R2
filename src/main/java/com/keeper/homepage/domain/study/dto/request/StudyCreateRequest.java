@@ -1,11 +1,19 @@
 package com.keeper.homepage.domain.study.dto.request;
 
+import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_INVALID;
+import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_REGEX;
+import static com.keeper.homepage.domain.study.entity.embedded.NoteLink.NOTION_LINK_INVALID;
+import static com.keeper.homepage.domain.study.entity.embedded.NoteLink.NOTION_LINK_REGEX;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.study.entity.embedded.GitLink;
+import com.keeper.homepage.domain.study.entity.embedded.Link;
+import com.keeper.homepage.domain.study.entity.embedded.NoteLink;
 import com.keeper.homepage.domain.study.entity.Study;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,9 +44,11 @@ public class StudyCreateRequest {
   private Integer season;
 
   @Nullable
+  @Pattern(regexp = GIT_LINK_REGEX, message = GIT_LINK_INVALID)
   private String gitLink;
 
   @Nullable
+  @Pattern(regexp = NOTION_LINK_REGEX, message = NOTION_LINK_INVALID)
   private String noteLink;
 
   @Nullable
@@ -54,9 +64,11 @@ public class StudyCreateRequest {
         .headMember(member)
         .year(year)
         .season(season)
-        .gitLink(gitLink)
-        .noteLink(noteLink)
-        .etcLink(etcLink)
+        .link(Link.builder()
+            .gitLink(GitLink.from(gitLink))
+            .noteLink(NoteLink.from(noteLink))
+            .etcLink(etcLink)
+            .build())
         .build();
   }
 }

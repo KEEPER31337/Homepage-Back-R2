@@ -60,3 +60,55 @@ include::{snippets}/delete-study/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/delete-study/http-response.adoc[]
+
+== *스터디 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-studies/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-studies/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-studies/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-studies/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-studies/response-fields.adoc[]
+
+== *스터디 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-study/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-study/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-study/response-fields.adoc[]

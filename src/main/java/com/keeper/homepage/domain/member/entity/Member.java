@@ -278,6 +278,10 @@ public class Member {
     return this.profile.getNickname().get();
   }
 
+  public String getRealName() {
+    return this.profile.getRealName().get();
+  }
+
   public Float getGeneration() {
     return this.generation.getGeneration();
   }
