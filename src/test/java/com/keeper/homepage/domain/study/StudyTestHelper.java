@@ -3,6 +3,9 @@ package com.keeper.homepage.domain.study;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
+import com.keeper.homepage.domain.study.entity.embedded.GitLink;
+import com.keeper.homepage.domain.study.entity.embedded.Link;
+import com.keeper.homepage.domain.study.entity.embedded.NoteLink;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +33,8 @@ public class StudyTestHelper {
     private String information;
     private Integer year;
     private Integer season;
-    private String gitLink;
-    private String noteLink;
+    private GitLink gitLink;
+    private NoteLink noteLink;
     private String etcLink;
     private Thumbnail thumbnail;
     private Member headMember;
@@ -56,12 +59,12 @@ public class StudyTestHelper {
       return this;
     }
 
-    public StudyBuilder gitLink(String gitLink) {
+    public StudyBuilder gitLink(GitLink gitLink) {
       this.gitLink = gitLink;
       return this;
     }
 
-    public StudyBuilder noteLink(String noteLink) {
+    public StudyBuilder NoteLink(NoteLink noteLink) {
       this.noteLink = noteLink;
       return this;
     }
@@ -87,9 +90,11 @@ public class StudyTestHelper {
           .information(information != null ? information : "스터디 소개")
           .year(year)
           .season(season)
-          .gitLink(gitLink != null ? gitLink : "github.com")
-          .noteLink(noteLink != null ? noteLink : "notion.com")
-          .etcLink(etcLink != null ? etcLink : "etc.com")
+          .link(Link.builder()
+              .gitLink(gitLink != null ? gitLink : GitLink.from("https://github.com/KEEPER31337/Homepage-Back-R2"))
+              .noteLink(noteLink != null ? noteLink : NoteLink.from("https://www.notion.so/Java-Spring"))
+              .etcLink(etcLink != null ? etcLink : "etc.com")
+              .build())
           .thumbnail(thumbnail)
           .headMember(headMember != null ? headMember : memberTestHelper.generate())
           .build());

@@ -52,8 +52,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
   class CreateStudy {
 
     @Test
-    @DisplayName("썸네일과 파일이 포함된 게시글을 생성하면 게시글 생성이 성공한다.")
-    void should_201CREATED_when_createPostWithThumbnailAndFiles() throws Exception {
+    @DisplayName("유효한 요청 시 스터디 생성은 성공한다.")
+    public void 유효한_요청_시_스터디_생성은_성공한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "createStudy");
 
       addAllParams(params);
@@ -92,9 +92,39 @@ public class StudyControllerTest extends StudyApiTestHelper {
       params.add("information", "자바 스터디 입니다");
       params.add("year", "2023");
       params.add("season", "1");
-      params.add("gitLink", "github.com");
-      params.add("noteLink", "notion.com");
+      params.add("gitLink", "https://github.com/KEEPER31337/Homepage-Back-R2");
+      params.add("noteLink", "https://www.notion.so/Java-Spring");
       params.add("etcLink", "etc.com");
+    }
+
+    @Test
+    @DisplayName("깃허브 링크가 아닌 링크를 입력할 경우 스터디 생성은 실패한다.")
+    public void 깃허브_링크가_아닌_링크를_입력할_경우_스터디_생성은_실패한다() throws Exception {
+      params.add("title", "자바 스터디");
+      params.add("information", "자바 스터디 입니다");
+      params.add("year", "2023");
+      params.add("season", "1");
+      params.add("gitLink", "https://www.youtube.com/");
+      params.add("noteLink", "https://www.notion.so/Java-Spring");
+      params.add("etcLink", "etc.com");
+
+      callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("노션 링크가 아닌 링크를 입력할 경우 스터디 생성은 실패한다.")
+    public void 노션_링크가_아닌_링크를_입력할_경우_스터디_생성은_실패한다() throws Exception {
+      params.add("title", "자바 스터디");
+      params.add("information", "자바 스터디 입니다");
+      params.add("year", "2023");
+      params.add("season", "1");
+      params.add("gitLink", "https://github.com/KEEPER31337/Homepage-Back-R2");
+      params.add("noteLink", "https://www.youtube.com/");
+      params.add("etcLink", "etc.com");
+
+      callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
+          .andExpect(status().isBadRequest());
     }
   }
 

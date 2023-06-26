@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.study.dto.response;
 
-import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
@@ -31,7 +30,7 @@ public class StudyDetailResponse {
             .map(Member::getRealName)
             .toList())
         .gitLink(study.getGitLink())
-        .noteLink(study.getNoteLink())
+        .noteLink(study.getNotionLink())
         .etcLink(study.getEtcLink())
         .build();
   }

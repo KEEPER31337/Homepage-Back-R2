@@ -4,10 +4,14 @@ package com.keeper.homepage.domain.study.entity;
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -56,14 +60,13 @@ public class Study extends BaseEntity {
   @Column(name = "season")
   private Integer season;
 
-  @Column(name = "git_link", length = MAX_LINK_LENGTH)
-  private String gitLink;
-
-  @Column(name = "note_link", length = MAX_LINK_LENGTH)
-  private String noteLink;
-
-  @Column(name = "etc_link", length = MAX_LINK_LENGTH)
-  private String etcLink;
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "gitLink", column = @Column(name = "git_link", length = MAX_LINK_LENGTH)),
+      @AttributeOverride(name = "noteLink", column = @Column(name = "note_link", length = MAX_LINK_LENGTH)),
+      @AttributeOverride(name = "etcLink", column = @Column(name = "etc_link", length = MAX_LINK_LENGTH))
+  })
+  private Link link;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "thumbnail_id", nullable = false)
@@ -77,15 +80,13 @@ public class Study extends BaseEntity {
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
-  private Study(String title, String information, Integer year, Integer season, String gitLink, String noteLink,
-      String etcLink, Thumbnail thumbnail, Member headMember) {
+  private Study(String title, String information, Integer year, Integer season, Link link, Thumbnail thumbnail,
+      Member headMember) {
     this.title = title;
     this.information = information;
     this.year = year;
     this.season = season;
-    this.gitLink = gitLink;
-    this.noteLink = noteLink;
-    this.etcLink = etcLink;
+    this.link = link;
     this.thumbnail = thumbnail;
     this.headMember = headMember;
   }
@@ -98,5 +99,17 @@ public class Study extends BaseEntity {
     return Optional.ofNullable(this.thumbnail)
         .map(Thumbnail::getPath)
         .orElse(DEFAULT_POST_THUMBNAIL.getPath());
+  }
+
+  public String getGitLink() {
+    return this.link.getGitLink().get();
+  }
+
+  public String getNotionLink() {
+    return this.link.getNoteLink().get();
+  }
+
+  public String getEtcLink() {
+    return this.link.getEtcLink();
   }
 }
