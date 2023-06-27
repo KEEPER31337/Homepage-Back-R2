@@ -112,3 +112,103 @@ include::{snippets}/get-study/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-study/response-fields.adoc[]
+
+== *스터디 썸네일 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-study-thumbnail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-study-thumbnail/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-study-thumbnail/path-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/update-study-thumbnail/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-study-thumbnail/http-response.adoc[]
+
+== *스터디 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-study/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-study/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-study/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/update-study/response-headers.adoc[]
+
+== *스터디원 추가*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/join-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/join-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/join-study/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/join-study/http-response.adoc[]
+
+== *스터디원 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/leave-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/leave-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/leave-study/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/leave-study/http-response.adoc[]
