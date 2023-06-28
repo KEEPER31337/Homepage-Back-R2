@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.StudentId;
+import com.keeper.homepage.domain.post.entity.Post;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,4 +26,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   boolean existsByProfileStudentId(StudentId profileStudentId);
 
   Page<Member> findAllByIdIsNotOrderByPointDesc(long virtualId, Pageable pageable);
+
+  Optional<Member> findByIdAndIdNot(Long memberId, Long virtualId);
 }

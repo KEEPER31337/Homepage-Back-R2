@@ -112,4 +112,12 @@ public class Study extends BaseEntity {
   public String getEtcLink() {
     return this.link.getEtcLink();
   }
+
+  public void update(Study newStudy) {
+    this.title = newStudy.getTitle();
+    this.information = newStudy.getInformation();
+    this.year = newStudy.getYear();
+    this.season = newStudy.getSeason();
+    this.link = newStudy.getLink();
+  }
 }

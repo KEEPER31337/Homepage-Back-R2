@@ -4,12 +4,16 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_INFORMATION_LENGTH;
 import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
@@ -20,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.api.PostController;
+import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,20 +32,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public class StudyControllerTest extends StudyApiTestHelper {
 
   private MockMultipartFile thumbnail;
+  private Member member, other;
   private String memberToken, otherToken;
   private long studyId;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
   @BeforeEach
   void setUp() throws IOException {
-    Member member = memberTestHelper.builder().build();
-    Member other = memberTestHelper.builder().build();
+    member = memberTestHelper.builder().build();
+    other = memberTestHelper.builder().build();
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
@@ -73,7 +80,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   parameterWithName("year")
                       .description("스터디 년도를 입력해주세요."),
                   parameterWithName("season")
-                      .description("스터디 학기를 입력해주세요. (1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기)"),
+                      .attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기"))
+                      .description("스터디 학기를 입력해주세요."),
                   parameterWithName("gitLink")
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
                   parameterWithName("noteLink")
@@ -214,6 +222,133 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   fieldWithPath("studies[].headName").description("스터디장 이름 (실명)"),
                   fieldWithPath("studies[].memberCount").description("스터디원 수")
               )));
+    }
+  }
+
+  @Nested
+  @DisplayName("스터디 수정")
+  class UpdateStudy {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 스터디 수정은 성공한다.")
+    public void 유효한_요청일_경우_스터디_수정은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "updateStudy");
+
+      StudyUpdateRequest request = StudyUpdateRequest.builder()
+          .title("자바 스터디")
+          .information("자바 스터디 입니다.")
+          .year(2023)
+          .season(2)
+          .build();
+
+      callUpdateStudyApi(memberToken, studyId, request)
+          .andExpect(status().isCreated())
+          .andDo(document("update-study",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("studyId").description("스터디 ID")
+              ),
+              requestFields(
+                  field("title", "스터디 제목 (최대 가능 길이 : " + STUDY_TITLE_LENGTH + ")"),
+                  field("information", "저자 (최대 가능 길이 : " + STUDY_INFORMATION_LENGTH + ")"),
+                  field("year", "스터디 년도"),
+                  field("season", "스터디 학기")
+                      .attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기")),
+                  field("gitLink", "깃허브 링크")
+                      .optional(),
+                  field("noteLink", "노션 링크")
+                      .optional(),
+                  field("etcLink", "기타 링크")
+                      .optional()
+              ),
+              responseHeaders(
+                  headerWithName("Location").description("수정한 스터디를 불러오는 URI 입니다.")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 스터디 썸네일 수정은 성공한다.")
+    public void 유효한_요청일_경우_스터디_썸네일_수정은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "updateStudyThumbnail");
+      MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
+
+      callUpdateStudyThumbnailApi(memberToken, studyId, newThumbnailFile)
+          .andExpect(status().isNoContent())
+          .andDo(document("update-study-thumbnail",
+                  requestCookies(
+                      cookieWithName(ACCESS_TOKEN.getTokenName())
+                          .description("ACCESS TOKEN %s".formatted(securedValue))
+                  ),
+                  pathParameters(
+                      parameterWithName("studyId").description("스터디 ID")
+                  ),
+                  requestParts(
+                      partWithName("thumbnail").description("책의 썸네일 (null 값으로 보낼 경우 기본 썸네일로 지정됩니다.)")
+                          .optional()
+                  )
+              )
+          );
+    }
+
+    @Test
+    @DisplayName("스터디장이 아닐 경우 스터디 수정은 실패한다.")
+    public void 스터디장이_아닐_경우_스터디_수정은_실패한다() throws Exception {
+      MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
+      callUpdateStudyThumbnailApi(otherToken, studyId, newThumbnailFile)
+          .andExpect(status().isForbidden());
+    }
+  }
+
+  @Nested
+  @DisplayName("스터디원 추가")
+  class AddStudyMember {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 스터디원 추가는 성공한다.")
+    public void 유효한_요청일_경우_스터디원_추가는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "joinStudy");
+
+      callJoinStudyApi(memberToken, studyId, member.getId())
+          .andExpect(status().isCreated())
+          .andDo(document("join-study",
+                  requestCookies(
+                      cookieWithName(ACCESS_TOKEN.getTokenName())
+                          .description("ACCESS TOKEN %s".formatted(securedValue))
+                  ),
+                  pathParameters(
+                      parameterWithName("studyId").description("스터디 ID"),
+                      parameterWithName("memberId").description("회원 ID")
+                  )
+              )
+          );
+    }
+  }
+
+  @Nested
+  @DisplayName("스터디원 삭제")
+  class DeleteStudyMember {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 스터디원 삭제는 성공한다.")
+    public void 유효한_요청일_경우_스터디원_삭제는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "leaveStudy");
+
+      callLeaveStudyApi(memberToken, studyId, member.getId())
+          .andExpect(status().isNoContent())
+          .andDo(document("leave-study",
+                  requestCookies(
+                      cookieWithName(ACCESS_TOKEN.getTokenName())
+                          .description("ACCESS TOKEN %s".formatted(securedValue))
+                  ),
+                  pathParameters(
+                      parameterWithName("studyId").description("스터디 ID"),
+                      parameterWithName("memberId").description("회원 ID")
+                  )
+              )
+          );
     }
   }
 }

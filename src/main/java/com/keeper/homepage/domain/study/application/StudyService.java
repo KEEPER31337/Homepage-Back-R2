@@ -4,16 +4,19 @@ import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumb
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_CANNOT_ACCESSIBLE;
 
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
+import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyListResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyResponse;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +33,7 @@ public class StudyService {
   private final StudyRepository studyRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final StudyFindService studyFindService;
+  private final MemberFindService memberFindService;
 
   public void create(Study study, MultipartFile thumbnail) {
     saveStudyThumbnail(study, thumbnail);
@@ -61,5 +65,38 @@ public class StudyService {
         .map(StudyResponse::from)
         .toList();
     return StudyListResponse.from(studyResponses);
+  }
+
+  @Transactional
+  public void update(Member member, long studyId, Study newStudy) {
+    Study study = studyFindService.findById(studyId);
+    if (!member.isHeadMember(study)) {
+      throw new BusinessException(studyId, "studyId", STUDY_CANNOT_ACCESSIBLE);
+    }
+    study.update(newStudy);
+  }
+
+  @Transactional
+  public void updateStudyThumbnail(Member member, long studyId, MultipartFile thumbnail) {
+    Study study = studyFindService.findById(studyId);
+    if (!member.isHeadMember(study)) {
+      throw new BusinessException(studyId, "studyId", STUDY_CANNOT_ACCESSIBLE);
+    }
+    Thumbnail newThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
+    study.changeThumbnail(newThumbnail);
+  }
+
+  @Transactional
+  public void joinStudy(long studyId, long memberId) {
+    Study study = studyFindService.findById(studyId);
+    Member member = memberFindService.findById(memberId);
+    member.join(study);
+  }
+
+  @Transactional
+  public void leaveStudy(long studyId, long memberId) {
+    Study study = studyFindService.findById(studyId);
+    Member member = memberFindService.findById(memberId);
+    member.leave(study);
   }
 }

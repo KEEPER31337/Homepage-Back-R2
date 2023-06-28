@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.study.dto.request;
 
+import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_INFORMATION_LENGTH;
+import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_TITLE_LENGTH;
 import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_INVALID;
 import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_REGEX;
 import static com.keeper.homepage.domain.study.entity.embedded.NoteLink.NOTION_LINK_INVALID;
@@ -7,10 +9,10 @@ import static com.keeper.homepage.domain.study.entity.embedded.NoteLink.NOTION_L
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.embedded.GitLink;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.domain.study.entity.embedded.NoteLink;
-import com.keeper.homepage.domain.study.entity.Study;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,16 +20,14 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
-public class StudyCreateRequest {
-
-  public static final int STUDY_TITLE_LENGTH = 45;
-  public static final int STUDY_INFORMATION_LENGTH = 100;
+public class StudyUpdateRequest {
 
   @NotBlank(message = "스터디 이름을 입력해주세요.")
   @Size(max = STUDY_TITLE_LENGTH, message = "스터디 이름은 {max}자 이하로 입력해주세요.")
@@ -54,14 +54,10 @@ public class StudyCreateRequest {
   @Nullable
   private String etcLink;
 
-  @Nullable
-  private MultipartFile thumbnail;
-
-  public Study toEntity(Member member) {
+  public Study toEntity() {
     return Study.builder()
         .title(title)
         .information(information)
-        .headMember(member)
         .year(year)
         .season(season)
         .link(Link.builder()
