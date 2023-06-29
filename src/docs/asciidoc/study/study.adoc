@@ -15,6 +15,8 @@ link:../keeper.html[API 목록으로 돌아가기]
 
 == *스터디 생성*
 
+NOTE: 호출 시 스터디원으로 추가됩니다.
+
 === 요청
 
 ==== Request
@@ -26,6 +28,8 @@ include::{snippets}/create-study/http-request.adoc[]
 include::{snippets}/create-study/request-cookies.adoc[]
 
 ==== Query Parameters
+
+NOTE: 링크는 하나 이상 필수입니다.
 
 include::{snippets}/create-study/query-parameters.adoc[]
 
@@ -157,6 +161,8 @@ include::{snippets}/update-study/path-parameters.adoc[]
 
 ==== Request Fields
 
+NOTE: 링크는 하나 이상 필수입니다.
+
 include::{snippets}/update-study/request-fields.adoc[]
 
 === 응답
@@ -192,6 +198,8 @@ include::{snippets}/join-study/path-parameters.adoc[]
 include::{snippets}/join-study/http-response.adoc[]
 
 == *스터디원 삭제*
+
+NOTE: 스터디장은 삭제할 수 없습니다.
 
 === 요청
 
