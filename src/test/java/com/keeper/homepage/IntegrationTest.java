@@ -39,6 +39,7 @@ import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
+import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
@@ -210,7 +211,16 @@ public class IntegrationTest {
   @SpyBean
   protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
+  @Autowired
+  protected FileRepository fileRepository;
+
+  @Autowired
+  protected ThumbnailRepository thumbnailRepository;
+
   /******* Service *******/
+  @SpyBean
+  protected MemberService memberService;
+
   @SpyBean
   protected EmailAuthService emailAuthService;
 
@@ -225,9 +235,6 @@ public class IntegrationTest {
 
   @SpyBean
   protected AuthCookieService authCookieService;
-
-  @SpyBean
-  protected MailUtil mailUtil;
 
   @Autowired
   protected StaticWriteService staticWriteService;
@@ -268,12 +275,6 @@ public class IntegrationTest {
   /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
-
-  @Autowired
-  protected FileRepository fileRepository;
-
-  @Autowired
-  protected ThumbnailRepository thumbnailRepository;
 
   @Autowired
   protected MemberTestHelper memberTestHelper;
@@ -323,6 +324,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected RedisUtil redisUtil;
+
+  @SpyBean
+  protected MailUtil mailUtil;
 
   protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
 
