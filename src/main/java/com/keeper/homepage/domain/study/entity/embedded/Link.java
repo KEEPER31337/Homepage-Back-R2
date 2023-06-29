@@ -27,4 +27,8 @@ public class Link {
     this.noteLink = noteLink;
     this.etcLink = etcLink;
   }
+
+  public boolean isEmpty() {
+    return gitLink == null && noteLink == null && etcLink == null;
+  }
 }
