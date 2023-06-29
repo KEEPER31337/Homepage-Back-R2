@@ -23,7 +23,7 @@ public class MemberService {
     me.getProfile().changePassword(newPassword);
   }
 
-  public List<MemberResponse> getMembers(String searchName) {
+  public List<MemberResponse> getMembersByRealName(String searchName) {
     if (searchName == null) {
       return memberFindService.findAll()
           .map(MemberResponse::from)

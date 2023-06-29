@@ -8,7 +8,6 @@ import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +39,10 @@ public class MemberController {
   public void getMyProfile() {
   }
 
-  @GetMapping("")
-  public ResponseEntity<List<MemberResponse>> getMembers(
+  @GetMapping("/real-name")
+  public ResponseEntity<List<MemberResponse>> getMembersByRealName(
       @RequestParam(required = false) String searchName
   ) {
-    return ResponseEntity.ok(memberService.getMembers(searchName));
+    return ResponseEntity.ok(memberService.getMembersByRealName(searchName));
   }
 }

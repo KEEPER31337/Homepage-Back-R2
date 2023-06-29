@@ -45,27 +45,27 @@ include::{snippets}/change-password/response-headers.adoc[]
 
 ==== Request
 
-include::{snippets}/get-members/http-request.adoc[]
+include::{snippets}/get-members-by-real-name/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/get-members/request-cookies.adoc[]
+include::{snippets}/get-members-by-real-name/request-cookies.adoc[]
 
 ==== Request Parameters
 
 NOTE: 실명 기준으로 검색됩니다.
 
-include::{snippets}/get-members/query-parameters.adoc[]
+include::{snippets}/get-members-by-real-name/query-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/get-members/http-response.adoc[]
+include::{snippets}/get-members-by-real-name/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/get-members/response-fields.adoc[]
+include::{snippets}/get-members-by-real-name/response-fields.adoc[]
 
 == *포인트 랭킹 조회*
 

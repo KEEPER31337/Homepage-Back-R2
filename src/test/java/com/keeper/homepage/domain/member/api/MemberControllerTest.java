@@ -90,13 +90,13 @@ class MemberControllerTest extends IntegrationTest {
     @DisplayName("유효한 요청일 경우 회원 목록 조회(검색)는 성공한다.")
     public void 유효한_요청일_경우_회원_목록_조회는_성공한다() throws Exception {
       assertThat(member.getGeneration()).isNotNull();
-      String securedValue = getSecuredValue(MemberController.class, "getMembers");
+      String securedValue = getSecuredValue(MemberController.class, "getMembersByRealName");
 
-      mockMvc.perform(get("/members")
+      mockMvc.perform(get("/members/real-name")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andDo(document("get-members",
+          .andDo(document("get-members-by-real-name",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
                       .description("ACCESS TOKEN %s".formatted(securedValue))
