@@ -3,8 +3,9 @@ package com.keeper.homepage.domain.member.dao;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.embedded.StudentId;
-import com.keeper.homepage.domain.post.entity.Post;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,5 +28,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
   Page<Member> findAllByIdIsNotOrderByPointDesc(long virtualId, Pageable pageable);
 
+  List<Member> findAllByIdNot(long virtualId);
+
   Optional<Member> findByIdAndIdNot(Long memberId, Long virtualId);
+
+  List<Member> findAllByProfileRealNameAndIdNot(RealName realName, long virtualId);
 }
