@@ -105,7 +105,7 @@ public class Study extends BaseEntity {
     return this.link.getGitLink().get();
   }
 
-  public String getNotionLink() {
+  public String getNoteLink() {
     return this.link.getNoteLink().get();
   }
 
