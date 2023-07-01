@@ -13,6 +13,28 @@ endif::[]
 
 link:./game.html[GAME API 목록으로 돌아가기]
 
+== *야구 게임 정보*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/baseball-game-info/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/baseball-game-info/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/baseball-game-info/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/baseball-game-info/response-fields.adoc[]
+
 == *플레이 했는지 확인하기*
 
 === 요청
@@ -85,16 +107,17 @@ include::{snippets}/baseball-guess/http-response.adoc[]
 include::{snippets}/baseball-guess/response-fields.adoc[]
 
 NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null이 들어갑니다.
+
 [source,json,options="nowrap"]
 ----
 {
-  "result" : [
+  "results" : [
         { "guessNumber" : "1234", "strike" : 0, "ball" : 0 },
         null,
         null,
         { "guessNumber" : "5678", "strike" : 4, "ball" : 0 }
   ],
-  "earnedPoint" : 2000
+  "earnablePoints" : 2000
 }
 ----
 
@@ -104,18 +127,18 @@ NOTE: 타임아웃이 난 round가 있으면 아래와 같이 results 에 null�
 
 ==== Request
 
-include::{snippets}/get-baseball-result/http-request.adoc[]
+include::{snippets}/get-baseball-results/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/get-baseball-result/request-cookies.adoc[]
+include::{snippets}/get-baseball-results/request-cookies.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/get-baseball-result/http-response.adoc[]
+include::{snippets}/get-baseball-results/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/get-baseball-result/response-fields.adoc[]
+include::{snippets}/get-baseball-results/response-fields.adoc[]
