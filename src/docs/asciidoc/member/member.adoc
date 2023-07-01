@@ -39,6 +39,34 @@ include::{snippets}/change-password/http-response.adoc[]
 
 include::{snippets}/change-password/response-headers.adoc[]
 
+== *회원 목록 조회(검색)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-members-by-real-name/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-members-by-real-name/request-cookies.adoc[]
+
+==== Request Parameters
+
+NOTE: 실명 기준으로 검색됩니다.
+
+include::{snippets}/get-members-by-real-name/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-members-by-real-name/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-members-by-real-name/response-fields.adoc[]
+
 == *포인트 랭킹 조회*
 
 === 요청

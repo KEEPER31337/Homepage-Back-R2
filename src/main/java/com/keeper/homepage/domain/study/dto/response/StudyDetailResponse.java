@@ -30,7 +30,7 @@ public class StudyDetailResponse {
             .map(Member::getRealName)
             .toList())
         .gitLink(study.getGitLink())
-        .noteLink(study.getNotionLink())
+        .noteLink(study.getNoteLink())
         .etcLink(study.getEtcLink())
         .build();
   }

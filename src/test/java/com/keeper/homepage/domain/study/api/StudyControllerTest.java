@@ -83,8 +83,10 @@ public class StudyControllerTest extends StudyApiTestHelper {
                       .attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기"))
                       .description("스터디 학기를 입력해주세요."),
                   parameterWithName("gitLink")
+                      .attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
                   parameterWithName("noteLink")
+                      .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
                       .description("스터디 노트 링크를 입력해주세요.").optional(),
                   parameterWithName("etcLink")
                       .description("스터디 기타 링크를 입력해주세요.").optional()
@@ -162,7 +164,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     @DisplayName("스터디장이 아닐 경우 스터디 삭제는 실패한다.")
     public void 스터디장이_아닐_경우_스터디_삭제는_실패한다() throws Exception {
       callDeleteStudyApi(otherToken, studyId)
-          .andExpect(status().isForbidden());
+          .andExpect(status().isBadRequest());
     }
   }
 
@@ -239,6 +241,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .information("자바 스터디 입니다.")
           .year(2023)
           .season(2)
+          .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
           .build();
 
       callUpdateStudyApi(memberToken, studyId, request)
@@ -258,8 +261,10 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   field("season", "스터디 학기")
                       .attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기")),
                   field("gitLink", "깃허브 링크")
+                      .attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .optional(),
                   field("noteLink", "노션 링크")
+                      .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
                       .optional(),
                   field("etcLink", "기타 링크")
                       .optional()
@@ -298,7 +303,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 스터디장이_아닐_경우_스터디_수정은_실패한다() throws Exception {
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
       callUpdateStudyThumbnailApi(otherToken, studyId, newThumbnailFile)
-          .andExpect(status().isForbidden());
+          .andExpect(status().isBadRequest());
     }
   }
 
@@ -311,7 +316,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 유효한_요청일_경우_스터디원_추가는_성공한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "joinStudy");
 
-      callJoinStudyApi(memberToken, studyId, member.getId())
+      callJoinStudyApi(memberToken, studyId, other.getId())
           .andExpect(status().isCreated())
           .andDo(document("join-study",
                   requestCookies(
@@ -336,7 +341,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 유효한_요청일_경우_스터디원_삭제는_성공한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "leaveStudy");
 
-      callLeaveStudyApi(memberToken, studyId, member.getId())
+      callLeaveStudyApi(memberToken, studyId, other.getId())
           .andExpect(status().isNoContent())
           .andDo(document("leave-study",
                   requestCookies(
