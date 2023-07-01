@@ -24,13 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun BookBorrowInfoTestHelper.generate(
-    borrowStatus: BookBorrowStatus.BookBorrowStatusType,
-    expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2)
-): BookBorrowInfo {
-    return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).expireDate(expiredDate).build()
-}
-
 class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)

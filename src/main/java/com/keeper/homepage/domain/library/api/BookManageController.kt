@@ -5,18 +5,41 @@ import com.keeper.homepage.domain.library.dto.req.BookRequest
 import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.BookDetailResponse
 import jakarta.validation.Valid
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.PositiveOrZero
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 
+const val GET_BOOKS_MIN_SIZE = 3L
+const val GET_BOOKS_MAX_SIZE = 100L
+const val GET_BOOKS_DEFAULT_SIZE = 10
+
+@Validated
 @RequestMapping("/manage/books")
 @RestController
 @Secured("ROLE_회장", "ROLE_부회장", "ROLE_사서")
 class BookManageController(
     private val bookManageService: BookManageService
 ) {
+    @GetMapping
+    fun getBooks(
+        @RequestParam(required = false) bookKeyword: String?,
+        @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
+        @RequestParam(defaultValue = GET_BOOKS_DEFAULT_SIZE.toString()) @Min(GET_BOOKS_MIN_SIZE) @Max(GET_BOOKS_MAX_SIZE) @NotNull size: Int,
+    ): ResponseEntity<Page<BookDetailResponse>> {
+        return ResponseEntity.ok(
+            bookManageService.getBooks(bookKeyword, PageRequest.of(page, size))
+                .map { book -> BookDetailResponse(book) })
+    }
+
     @PostMapping
     fun addBook(
         @ModelAttribute @Valid request: BookRequest

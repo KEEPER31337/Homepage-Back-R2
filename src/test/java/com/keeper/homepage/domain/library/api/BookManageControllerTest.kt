@@ -26,9 +26,11 @@ import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Attributes.key
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -44,6 +46,62 @@ fun LocalDateTime.formatting(format: String) =
         this.format(DateTimeFormatter.ofPattern(format))
 
 class BookManageControllerTest : BookManageApiTestHelper() {
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `관리자 책 목록 검색` {
+        private lateinit var validParams: MultiValueMap<String, String>
+        private lateinit var bookList: List<Book>
+
+        @BeforeEach
+        fun setUp() {
+            bookList = (0..3).map { bookTestHelper.builder().totalQuantity(2).build() }
+            (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기중, book = bookList[it]) }
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출승인, book = bookList[0])
+            validParams = multiValueMapOf(
+                "bookKeyword" to "",
+                "page" to "0",
+                "size" to "3",
+            )
+        }
+
+        @Test
+        fun `유효한 요청이면 관리자 책 목록 가져오기는 성공해야 한다`() {
+            val securedValue = getSecuredValue(BookManageController::class.java, "getBooks")
+            callGetBooksApi(validParams).andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content[0].id").value(bookList[0].id))
+                .andExpect(jsonPath("$.content[0].title").value(bookList[0].title))
+                .andExpect(jsonPath("$.content[0].author").value(bookList[0].author))
+                .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[0].bookDepartment.type.name))
+                .andExpect(jsonPath("$.content[0].totalCount").value(2))
+                .andExpect(jsonPath("$.content[0].borrowingCount").value(1))
+                .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[0].thumbnailPath))
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("3"))
+                .andExpect(jsonPath("$.totalPages").value("2"))
+                .andDo(
+                    document(
+                        "get-books",
+                        requestCookies(
+                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        queryParameters(
+                            parameterWithName("page").description("페이지 (양수여야 합니다.)")
+                                .optional(),
+                            parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
+                                .optional(),
+                            parameterWithName("bookKeyword").description("책의 제목이나 저자를 검색합니다. (만약 빈 값으로 보낼 경우 책 관련 정보를 모두 가져옵니다.)")
+                                .optional()
+                        ),
+                        responseFields(
+                            *pageHelper(*getBookDetailResponseDocs())
+                        )
+                    )
+                )
+        }
+    }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested

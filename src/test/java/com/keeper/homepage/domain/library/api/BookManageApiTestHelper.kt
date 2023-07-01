@@ -1,8 +1,12 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper
+import com.keeper.homepage.domain.library.BookTestHelper
 import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
+import com.keeper.homepage.domain.library.entity.Book
+import com.keeper.homepage.domain.library.entity.BookBorrowInfo
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.Member
@@ -20,6 +24,7 @@ import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import java.time.LocalDateTime
 
 const val BOOK_URL = "/manage/books"
 
@@ -63,6 +68,18 @@ fun <K, V> multiValueMapOf(
     setAll(mapOf(*pairs))
 }
 
+fun BookBorrowInfoTestHelper.generate(
+    borrowStatus: BookBorrowStatus.BookBorrowStatusType,
+    expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2),
+    book: Book = BookTestHelper().generate(),
+): BookBorrowInfo {
+    return this.builder()
+        .book(book)
+        .borrowStatus(BookBorrowStatus.getBookBorrowStatusBy(borrowStatus))
+        .expireDate(expiredDate)
+        .build()
+}
+
 class BookManageApiTestHelper : IntegrationTest() {
 
     lateinit var bookManager: Member
@@ -74,6 +91,21 @@ class BookManageApiTestHelper : IntegrationTest() {
         bookManager.assignJob(ROLE_회원)
         bookManager.assignJob(ROLE_사서)
         bookManagerCookies = memberTestHelper.getTokenCookies(bookManager)
+    }
+
+    fun callGetBooksApi(
+        params: MultiValueMap<String, String> = multiValueMapOf(
+            "bookKeyword" to "",
+            "page" to "0",
+            "size" to "10",
+        ),
+        accessCookies: Array<Cookie> = bookManagerCookies,
+    ): ResultActions {
+        return mockMvc.perform(
+            get(BOOK_URL)
+                .queryParams(params)
+                .cookie(*accessCookies)
+        )
     }
 
     fun callAddBookApi(
