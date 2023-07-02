@@ -272,3 +272,55 @@ include::{snippets}/get-notice-posts/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-notice-posts/response-fields.adoc[]
+
+== *게시글 파일 추가*
+
+NOTE: 자신의 게시글에만 파일을 추가할 수 있습니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/add-post-files/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/add-post-files/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/add-post-files/path-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/add-post-files/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/add-post-files/http-response.adoc[]
+
+== *게시글 파일 삭제*
+
+NOTE: 자신의 게시글의 파일만 삭제할 수 있습니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-post-file/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-post-file/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-post-file/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-post-file/http-response.adoc[]

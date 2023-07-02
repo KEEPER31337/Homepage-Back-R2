@@ -37,6 +37,7 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final FileRepository fileRepository;
+  private final PostHasFileRepository postHasFileRepository;
 
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
@@ -223,5 +224,26 @@ public class PostService {
         .map(PostResponse::from)
         .toList();
     return PostListResponse.from(postResponses);
+  }
+
+  public void addPostFiles(Member member, long postId, List<MultipartFile> files) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    }
+    savePostFiles(post, files);
+  }
+
+  public void deletePostFile(Member member, long postId, long fileId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", FILE_NOT_FOUND);
+    }
+    FileEntity file = fileRepository.findById(fileId)
+        .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
+    postHasFileRepository.deleteByPostAndFile(post, file);
+    fileUtil.deleteFileAndEntity(file);
   }
 }

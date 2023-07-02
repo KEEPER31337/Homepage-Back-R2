@@ -114,4 +114,22 @@ public class PostApiTestHelper extends IntegrationTest {
         .param("categoryId", String.valueOf(categoryId))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
   }
+
+  ResultActions callAddPostFilesApi(String accessToken, long postId, MockMultipartFile file)
+      throws Exception {
+    return mockMvc.perform(multipart("/posts/{postId}/files", postId)
+        .file(file)
+        .with(request -> {
+          request.setMethod("POST");
+          return request;
+        })
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .contentType(MediaType.MULTIPART_FORM_DATA));
+  }
+
+  ResultActions callDeletePostFileApi(String accessToken, long postId, long fileId)
+      throws Exception {
+    return mockMvc.perform(delete("/posts/{postId}/files/{fileId}", postId, fileId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
 }

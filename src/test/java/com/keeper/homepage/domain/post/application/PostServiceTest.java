@@ -482,4 +482,27 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(member.isDislike(post)).isFalse();
     }
   }
+
+  @Nested
+  @DisplayName("게시글 파일 삭제")
+  class DeletePostFile {
+
+    @Test
+    @DisplayName("게시글 파일 삭제는 성공해야 한다.")
+    public void 게시글_파일_삭제는_성공해야_한다() throws Exception {
+      postService.addPostFiles(member, postId, List.of(thumbnail));
+
+      FileEntity beforeFile = postHasFileRepository.findByPost(post)
+          .orElseThrow()
+          .getFile();
+
+      assertThat(new File(beforeFile.getFilePath())).exists();
+      assertThat(fileRepository.findById(beforeFile.getId())).isNotEmpty();
+
+      postService.deletePostFile(member, postId, beforeFile.getId());
+
+      assertThat(new File(beforeFile.getFilePath())).doesNotExist();
+      assertThat(fileRepository.findById(beforeFile.getId())).isEmpty();
+    }
+  }
 }

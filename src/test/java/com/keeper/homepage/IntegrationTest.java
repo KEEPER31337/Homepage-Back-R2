@@ -54,6 +54,7 @@ import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
+import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.seminar.SeminarTestHelper;
@@ -174,6 +175,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected PostRepository postRepository;
+
+  @SpyBean
+  protected PostHasFileRepository postHasFileRepository;
 
   @SpyBean
   protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;

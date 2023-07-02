@@ -621,4 +621,65 @@ public class PostControllerTest extends PostApiTestHelper {
               )));
     }
   }
+  @Nested
+  @DisplayName("게시글 파일 추가")
+  class AddPostFile {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 게시글 파일 추가는 성공한다.")
+    public void 유효한_요청일_경우_게시글_파일_추가는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "addPostFiles");
+
+      callAddPostFilesApi(memberToken, postId, file)
+          .andExpect(status().isCreated())
+          .andDo(document("add-post-files",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("파일을 추가하고자 하는 게시글의 ID")
+              ),
+              requestParts(
+                  partWithName("files").description("첨부 파일")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 파일 제거")
+  class DeletePostFile {
+
+    private long fileId;
+
+    @BeforeEach
+    void setUp() {
+      postService.addPostFiles(member, postId, List.of(thumbnail));
+      fileId = postHasFileRepository.findByPost(post)
+          .orElseThrow()
+          .getFile()
+          .getId();
+    }
+
+    @Test
+    @DisplayName("유효한 요청인 경우 게시글 파일 제거는 성공한다.")
+    public void 유효한_요청인_경우_게시글_파일_제거는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "deletePostFile");
+
+      callDeletePostFileApi(memberToken, postId, fileId)
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-post-file",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("파일을 삭제하고자 하는 게시글의 ID"),
+                  parameterWithName("fileId")
+                      .description("삭제하고자 하는 파일 ID")
+              )));
+    }
+  }
 }

@@ -41,7 +41,6 @@ public class PostController {
         request.toEntity(member, WebUtil.getUserIP()),
         request.getCategoryId(), request.getThumbnail(),
         request.getFiles());
-
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))
         .build();
@@ -78,6 +77,28 @@ public class PostController {
       @ModelAttribute MultipartFile thumbnail
   ) {
     postService.updatePostThumbnail(member, postId, thumbnail);
+    return ResponseEntity.noContent().build();
+  }
+
+
+  @PostMapping("/{postId}/files")
+  public ResponseEntity<Void> addPostFiles(
+      @LoginMember Member member,
+      @PathVariable long postId,
+      @RequestPart List<MultipartFile> files
+  ) {
+    postService.addPostFiles(member, postId, files);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .build();
+  }
+
+  @DeleteMapping("/{postId}/files/{fileId}")
+  public ResponseEntity<Void> deletePostFile(
+      @LoginMember Member member,
+      @PathVariable long postId,
+      @PathVariable long fileId
+  ) {
+    postService.deletePostFile(member, postId, fileId);
     return ResponseEntity.noContent().build();
   }
 
