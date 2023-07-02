@@ -2,11 +2,12 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
+import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FOUND;
 import static java.lang.Boolean.TRUE;
-import static java.util.stream.Collectors.toList;
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
@@ -14,6 +15,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
+import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
@@ -24,8 +26,11 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -220,7 +225,7 @@ public class PostService {
 
   public PostListResponse getNoticePosts(long categoryId) {
     Category category = categoryFindService.findById(categoryId);
-    List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
+    List<Post> posts = postRepository.findAllNoticeByCategory(category);
     List<PostResponse> postResponses = posts.stream()
         .map(PostResponse::from)
         .toList();
@@ -246,5 +251,56 @@ public class PostService {
         .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
     postHasFileRepository.deleteByPostAndFile(post, file);
     fileUtil.deleteFileAndEntity(file);
+  }
+
+  public Page<PostResponse> getPosts(long categoryId, String searchType, String search, PageRequest pageable) {
+    Category category = categoryFindService.findById(categoryId);
+    if (searchType == null) {
+      return postRepository.findAllRecentByCategory(category, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("title")) {
+      return postRepository.findAllRecentByCategoryAndTitle(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("content")) {
+      return postRepository.findAllRecentByCategoryAndContent(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("writer")) {
+      return postRepository.findAllRecentByCategoryAndWriter(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("title+content")) {
+      return postRepository.findAllRecentByCategoryAndTitleOrContent(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    throw new BusinessException(searchType, "searchType", POST_SEARCH_TYPE_NOT_FOUND);
+  }
+
+  public List<PostResponse> getRecentPosts() {
+    return postRepository.findAllRecent().stream()
+        .map(PostResponse::from)
+        .limit(10)
+        .toList();
+  }
+
+  public List<PostResponse> getTrendPosts() {
+    LocalDateTime startDateTime = LocalDateTime.now().minusWeeks(2);
+    LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
+    List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
+    posts.sort((post1, post2) -> {
+      Integer postScore1 = getPostScore(post1);
+      Integer postScore2 = getPostScore(post2);
+      return postScore2.compareTo(postScore1);
+    });
+    return posts.stream()
+        .map(PostResponse::from)
+        .limit(10)
+        .toList();
+  }
+
+  private Integer getPostScore(Post post) {
+    return post.getVisitCount() + post.getPostLikes().size() * 2 - post.getPostDislikes().size();
   }
 }

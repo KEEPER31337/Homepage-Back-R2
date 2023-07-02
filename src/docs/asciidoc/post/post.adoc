@@ -344,3 +344,69 @@ include::{snippets}/delete-post-file/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/delete-post-file/http-response.adoc[]
+
+== *게시글 목록 조회(검색)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-posts/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-posts/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-posts/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-posts/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-posts/response-fields.adoc[]
+
+== *최근 게시글 목록 조회*
+
+NOTE: 비회원도 접근 가능한 api 입니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-recent-posts/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-recent-posts/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-recent-posts/response-fields.adoc[]
+
+== *트랜드 게시글 목록 조회*
+
+NOTE: 비회원도 접근 가능한 api 입니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-trend-posts/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-trend-posts/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-trend-posts/response-fields.adoc[]

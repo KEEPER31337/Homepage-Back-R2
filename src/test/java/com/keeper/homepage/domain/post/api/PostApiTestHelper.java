@@ -3,15 +3,15 @@ package com.keeper.homepage.domain.post.api;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.keeper.homepage.IntegrationTest;
 import jakarta.servlet.http.Cookie;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
@@ -20,9 +20,13 @@ public class PostApiTestHelper extends IntegrationTest {
   ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file,
       MultiValueMap<String, String> params)
       throws Exception {
-    return mockMvc.perform(multipart(HttpMethod.POST, "/posts")
+    return mockMvc.perform(multipart("/posts")
         .file(file)
         .queryParams(params)
+        .with(request -> {
+          request.setMethod("POST");
+          return request;
+        })
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
@@ -30,9 +34,13 @@ public class PostApiTestHelper extends IntegrationTest {
   ResultActions callCreatePostApiWithFiles(String accessToken,
       MockMultipartFile thumbnail,
       MockMultipartFile file, MultiValueMap<String, String> params) throws Exception {
-    return mockMvc.perform(multipart(HttpMethod.POST, "/posts")
+    return mockMvc.perform(multipart("/posts")
         .file(thumbnail)
         .file(file)
+        .with(request -> {
+          request.setMethod("POST");
+          return request;
+        })
         .queryParams(params)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
@@ -40,8 +48,12 @@ public class PostApiTestHelper extends IntegrationTest {
 
   ResultActions callCreatePostApi(String accessToken, MultiValueMap<String, String> params)
       throws Exception {
-    return mockMvc.perform(multipart(HttpMethod.POST, "/posts")
+    return mockMvc.perform(multipart("/posts")
         .queryParams(params)
+        .with(request -> {
+          request.setMethod("POST");
+          return request;
+        })
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
@@ -137,5 +149,24 @@ public class PostApiTestHelper extends IntegrationTest {
       throws Exception {
     return mockMvc.perform(delete("/posts/{postId}/files/{fileId}", postId, fileId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
+  ResultActions callGetPostsApi(String memberToken, MultiValueMap<String, String> params) throws Exception {
+    return mockMvc.perform(get("/posts")
+        .params(params)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+  }
+
+  FieldDescriptor[] getPostsResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("게시글 ID"),
+        fieldWithPath("title").description("게시글 제목"),
+        fieldWithPath("writerName").description("게시글 작성자 닉네임"),
+        fieldWithPath("visitCount").description("게시글 조회수"),
+        fieldWithPath("commentCount").description("게시글 댓글수"),
+        fieldWithPath("isSecret").description("비밀글 여부"),
+        fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
+        fieldWithPath("registerTime").description("게시글 등록 시간")
+    };
   }
 }

@@ -6,11 +6,16 @@ import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
+import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -144,5 +150,27 @@ public class PostController {
     PostListResponse response = postService.getNoticePosts(categoryId);
     return ResponseEntity.status(HttpStatus.OK)
         .body(response);
+  }
+
+  @GetMapping
+  public ResponseEntity<Page<PostResponse>> getPosts(
+      @RequestParam long categoryId,
+      @RequestParam(required = false) String searchType,
+      @RequestParam(required = false) String search,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    return ResponseEntity.ok(postService.getPosts(categoryId, searchType, search, PageRequest.of(page, size)));
+  }
+
+  @GetMapping("/recent")
+  public ResponseEntity<List<PostResponse>> getRecentPosts() {
+    return ResponseEntity.ok(postService.getRecentPosts());
+  }
+
+
+  @GetMapping("/trend")
+  public ResponseEntity<List<PostResponse>> getTrendPosts() {
+    return ResponseEntity.ok(postService.getTrendPosts());
   }
 }
