@@ -72,7 +72,7 @@ public class PostController {
         .build();
   }
 
-  @PatchMapping("/{postId}")
+  @PatchMapping("/{postId}/thumbnail")
   public ResponseEntity<Void> updatePostThumbnail(
       @LoginMember Member member,
       @PathVariable long postId,

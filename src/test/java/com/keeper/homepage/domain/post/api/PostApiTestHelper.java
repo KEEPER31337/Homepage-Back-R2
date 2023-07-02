@@ -77,7 +77,7 @@ public class PostApiTestHelper extends IntegrationTest {
 
   ResultActions callUpdatePostThumbnail(String accessToken, long postId, MockMultipartFile thumbnail)
       throws Exception {
-    return mockMvc.perform(RestDocumentationRequestBuilders.multipart("/posts/{postId}", postId)
+    return mockMvc.perform(multipart("/posts/{postId}/thumbnail", postId)
         .file(thumbnail)
         .with(request -> {
           request.setMethod("PATCH");
