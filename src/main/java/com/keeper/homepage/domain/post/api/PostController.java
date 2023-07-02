@@ -65,8 +65,7 @@ public class PostController {
       @ModelAttribute @Valid PostUpdateRequest request
   ) {
     postService.update(member, postId,
-        request.toEntity(WebUtil.getUserIP()),
-        request.getFiles());
+        request.toEntity(WebUtil.getUserIP()));
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))
         .build();

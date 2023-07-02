@@ -421,7 +421,7 @@ public class PostControllerTest extends PostApiTestHelper {
       String securedValue = getSecuredValue(PostController.class, "updatePost");
       addAllParams();
 
-      callUpdatePostApiWithFiles(memberToken, postId, file, params)
+      callUpdatePostApi(memberToken, postId, params)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("update-post",
@@ -493,7 +493,7 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_fail_when_writerIsNotMe() throws Exception {
       addAllParams();
 
-      callUpdatePostApiWithFiles(otherToken, postId, file, params)
+      callUpdatePostApi(otherToken, postId, params)
           .andExpect(status().isForbidden());
     }
 

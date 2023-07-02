@@ -155,7 +155,7 @@ public class PostService {
   }
 
   @Transactional
-  public void update(Member member, long postId, Post newPost, List<MultipartFile> files) {
+  public void update(Member member, long postId, Post newPost) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
@@ -164,8 +164,6 @@ public class PostService {
     if (TRUE.equals(newPost.isSecret())) {
       checkPassword(newPost.getPassword());
     }
-
-    updateFiles(post, files);
     post.update(newPost);
   }
 
@@ -175,16 +173,10 @@ public class PostService {
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
     }
-
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
     savePostThumbnail(post, thumbnail);
   }
 
-  private void updateFiles(Post post, List<MultipartFile> files) {
-    List<FileEntity> postFiles = getPostFilesWithoutThumbnailFile(post);
-    postFiles.forEach(fileUtil::deleteFileAndEntity);
-    savePostFiles(post, files);
-  }
 
   private List<FileEntity> getPostFilesWithoutThumbnailFile(Post post) {
     if (post.getThumbnail() == null) {

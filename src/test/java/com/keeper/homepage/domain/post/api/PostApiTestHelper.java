@@ -60,12 +60,10 @@ public class PostApiTestHelper extends IntegrationTest {
         .param("password", password));
   }
 
-  ResultActions callUpdatePostApiWithFiles(String accessToken, long postId,
-      MockMultipartFile file,
+  ResultActions callUpdatePostApi(String accessToken, long postId,
       MultiValueMap<String, String> params)
       throws Exception {
-    return mockMvc.perform(RestDocumentationRequestBuilders.multipart("/posts/{postId}", postId)
-        .file(file)
+    return mockMvc.perform(multipart("/posts/{postId}", postId)
         .with(request -> {
           request.setMethod("PUT");
           return request;

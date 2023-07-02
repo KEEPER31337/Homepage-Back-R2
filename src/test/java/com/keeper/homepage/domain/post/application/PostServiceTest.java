@@ -77,7 +77,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.getIsTemp()).isEqualTo(false);
       assertThat(findPost.getCategory().getId()).isEqualTo(category.getId());
       assertThat(findPost.getThumbnail()).isNotNull();
-      assertThat(findPost.getFiles()).isNotEmpty();
+      assertThat(findPost.getPostHasFiles()).isNotEmpty();
     }
 
     @Test
@@ -332,7 +332,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertDoesNotThrow(() -> {
-        postService.update(member, postId, newPost, null);
+        postService.update(member, postId, newPost);
       });
     }
 
@@ -374,32 +374,6 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 파일 수정은 성공한다.")
-    public void should_success_when_updateFiles() throws Exception {
-      post = postTestHelper.builder().member(member).build();
-      postId = postService.create(post, category.getId(), null, List.of(file1));
-      List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
-
-      Post newPost = Post.builder()
-          .title("수정 제목")
-          .content("수정 내용")
-          .ipAddress(WebUtil.getUserIP())
-          .build();
-
-      postService.update(member, postId, newPost, List.of(file2));
-      List<FileEntity> afterFiles = fileRepository.findAllByPost(post);
-
-      for (FileEntity fileEntity : beforeFiles) {
-        assertThat(new File(fileEntity.getFilePath())).doesNotExist();
-        assertThat(fileRepository.findById(fileEntity.getId())).isEmpty();
-      }
-      for (FileEntity fileEntity : afterFiles) {
-        assertThat(new File(fileEntity.getFilePath())).exists();
-        assertThat(fileRepository.findById(fileEntity.getId())).isNotEmpty();
-      }
-    }
-
-    @Test
     @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_secretPostWithoutPassword() throws Exception {
       postId = postTestHelper.builder().member(member).build().getId();
@@ -411,7 +385,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertThrows(BusinessException.class, () -> {
-        postService.update(member, postId, newPost, null);
+        postService.update(member, postId, newPost);
       });
     }
   }
