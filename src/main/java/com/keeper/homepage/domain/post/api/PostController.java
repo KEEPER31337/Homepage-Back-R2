@@ -80,6 +80,14 @@ public class PostController {
     return ResponseEntity.noContent().build();
   }
 
+  @DeleteMapping("/{postId}/thumbnail")
+  public ResponseEntity<Void> deletePostThumbnail(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    postService.deletePostThumbnail(member, postId);
+    return ResponseEntity.noContent().build();
+  }
 
   @PostMapping("/{postId}/files")
   public ResponseEntity<Void> addPostFiles(

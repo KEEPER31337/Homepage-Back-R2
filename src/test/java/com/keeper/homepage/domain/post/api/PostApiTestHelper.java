@@ -91,6 +91,12 @@ public class PostApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
+  ResultActions callDeletePostThumbnailApi(String accessToken, long postId)
+      throws Exception {
+    return mockMvc.perform(delete("/posts/{postId}/thumbnail", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
   ResultActions callAdminDeletePostApi(String adminToken, long postId)
       throws Exception {
     return mockMvc.perform(delete("/admin/posts/{postId}", postId)

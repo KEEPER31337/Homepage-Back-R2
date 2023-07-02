@@ -621,6 +621,30 @@ public class PostControllerTest extends PostApiTestHelper {
               )));
     }
   }
+
+  @Nested
+  @DisplayName("게시글 썸네일 삭제")
+  class DeletePostThumbnail {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 썸네일 삭제는 성공한다.")
+    public void 유효한_요청일_경우_썸네일_삭제는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "deletePostThumbnail");
+
+      callDeletePostThumbnailApi(memberToken, postId)
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-post-thumbnail",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("썸네일을 삭제하고자 하는 게시글의 ID")
+              )));
+    }
+  }
+
   @Nested
   @DisplayName("게시글 파일 추가")
   class AddPostFile {

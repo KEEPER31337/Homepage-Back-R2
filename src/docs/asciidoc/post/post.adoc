@@ -159,6 +159,26 @@ include::{snippets}/update-post-thumbnail/request-parts.adoc[]
 
 include::{snippets}/update-post-thumbnail/http-response.adoc[]
 
+== *게시글 썸네일 삭제*
+
+NOTE: 자신의 게시글의 썸네일만 삭제할 수 있습니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-post-thumbnail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-post-thumbnail/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-post-thumbnail/http-response.adoc[]
+
 == *게시글 삭제*
 
 === 요청

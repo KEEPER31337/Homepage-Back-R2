@@ -178,12 +178,13 @@ public class PostService {
     savePostThumbnail(post, thumbnail);
   }
 
+  public void deletePostThumbnail(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
 
-  private List<FileEntity> getPostFilesWithoutThumbnailFile(Post post) {
-    if (post.getThumbnail() == null) {
-      return fileRepository.findAllByPost(post);
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
     }
-    return fileRepository.findAllByPostAndIdNot(post, post.getThumbnailFile().getId());
+    thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
   }
 
   public void delete(Member member, long postId) {
