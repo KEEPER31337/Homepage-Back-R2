@@ -82,7 +82,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(jsonPath("$.totalPages").value("2"))
                 .andDo(
                     document(
-                        "get-books",
+                        "manager-get-books",
                         requestCookies(
                             cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
                             cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
