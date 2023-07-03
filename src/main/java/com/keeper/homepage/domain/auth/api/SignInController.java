@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sign-in")
+@RequestMapping("/v1/sign-in") // TODO: /v1 prefix는 개발서버 도메인 바뀌면 제거
 public class SignInController {
 
   private final SignInService signInService;

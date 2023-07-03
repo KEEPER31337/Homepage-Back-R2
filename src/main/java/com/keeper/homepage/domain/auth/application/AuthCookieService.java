@@ -5,9 +5,10 @@ import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TO
 
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.redis.RedisUtil;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -27,12 +28,14 @@ public class AuthCookieService {
     redisUtil.setDataExpire(authId, newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
   }
 
-  private void setTokenInCookie(HttpServletResponse httpResponse, String token,
-      int expiredSeconds, String cookieName) {
-    Cookie cookie = new Cookie(cookieName, token);
-    cookie.setHttpOnly(true);
-    cookie.setMaxAge(expiredSeconds);
-    httpResponse.addCookie(cookie);
+  private void setTokenInCookie(HttpServletResponse httpResponse, String token, int expiredSeconds, String cookieName) {
+    ResponseCookie cookie = ResponseCookie.from(cookieName, token)
+        .sameSite("None")
+        .httpOnly(true)
+        .maxAge(expiredSeconds)
+        .secure(true)
+        .build();
+    httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 
   public void setCookieExpired(String authId, HttpServletResponse response) {
