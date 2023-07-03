@@ -232,6 +232,7 @@ public class PostService {
     return PostListResponse.from(postResponses);
   }
 
+  @Transactional
   public void addPostFiles(Member member, long postId, List<MultipartFile> files) {
     Post post = validPostFindService.findById(postId);
 
@@ -241,6 +242,7 @@ public class PostService {
     savePostFiles(post, files);
   }
 
+  @Transactional
   public void deletePostFile(Member member, long postId, long fileId) {
     Post post = validPostFindService.findById(postId);
 
