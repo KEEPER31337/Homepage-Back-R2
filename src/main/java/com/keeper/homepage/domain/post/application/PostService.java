@@ -173,6 +173,7 @@ public class PostService {
     post.update(newPost);
   }
 
+  @Transactional
   public void updatePostThumbnail(Member member, long postId, MultipartFile thumbnail) {
     Post post = validPostFindService.findById(postId);
 
@@ -183,6 +184,7 @@ public class PostService {
     savePostThumbnail(post, thumbnail);
   }
 
+  @Transactional
   public void deletePostThumbnail(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
