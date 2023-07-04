@@ -3,7 +3,7 @@ package com.keeper.homepage.domain.post.application;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
-import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
+import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FOUND;
@@ -121,7 +121,7 @@ public class PostService {
         && member.getMemberAttendance().size() >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
       return;
     }
-    throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
   }
 
   private void checkTempPost(Member member, Post post) {
@@ -134,7 +134,7 @@ public class PostService {
     if (post.isMine(member)) {
       return;
     }
-    throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
   }
 
   private void checkSecretPost(Member member, Post post, String password) {
@@ -165,7 +165,7 @@ public class PostService {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     if (TRUE.equals(newPost.isSecret())) {
       checkPassword(newPost.getPassword());
@@ -177,7 +177,7 @@ public class PostService {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
     savePostThumbnail(post, thumbnail);
@@ -187,7 +187,7 @@ public class PostService {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
   }
@@ -196,7 +196,7 @@ public class PostService {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     postDeleteService.delete(post);
   }
@@ -237,7 +237,7 @@ public class PostService {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     savePostFiles(post, files);
   }
