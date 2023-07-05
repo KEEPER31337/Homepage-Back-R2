@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.comment.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_ALLOWED;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_WRITER;
 
@@ -15,7 +16,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.global.error.BusinessException;
-import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,13 +32,15 @@ public class CommentService {
   private final CommentFindService commentFindService;
   private final MemberFindService memberFindService;
   private final CommentDeleteService commentDeleteService;
-  private final ThumbnailUtil thumbnailUtil;
 
   public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
 
   @Transactional
   public long create(Member member, CommentCreateRequest request) {
     Post post = validPostFindService.findById(request.getPostId());
+    if (!post.allowComment()) {
+      throw new BusinessException(post.getId(), "postId", COMMENT_NOT_ALLOWED);
+    }
     Comment parent = getParentById(request.getParentId());
     Comment comment = request.toEntity(member, post, parent);
 

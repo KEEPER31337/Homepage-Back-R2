@@ -56,6 +56,8 @@ public class CommentControllerTest extends CommentApiTestHelper {
     @BeforeEach
     void setUp() {
       parent = commentTestHelper.generate();
+      em.flush();
+      em.clear();
     }
 
     @Test

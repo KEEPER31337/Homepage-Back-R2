@@ -39,6 +39,7 @@ public enum ErrorCode {
   COMMENT_NOT_FOUND("존재하지 않는 댓글입니다.", HttpStatus.NOT_FOUND),
   COMMENT_NOT_WRITER("댓글 작성자가 아닙니다.", HttpStatus.BAD_REQUEST),
   COMMENT_NOT_PARENT("대댓글에는 대댓글을 달 수 없습니다.", HttpStatus.BAD_REQUEST),
+  COMMENT_NOT_ALLOWED("댓글 작성이 허용되지 않습니다.", HttpStatus.BAD_REQUEST),
   // BOOK
   BOOK_NOT_FOUND("존재하지 않는 도서입니다.", HttpStatus.NOT_FOUND),
   BOOK_TYPE_NOT_FOUND("존재하지 않는 도서 타입입니다.", HttpStatus.NOT_FOUND),
