@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,7 +31,7 @@ public class PostHasFile {
   private Post post;
 
   @Id
-  @ManyToOne(fetch = LAZY)
+  @OneToOne(fetch = LAZY)
   @JoinColumn(name = "file_id", nullable = false, updatable = false)
   private FileEntity file;
 

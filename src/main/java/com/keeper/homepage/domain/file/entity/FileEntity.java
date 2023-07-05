@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -53,8 +54,8 @@ public class FileEntity {
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
 
-  @OneToMany(mappedBy = "file", cascade = REMOVE)
-  private final Set<PostHasFile> postHasFiles = new HashSet<>();
+  @OneToOne(mappedBy = "file", cascade = REMOVE, fetch = LAZY)
+  private PostHasFile postHasFile;
 
   @Builder
   private FileEntity(String fileName, String filePath, Long fileSize, LocalDateTime uploadTime,
