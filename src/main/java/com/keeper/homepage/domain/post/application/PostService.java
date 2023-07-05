@@ -294,9 +294,9 @@ public class PostService {
     LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
     List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
     posts.sort((post1, post2) -> {
-      Integer postScore1 = getPostScore(post1);
-      Integer postScore2 = getPostScore(post2);
-      return postScore2.compareTo(postScore1);
+      int postScore1 = getPostScore(post1);
+      int postScore2 = getPostScore(post2);
+      return Integer.compare(postScore2, postScore1);
     });
     return posts.stream()
         .map(PostResponse::from)
@@ -304,7 +304,7 @@ public class PostService {
         .toList();
   }
 
-  private Integer getPostScore(Post post) {
+  private int getPostScore(Post post) {
     return post.getVisitCount() + post.getPostLikes().size() * 2 - post.getPostDislikes().size();
   }
 }
