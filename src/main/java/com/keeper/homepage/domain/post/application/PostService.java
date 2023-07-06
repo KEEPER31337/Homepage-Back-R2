@@ -2,11 +2,12 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
-import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
+import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FOUND;
 import static java.lang.Boolean.TRUE;
-import static java.util.stream.Collectors.toList;
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
@@ -14,6 +15,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
+import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
@@ -24,8 +26,11 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +42,7 @@ public class PostService {
 
   private final PostRepository postRepository;
   private final FileRepository fileRepository;
+  private final PostHasFileRepository postHasFileRepository;
 
   private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
@@ -115,7 +121,7 @@ public class PostService {
         && member.getMemberAttendance().size() >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
       return;
     }
-    throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
   }
 
   private void checkTempPost(Member member, Post post) {
@@ -128,7 +134,7 @@ public class PostService {
     if (post.isMine(member)) {
       return;
     }
-    throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+    throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
   }
 
   private void checkSecretPost(Member member, Post post, String password) {
@@ -155,49 +161,44 @@ public class PostService {
   }
 
   @Transactional
-  public void update(Member member, long postId, Post newPost, List<MultipartFile> files) {
+  public void update(Member member, long postId, Post newPost) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     if (TRUE.equals(newPost.isSecret())) {
       checkPassword(newPost.getPassword());
     }
-
-    updateFiles(post, files);
     post.update(newPost);
   }
 
+  @Transactional
   public void updatePostThumbnail(Member member, long postId, MultipartFile thumbnail) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
     savePostThumbnail(post, thumbnail);
   }
 
-  private void updateFiles(Post post, List<MultipartFile> files) {
-    List<FileEntity> postFiles = getPostFilesWithoutThumbnailFile(post);
-    postFiles.forEach(fileUtil::deleteFileAndEntity);
-    savePostFiles(post, files);
-  }
+  @Transactional
+  public void deletePostThumbnail(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
 
-  private List<FileEntity> getPostFilesWithoutThumbnailFile(Post post) {
-    if (post.getThumbnail() == null) {
-      return fileRepository.findAllByPost(post);
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-    return fileRepository.findAllByPostAndIdNot(post, post.getThumbnailFile().getId());
+    thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
   }
 
   public void delete(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_CANNOT_ACCESSIBLE);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     postDeleteService.delete(post);
   }
@@ -226,10 +227,84 @@ public class PostService {
 
   public PostListResponse getNoticePosts(long categoryId) {
     Category category = categoryFindService.findById(categoryId);
-    List<Post> posts = postRepository.findAllByCategoryAndIsNoticeTrue(category);
+    List<Post> posts = postRepository.findAllNoticeByCategory(category);
     List<PostResponse> postResponses = posts.stream()
         .map(PostResponse::from)
         .toList();
     return PostListResponse.from(postResponses);
+  }
+
+  @Transactional
+  public void addPostFiles(Member member, long postId, List<MultipartFile> files) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
+    }
+    savePostFiles(post, files);
+  }
+
+  @Transactional
+  public void deletePostFile(Member member, long postId, long fileId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (!post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", FILE_NOT_FOUND);
+    }
+    FileEntity file = fileRepository.findById(fileId)
+        .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
+    postHasFileRepository.deleteByPostAndFile(post, file);
+    fileUtil.deleteFileAndEntity(file);
+  }
+
+  public Page<PostResponse> getPosts(long categoryId, String searchType, String search, PageRequest pageable) {
+    Category category = categoryFindService.findById(categoryId);
+    if (searchType == null) {
+      return postRepository.findAllRecentByCategory(category, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("title")) {
+      return postRepository.findAllRecentByCategoryAndTitle(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("content")) {
+      return postRepository.findAllRecentByCategoryAndContent(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("writer")) {
+      return postRepository.findAllRecentByCategoryAndWriter(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    if (searchType.equals("title+content")) {
+      return postRepository.findAllRecentByCategoryAndTitleOrContent(category, search, pageable)
+          .map(PostResponse::from);
+    }
+    throw new BusinessException(searchType, "searchType", POST_SEARCH_TYPE_NOT_FOUND);
+  }
+
+  public List<PostResponse> getRecentPosts() {
+    return postRepository.findAllRecent().stream()
+        .map(PostResponse::from)
+        .limit(10)
+        .toList();
+  }
+
+  public List<PostResponse> getTrendPosts() {
+    LocalDateTime startDateTime = LocalDateTime.now().minusWeeks(2);
+    LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
+    List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
+    posts.sort((post1, post2) -> {
+      int postScore1 = getPostScore(post1);
+      int postScore2 = getPostScore(post2);
+      return Integer.compare(postScore2, postScore1);
+    });
+    return posts.stream()
+        .map(PostResponse::from)
+        .limit(10)
+        .toList();
+  }
+
+  private int getPostScore(Post post) {
+    return post.getVisitCount() + post.getPostLikes().size() * 2 - post.getPostDislikes().size();
   }
 }

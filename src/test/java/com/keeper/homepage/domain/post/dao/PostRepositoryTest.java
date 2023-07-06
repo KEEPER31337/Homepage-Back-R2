@@ -9,6 +9,7 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,19 +57,6 @@ public class PostRepositoryTest extends IntegrationTest {
   @Nested
   @DisplayName("Post Remove 테스트")
   class PostRemoveTest {
-
-    @Test
-    @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
-    void should_deletedFiles_when_deletePost() {
-      FileEntity file = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
-      post.addFile(file);
-
-      postRepository.delete(post);
-
-      em.flush();
-      em.clear();
-      assertThat(fileRepository.findById(file.getId())).isEmpty();
-    }
 
     @Test
     @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")

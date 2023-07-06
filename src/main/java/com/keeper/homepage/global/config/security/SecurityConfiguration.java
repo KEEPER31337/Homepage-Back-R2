@@ -33,7 +33,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests()
         .requestMatchers("/docs/**", "/keeper_files/**", "/auth-test", "/sign-up/**", "/error",
-            "/about/**", "/sign-in/**",
+            "/about/**", "/sign-in/**", "/posts/recent", "/posts/trend",
             "/v1/**" // TODO: 개발서버 도메인에 /v1 prefix 사라지면 함께 제거
         )
         .permitAll()

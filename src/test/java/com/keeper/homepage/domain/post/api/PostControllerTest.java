@@ -8,6 +8,9 @@ import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -16,6 +19,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -38,6 +42,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -421,7 +426,7 @@ public class PostControllerTest extends PostApiTestHelper {
       String securedValue = getSecuredValue(PostController.class, "updatePost");
       addAllParams();
 
-      callUpdatePostApiWithFiles(memberToken, postId, file, params)
+      callUpdatePostApi(memberToken, postId, params)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("update-post",
@@ -493,7 +498,7 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_fail_when_writerIsNotMe() throws Exception {
       addAllParams();
 
-      callUpdatePostApiWithFiles(otherToken, postId, file, params)
+      callUpdatePostApi(otherToken, postId, params)
           .andExpect(status().isForbidden());
     }
 
@@ -618,6 +623,167 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("posts[].isSecret").description("개시글 비밀글 여부"),
                   fieldWithPath("posts[].thumbnailPath").description("개시글 썸네일 주소"),
                   fieldWithPath("posts[].registerTime").description("개시글 작성 시간")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 썸네일 삭제")
+  class DeletePostThumbnail {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 썸네일 삭제는 성공한다.")
+    public void 유효한_요청일_경우_썸네일_삭제는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "deletePostThumbnail");
+
+      callDeletePostThumbnailApi(memberToken, postId)
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-post-thumbnail",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("썸네일을 삭제하고자 하는 게시글의 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 파일 추가")
+  class AddPostFile {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 게시글 파일 추가는 성공한다.")
+    public void 유효한_요청일_경우_게시글_파일_추가는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "addPostFiles");
+
+      callAddPostFilesApi(memberToken, postId, file)
+          .andExpect(status().isCreated())
+          .andDo(document("add-post-files",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("파일을 추가하고자 하는 게시글의 ID")
+              ),
+              requestParts(
+                  partWithName("files").description("첨부 파일")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 파일 제거")
+  class DeletePostFile {
+
+    private long fileId;
+
+    @BeforeEach
+    void setUp() {
+      postService.addPostFiles(member, postId, List.of(thumbnail));
+      fileId = postHasFileRepository.findByPost(post)
+          .orElseThrow()
+          .getFile()
+          .getId();
+    }
+
+    @Test
+    @DisplayName("유효한 요청인 경우 게시글 파일 제거는 성공한다.")
+    public void 유효한_요청인_경우_게시글_파일_제거는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "deletePostFile");
+
+      callDeletePostFileApi(memberToken, postId, fileId)
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-post-file",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId")
+                      .description("파일을 삭제하고자 하는 게시글의 ID"),
+                  parameterWithName("fileId")
+                      .description("삭제하고자 하는 파일 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 목록 조회")
+  class GetPosts {
+
+    private Post post;
+
+    @BeforeEach
+    void setUp() {
+      post = postTestHelper.builder().category(category).build();
+      post = postTestHelper.builder().category(category).build();
+      post = postTestHelper.builder().category(category).build();
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 게시글 목록 조회(검색)은 성공한다.")
+    public void 유효한_요청이면_게시글_목록_조회검색은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getPosts");
+
+      params.add("categoryId", String.valueOf(category.getId()));
+      params.add("searchType", null);
+      params.add("search", null);
+      params.add("page", "0");
+      params.add("size", "3");
+      callGetPostsApi(memberToken, params)
+          .andExpect(status().isOk())
+          .andDo(document("get-posts",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("categoryId").description("게시글 카테고리 ID"),
+                  parameterWithName("searchType")
+                      .attributes(new Attribute("format",
+                          "title: 제목, content: 내용, writer: 작성자, title+content: 제목+내용, null : 전체(검색x)"))
+                      .description("검색 타입")
+                      .optional(),
+                  parameterWithName("search").description("검색할 단어")
+                      .optional(),
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getPostsResponse())
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 최근 게시글 목록 조회는 성공한다.")
+    public void 유효한_요청이면_최근_게시글_목록_조회는_성공한다() throws Exception {
+      em.flush();
+      em.clear();
+      mockMvc.perform(get("/posts/recent"))
+          .andExpect(status().isOk())
+          .andDo(document("get-recent-posts",
+              responseFields(
+                  listHelper("", getPostsResponse())
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 트렌드 게시글 목록 조회는 성공한다.")
+    public void 유효한_요청이면_트렌드_게시글_목록_조회는_성공한다() throws Exception {
+      em.flush();
+      em.clear();
+      mockMvc.perform(get("/posts/trend"))
+          .andExpect(status().isOk())
+          .andDo(document("get-trend-posts",
+              responseFields(
+                  listHelper("", getPostsResponse())
               )));
     }
   }

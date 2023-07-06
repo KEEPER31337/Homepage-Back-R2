@@ -42,9 +42,6 @@ public class PostUpdateRequest {
   @Size(max = POST_PASSWORD_LENGTH, message = "비밀번호는 {max}자 이하로 입력해주세요.")
   private String password;
 
-  @Nullable
-  private List<MultipartFile> files;
-
   public Post toEntity(String ipAddress) {
     return Post.builder()
         .title(title)

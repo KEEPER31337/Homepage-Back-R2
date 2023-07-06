@@ -19,6 +19,7 @@ import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
+import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 public class PostServiceTest extends IntegrationTest {
@@ -77,7 +80,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.getIsTemp()).isEqualTo(false);
       assertThat(findPost.getCategory().getId()).isEqualTo(category.getId());
       assertThat(findPost.getThumbnail()).isNotNull();
-      assertThat(findPost.getFiles()).isNotEmpty();
+      assertThat(findPost.getPostHasFiles()).isNotEmpty();
     }
 
     @Test
@@ -332,7 +335,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertDoesNotThrow(() -> {
-        postService.update(member, postId, newPost, null);
+        postService.update(member, postId, newPost);
       });
     }
 
@@ -374,32 +377,6 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 파일 수정은 성공한다.")
-    public void should_success_when_updateFiles() throws Exception {
-      post = postTestHelper.builder().member(member).build();
-      postId = postService.create(post, category.getId(), null, List.of(file1));
-      List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
-
-      Post newPost = Post.builder()
-          .title("수정 제목")
-          .content("수정 내용")
-          .ipAddress(WebUtil.getUserIP())
-          .build();
-
-      postService.update(member, postId, newPost, List.of(file2));
-      List<FileEntity> afterFiles = fileRepository.findAllByPost(post);
-
-      for (FileEntity fileEntity : beforeFiles) {
-        assertThat(new File(fileEntity.getFilePath())).doesNotExist();
-        assertThat(fileRepository.findById(fileEntity.getId())).isEmpty();
-      }
-      for (FileEntity fileEntity : afterFiles) {
-        assertThat(new File(fileEntity.getFilePath())).exists();
-        assertThat(fileRepository.findById(fileEntity.getId())).isNotEmpty();
-      }
-    }
-
-    @Test
     @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_secretPostWithoutPassword() throws Exception {
       postId = postTestHelper.builder().member(member).build().getId();
@@ -411,7 +388,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertThrows(BusinessException.class, () -> {
-        postService.update(member, postId, newPost, null);
+        postService.update(member, postId, newPost);
       });
     }
   }
@@ -506,6 +483,85 @@ public class PostServiceTest extends IntegrationTest {
 
       assertThat(member.isLike(post)).isFalse();
       assertThat(member.isDislike(post)).isFalse();
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 파일 삭제")
+  class DeletePostFile {
+
+    @Test
+    @DisplayName("게시글 파일 삭제는 성공해야 한다.")
+    public void 게시글_파일_삭제는_성공해야_한다() throws Exception {
+      postService.addPostFiles(member, postId, List.of(thumbnail));
+
+      FileEntity beforeFile = postHasFileRepository.findByPost(post)
+          .orElseThrow()
+          .getFile();
+
+      assertThat(new File(beforeFile.getFilePath())).exists();
+      assertThat(fileRepository.findById(beforeFile.getId())).isNotEmpty();
+
+      postService.deletePostFile(member, postId, beforeFile.getId());
+
+      assertThat(new File(beforeFile.getFilePath())).doesNotExist();
+      assertThat(fileRepository.findById(beforeFile.getId())).isEmpty();
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 목록 조회")
+  class FindPosts {
+
+    Category category;
+
+    @BeforeEach
+    void setUp() {
+      category = categoryTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("공지글과 임시글은 조회되지 않아야 한다.")
+    public void 공지글과_임시글은_조회되지_않아야_한다() throws Exception {
+      Long postId1 = postTestHelper.builder().category(category).isTemp(true).build().getId();
+      Long postId2 = postTestHelper.builder().category(category).isNotice(true).build().getId();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), null, null, PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(postId1);
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(postId2);
+    }
+
+    @Test
+    @DisplayName("제목 검색은 대소문자 구분 없이 조회되어야 한다.")
+    public void 제목_검색은_대소문자_구분_없이_조회되어야_한다() throws Exception {
+      postTestHelper.builder().category(category).title("ABCD").build();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "title", "abc", PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getTitle).toList()).contains("ABCD");
+    }
+
+    @Test
+    @DisplayName("내용 검색은 대소문자 구분 없이 조회되어야 한다.")
+    public void 내용_검색은_대소문자_구분_없이_조회되어야_한다() throws Exception {
+      Long postId = postTestHelper.builder().category(category).content("ABCD").build().getId();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "content", "abc", PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId);
+    }
+
+    @Test
+    @DisplayName("제목 or 내용 검색은 대소문자 구분 없이 모두 조회되어야 한다.")
+    public void 제목_or_내용_검색은_대소문자_구분_없이_모두_조회되어야_한다() throws Exception {
+      Long postId1 = postTestHelper.builder().category(category).title("ABCD").build().getId();
+      Long postId2 = postTestHelper.builder().category(category).content("BCD").build().getId();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "title+content", "bc", PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId1);
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId2);
     }
   }
 }

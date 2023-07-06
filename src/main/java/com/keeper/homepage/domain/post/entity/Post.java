@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.post.entity;
 
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -88,8 +89,8 @@ public class Post extends BaseEntity {
   @OneToMany(mappedBy = "post", cascade = REMOVE)
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "post", cascade = REMOVE)
-  private final List<FileEntity> files = new ArrayList<>();
+  @OneToMany(mappedBy = "post", cascade = ALL)
+  private final Set<PostHasFile> postHasFiles = new HashSet<>();
 
   @OneToMany(mappedBy = "post")
   private final Set<MemberHasPostLike> postLikes = new HashSet<>();
@@ -116,8 +117,10 @@ public class Post extends BaseEntity {
   }
 
   public void addFile(FileEntity file) {
-    file.registerPost(this);
-    files.add(file);
+    postHasFiles.add(PostHasFile.builder()
+        .post(this)
+        .file(file)
+        .build());
   }
 
   public void addCategory(Category category) {
