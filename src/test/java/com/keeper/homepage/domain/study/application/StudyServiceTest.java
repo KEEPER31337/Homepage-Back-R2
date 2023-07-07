@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.study.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -79,20 +78,16 @@ public class StudyServiceTest extends IntegrationTest {
   @DisplayName("스터디원 삭제")
   class DeleteStudyMember {
 
-    private Member other = memberTestHelper.generate();
-
-    @BeforeEach
-    void setUp() {
+    @Test
+    @DisplayName("스터디원 삭제는 성공해야 한다.")
+    public void 스터디원_삭제는_성공해야_한다() throws Exception {
+      Member other = memberTestHelper.generate();
       studyService.joinStudy(study.getId(), other.getId());
       em.flush();
       em.clear();
       other = memberRepository.findById(other.getId()).get();
       study = studyRepository.findById(study.getId()).get();
-    }
 
-    @Test
-    @DisplayName("스터디원 삭제는 성공해야 한다.")
-    public void 스터디원_삭제는_성공해야_한다() throws Exception {
       studyService.leaveStudy(study.getId(), other.getId());
 
       assertThat(studyHasMemberRepository.findByStudyAndMember(study, other)).isEmpty();
