@@ -13,6 +13,32 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
+== *책 목록 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/manager-get-books/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/manager-get-books/request-cookies.adoc[]
+
+==== Request Params
+
+include::{snippets}/manager-get-books/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/manager-get-books/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/manager-get-books/response-fields.adoc[]
+
 == *책 추가*
 
 === 요청
