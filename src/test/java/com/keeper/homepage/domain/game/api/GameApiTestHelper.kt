@@ -33,6 +33,15 @@ class GameApiTestHelper : IntegrationTest() {
         redisUtil.flushAll()
     }
 
+    fun callGetGameRank(
+        accessCookies: Array<Cookie> = playerCookies
+    ): ResultActions {
+        return mockMvc.perform(
+            get("$GAME_URL/rank")
+                .cookie(*accessCookies)
+        )
+    }
+
     fun callBaseballGameInfo(
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {

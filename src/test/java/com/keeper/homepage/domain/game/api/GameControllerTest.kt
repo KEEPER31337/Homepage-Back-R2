@@ -1,9 +1,6 @@
 package com.keeper.homepage.domain.game.api
 
-import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
-import com.keeper.homepage.domain.game.application.MAX_BETTING_POINT
-import com.keeper.homepage.domain.game.application.MIN_BETTING_POINT
-import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
+import com.keeper.homepage.domain.game.application.*
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.global.config.security.data.JwtType
@@ -21,6 +18,33 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
 class GameControllerTest : GameApiTestHelper() {
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `게임 랭킹` {
+        @Test
+        fun `게임 랭킹을 불러온다`() {
+            (1..2).forEach { _ -> gameTestHelper.generate() }
+
+            callGetGameRank()
+                .andExpect(status().isOk)
+                .andDo(
+                    document(
+                        "game-rank",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        ),
+                        responseFields(
+                            fieldWithPath("[].rank").description("순위 (1~${MAX_RANK_COUNT})"),
+                            fieldWithPath("[].nickname").description("닉네임"),
+                            fieldWithPath("[].generation").description("기수"),
+                            fieldWithPath("[].todayEarnedPoint").description("오늘 얻은 포인트")
+                        )
+                    )
+                )
+        }
+    }
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested

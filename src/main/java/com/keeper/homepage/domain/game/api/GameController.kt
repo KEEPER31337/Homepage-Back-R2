@@ -1,10 +1,12 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.domain.game.application.BaseballService
+import com.keeper.homepage.domain.game.application.GameService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.game.dto.res.BaseballResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
+import com.keeper.homepage.domain.game.dto.res.GameRankResponse
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.config.security.annotation.LoginMember
 import jakarta.validation.Valid
@@ -14,8 +16,14 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/game")
 @RestController
 class GameController(
-    private val baseballService: BaseballService
+    private val baseballService: BaseballService,
+    private val gameService: GameService
 ) {
+    @GetMapping("/rank")
+    fun getGameRank(): ResponseEntity<List<GameRankResponse>> {
+        return ResponseEntity.ok(gameService.getGameRanks())
+    }
+
     @GetMapping("/baseball/game-info")
     fun baseballGameInfoByMember(): ResponseEntity<GameInfoByMemberResponse> {
         return ResponseEntity.ok(baseballService.getBaseballGameInfoByMember())
