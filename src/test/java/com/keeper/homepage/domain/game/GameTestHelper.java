@@ -8,7 +8,6 @@ import com.keeper.homepage.domain.game.entity.embedded.Lotto;
 import com.keeper.homepage.domain.game.entity.embedded.Roulette;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +73,16 @@ public class GameTestHelper {
       return this;
     }
 
+    public GameBuilder baseball(Baseball baseball) {
+      this.baseball = baseball;
+      return this;
+    }
+
     public Game build() {
       return gameRepository.save(
           Game.builder().member(member != null ? member : memberTestHelper.generate())
               .playDate(playDate != null ? playDate : LocalDate.now())
-              .lastPlayTime(null)
+              .lastPlayTime(lastPlayTime != null ? lastPlayTime : LocalDateTime.now())
               .dice(dice != null ? dice : Dice.from(0, 0))
               .lotto(lotto != null ? lotto : Lotto.from(0, 0))
               .roulette(roulette != null ? roulette : Roulette.from(0, 0))
