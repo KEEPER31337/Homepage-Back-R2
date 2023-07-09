@@ -19,7 +19,7 @@ data class BookDetailResponse(
         bookDepartment = book.bookDepartment.type.name,
         totalCount = book.totalQuantity,
         borrowingCount = book.bookBorrowInfos.count { it.isInBorrowing },
-        thumbnailPath = book.thumbnail.path,
+        thumbnailPath = book.thumbnailPath,
         borrowInfos = book.bookBorrowInfos.map(::BorrowDetailResponse),
     )
 }
