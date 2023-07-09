@@ -151,6 +151,7 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   parameterWithName("postId").description("조회하고자 하는 댓글목록의 게시글 ID")
               ),
               responseFields(
+                  fieldWithPath("comments[].commentId").description("댓글 ID"),
                   fieldWithPath("comments[].writerName").description("댓글 작성자 이름"),
                   fieldWithPath("comments[].writerThumbnailPath").description("댓글 작성자의 썸네일 경로"),
                   fieldWithPath("comments[].content").description("댓글 내용"),
