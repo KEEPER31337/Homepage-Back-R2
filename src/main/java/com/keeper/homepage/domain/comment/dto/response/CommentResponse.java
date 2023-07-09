@@ -12,6 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentResponse {
 
+  private Long commentId;
   private String writerName;
   private String writerThumbnailPath;
   private String content;
@@ -22,6 +23,7 @@ public class CommentResponse {
 
   public static CommentResponse from(Comment comment) {
     return CommentResponse.builder()
+        .commentId(comment.getId())
         .writerName(comment.getMember().getNickname())
         .writerThumbnailPath(comment.getWriterThumbnailPath())
         .content(comment.getContent())
