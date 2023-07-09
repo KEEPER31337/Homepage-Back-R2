@@ -73,22 +73,22 @@ include::{snippets}/get-members-by-real-name/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/get-point-ranking/http-request.adoc[]
+include::{snippets}/get-point-ranks/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/get-point-ranking/request-cookies.adoc[]
+include::{snippets}/get-point-ranks/request-cookies.adoc[]
 
 ==== Request Parameters
 
-include::{snippets}/get-point-ranking/query-parameters.adoc[]
+include::{snippets}/get-point-ranks/query-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/get-point-ranking/http-response.adoc[]
+include::{snippets}/get-point-ranks/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/get-point-ranking/response-fields.adoc[]
+include::{snippets}/get-point-ranks/response-fields.adoc[]
