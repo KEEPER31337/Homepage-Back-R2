@@ -14,6 +14,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class AttendanceResponse {
 
+  private Integer rank;
   private String thumbnailPath;
   private String nickName;
   private Float generation;
@@ -24,6 +25,7 @@ public class AttendanceResponse {
 
   public static AttendanceResponse from(Attendance attendance) {
     return AttendanceResponse.builder()
+        .rank(attendance.getRank())
         .thumbnailPath(attendance.getMember().getThumbnailPath())
         .nickName(attendance.getMember().getNickname())
         .generation(attendance.getMember().getGeneration())
