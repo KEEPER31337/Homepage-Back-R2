@@ -19,12 +19,12 @@ public enum BonusPoint {
 
   public static Optional<Integer> getBonusPoint(int date) {
     return Arrays.stream(BonusPoint.values())
-        .filter(bonusPoint -> bonusPoint.isDateRange(date))
+        .filter(bonusPoint -> bonusPoint.isMatch(date))
         .map(BonusPoint::getPoint)
         .findFirst();
   }
 
-  private boolean isDateRange(int date) {
-    return this.date <= date;
+  private boolean isMatch(int date) {
+    return this.date == date;
   }
 }
