@@ -15,7 +15,9 @@ link:auth/auth.html[API 문서 보기]
 
 == *MEMBER API*
 
-link:member/member.html[API 문서 보기]
+link:member/member.html[회원 API 문서 보기]
+
+link:member/member-job.html[직책 API 문서 보기]
 
 == *ABOUT API*
 
