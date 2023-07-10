@@ -33,7 +33,7 @@ public class AttendanceController {
         .build();
   }
 
-  @GetMapping("/today")
+  @GetMapping("/today-rank")
   public ResponseEntity<Page<AttendanceResponse>> getTodayRanks(
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
@@ -41,7 +41,7 @@ public class AttendanceController {
     return ResponseEntity.ok(attendanceService.getTodayRanks(PageRequest.of(page, size)));
   }
 
-  @GetMapping("/continuous")
+  @GetMapping("/continuous-rank")
   public ResponseEntity<List<AttendanceResponse>> getContinuousRanks() {
     return ResponseEntity.ok(attendanceService.getContinuousRanks());
   }

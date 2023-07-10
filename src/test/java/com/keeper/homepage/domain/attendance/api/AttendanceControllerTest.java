@@ -78,9 +78,10 @@ public class AttendanceControllerTest extends IntegrationTest {
     public void 유효한_요청일_경우_당일_출석_랭킹_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AttendanceController.class, "getTodayRanks");
 
-      mockMvc.perform(get("/attendances/today")
+      mockMvc.perform(get("/attendances/today-rank")
               .params(params)
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
           .andDo(document("get-today-attendance-ranks",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -102,7 +103,7 @@ public class AttendanceControllerTest extends IntegrationTest {
     public void 유효한_요청일_경우_연속_출석_랭킹_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AttendanceController.class, "getContinuousRanks");
 
-      mockMvc.perform(get("/attendances/continuous")
+      mockMvc.perform(get("/attendances/continuous-rank")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
           .andDo(document("get-continuous-attendance-ranks",
@@ -117,6 +118,7 @@ public class AttendanceControllerTest extends IntegrationTest {
 
     FieldDescriptor[] getAttendanceResponse() {
       return new FieldDescriptor[]{
+          fieldWithPath("rank").description("회원 당일 출석 순위"),
           fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),
           fieldWithPath("nickName").description("회원 닉네임"),
           fieldWithPath("generation").description("회원 기수"),
