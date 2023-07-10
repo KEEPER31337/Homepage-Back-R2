@@ -103,9 +103,9 @@ include::{snippets}/modify-book/http-request.adoc[]
 
 include::{snippets}/modify-book/request-cookies.adoc[]
 
-==== Request Parameters
+==== Path Parameters
 
-include::{snippets}/modify-book/query-parameters.adoc[]
+include::{snippets}/modify-book/path-parameters.adoc[]
 
 == *책 썸네일 수정*
 
