@@ -108,8 +108,8 @@ public class AttendanceService {
     LocalDate now = LocalDate.now();
     List<Attendance> attendances = attendanceRepository.findAllByDateOrderByContinuousDayDesc(now);
     return attendances.stream()
-        .map(AttendanceResponse::from)
         .limit(4)
+        .map(AttendanceResponse::from)
         .toList();
   }
 }
