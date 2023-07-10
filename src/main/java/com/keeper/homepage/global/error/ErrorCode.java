@@ -20,6 +20,7 @@ public enum ErrorCode {
   MEMBER_LOGIN_ID_DUPLICATE("회원의 로그인 아이디가 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_STUDENT_ID_DUPLICATE("회원의 학번이 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_WRONG_ID_OR_PASSWORD("아이디 혹은 비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
+  MEMBER_JOB_NOT_FOUND("해당 직책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // ABOUT
   TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR
