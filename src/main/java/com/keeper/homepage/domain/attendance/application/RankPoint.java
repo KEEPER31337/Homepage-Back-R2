@@ -9,11 +9,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum RankPoint {
 
-  FIRST_RANK_POINT(1),
-  SECOND_RANK_POINT(2),
-  THIRD_RANK_POINT(3),
+  FIRST_RANK_POINT(1, 500),
+  SECOND_RANK_POINT(2, 300),
+  THIRD_RANK_POINT(3, 100),
   ;
 
+  private final int rank;
   private final int point;
 
   public static Optional<Integer> getRankPoint(int rank) {
@@ -24,6 +25,6 @@ public enum RankPoint {
   }
 
   private boolean isMatch(int rank) {
-    return this.point == rank;
+    return this.rank == rank;
   }
 }
