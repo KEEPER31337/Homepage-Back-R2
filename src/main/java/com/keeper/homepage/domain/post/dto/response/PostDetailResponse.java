@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.post.dto.response;
 
-import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -37,7 +36,10 @@ public class PostDetailResponse {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime updateTime;
 
-  public static PostDetailResponse of(Post post, String writerName) {
+  private AdjacentPostResponse previousPost;
+  private AdjacentPostResponse nextPost;
+
+  public static PostDetailResponse of(Post post, String writerName, Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
         .categoryName(post.getCategory().getName())
         .title(post.getTitle())
@@ -57,6 +59,8 @@ public class PostDetailResponse {
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
         .isTemp(post.isTemp())
+        .previousPost(previousPost != null ? AdjacentPostResponse.from(previousPost) : null)
+        .nextPost(nextPost != null ? AdjacentPostResponse.from(nextPost) : null)
         .build();
   }
 }
