@@ -65,7 +65,7 @@ class SignInControllerTest extends IntegrationTest {
     @Test
     @DisplayName("유효한 요청이면 로그인에 성공해야 한다.")
     void should_successSignIn_when_validRequest() throws Exception {
-      mockMvc.perform(post("/v1/sign-in")
+      mockMvc.perform(post("/sign-in")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(validRequest)))
           .andExpect(status().isNoContent())
@@ -102,7 +102,7 @@ class SignInControllerTest extends IntegrationTest {
       FindLoginIdRequest request = FindLoginIdRequest.from(
           member.getProfile().getEmailAddress().get());
 
-      mockMvc.perform(post("/v1/sign-in/find-login-id")
+      mockMvc.perform(post("/sign-in/find-login-id")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
@@ -123,7 +123,7 @@ class SignInControllerTest extends IntegrationTest {
           .loginId(member.getProfile().getLoginId().get())
           .build();
 
-      mockMvc.perform(post("/v1/sign-in/send-password-change-auth-code")
+      mockMvc.perform(post("/sign-in/send-password-change-auth-code")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
@@ -146,7 +146,7 @@ class SignInControllerTest extends IntegrationTest {
       params.add("loginId", member.getProfile().getLoginId().get());
       params.add("authCode", authCode);
 
-      mockMvc.perform(get("/v1/sign-in/check-auth-code")
+      mockMvc.perform(get("/sign-in/check-auth-code")
               .params(params))
           .andDo(print())
           .andExpect(status().isOk())
@@ -170,7 +170,7 @@ class SignInControllerTest extends IntegrationTest {
       String authCode = redisUtil.getData("PW_AUTH_" + member.getId(), String.class).orElseThrow();
       String newPassword = "newPassword123";
 
-      mockMvc.perform(patch("/v1/sign-in/change-password-for-missing")
+      mockMvc.perform(patch("/sign-in/change-password-for-missing")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(ChangePasswordForMissingRequest.builder()
                   .loginId(member.getProfile().getLoginId().get())
