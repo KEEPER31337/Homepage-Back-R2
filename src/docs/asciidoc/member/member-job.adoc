@@ -13,7 +13,7 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
-== *임원진 목록 조회*
+== *임원 목록 조회*
 
 NOTE: `출제자`, ``회원``을 제외한 직책을 가진 회원 정보를 불러옵니다.
 
@@ -37,46 +37,50 @@ include::{snippets}/get-executives/http-response.adoc[]
 
 include::{snippets}/get-executives/response-fields.adoc[]
 
-== *회원 직책 추가*
+== *회원 임원 직책 추가*
 
 === 요청
 
 ==== Request
 
-include::{snippets}/add-member-job/http-request.adoc[]
+include::{snippets}/add-member-executive-job/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/add-member-job/request-cookies.adoc[]
+include::{snippets}/add-member-executive-job/request-cookies.adoc[]
 
 ==== Path Parameters
 
-include::{snippets}/add-member-job/path-parameters.adoc[]
+NOTE: jobId로 `출제자`, `회원` jobId를 제외한 jobId를 보내주어야 합니다.
+
+include::{snippets}/add-member-executive-job/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/add-member-job/http-response.adoc[]
+include::{snippets}/add-member-executive-job/http-response.adoc[]
 
-== *회원 직책 삭제*
+== *회원 임원 직책 삭제*
 
 === 요청
 
 ==== Request
 
-include::{snippets}/delete-member-job/http-request.adoc[]
+include::{snippets}/delete-member-executive-job/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/delete-member-job/request-cookies.adoc[]
+include::{snippets}/delete-member-executive-job/request-cookies.adoc[]
 
 ==== Path Parameters
 
-include::{snippets}/delete-member-job/path-parameters.adoc[]
+NOTE: jobId로 `출제자`, `회원` jobId를 제외한 jobId를 보내주어야 합니다.
+
+include::{snippets}/delete-member-executive-job/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/delete-member-job/http-response.adoc[]
+include::{snippets}/delete-member-executive-job/http-response.adoc[]
