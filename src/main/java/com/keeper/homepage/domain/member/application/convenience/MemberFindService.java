@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberFindService {
 
-  private static final long VIRTUAL_MEMBER_ID = 1;
+  public static final long VIRTUAL_MEMBER_ID = 1;
   private final MemberRepository memberRepository;
 
   public Member getVirtualMember() {
