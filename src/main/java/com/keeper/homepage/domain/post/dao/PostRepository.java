@@ -75,4 +75,20 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       "AND p.registerTime BETWEEN :startDate AND :endDate")
   List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
+
+  @Query("SELECT p FROM Post p "
+      + "WHERE p.id > :postId "
+      + "AND p.category = :category "
+      + "AND p.isTemp = false "
+      + "ORDER BY p.id DESC "
+      + "LIMIT 1")
+  Optional<Post> findNextPost(@Param("postId") Long postId, @Param("category") Category category);
+
+  @Query("SELECT p FROM Post p "
+      + "WHERE p.id < :postId "
+      + "AND p.category = :category "
+      + "AND p.isTemp = false "
+      + "ORDER BY p.id DESC "
+      + "LIMIT 1")
+  Optional<Post> findPreviousPost(@Param("postId") Long postId, @Param("category") Category category);
 }

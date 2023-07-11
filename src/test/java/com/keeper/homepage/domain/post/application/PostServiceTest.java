@@ -306,6 +306,50 @@ public class PostServiceTest extends IntegrationTest {
         postService.find(bestMember, post.getId(), null);
       });
     }
+
+    @Test
+    @DisplayName("id 기준으로 카테고리에 해당하는 이전과 다음 게시글 하나는 성공적으로 조회된다.")
+    public void id_기준으로_카테고리에_해당하는_이전과_다음_게시글_하나는_성공적으로_조회된다() throws Exception {
+      Post first = postTestHelper.builder().category(category).build();
+      Post middle = postTestHelper.builder().member(member).category(category).build();
+      Post last = postTestHelper.builder().category(category).build();
+
+      em.flush();
+      em.clear();
+      PostDetailResponse response = postService.find(member, middle.getId(), null);
+
+      assertThat(response.getPreviousPost().getPostId()).isEqualTo(first.getId());
+      assertThat(response.getNextPost().getPostId()).isEqualTo(last.getId());
+    }
+
+    @Test
+    @DisplayName("이전, 다음 게시글으로 임시 저장글은 조회되면 안돤다.")
+    public void 이전_다음_게시글으로_임시_저장글은_조회되면_안돤다() throws Exception {
+      Post first = postTestHelper.builder().category(category).isTemp(true).build();
+      Post middle = postTestHelper.builder().member(member).category(category).build();
+      Post last = postTestHelper.builder().category(category).build();
+
+      em.flush();
+      em.clear();
+      PostDetailResponse response = postService.find(member, middle.getId(), null);
+
+      assertThat(response.getPreviousPost().getPostId()).isNotEqualTo(first.getId());
+      assertThat(response.getNextPost().getPostId()).isEqualTo(last.getId());
+    }
+
+    @Test
+    @DisplayName("이전, 혹은 다음 게시글이 없을 경우 null로 조회된다.")
+    public void 이전_혹은_다음_게시글이_없을_경우_null로_조회된다() throws Exception {
+      Post first = postTestHelper.builder().category(category).build();
+      Post middle = postTestHelper.builder().member(member).category(category).build();
+
+      em.flush();
+      em.clear();
+      PostDetailResponse response = postService.find(member, middle.getId(), null);
+
+      assertThat(response.getPreviousPost().getPostId()).isEqualTo(first.getId());
+      assertThat(response.getNextPost()).isEqualTo(null);
+    }
   }
 
   @Nested
