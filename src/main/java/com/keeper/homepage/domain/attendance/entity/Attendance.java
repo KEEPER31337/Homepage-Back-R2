@@ -25,8 +25,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "attendance",
-    indexes = @Index(name = "is_duplicated", columnList = "member_id, date", unique = true))
+@Table(name = "attendance", indexes = @Index(name = "is_duplicated", columnList = "member_id, date", unique = true))
 public class Attendance {
 
   public static final int MAX_IP_ADDRESS_LENGTH = 128;
@@ -88,5 +87,9 @@ public class Attendance {
     this.continuousDay = continuousDay;
     this.member = member;
     this.rank = rank;
+  }
+
+  public Integer getTotalPoint() {
+    return point + randomPoint + continuousPoint;
   }
 }

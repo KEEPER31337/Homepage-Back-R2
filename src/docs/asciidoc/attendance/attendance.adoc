@@ -1,0 +1,84 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= ATTENDANCE API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *출석*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-attendance/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-attendance/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-attendance/http-response.adoc[]
+
+== *당일 출석 랭킹 조회*
+
+NOTE: 당일의 출석 시간이 빠른 순서대로 정렬되어 조회됩니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-today-attendance-ranks/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-today-attendance-ranks/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-today-attendance-ranks/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-today-attendance-ranks/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-today-attendance-ranks/response-fields.adoc[]
+
+== *연속 출석 랭킹 조회*
+
+NOTE: 연속 출석일이 많은 순으로 정렬되어 조회됩니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-continuous-attendance-ranks/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-continuous-attendance-ranks/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-continuous-attendance-ranks/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-continuous-attendance-ranks/response-fields.adoc[]

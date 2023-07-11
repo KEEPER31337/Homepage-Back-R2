@@ -279,9 +279,9 @@ include::{snippets}/get-notice-posts/http-request.adoc[]
 
 include::{snippets}/get-notice-posts/request-cookies.adoc[]
 
-==== Path Parameters
+==== Query Parameters
 
-include::{snippets}/get-notice-posts/path-parameters.adoc[]
+include::{snippets}/get-notice-posts/query-parameters.adoc[]
 
 === 응답
 

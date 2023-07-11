@@ -29,6 +29,7 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
+import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
@@ -138,6 +139,9 @@ public class Member {
 
   @OneToMany(mappedBy = "member")
   private final List<Comment> comments = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member")
+  private final List<PointLog> pointLogs = new ArrayList<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,

@@ -70,8 +70,8 @@ fun <K, V> multiValueMapOf(
 
 fun BookBorrowInfoTestHelper.generate(
     borrowStatus: BookBorrowStatus.BookBorrowStatusType,
+    book: Book,
     expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2),
-    book: Book = BookTestHelper().generate(),
 ): BookBorrowInfo {
     return this.builder()
         .book(book)

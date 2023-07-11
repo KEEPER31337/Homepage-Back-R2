@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -38,6 +39,12 @@ public class RedisUtil {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public Long increaseAndGetWithExpire(String key, long durationMillis) {
+    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    redisTemplate.expire(key, durationMillis, TimeUnit.SECONDS);
+    return valueOperations.increment(key);
   }
 
   public void deleteData(String key) {
