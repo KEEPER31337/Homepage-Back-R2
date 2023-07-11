@@ -14,3 +14,28 @@ endif::[]
 link:../keeper.html[API 목록으로 돌아가기]
 
 link:./baseball.html[야구 게임 API]
+
+== *게임 랭크*
+
+NOTE: 최대 4명까지 내려가며 포인트순으로 정렬됩니다.
+만약 얻은 포인트가 같다면 마지막 플레이 시간이 빠른 순으로 정렬됩니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-rank/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/game-rank/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-rank/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-rank/response-fields.adoc[]

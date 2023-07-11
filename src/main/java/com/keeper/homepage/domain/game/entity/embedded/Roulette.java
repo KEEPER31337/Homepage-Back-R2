@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Getter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
@@ -37,5 +36,13 @@ public class Roulette {
 
   public void resetRouletteDayPoint() {
     this.rouletteDayPoint = 0;
+  }
+
+  public Integer getRoulettePerDay() {
+    return roulettePerDay;
+  }
+
+  public Integer getRouletteDayPoint() {
+    return rouletteDayPoint;
   }
 }

@@ -16,5 +16,9 @@ class GameFindService(private val gameRepository: GameRepository) {
             .orElseGet { initWhenNotExistGameMemberInfo(member) }
     }
 
+    fun findAllByPlayDate(playDate: LocalDate): List<Game> {
+        return gameRepository.findAllByPlayDate(playDate)
+    }
+
     private fun initWhenNotExistGameMemberInfo(member: Member) = gameRepository.save(Game.newInstance(member))
 }

@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Getter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
@@ -37,5 +36,13 @@ public class Dice {
 
   public void resetDiceDayPoint() {
     this.diceDayPoint = 0;
+  }
+
+  public Integer getDicePerDay() {
+    return dicePerDay;
+  }
+
+  public Integer getDiceDayPoint() {
+    return diceDayPoint;
   }
 }
