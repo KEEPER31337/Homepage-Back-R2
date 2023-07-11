@@ -24,6 +24,7 @@ import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 
 public class MemberJobControllerTest extends IntegrationTest {
 
@@ -63,40 +64,40 @@ public class MemberJobControllerTest extends IntegrationTest {
   }
 
   @Test
-  @DisplayName("유효한 요청일 경우 직책 추가는 성공해야 한다.")
-  public void 유효한_요청일_경우_직책_추가는_성공해야_한다() throws Exception {
-    String securedValue = getSecuredValue(MemberJobController.class, "addMemberJob");
+  @DisplayName("유효한 요청일 경우 임원 직책 추가는 성공해야 한다.")
+  public void 유효한_요청일_경우_임원_직책_추가는_성공해야_한다() throws Exception {
+    String securedValue = getSecuredValue(MemberJobController.class, "addMemberExecutiveJob");
 
-    mockMvc.perform(post("/members/{memberId}/jobs/{jobId}", member.getId(), ROLE_부회장.getId())
+    mockMvc.perform(post("/members/{memberId}/executive-jobs/{jobId}", member.getId(), ROLE_부회장.getId())
             .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
         .andExpect(status().isCreated())
-        .andDo(document("add-member-job",
+        .andDo(document("add-member-executive-job",
             requestCookies(
                 cookieWithName(ACCESS_TOKEN.getTokenName())
                     .description("ACCESS TOKEN %s".formatted(securedValue))
             ),
             pathParameters(
                 parameterWithName("memberId").description("회원 ID"),
-                parameterWithName("jobId").description("직책 ID")
+                parameterWithName("jobId").description("임원 직책 ID")
             )));
   }
 
   @Test
-  @DisplayName("유효한 요청일 경우 직책 삭제는 성공해야 한다.")
-  public void 유효한_요청일_경우_직책_삭제는_성공해야_한다() throws Exception {
-    String securedValue = getSecuredValue(MemberJobController.class, "deleteMemberJob");
+  @DisplayName("유효한 요청일 경우 임원직책 삭제는 성공해야 한다.")
+  public void 유효한_요청일_경우_임원_직책_삭제는_성공해야_한다() throws Exception {
+    String securedValue = getSecuredValue(MemberJobController.class, "deleteMemberExecutiveJob");
 
-    mockMvc.perform(delete("/members/{memberId}/jobs/{jobId}", member.getId(), ROLE_부회장.getId())
+    mockMvc.perform(delete("/members/{memberId}/executive-jobs/{jobId}", member.getId(), ROLE_부회장.getId())
             .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
         .andExpect(status().isNoContent())
-        .andDo(document("delete-member-job",
+        .andDo(document("delete-member-executive-job",
             requestCookies(
                 cookieWithName(ACCESS_TOKEN.getTokenName())
                     .description("ACCESS TOKEN %s".formatted(securedValue))
             ),
             pathParameters(
                 parameterWithName("memberId").description("회원 ID"),
-                parameterWithName("jobId").description("직책 ID")
+                parameterWithName("jobId").description("임원 직책 ID")
             )));
   }
 }

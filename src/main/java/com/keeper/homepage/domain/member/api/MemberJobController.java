@@ -27,22 +27,22 @@ public class MemberJobController {
     return ResponseEntity.ok(memberJobService.getExecutives());
   }
 
-  @PostMapping("{memberId}/jobs/{jobId}")
-  public ResponseEntity<Void> addMemberJob(
+  @PostMapping("{memberId}/executive-jobs/{jobId}")
+  public ResponseEntity<Void> addMemberExecutiveJob(
       @PathVariable Long memberId,
       @PathVariable Long jobId
   ) {
-    memberJobService.addMemberJob(memberId, jobId);
+    memberJobService.addMemberExecutiveJob(memberId, jobId);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }
 
-  @DeleteMapping("{memberId}/jobs/{jobId}")
-  public ResponseEntity<Void> deleteMemberJob(
+  @DeleteMapping("{memberId}/executive-jobs/{jobId}")
+  public ResponseEntity<Void> deleteMemberExecutiveJob(
       @PathVariable Long memberId,
       @PathVariable Long jobId
   ) {
-    memberJobService.deleteMemberJob(memberId, jobId);
+    memberJobService.deleteMemberExecutiveJob(memberId, jobId);
     return ResponseEntity.noContent().build();
   }
 }
