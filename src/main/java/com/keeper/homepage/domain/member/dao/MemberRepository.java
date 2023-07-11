@@ -33,4 +33,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   Optional<Member> findByIdAndIdNot(Long memberId, Long virtualId);
 
   List<Member> findAllByProfileRealNameAndIdNot(RealName realName, long virtualId);
+
+  void deleteAllByIdNot(Long virtualId);
 }
