@@ -67,6 +67,7 @@ public class PostControllerTest extends PostApiTestHelper {
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     file = new MockMultipartFile("files", "testImage_1x1.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+    postTestHelper.builder().category(category).build();
     post = postTestHelper.builder().member(member).build();
     postId = post.getId();
   }
@@ -295,6 +296,7 @@ public class PostControllerTest extends PostApiTestHelper {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
       postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+      postTestHelper.builder().category(category).build();
       em.flush();
       em.clear();
 
@@ -329,7 +331,11 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
                   fieldWithPath("isNotice").description("공지글 여부"),
                   fieldWithPath("isSecret").description("비밀글 여부"),
-                  fieldWithPath("isTemp").description("임시 저장글 여부")
+                  fieldWithPath("isTemp").description("임시 저장글 여부"),
+                  fieldWithPath("previousPost.postId").description("이전 게시글 ID"),
+                  fieldWithPath("previousPost.title").description("이전 게시글 제목"),
+                  fieldWithPath("nextPost.postId").description("다음 게시글 ID"),
+                  fieldWithPath("nextPost.title").description("다음 게시글 제목")
               )));
     }
 
@@ -338,8 +344,10 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_success_when_samePassword() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getPost");
 
+      postTestHelper.builder().category(category).build();
       post = postTestHelper.builder().member(other).password("비밀비밀").build();
       postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+      postTestHelper.builder().category(category).build();
       em.flush();
       em.clear();
 
@@ -378,7 +386,11 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
                   fieldWithPath("isNotice").description("공지글 여부"),
                   fieldWithPath("isSecret").description("비밀글 여부"),
-                  fieldWithPath("isTemp").description("임시 저장글 여부")
+                  fieldWithPath("isTemp").description("임시 저장글 여부"),
+                  fieldWithPath("previousPost.postId").description("이전 게시글 ID"),
+                  fieldWithPath("previousPost.title").description("이전 게시글 제목"),
+                  fieldWithPath("nextPost.postId").description("다음 게시글 ID"),
+                  fieldWithPath("nextPost.title").description("다음 게시글 제목")
               )));
     }
 

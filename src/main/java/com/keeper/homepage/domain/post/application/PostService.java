@@ -28,6 +28,7 @@ import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -103,7 +104,10 @@ public class PostService {
     post.addVisitCount();
 
     String writerName = getWriterName(post);
-    return PostDetailResponse.of(post, writerName);
+
+    Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
+    Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
+    return PostDetailResponse.of(post, writerName, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {

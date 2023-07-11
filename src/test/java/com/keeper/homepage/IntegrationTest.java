@@ -14,6 +14,7 @@ import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
+import com.keeper.homepage.domain.attendance.application.AttendanceService;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
@@ -52,6 +53,8 @@ import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
+import com.keeper.homepage.domain.point.application.PointLogService;
+import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
@@ -222,6 +225,9 @@ public class IntegrationTest {
   @Autowired
   protected ThumbnailRepository thumbnailRepository;
 
+  @Autowired
+  protected PointLogRepository pointLogRepository;
+
   /******* Service *******/
   @SpyBean
   protected MemberService memberService;
@@ -279,6 +285,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected MemberJobService memberJobService;
+  
+  @SpyBean
+  protected AttendanceService attendanceService;
 
   /******* Helper *******/
   @SpyBean
