@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -24,8 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.embedded.Generation;
-import com.keeper.homepage.domain.study.api.StudyController;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -36,8 +35,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-class MemberControllerTest extends IntegrationTest {
+class MemberControllerTest extends MemberApiTestHelper {
 
   @Nested
   class ChangePassword {
@@ -110,6 +111,48 @@ class MemberControllerTest extends IntegrationTest {
                   fieldWithPath("[].memberId").description("회원 ID"),
                   fieldWithPath("[].memberName").description("회원 실명"),
                   fieldWithPath("[].generation").description("회원 기수")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("누적 포인트 랭킹 테스트")
+  class PointRanking {
+
+    private String memberToken;
+    private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    @BeforeEach
+    void setUp() throws IOException {
+      long memberId;
+      memberTestHelper.builder().point(0).build();
+      memberTestHelper.builder().point(100).build();
+      memberId = memberTestHelper.builder().point(1000).build().getId();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 누적 포인트 랭킹 조회는 성공해야 한다.")
+    public void 유효한_요청이면_누적_포인트_랭킹_조회는_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "getPointRanks");
+
+      params.add("page", "0");
+      params.add("size", "3");
+      callGetPointRankingApi(memberToken, params)
+          .andExpect(status().isOk())
+          .andDo(document("get-point-ranks",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getPointRankResponse())
               )));
     }
   }
