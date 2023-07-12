@@ -35,6 +35,14 @@ public class MemberJobService {
         .toList();
   }
 
+  public List<JobResponse> getExecutiveJobs() {
+    return memberJobRepository.findAll()
+        .stream()
+        .filter(MemberJob::isExecutive)
+        .map(JobResponse::from)
+        .toList();
+  }
+
   @Transactional
   public void addMemberExecutiveJob(Long memberId, Long jobId) {
     Member member = memberFindService.findById(memberId);

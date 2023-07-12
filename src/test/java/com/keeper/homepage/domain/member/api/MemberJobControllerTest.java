@@ -24,7 +24,6 @@ import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.restdocs.snippet.Attributes.Attribute;
 
 public class MemberJobControllerTest extends IntegrationTest {
 
@@ -56,10 +55,30 @@ public class MemberJobControllerTest extends IntegrationTest {
             responseFields(
                 fieldWithPath("[].jobId").description("직책 ID"),
                 fieldWithPath("[].jobName").description("직책 이름"),
-                fieldWithPath("[].jobThumbnail").description("직책 썸네일 경로"),
+                fieldWithPath("[].jobThumbnailPath").description("직책 썸네일 경로"),
                 fieldWithPath("[].memberId").description("회원 ID"),
                 fieldWithPath("[].generation").description("회원 기수"),
                 fieldWithPath("[].realName").description("회원 실명")
+            )));
+  }
+
+  @Test
+  @DisplayName("유효한 요청일 경우 임원진 직책 목록 조회는 성공해야 한다.")
+  public void 유효한_요청일_경우_임원진_직책_목록_조회는_성공해야_한다() throws Exception {
+    String securedValue = getSecuredValue(MemberJobController.class, "getExecutiveJobs");
+
+    mockMvc.perform(get("/members/executive-jobs")
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+        .andExpect(status().isOk())
+        .andDo(document("get-executive-jobs",
+            requestCookies(
+                cookieWithName(ACCESS_TOKEN.getTokenName())
+                    .description("ACCESS TOKEN %s".formatted(securedValue))
+            ),
+            responseFields(
+                fieldWithPath("[].jobId").description("직책 ID"),
+                fieldWithPath("[].jobName").description("직책 이름"),
+                fieldWithPath("[].jobThumbnailPath").description("직책 썸네일 경로")
             )));
   }
 

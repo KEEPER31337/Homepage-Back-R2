@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.api;
 
 import com.keeper.homepage.domain.member.application.MemberJobService;
+import com.keeper.homepage.domain.member.dto.response.JobResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberJobResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,11 @@ public class MemberJobController {
   @GetMapping("/executives")
   public ResponseEntity<List<MemberJobResponse>> getExecutives() {
     return ResponseEntity.ok(memberJobService.getExecutives());
+  }
+
+  @GetMapping("/executive-jobs")
+  public ResponseEntity<List<JobResponse>> getExecutiveJobs() {
+    return ResponseEntity.ok(memberJobService.getExecutiveJobs());
   }
 
   @PostMapping("{memberId}/executive-jobs/{jobId}")
