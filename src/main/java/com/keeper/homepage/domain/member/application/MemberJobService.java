@@ -52,7 +52,7 @@ public class MemberJobService {
   }
 
   private void checkExecutiveJob(MemberJob memberJob) {
-    if (memberJob.isExecutive()) {
+    if (!memberJob.isExecutive()) {
       throw new BusinessException(memberJob.toString(), "memberJob", MEMBER_JOB_IS_NOT_EXECUTIVE);
     }
   }
