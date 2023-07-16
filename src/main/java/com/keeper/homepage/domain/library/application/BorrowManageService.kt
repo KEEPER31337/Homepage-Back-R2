@@ -34,6 +34,11 @@ class BorrowManageService(
         if (borrowInfo.borrowStatus.type != 대출대기중) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_REQUESTS)
         }
+        val book = borrowInfo.book
+        if (book.currentQuantity <= 0) {
+            throw BusinessException(borrowId, "borrowId", ErrorCode.BOOK_BORROWING_COUNT_OVER)
+        }
+        
         borrowInfo.changeBorrowStatus(대출승인)
     }
 
@@ -49,7 +54,6 @@ class BorrowManageService(
     @Transactional
     fun approveReturn(borrowId: Long) {
         val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
-        val book = borrowInfo.book
         if (borrowInfo.borrowStatus.type != 반납대기중) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
         }
