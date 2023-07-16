@@ -63,7 +63,7 @@ public class Study extends BaseEntity {
   @Embedded
   @AttributeOverrides({
       @AttributeOverride(name = "gitLink", column = @Column(name = "git_link", length = MAX_LINK_LENGTH)),
-      @AttributeOverride(name = "noteLink", column = @Column(name = "note_link", length = MAX_LINK_LENGTH)),
+      @AttributeOverride(name = "notionLink", column = @Column(name = "notion_link", length = MAX_LINK_LENGTH)),
       @AttributeOverride(name = "etcLink", column = @Column(name = "etc_link", length = MAX_LINK_LENGTH))
   })
   private Link link;
@@ -105,8 +105,8 @@ public class Study extends BaseEntity {
     return this.link.getGitLink().get();
   }
 
-  public String getNoteLink() {
-    return this.link.getNoteLink().get();
+  public String getNotionLink() {
+    return this.link.getNotionLink().get();
   }
 
   public String getEtcLink() {
