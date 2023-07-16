@@ -4,7 +4,6 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
-import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
@@ -13,6 +12,7 @@ import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -35,7 +35,7 @@ public class SignInService {
   private final MailUtil mailUtil;
 
   @Transactional
-  public void signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
+  public List<String> signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
     Member member = memberRepository.findByProfileLoginId(loginId)
         .orElseThrow(
             () -> new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_NOT_FOUND));
@@ -44,6 +44,7 @@ public class SignInService {
     }
     authCookieService.setNewCookieInResponse(String.valueOf(member.getId()),
         getRoles(member), response);
+    return Arrays.stream(getRoles(member)).toList();
   }
 
   private static String[] getRoles(Member member) {

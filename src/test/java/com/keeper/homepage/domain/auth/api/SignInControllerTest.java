@@ -68,13 +68,16 @@ class SignInControllerTest extends IntegrationTest {
       mockMvc.perform(post("/sign-in")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(validRequest)))
-          .andExpect(status().isNoContent())
+          .andExpect(status().isOk())
           .andExpect(cookie().exists(ACCESS_TOKEN.getTokenName()))
           .andExpect(cookie().exists(REFRESH_TOKEN.getTokenName()))
           .andDo(document("sign-in",
               requestFields(
                   fieldWithPath("loginId").description("로그인 아이디"),
                   fieldWithPath("password").description("비밀번호")
+              ),
+              responseFields(
+                  fieldWithPath("[]").description("회원 역할")
               ),
               responseCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
