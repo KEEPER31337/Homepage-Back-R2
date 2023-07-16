@@ -32,6 +32,7 @@ class BaseballService(
             minBettingPoint = MIN_BETTING_POINT,
         )
 
+    @Transactional
     fun isAlreadyPlayed(requestMember: Member): Boolean {
         return gameFindService.findByMemberOrInit(requestMember)
             .baseball
