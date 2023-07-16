@@ -113,7 +113,10 @@ class GameControllerTest : GameApiTestHelper() {
 
             val baseball = gameFindService.findByMemberOrInit(player).baseball
             assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
-            val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResultEntity::class.java)
+            val data = redisUtil.getData(
+                REDIS_KEY_PREFIX + player.id.toString() + "_" + baseball.baseballPerDay,
+                BaseballResultEntity::class.java
+            )
             assertThat(data).isNotEmpty
             assertThat(data.get().correctNumber).hasSize(4)
             assertThat(data.get().correctNumber).containsOnlyDigits()

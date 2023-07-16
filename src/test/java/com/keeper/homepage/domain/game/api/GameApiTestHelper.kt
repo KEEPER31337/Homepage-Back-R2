@@ -1,9 +1,9 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.IntegrationTest
-import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob
 import jakarta.servlet.http.Cookie
@@ -80,7 +80,11 @@ class GameApiTestHelper : IntegrationTest() {
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
-        baseballService.saveBaseballResultInRedis(player.id, BaseballResultEntity(correctNumber, bettingPoint, results, earnablePoints))
+        baseballService.saveBaseballResultInRedis(
+            player.id,
+            BaseballResultEntity(correctNumber, bettingPoint, results, earnablePoints),
+            0,
+        )
         return mockMvc.perform(
             post("$GAME_URL/baseball/guess")
                 .content(asJsonString(BaseballGuessRequest(guessNumber)))
@@ -94,7 +98,11 @@ class GameApiTestHelper : IntegrationTest() {
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
-        baseballService.saveBaseballResultInRedis(player.id, BaseballResultEntity("1234", 1000, results, earnablePoints))
+        baseballService.saveBaseballResultInRedis(
+            player.id,
+            BaseballResultEntity("1234", 1000, results, earnablePoints),
+            1,
+        )
         return mockMvc.perform(
             get("$GAME_URL/baseball/result")
                 .cookie(*accessCookies)
