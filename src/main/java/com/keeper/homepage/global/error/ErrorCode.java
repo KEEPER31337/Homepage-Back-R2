@@ -29,6 +29,7 @@ public enum ErrorCode {
   SEMINAR_NOT_FOUND("해당 세미나를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   SEMINAR_TIME_NOT_AVAILABLE("올바르지 않은 시간 값입니다", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE("올바르지 않은 출석 코드입니다.", HttpStatus.BAD_REQUEST),
+  SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE("출석코드 입력 가능 횟수를 초과하여 출석이 불가능합니다.", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_DUPLICATE("이미 출석을 완료한 계정입니다.", HttpStatus.CONFLICT),
   // POST
   POST_CATEGORY_NOT_FOUND("존재하지 않는 게시글 카테고리입니다.", HttpStatus.NOT_FOUND),

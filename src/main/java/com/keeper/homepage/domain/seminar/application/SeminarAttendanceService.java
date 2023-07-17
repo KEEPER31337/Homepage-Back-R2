@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_DUPLICATE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
@@ -15,6 +16,8 @@ import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.util.redis.RedisUtil;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SeminarAttendanceService {
 
+  private final RedisUtil redisUtil;
   private final SeminarAttendanceRepository attendanceRepository;
   private final SeminarRepository seminarRepository;
 
   @Transactional
-  public SeminarAttendanceResponse save(Long seminarId, Member member, SeminarAttendanceCodeRequest request){
+  public SeminarAttendanceResponse save(Long seminarId, Member member, SeminarAttendanceCodeRequest request) {
+    String key = "seminar:" + LocalDate.now() + "memberId:" + member.getId();
+    int attemptNumber = checkAttemptLimit(key);
+
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
 
@@ -40,8 +47,15 @@ public class SeminarAttendanceService {
         .member(member)
         .seminarAttendanceStatus(seminar.getStatus())
         .build();
+    return SeminarAttendanceResponse.of(attendanceRepository.save(attendance), attemptNumber);
+  }
 
-    return SeminarAttendanceResponse.from(attendanceRepository.save(attendance));
+  private int checkAttemptLimit(String key) {
+    int attemptNumber = redisUtil.increaseAndGetWithExpire(key, 60 * 60 * 3).intValue(); // 3시간 후 만료
+    if (attemptNumber > 5) {
+      throw new BusinessException(attemptNumber, "attemptNumber", SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE);
+    }
+    return attemptNumber;
   }
 
   private void validAttendanceCode(Seminar seminar, SeminarAttendanceCodeRequest request) {
@@ -49,8 +63,7 @@ public class SeminarAttendanceService {
     String inputAttendanceCode = request.attendanceCode();
 
     if (!seminarAttendanceCode.equals(inputAttendanceCode)) {
-      throw new BusinessException(inputAttendanceCode, "inputAttendanceCode",
-          SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE);
+      throw new BusinessException(inputAttendanceCode, "inputAttendanceCode", SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE);
     }
   }
 
