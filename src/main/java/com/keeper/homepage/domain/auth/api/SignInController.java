@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +29,9 @@ public class SignInController {
   private final SignInService signInService;
 
   @PostMapping
-  public ResponseEntity<Void> signIn(@RequestBody @Valid SignInRequest request,
-      HttpServletResponse httpServletResponse) {
-    signInService.signIn(LoginId.from(request.getLoginId()),
-        request.getRawPassword(), httpServletResponse);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<List<String>> signIn(@RequestBody @Valid SignInRequest request, HttpServletResponse response) {
+    List<String> roles = signInService.signIn(LoginId.from(request.getLoginId()), request.getRawPassword(), response);
+    return ResponseEntity.ok(roles);
   }
 
   @PostMapping("/find-login-id")
