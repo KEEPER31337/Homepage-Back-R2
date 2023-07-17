@@ -2,14 +2,14 @@ package com.keeper.homepage.domain.study.dto.request;
 
 import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_INVALID;
 import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_REGEX;
-import static com.keeper.homepage.domain.study.entity.embedded.NoteLink.NOTION_LINK_INVALID;
-import static com.keeper.homepage.domain.study.entity.embedded.NoteLink.NOTION_LINK_REGEX;
+import static com.keeper.homepage.domain.study.entity.embedded.NotionLink.NOTION_LINK_INVALID;
+import static com.keeper.homepage.domain.study.entity.embedded.NotionLink.NOTION_LINK_REGEX;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.embedded.GitLink;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
-import com.keeper.homepage.domain.study.entity.embedded.NoteLink;
+import com.keeper.homepage.domain.study.entity.embedded.NotionLink;
 import com.keeper.homepage.domain.study.entity.Study;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -49,7 +49,7 @@ public class StudyCreateRequest {
 
   @Nullable
   @Pattern(regexp = NOTION_LINK_REGEX, message = NOTION_LINK_INVALID)
-  private String noteLink;
+  private String notionLink;
 
   @Nullable
   private String etcLink;
@@ -66,7 +66,7 @@ public class StudyCreateRequest {
         .season(season)
         .link(Link.builder()
             .gitLink(gitLink == null ? null : GitLink.from(gitLink))
-            .noteLink(noteLink == null ? null : NoteLink.from(noteLink))
+            .notionLink(notionLink == null ? null : NotionLink.from(notionLink))
             .etcLink(etcLink)
             .build())
         .build();

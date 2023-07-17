@@ -64,12 +64,13 @@ public class MemberJob {
     ROLE_부회장(2),
     ROLE_대외부장(3),
     ROLE_학술부장(4),
-    ROLE_전산관리자(5),
-    ROLE_서기(6),
-    ROLE_총무(7),
-    ROLE_사서(8),
-    ROLE_회원(9),
-    ROLE_출제자(10),
+    ROLE_FRONT_전산관리자(5),
+    ROLE_BACK_전산관리자(6),
+    ROLE_서기(7),
+    ROLE_총무(8),
+    ROLE_사서(9),
+    ROLE_회원(10),
+    ROLE_출제자(11),
     ;
 
     private final long id;

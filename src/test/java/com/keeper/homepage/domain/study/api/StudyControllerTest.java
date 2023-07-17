@@ -130,7 +130,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
       params.add("year", "2023");
       params.add("season", "1");
       params.add("gitLink", "https://github.com/KEEPER31337/Homepage-Back-R2");
-      params.add("noteLink", "https://www.youtube.com/");
+      params.add("notionLink", "https://www.youtube.com/");
       params.add("etcLink", "etc.com");
 
       callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
@@ -196,7 +196,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   fieldWithPath("information").description("스터디 정보"),
                   fieldWithPath("members[]").description("스터디원 실명 리스트"),
                   fieldWithPath("gitLink").description("스터디 깃허브 링크 주소"),
-                  fieldWithPath("noteLink").description("스터디 노트(노션) 링크 주소"),
+                  fieldWithPath("notionLink").description("스터디 노트(노션) 링크 주소"),
                   fieldWithPath("etcLink").description("스터디 기타 링크 주소")
               )));
     }
@@ -263,7 +263,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   field("gitLink", "깃허브 링크")
                       .attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .optional(),
-                  field("noteLink", "노션 링크")
+                  field("notionLink", "노션 링크")
                       .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
                       .optional(),
                   field("etcLink", "기타 링크")
