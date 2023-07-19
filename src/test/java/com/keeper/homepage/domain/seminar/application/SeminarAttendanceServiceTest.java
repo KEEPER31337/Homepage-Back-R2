@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-class SeminarServiceTest extends IntegrationTest {
+class SeminarAttendanceServiceTest extends IntegrationTest {
 
   @Nested
   @DisplayName("출석코드 입력 제한 테스트")
