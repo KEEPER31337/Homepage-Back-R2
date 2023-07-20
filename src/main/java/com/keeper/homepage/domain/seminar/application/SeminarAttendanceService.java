@@ -34,7 +34,7 @@ public class SeminarAttendanceService {
   @Transactional
   public SeminarAttendanceResponse save(Long seminarId, Member member, SeminarAttendanceCodeRequest request) {
     String key = "seminar:" + LocalDate.now() + "memberId:" + member.getId();
-    int attemptNumber = checkAttemptLimit(key);
+    checkAttemptNumberLimit(key);
 
     Seminar seminar = seminarRepository.findById(seminarId)
         .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
@@ -47,15 +47,14 @@ public class SeminarAttendanceService {
         .member(member)
         .seminarAttendanceStatus(seminar.getStatus())
         .build();
-    return SeminarAttendanceResponse.of(attendanceRepository.save(attendance), attemptNumber);
+    return SeminarAttendanceResponse.of(attendanceRepository.save(attendance));
   }
 
-  private int checkAttemptLimit(String key) {
-    int attemptNumber = redisUtil.increaseAndGetWithExpire(key, 60 * 60 * 3).intValue(); // 3시간 후 만료
+  private void checkAttemptNumberLimit(String key) {
+    int attemptNumber = redisUtil.increaseAndGetWithExpire(key, 60 * 60).intValue(); // 1시간 후 만료
     if (attemptNumber > 5) {
       throw new BusinessException(attemptNumber, "attemptNumber", SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE);
     }
-    return attemptNumber;
   }
 
   private void validAttendanceCode(Seminar seminar, SeminarAttendanceCodeRequest request) {

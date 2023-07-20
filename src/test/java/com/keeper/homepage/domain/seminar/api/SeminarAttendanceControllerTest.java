@@ -83,8 +83,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
                   field("attendanceCode", "세미나 출석 코드")),
               responseFields(
                   field("id", "세미나 출석 ID"),
-                  field("statusType", "출석 상태"),
-                  field("attemptNumber", "출석 시도 횟수 (5회까지 가능합니다.)"))
+                  field("statusType", "출석 상태"))
           )).andReturn();
 
       SeminarAttendanceStatusType statusType = objectMapper.readValue(

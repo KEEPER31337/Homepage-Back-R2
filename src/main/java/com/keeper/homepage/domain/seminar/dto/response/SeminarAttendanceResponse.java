@@ -18,13 +18,11 @@ public class SeminarAttendanceResponse {
 
   private Long id;
   private SeminarAttendanceStatusType statusType;
-  private int attemptNumber;
 
-  public static SeminarAttendanceResponse of(SeminarAttendance attendance, int attemptNumber) {
+  public static SeminarAttendanceResponse of(SeminarAttendance attendance) {
     return SeminarAttendanceResponse.builder()
         .id(attendance.getId())
         .statusType(attendance.getSeminarAttendanceStatus().getType())
-        .attemptNumber(attemptNumber)
         .build();
   }
 }
