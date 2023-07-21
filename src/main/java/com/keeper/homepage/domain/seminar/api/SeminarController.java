@@ -77,4 +77,11 @@ public class SeminarController {
     SeminarResponse response = seminarService.findById(seminarId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
+
+  @GetMapping("/recently-done")
+  @Secured({"ROLE_회원"})
+  public ResponseEntity<SeminarIdResponse> getRecentlyDoneSeminarId() {
+    Long seminarId = seminarService.getRecentlyDoneSeminarId();
+    return ResponseEntity.ok(new SeminarIdResponse(seminarId));
+  }
 }

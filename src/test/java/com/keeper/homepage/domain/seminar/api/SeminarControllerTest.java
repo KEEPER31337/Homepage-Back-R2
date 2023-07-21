@@ -10,17 +10,20 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -507,6 +510,36 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
     @DisplayName("존재하지 않는 세미나를 삭제했을 때 실패한다.")
     public void should_failDeleteNotExistsSeminar_when_admin() throws Exception {
       deleteSeminarUsingApi(adminToken, -1L).andExpect(status().isNotFound());
+    }
+  }
+
+  @Nested
+  @DisplayName("가장 최근에 마감된 세미나 조회 테스트")
+  class GetRecentlyDoneSeminarTest {
+
+    @Test
+    @DisplayName("가장 최근에 마감된 세미나는 성공적으로 조회된다.")
+    public void 가장_최근에_마감된_세미나는_성공적으로_조회된다() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "getRecentlyDoneSeminarId");
+
+      seminarTestHelper.builder()
+          .openTime(LocalDateTime.now().minusDays(1))
+          .latenessCloseTime(LocalDateTime.now().minusDays(1))
+          .build();
+
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/seminars/recently-done")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-recently-done-seminar-id",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(field("id", "세미나 ID"))
+          ));
     }
   }
 }

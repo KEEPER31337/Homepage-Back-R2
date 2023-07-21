@@ -21,4 +21,12 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
       + "AND s.latenessCloseTime is not null "
       + "AND s.latenessCloseTime > :dateTime")
   Optional<Seminar> findByAvailable(@Param("dateTime") LocalDateTime dateTime);
+
+  @Query("SELECT s FROM Seminar s "
+      + "WHERE s.id <> 1 " // virtual seminar data 제외
+      + "AND DATE(s.openTime) < :localDate "
+      + "AND DATE(s.latenessCloseTime) < :localDate "
+      + "ORDER BY s.openTime DESC "
+      + "LIMIT 1")
+  Optional<Seminar> findRecentlyDoneSeminar(@Param("localDate") LocalDate localDate);
 }

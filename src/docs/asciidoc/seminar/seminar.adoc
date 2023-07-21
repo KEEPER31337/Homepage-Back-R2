@@ -179,6 +179,30 @@ include::{snippets}/delete-seminar/request-cookies.adoc[]
 
 include::{snippets}/delete-seminar/http-response.adoc[]
 
+== *가장 최근에 마감된 세미나 ID 조회*
+
+NOTE: 어제까지의 세미나 중, 가장 현재와 가깝고 마감된 세미나의 ID를 조회합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-recently-done-seminar-id/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-recently-done-seminar-id/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-recently-done-seminar-id/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-recently-done-seminar-id/response-fields.adoc[]
+
 == *세미나 출석*
 
 link:seminar-attendance.html[API 문서 보기]

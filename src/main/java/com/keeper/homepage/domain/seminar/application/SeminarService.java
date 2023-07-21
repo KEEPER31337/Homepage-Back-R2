@@ -106,4 +106,11 @@ public class SeminarService {
   public SeminarListResponse findAll() {
     return new SeminarListResponse(validSeminarFindService.findAll());
   }
+
+  public Long getRecentlyDoneSeminarId() {
+    LocalDate now = LocalDate.now();
+    return seminarRepository.findRecentlyDoneSeminar(now)
+        .map(Seminar::getId)
+        .orElse(null);
+  }
 }
