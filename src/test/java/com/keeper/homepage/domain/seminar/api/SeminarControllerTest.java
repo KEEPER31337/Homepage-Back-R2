@@ -520,7 +520,7 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("가장 최근에 마감된 세미나는 성공적으로 조회된다.")
     public void 가장_최근에_마감된_세미나는_성공적으로_조회된다() throws Exception {
-      String securedValue = getSecuredValue(SeminarController.class, "getRecentlyDoneSeminarId");
+      String securedValue = getSecuredValue(SeminarController.class, "getRecentlyDoneSeminar");
 
       seminarTestHelper.builder()
           .openTime(LocalDateTime.now().minusDays(1))
@@ -533,12 +533,43 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       mockMvc.perform(get("/seminars/recently-done")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
           .andExpect(status().isOk())
-          .andDo(document("get-recently-done-seminar-id",
+          .andDo(document("get-recently-done-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
                       .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
               responseFields(field("id", "세미나 ID"))
+          ));
+    }
+  }
+
+  @Nested
+  @DisplayName("가장 최근의 예정된 세미나 조회 테스트")
+  class GetRecentlyUpcomingSeminarTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 가장 최근의 예정된 세미나는 성공적으로 조회된다.")
+    public void 유효한_요청일_경우_가장_최근의_예정된_세미나는_성공적으로_조회된다() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "getRecentlyUpcomingSeminars");
+
+      seminarTestHelper.builder()
+          .openTime(LocalDateTime.now())
+          .build();
+      seminarTestHelper.builder()
+          .openTime(LocalDateTime.now().plusDays(1))
+          .build();
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/seminars/recently-upcoming")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-recently-upcoming-seminars",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(field("[].id", "세미나 ID"))
           ));
     }
   }

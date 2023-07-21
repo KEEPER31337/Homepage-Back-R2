@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -80,8 +81,15 @@ public class SeminarController {
 
   @GetMapping("/recently-done")
   @Secured({"ROLE_회원"})
-  public ResponseEntity<SeminarIdResponse> getRecentlyDoneSeminarId() {
-    Long seminarId = seminarService.getRecentlyDoneSeminarId();
-    return ResponseEntity.ok(new SeminarIdResponse(seminarId));
+  public ResponseEntity<SeminarIdResponse> getRecentlyDoneSeminar() {
+    SeminarIdResponse response = seminarService.getRecentlyDoneSeminar();
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/recently-upcoming")
+  @Secured({"ROLE_회원"})
+  public ResponseEntity<List<SeminarIdResponse>> getRecentlyUpcomingSeminars() {
+    List<SeminarIdResponse> responses = seminarService.getRecentlyUpcomingSeminars();
+    return ResponseEntity.ok(responses);
   }
 }

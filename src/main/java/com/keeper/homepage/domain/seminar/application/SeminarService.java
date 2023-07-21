@@ -16,6 +16,7 @@ import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -107,10 +108,20 @@ public class SeminarService {
     return new SeminarListResponse(validSeminarFindService.findAll());
   }
 
-  public Long getRecentlyDoneSeminarId() {
+  public SeminarIdResponse getRecentlyDoneSeminar() {
     LocalDate now = LocalDate.now();
     return seminarRepository.findRecentlyDoneSeminar(now)
         .map(Seminar::getId)
+        .map(SeminarIdResponse::new)
         .orElse(null);
+  }
+
+  public List<SeminarIdResponse> getRecentlyUpcomingSeminars() {
+    LocalDate now = LocalDate.now();
+    return seminarRepository.findRecentlyUpcomingSeminar(now)
+        .stream()
+        .map(Seminar::getId)
+        .map(SeminarIdResponse::new)
+        .toList();
   }
 }

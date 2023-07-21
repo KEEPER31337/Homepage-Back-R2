@@ -179,29 +179,53 @@ include::{snippets}/delete-seminar/request-cookies.adoc[]
 
 include::{snippets}/delete-seminar/http-response.adoc[]
 
-== *가장 최근에 마감된 세미나 ID 조회*
+== *가장 최근에 마감된 세미나 조회*
 
-NOTE: 어제까지의 세미나 중, 가장 현재와 가깝고 마감된 세미나의 ID를 조회합니다.
+NOTE: 어제까지의 세미나 중, 가장 현재와 가깝고 마감된 세미나를 조회합니다.
 
 === 요청
 
 ==== Request
 
-include::{snippets}/get-recently-done-seminar-id/http-request.adoc[]
+include::{snippets}/get-recently-done-seminar/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/get-recently-done-seminar-id/request-cookies.adoc[]
+include::{snippets}/get-recently-done-seminar/request-cookies.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/get-recently-done-seminar-id/http-response.adoc[]
+include::{snippets}/get-recently-done-seminar/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/get-recently-done-seminar-id/response-fields.adoc[]
+include::{snippets}/get-recently-done-seminar/response-fields.adoc[]
+
+== *가장 최근의 예정된 세미나 2개 조회*
+
+NOTE: 오늘을 포함하여 가장 최근의 예정된 세미나 2개를 조회합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-recently-upcoming-seminars/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-recently-upcoming-seminars/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-recently-upcoming-seminars/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-recently-upcoming-seminars/response-fields.adoc[]
 
 == *세미나 출석*
 

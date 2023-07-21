@@ -29,4 +29,11 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
       + "ORDER BY s.openTime DESC "
       + "LIMIT 1")
   Optional<Seminar> findRecentlyDoneSeminar(@Param("localDate") LocalDate localDate);
+
+  @Query("SELECT s FROM Seminar s "
+      + "WHERE s.id <> 1 " // virtual seminar data 제외"
+      + "AND DATE(s.openTime) >= :localDate "
+      + "ORDER BY s.openTime ASC "
+      + "LIMIT 2")
+  List<Seminar> findRecentlyUpcomingSeminar(@Param("localDate") LocalDate localDate);
 }
