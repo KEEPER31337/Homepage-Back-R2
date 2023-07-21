@@ -141,6 +141,10 @@ include::{snippets}/sign-in/request-fields.adoc[]
 
 include::{snippets}/sign-in/http-response.adoc[]
 
+==== Response Fields
+
+include::{snippets}/sign-in/response-fields.adoc[]
+
 ==== Response Cookies
 
 include::{snippets}/sign-in/response-cookies.adoc[]
