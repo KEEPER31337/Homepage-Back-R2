@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.embedded.StudentId;
+import com.keeper.homepage.domain.member.entity.type.MemberType;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -35,4 +36,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   List<Member> findAllByProfileRealNameAndIdNot(RealName realName, long virtualId);
 
   void deleteAllByIdNot(Long virtualId);
+
+  List<Member> findAllByMemberType(MemberType type);
 }
