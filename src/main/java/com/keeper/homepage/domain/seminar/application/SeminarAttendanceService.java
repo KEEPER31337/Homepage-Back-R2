@@ -77,14 +77,12 @@ public class SeminarAttendanceService {
   }
 
   @Transactional
-  public void changeStatus(Long seminarId, Member member, SeminarAttendanceStatusRequest request) {
-    Nickname nickname = member.getProfile().getNickname();
-
-    Seminar seminar = seminarRepository.findById(seminarId)
-        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
+  public void changeStatus(long seminarId, long memberId, SeminarAttendanceStatusRequest request) {
+    Member member = memberFindService.findById(memberId);
+    Seminar seminar = validSeminarFindService.findById(seminarId);
 
     SeminarAttendance seminarAttendance = attendanceRepository.findBySeminarAndMember(seminar, member)
-        .orElseThrow(() -> new BusinessException(nickname, "nickname", MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(member.getNickname(), "nickname", MEMBER_NOT_FOUND));
 
     seminarAttendance.changeStatus(request.excuse(), request.statusType());
   }

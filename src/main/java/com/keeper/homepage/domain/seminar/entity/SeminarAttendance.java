@@ -76,6 +76,10 @@ public class SeminarAttendance {
     }
   }
 
+  public void changeStatus(SeminarAttendanceStatusType type) {
+    seminarAttendanceStatus = getSeminarAttendanceStatusBy(type);
+  }
+
   @Builder
   private SeminarAttendance(Seminar seminar, Member member,
       SeminarAttendanceStatus seminarAttendanceStatus, LocalDateTime attendTime) {

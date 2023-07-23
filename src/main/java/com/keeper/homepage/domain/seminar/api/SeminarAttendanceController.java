@@ -32,12 +32,12 @@ public class SeminarAttendanceController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @PatchMapping
+  @PatchMapping("/{memberId}") // TODO: 관리자 권한으로 접근 가능하게 설정
   public ResponseEntity<Void> changeAttendanceStatus(
-      @PathVariable Long seminarId,
-      @LoginMember Member member,
+      @PathVariable long seminarId,
+      @PathVariable long memberId,
       @RequestBody @Valid SeminarAttendanceStatusRequest request) {
-    seminarAttendanceService.changeStatus(seminarId, member, request);
+    seminarAttendanceService.changeStatus(seminarId, memberId, request);
     return ResponseEntity.noContent().build();
   }
 }
