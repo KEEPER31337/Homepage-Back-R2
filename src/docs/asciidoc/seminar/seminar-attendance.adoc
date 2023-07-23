@@ -15,6 +15,8 @@ link:../keeper.html[API 목록으로 돌아가기]
 
 == *세미나 출석*
 
+NOTE: 활동회원만 출석이 가능합니다.
+
 === 요청
 
 ==== Request
@@ -24,6 +26,10 @@ include::{snippets}/attendance-seminar/http-request.adoc[]
 ==== Request Cookies
 
 include::{snippets}/attendance-seminar/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/attendance-seminar/path-parameters.adoc[]
 
 ==== Request Fields
 
@@ -50,6 +56,10 @@ include::{snippets}/change-attendance-seminar/http-request.adoc[]
 ==== Request Cookies
 
 include::{snippets}/change-attendance-seminar/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/change-attendance-seminar/path-parameters.adoc[]
 
 ==== Request Fields
 

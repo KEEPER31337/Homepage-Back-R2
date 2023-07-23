@@ -47,6 +47,11 @@ public class RedisUtil {
     return valueOperations.increment(key);
   }
 
+  public Long increment(String key) {
+    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    return valueOperations.increment(key);
+  }
+
   public void deleteData(String key) {
     redisTemplate.delete(key);
   }

@@ -14,12 +14,15 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceCodeRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,6 +82,10 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
                       "ACCESS TOKEN %s".formatted(securedValue))),
+              pathParameters(
+                  parameterWithName("seminarId")
+                      .description("세미나의 ID")
+              ),
               requestFields(
                   field("attendanceCode", "세미나 출석 코드")),
               responseFields(
@@ -122,16 +129,17 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       Long seminarId = createSeminarAndGetId(adminToken);
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      attendanceSeminarUsingApi(adminToken, seminarId, strJson.formatted(attendanceCode)).andExpect(status().isBadRequest());
+      attendanceSeminarUsingApi(adminToken, seminarId, strJson.formatted(attendanceCode)).andExpect(
+          status().isBadRequest());
     }
 
     @Test
     @DisplayName("세미나 지각을 성공한다.")
     public void should_success_when_attendanceSeminarLateness() throws Exception {
-      Long seminarId = seminarTestHelper.builder()
-          .attendanceCloseTime(now.plusMinutes(-2))
-          .latenessCloseTime(now.plusMinutes(3))
-          .build().getId();
+      long seminarId = seminarService.save().id();
+      Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
+      seminar.changeCloseTime(now.plusMinutes(-2), now.plusMinutes(3));
+
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -152,10 +160,10 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("세미나 지각 마감 시간이 지나면 결석 처리한다.")
     public void should_success_when_attendanceSeminarAbsence() throws Exception {
-      Long seminarId = seminarTestHelper.builder()
-          .attendanceCloseTime(now.plusMinutes(-2))
-          .latenessCloseTime(now.plusMinutes(-1))
-          .build().getId();
+      long seminarId = seminarService.save().id();
+      Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
+      seminar.changeCloseTime(now.plusMinutes(-2), now.plusMinutes(-1));
+
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -173,6 +181,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       assertThat(statusType).isEqualTo(ABSENCE);
     }
   }
+
   @Nested
   @DisplayName("세미나 출석 상태 변경 테스트")
   class SeminarAttendanceStatusTest {
@@ -196,14 +205,19 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      attendanceSeminarUsingApi(adminToken, seminarId, request).andExpect(status().isCreated());
 
-      changeAttendanceStatusUsingApi(adminToken, seminarId, statusRequest)
+      changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, statusRequest)
           .andExpect(status().isNoContent())
           .andDo(document("change-attendance-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
                       "ACCESS TOKEN %s".formatted(securedValue))),
+              pathParameters(
+                  parameterWithName("memberId")
+                      .description("출석 상태를 변경하고자 하는 회원의 ID"),
+                  parameterWithName("seminarId")
+                      .description("세미나의 ID")
+              ),
               requestFields(
                   field("excuse", "세미나 사유"),
                   field("statusType", "출석 타입"))
@@ -226,8 +240,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      attendanceSeminarUsingApi(adminToken, seminarId, request).andExpect(status().isCreated());
-      changeAttendanceStatusUsingApi(adminToken, seminarId, strJson.formatted(excuse)).andExpect(status().isNoContent());
+      changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, strJson.formatted(excuse)).andExpect(
+          status().isNoContent());
     }
 
     @ParameterizedTest
@@ -246,8 +260,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      attendanceSeminarUsingApi(adminToken, seminarId, request).andExpect(status().isCreated());
-      changeAttendanceStatusUsingApi(adminToken, seminarId, strJson.formatted(statusType)).andExpect(status().isBadRequest());
+      changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, strJson.formatted(statusType)).andExpect(
+          status().isBadRequest());
     }
   }
 }

@@ -64,6 +64,7 @@ import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.seminar.application.SeminarAttendanceService;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
@@ -287,12 +288,15 @@ public class IntegrationTest {
 
   @SpykBean
   protected GameService gameService;
-  
+
   @SpyBean
   protected MemberJobService memberJobService;
-  
+
   @SpyBean
   protected AttendanceService attendanceService;
+
+  @SpyBean
+  protected SeminarAttendanceService seminarAttendanceService;
 
   /******* Helper *******/
   @SpyBean
