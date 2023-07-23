@@ -30,13 +30,25 @@ public class SeminarService {
   private static final Random RANDOM = new Random();
 
   private final SeminarRepository seminarRepository;
+  private final SeminarAttendanceRepository seminarAttendanceRepository;
   private final ValidSeminarFindService validSeminarFindService;
+  private final MemberFindService memberFindService;
 
   @Transactional
   public SeminarIdResponse save() {
     Seminar seminar = Seminar.builder()
         .attendanceCode(randomAttendanceCode())
         .build();
+
+    List<Member> activeMembers = memberFindService.findAllRegular();
+    activeMembers.forEach(member -> {
+      seminarAttendanceRepository.save(
+          SeminarAttendance.builder()
+              .seminar(seminar)
+              .member(member)
+              .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
+              .build());
+    });
     return new SeminarIdResponse(seminarRepository.save(seminar).getId());
   }
 
