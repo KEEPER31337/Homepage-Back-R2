@@ -47,6 +47,10 @@ include::{snippets}/start-seminar/http-request.adoc[]
 
 include::{snippets}/start-seminar/request-cookies.adoc[]
 
+==== Path Parameters
+
+include::{snippets}/start-seminar/path-parameters.adoc[]
+
 ==== Request Fields
 
 include::{snippets}/start-seminar/request-fields.adoc[]
