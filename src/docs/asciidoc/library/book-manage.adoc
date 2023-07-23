@@ -53,7 +53,7 @@ include::{snippets}/assign-book/request-cookies.adoc[]
 
 ==== Request Parameters
 
-include::{snippets}/assign-book/query-parameters.adoc[]
+include::{snippets}/assign-book/request-part-bookMetaData-fields.adoc[]
 
 ==== Request Parts
 

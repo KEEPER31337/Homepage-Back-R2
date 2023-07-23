@@ -26,6 +26,4 @@ data class BookRequest(
 
     @field:NotNull
     val bookDepartment: BookDepartment.BookDepartmentType?,
-
-    val thumbnail: MultipartFile?,
 )
