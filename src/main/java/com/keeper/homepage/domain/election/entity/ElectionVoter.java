@@ -27,7 +27,7 @@ public class ElectionVoter {
   @Id
   @GeneratedValue(strategy = IDENTITY)
   @ManyToOne(fetch = LAZY)
-  @Column(name = "voter_id", nullable = false)
+  @JoinColumn(name = "voter_id", nullable = false)
   private Member member;
 
   @Id

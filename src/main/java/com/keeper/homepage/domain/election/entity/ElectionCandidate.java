@@ -46,7 +46,7 @@ public class ElectionCandidate extends BaseEntity {
   private Member member;
 
   @ManyToOne(fetch = LAZY)
-  @Column(name = "member_job_id", nullable = false)
+  @JoinColumn(name = "member_job_id", nullable = false)
   private MemberJob memberJob;
 
   @Column(name = "description", length = MAX_DESCRIPTION_LENGTH)
