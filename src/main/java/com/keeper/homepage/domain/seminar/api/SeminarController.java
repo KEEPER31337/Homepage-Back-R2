@@ -1,11 +1,14 @@
 package com.keeper.homepage.domain.seminar.api;
 
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceCodeResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarDetailResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
+import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
@@ -74,8 +77,12 @@ public class SeminarController {
   }
 
   @GetMapping("/{seminarId}")
-  public ResponseEntity<SeminarResponse> getSeminar(@PathVariable long seminarId) {
-    SeminarResponse response = seminarService.findById(seminarId);
+  @Secured({"ROLE_회원"})
+  public ResponseEntity<SeminarDetailResponse> getSeminar(
+      @LoginMember Member member,
+      @PathVariable long seminarId
+  ) {
+    SeminarDetailResponse response = seminarService.findById(member, seminarId);
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 

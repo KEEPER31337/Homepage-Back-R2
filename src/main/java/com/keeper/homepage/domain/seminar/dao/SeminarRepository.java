@@ -13,6 +13,8 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
 
   List<Seminar> findAllByIdIsNot(Long seminarId);
 
+  Optional<Seminar> findByIdAndIdNot(Long seminarId, Long virtualId);
+
   @Query("SELECT s FROM Seminar s WHERE DATE(s.openTime) =:localDate")
   Optional<Seminar> findByOpenTime(@Param("localDate") LocalDate localDate);
 

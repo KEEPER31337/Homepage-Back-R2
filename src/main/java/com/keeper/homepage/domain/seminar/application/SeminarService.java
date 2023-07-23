@@ -1,17 +1,23 @@
 package com.keeper.homepage.domain.seminar.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_NOT_FOUND;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
 import static java.util.stream.Collectors.joining;
 
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
+import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceCodeResponse;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarDetailResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarListResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import java.time.LocalDate;
@@ -64,8 +70,7 @@ public class SeminarService {
   public SeminarAttendanceCodeResponse start(Long seminarId, SeminarStartRequest request) {
     validCloseTime(request);
 
-    Seminar seminar = seminarRepository.findById(seminarId)
-        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
+    Seminar seminar = validSeminarFindService.findById(seminarId);
     seminar.changeCloseTime(request.attendanceCloseTime(), request.latenessCloseTime());
     return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }
@@ -95,14 +100,20 @@ public class SeminarService {
 
   @Transactional
   public void delete(long seminarId) {
-    Seminar seminar = seminarRepository.findById(seminarId)
-        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND));
+    Seminar seminar = validSeminarFindService.findById(seminarId);
     seminarRepository.delete(seminar);
   }
 
-  public SeminarResponse findById(long seminarId) {
-    return SeminarResponse.from(seminarRepository.findById(seminarId)
-        .orElseThrow(() -> new BusinessException(seminarId, "seminarId", SEMINAR_NOT_FOUND)));
+  public SeminarDetailResponse findById(Member member, long seminarId) {
+    Seminar seminar = validSeminarFindService.findById(seminarId);
+
+    var seminarAttendanceStatusType = seminarAttendanceRepository.findBySeminarAndMember(seminar, member)
+        .orElse(SeminarAttendance.builder()
+            .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
+            .build())
+        .getSeminarAttendanceStatus()
+        .getType();
+    return SeminarDetailResponse.from(seminar, seminarAttendanceStatusType);
   }
 
   public SeminarResponse findByAvailable() {
