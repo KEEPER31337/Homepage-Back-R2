@@ -1,11 +1,14 @@
 package com.keeper.homepage.domain.member.application.convenience;
 
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,5 +40,12 @@ public class MemberFindService {
   public Stream<Member> findAllByRealName(RealName realName) {
     return memberRepository.findAllByProfileRealNameAndIdNot(realName, VIRTUAL_MEMBER_ID)
         .stream();
+  }
+
+  public List<Member> findAllRegular() {
+    return memberRepository.findAllByMemberType(getMemberTypeBy(정회원))
+        .stream()
+        .filter(member -> member.getId() != VIRTUAL_MEMBER_ID)
+        .toList();
   }
 }
