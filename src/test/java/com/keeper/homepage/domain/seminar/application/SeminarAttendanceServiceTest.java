@@ -21,19 +21,20 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
     @Test
     @DisplayName("출석코드 5회 초과 입력 시 출석이 불가능해야 한다.")
     public void 출석코드_5회_초과_입력_시_출석이_불가능해야_한다() throws Exception {
-      Seminar seminar = seminarTestHelper.generate();
       Member member = memberTestHelper.generate();
+      long seminarId = seminarService.save().id();
+      Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
 
       String invalidAttendanceCode = "12345";
 
       for (int i = 0; i < 5; i++) {
-        assertThatThrownBy(() -> seminarAttendanceService.save(seminar.getId(), member,
+        assertThatThrownBy(() -> seminarAttendanceService.attendance(seminar.getId(), member,
             new SeminarAttendanceCodeRequest(invalidAttendanceCode)))
             .isInstanceOf(BusinessException.class)
             .hasMessageContaining("올바르지 않은 출석 코드입니다.");
       }
 
-      assertThatThrownBy(() -> seminarAttendanceService.save(seminar.getId(), member,
+      assertThatThrownBy(() -> seminarAttendanceService.attendance(seminar.getId(), member,
           new SeminarAttendanceCodeRequest(seminar.getAttendanceCode())))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining("출석코드 입력 가능 횟수를 초과하여 출석이 불가능합니다.");

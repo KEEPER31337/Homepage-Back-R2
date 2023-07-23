@@ -4,7 +4,10 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.restdocs.RestDocsHelper.*;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateFormat;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateTimeFormat;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -16,7 +19,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,6 +110,10 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
                       "ACCESS TOKEN %s".formatted(securedValue))),
+              pathParameters(
+                  parameterWithName("seminarId")
+                      .description("세미나의 ID")
+              ),
               requestFields(
                   field("attendanceCloseTime", "출석 마감 시간", dateTimeFormat()),
                   field("latenessCloseTime", "지각 마감 시간", dateTimeFormat())),
@@ -282,14 +288,12 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
         em.clear();
 
         var responseSeminarDescriptors = new FieldDescriptor[]{
-            field("id", "세미나 ID"),
+            field("seminarId", "세미나 ID"),
             field("openTime", "세미나 생성 시간"),
             field("attendanceCloseTime", "출석 마감 시간"),
             field("latenessCloseTime", "지각 마감 시간"),
-            field("attendanceCode", "출석 코드"),
-            field("name", "세미나명"),
-            field("registerTime", "DB 생성 시간"),
-            field("updateTime", "DB 업데이트 시간")
+            field("seminarName", "세미나명"),
+            field("statusType", "세미나 출석 상태")
         };
 
         searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
@@ -308,12 +312,6 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       @DisplayName("존재하지 않는 세미나를 조회했을 때 실패한다.")
       public void should_failSearchSeminarNotExistId_when_admin() throws Exception {
         searchSeminarUsingApi(adminToken, 0L).andExpect(status().isNotFound());
-      }
-
-      @Test
-      @DisplayName("관리자 권한이 아니면 id 값으로 세미나 조회를 실패한다.")
-      public void should_failSearchSeminarUsingId_when_notAdmin() throws Exception {
-        searchSeminarUsingApi(userToken, 2L).andExpect(status().isForbidden());
       }
     }
 
