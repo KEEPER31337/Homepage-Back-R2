@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.post.application;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
@@ -53,9 +54,7 @@ public class PostService {
   private final CategoryFindService categoryFindService;
 
   public static final String ANONYMOUS_NAME = "익명";
-  public static final int EXAM_ACCESSIBLE_POINT = 20000;
-  public static final int EXAM_ACCESSIBLE_COMMENT_COUNT = 5;
-  public static final int EXAM_ACCESSIBLE_ATTENDANCE_COUNT = 10;
+  public static final int EXAM_ACCESSIBLE_POINT = 30000;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
@@ -131,12 +130,10 @@ public class PostService {
     if (post.isNotice()) {
       return;
     }
-    if (member.getPoint() >= EXAM_ACCESSIBLE_POINT
-        && member.getComments().size() >= EXAM_ACCESSIBLE_COMMENT_COUNT
-        && member.getMemberAttendance().size() >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
+    if (member.getPoint() >= EXAM_ACCESSIBLE_POINT) {
       return;
     }
-    throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
+    throw new BusinessException(member.getPoint(), "point", POST_ACCESS_CONDITION_NEED);
   }
 
   private void checkTempPost(Member member, Post post) {

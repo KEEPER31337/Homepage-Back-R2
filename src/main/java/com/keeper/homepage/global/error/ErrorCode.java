@@ -36,6 +36,7 @@ public enum ErrorCode {
   POST_CATEGORY_NOT_FOUND("존재하지 않는 게시글 카테고리입니다.", HttpStatus.NOT_FOUND),
   POST_NOT_FOUND("존재하지 않는 게시글입니다.", HttpStatus.NOT_FOUND),
   POST_INACCESSIBLE("게시글에 접근할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+  POST_ACCESS_CONDITION_NEED("게시글 열람 조건을 충족하지 않습니다.", HttpStatus.BAD_REQUEST),
   POST_PASSWORD_MISMATCH("게시글의 비밀번호가 일치하지 않습니다.", HttpStatus.FORBIDDEN),
   POST_PASSWORD_NEED("게시글의 비밀번호를 입력해주세요.", HttpStatus.BAD_REQUEST),
   POST_CONTENT_NEED("게시글의 내용을 입력해주세요.", HttpStatus.BAD_REQUEST),

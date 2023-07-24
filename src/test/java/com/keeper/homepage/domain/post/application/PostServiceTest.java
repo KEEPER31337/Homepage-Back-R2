@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_ATTENDANCE_COUNT;
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_COMMENT_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
@@ -30,7 +28,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -104,14 +101,6 @@ public class PostServiceTest extends IntegrationTest {
     @BeforeEach
     void setUp() {
       bestMember = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      for (int i = 0; i < EXAM_ACCESSIBLE_COMMENT_COUNT; i++) {
-        commentRepository.save(commentTestHelper.builder().member(bestMember).build());
-      }
-      for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
-        LocalDate attendanceDate = LocalDate.now().plusDays(i);
-        attendanceRepository
-            .save(attendanceTestHelper.builder().member(bestMember).date(attendanceDate).build());
-      }
       virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
       examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
       thumbnail = thumbnailRepository.findById(DEFAULT_POST_THUMBNAIL.getId()).orElseThrow();
@@ -209,46 +198,6 @@ public class PostServiceTest extends IntegrationTest {
     @DisplayName("족보 글은 포인트가 20000점 미만이면 조회할 수 없다.")
     public void should_failGetExamPost_when_pointLessThan20000() throws Exception {
       member = memberTestHelper.builder().point(0).build();
-      post = postTestHelper.builder()
-          .member(bestMember)
-          .category(examCategory)
-          .build();
-
-      em.flush();
-      em.clear();
-      member = memberRepository.findById(member.getId()).orElseThrow();
-      post = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThrows(BusinessException.class, () -> {
-        postService.find(member, post.getId(), null);
-      });
-    }
-
-    @Test
-    @DisplayName("족보 글은 회원의 댓글 수가 5개 미만이면 조회할 수 없다.")
-    public void should_failGetExamPost_when_commentLessThan5() throws Exception {
-      member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      commentRepository.deleteAll();
-      post = postTestHelper.builder()
-          .member(bestMember)
-          .category(examCategory)
-          .build();
-
-      em.flush();
-      em.clear();
-      member = memberRepository.findById(member.getId()).orElseThrow();
-      post = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThrows(BusinessException.class, () -> {
-        postService.find(member, post.getId(), null);
-      });
-    }
-
-    @Test
-    @DisplayName("족보 글은 회원의 출석 수가 10회 미만이면 조회할 수 없다.")
-    public void should_failGetExamPost_when_attendanceLessThan10() throws Exception {
-      member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      attendanceRepository.deleteAll();
       post = postTestHelper.builder()
           .member(bestMember)
           .category(examCategory)

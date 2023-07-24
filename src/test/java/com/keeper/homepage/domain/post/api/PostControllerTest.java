@@ -1,8 +1,6 @@
 package com.keeper.homepage.domain.post.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_ATTENDANCE_COUNT;
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_COMMENT_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
@@ -40,7 +38,6 @@ import com.keeper.homepage.domain.post.entity.category.Category;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -343,17 +340,6 @@ public class PostControllerTest extends PostApiTestHelper {
   @Nested
   @DisplayName("게시글 조회")
   class FindPost {
-
-    @BeforeEach
-    void setUp() throws IOException {
-      for (int i = 0; i < EXAM_ACCESSIBLE_COMMENT_COUNT; i++) {
-        commentRepository.save(commentTestHelper.builder().member(member).build());
-      }
-      for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
-        attendanceRepository
-            .save(attendanceTestHelper.builder().member(member).date(LocalDate.now().plusDays(i)).build());
-      }
-    }
 
     @Test
     @DisplayName("게시글을 조회하면 성공적으로 조회된다.")
