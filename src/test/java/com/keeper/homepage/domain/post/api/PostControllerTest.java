@@ -120,7 +120,8 @@ public class PostControllerTest extends PostApiTestHelper {
               requestPartFields(
                   "request",
                   fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
-                  fieldWithPath("content").description("게시글 내용을 입력해주세요."),
+                  fieldWithPath("content").description("게시글 내용을 입력해주세요. (임시 저장글이 아닐 경우 필수입니다.)")
+                      .optional(),
                   fieldWithPath("allowComment").description("댓글 허용 여부 (null일 때 default : " + true + ")")
                       .optional(),
                   fieldWithPath("isNotice").description("공지글 여부 (null일 때 default : " + false + ")")
@@ -527,7 +528,8 @@ public class PostControllerTest extends PostApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
-                  fieldWithPath("content").description("게시글 내용을 입력해주세요.").optional(),
+                  fieldWithPath("content").description("게시글 내용을 입력해주세요. (임시 저장글이 아닐 경우 필수입니다.)")
+                      .optional(),
                   fieldWithPath("allowComment").description("댓글 허용 여부 (null일 때 default : " + true + ")")
                       .optional(),
                   fieldWithPath("isNotice").description("공지글 여부 (null일 때 default : " + false + ")")

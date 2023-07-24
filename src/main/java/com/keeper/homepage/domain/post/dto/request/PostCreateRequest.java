@@ -27,7 +27,7 @@ public class PostCreateRequest {
   @Size(max = POST_TITLE_LENGTH, message = "게시글 제목은 {max}자 이하로 입력해주세요.")
   private String title;
 
-  @NotBlank(message = "게시글 본문을 입력해주세요.")
+  @Nullable
   private String content;
 
   @Nullable
