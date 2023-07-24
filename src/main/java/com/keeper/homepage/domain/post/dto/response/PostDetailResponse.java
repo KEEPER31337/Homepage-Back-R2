@@ -16,6 +16,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class PostDetailResponse {
 
+  private Long categoryId;
   private String categoryName;
   private String title;
   private String writerName;
@@ -41,6 +42,7 @@ public class PostDetailResponse {
 
   public static PostDetailResponse of(Post post, String writerName, Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
+        .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getName())
         .title(post.getTitle())
         .writerName(writerName)

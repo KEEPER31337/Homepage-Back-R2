@@ -10,7 +10,6 @@ import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOK
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -311,6 +310,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
               ),
               responseFields(
+                  fieldWithPath("categoryId").description("게시글 카테고리의 ID"),
                   fieldWithPath("categoryName").description("게시글 카테고리의 이름"),
                   fieldWithPath("title").description("게시글의 타이틀"),
                   fieldWithPath("writerName").description("게시글 작성자의 이름(익명 게시판일 경우 \"익명\")"),
@@ -366,6 +366,7 @@ public class PostControllerTest extends PostApiTestHelper {
                       .description("조회하고자 하는 게시글의 비밀번호. 단, 작성자가 본인인 경우 없어도 됩니다.")
               ),
               responseFields(
+                  fieldWithPath("categoryId").description("게시글 카테고리의 ID"),
                   fieldWithPath("categoryName").description("게시글 카테고리의 이름"),
                   fieldWithPath("title").description("게시글의 타이틀"),
                   fieldWithPath("writerName").description("게시글 작성자의 이름(익명 게시판일 경우 \"익명\")"),
