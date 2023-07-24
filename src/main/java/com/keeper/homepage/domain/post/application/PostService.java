@@ -17,9 +17,9 @@ import com.keeper.homepage.domain.post.application.convenience.PostDeleteService
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
-import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -28,7 +28,6 @@ import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -104,10 +103,11 @@ public class PostService {
     post.addVisitCount();
 
     String writerName = getWriterName(post);
+    String writerThumbnailPath = getWriterThumbnailPath(post);
 
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
-    return PostDetailResponse.of(post, writerName, previousPost, nextPost);
+    return PostDetailResponse.of(post, writerName, writerThumbnailPath, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -162,6 +162,13 @@ public class PostService {
       return ANONYMOUS_NAME;
     }
     return post.getWriterNickname();
+  }
+
+  private String getWriterThumbnailPath(Post post) {
+    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
+      return null;
+    }
+    return post.getMember().getThumbnailPath();
   }
 
   @Transactional
