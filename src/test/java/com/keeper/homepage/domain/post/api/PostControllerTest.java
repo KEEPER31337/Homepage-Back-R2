@@ -20,6 +20,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.responseH
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
+import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import java.io.FileInputStream;
@@ -498,9 +500,18 @@ public class PostControllerTest extends PostApiTestHelper {
     @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
     public void should_success_when_writerIsMe() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "updatePost");
-      addAllParams();
 
-      callUpdatePostApi(memberToken, postId, params)
+      PostUpdateRequest request = PostUpdateRequest.builder()
+          .title("게시글 제목")
+          .content("게시글 내용")
+          .allowComment(true)
+          .isNotice(false)
+          .isSecret(false)
+          .isTemp(false)
+          .password("게시글 비밀번호")
+          .build();
+
+      callUpdatePostApi(memberToken, postId, request)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("update-post",
@@ -512,31 +523,19 @@ public class PostControllerTest extends PostApiTestHelper {
                   parameterWithName("postId")
                       .description("수정하고자 하는 게시글의 ID")
               ),
-              queryParameters(
-                  parameterWithName("title")
-                      .description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
-                  parameterWithName("content")
-                      .description("게시글 내용을 입력해주세요."),
-                  parameterWithName("allowComment")
-                      .description("댓글 허용 여부 (null일 때 default : " + true + ")")
+              requestFields(
+                  fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
+                  fieldWithPath("content").description("게시글 내용을 입력해주세요.").optional(),
+                  fieldWithPath("allowComment").description("댓글 허용 여부 (null일 때 default : " + true + ")")
                       .optional(),
-                  parameterWithName("isNotice")
-                      .description("공지글 여부 (null일 때 default : " + false + ")")
+                  fieldWithPath("isNotice").description("공지글 여부 (null일 때 default : " + false + ")")
                       .optional(),
-                  parameterWithName("isSecret")
-                      .description("비밀글 여부 (null일 때 default : " + false + ")")
+                  fieldWithPath("isSecret").description("비밀글 여부 (null일 때 default : " + false + ")")
                       .optional(),
-                  parameterWithName("isTemp")
-                      .description("임시 저장글 여부 (null일 때 default : " + false + ")")
+                  fieldWithPath("isTemp").description("임시 저장글 여부 (null일 때 default : " + false + ")")
                       .optional(),
-                  parameterWithName("password")
-                      .description(
-                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
-                              + ", 비밀글일 경우 필수값입니다.)")
-                      .optional()
-              ),
-              requestParts(
-                  partWithName("files").description("게시글의 첨부 파일")
+                  fieldWithPath("password").description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
+                          + ", 비밀글일 경우 필수값입니다.)")
                       .optional()
               ),
               responseHeaders(
@@ -570,20 +569,18 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("내가 작성한 게시글이 아닐 경우 게시글 수정은 실패한다.")
     public void should_fail_when_writerIsNotMe() throws Exception {
-      addAllParams();
+      PostUpdateRequest request = PostUpdateRequest.builder()
+          .title("게시글 제목")
+          .content("게시글 내용")
+          .allowComment(true)
+          .isNotice(false)
+          .isSecret(false)
+          .isTemp(false)
+          .password("게시글 비밀번호")
+          .build();
 
-      callUpdatePostApi(otherToken, postId, params)
+      callUpdatePostApi(otherToken, postId, request)
           .andExpect(status().isForbidden());
-    }
-
-    private void addAllParams() {
-      params.add("title", "게시글 제목");
-      params.add("content", "게시글 내용");
-      params.add("allowComment", "true");
-      params.add("isNotice", "false");
-      params.add("isSecret", "false");
-      params.add("isTemp", "false");
-      params.add("password", "게시글 비밀번호");
     }
   }
 

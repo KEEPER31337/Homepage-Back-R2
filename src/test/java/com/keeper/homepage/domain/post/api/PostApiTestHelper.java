@@ -5,9 +5,11 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -59,17 +61,12 @@ public class PostApiTestHelper extends IntegrationTest {
         .param("password", password));
   }
 
-  ResultActions callUpdatePostApi(String accessToken, long postId,
-      MultiValueMap<String, String> params)
+  ResultActions callUpdatePostApi(String accessToken, long postId, PostUpdateRequest request)
       throws Exception {
-    return mockMvc.perform(multipart("/posts/{postId}", postId)
-        .with(request -> {
-          request.setMethod("PUT");
-          return request;
-        })
-        .queryParams(params)
+    return mockMvc.perform(put("/posts/{postId}", postId)
+        .content(asJsonString(request))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
-        .contentType(MediaType.MULTIPART_FORM_DATA));
+        .contentType(MediaType.APPLICATION_JSON));
   }
 
   ResultActions callUpdatePostThumbnail(String accessToken, long postId, MockMultipartFile thumbnail)

@@ -25,7 +25,7 @@ include::{snippets}/create-post/http-request.adoc[]
 
 include::{snippets}/create-post/request-cookies.adoc[]
 
-==== Request Body
+==== Request Fields
 
 include::{snippets}/create-post/request-part-request-fields.adoc[]
 
@@ -115,13 +115,9 @@ include::{snippets}/update-post/request-cookies.adoc[]
 
 include::{snippets}/update-post/path-parameters.adoc[]
 
-==== Query Parameters
+==== Request Fields
 
-include::{snippets}/update-post/query-parameters.adoc[]
-
-==== Request Parts
-
-include::{snippets}/update-post/request-parts.adoc[]
+include::{snippets}/update-post/request-fields.adoc[]
 
 === 응답
 
