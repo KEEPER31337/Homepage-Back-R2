@@ -71,6 +71,7 @@ public class MemberJob {
     ROLE_사서(9),
     ROLE_회원(10),
     ROLE_출제자(11),
+    ROLE_INFRA_전산관리자(12),
     ;
 
     private final long id;
