@@ -1,14 +1,13 @@
 package com.keeper.homepage.domain.post.entity.category;
 
-import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
-import com.keeper.homepage.domain.post.entity.Post;
-import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,41 +36,24 @@ public class Category {
   @Column(name = "name", nullable = false, length = MAX_NAME_LENGTH)
   private String name;
 
-  @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "parent_id")
-  private Category parent;
-
-  @Column(name = "href", length = MAX_HREF_LENGTH)
-  private String href;
-
-  @OneToMany(mappedBy = "parent", cascade = ALL, orphanRemoval = true)
-  private final List<Category> children = new ArrayList<>();
-
   @Builder
-  private Category(String name, Category parent, String href) {
+  private Category(String name) {
     this.name = name;
-    this.parent = parent;
-    this.href = href;
   }
 
   @Getter
   @RequiredArgsConstructor
-  public enum DefaultCategory {
-    VIRTUAL_CATEGORY(1, "virtual_category"),
-    EXAM_CATEGORY(1377, "시험"),
-    ANONYMOUS_CATEGORY(63908, "익명게시판"),
+  public enum CategoryType {
+    VIRTUAL_CATEGORY(1),
+    NOTICE_CATEGORY(101),
+    SUGGESTION_CATEGORY(102),
+    INFORMATION_CATEGORY(103),
+    FREE_CATEGORY(104),
+    ANONYMOUS_CATEGORY(105),
+    GRADUATE_CATEGORY(106),
+    EXAM_CATEGORY(107),
     ;
 
     private final long id;
-    private final String name;
-  }
-
-  public void addChild(Category child) {
-    child.assignParent(this);
-    children.add(child);
-  }
-
-  public void assignParent(Category parent) {
-    this.parent = parent;
   }
 }

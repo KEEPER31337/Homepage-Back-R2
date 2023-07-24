@@ -1,9 +1,9 @@
 package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.VIRTUAL_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.VIRTUAL_CATEGORY;
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
 import static java.io.File.separator;
@@ -122,7 +122,6 @@ public class PostServiceTest extends IntegrationTest {
       post = postRepository.findById(post.getId()).orElseThrow();
       PostDetailResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
 
-      assertThat(response.getCategoryName()).isEqualTo(VIRTUAL_CATEGORY.getName());
       assertThat(response.getTitle()).isEqualTo(post.getTitle());
       assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getNickname().get());
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
