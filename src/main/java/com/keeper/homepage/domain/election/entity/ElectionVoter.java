@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,6 +23,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "election_voter")
+@IdClass(ElectionVoterPK.class)
 public class ElectionVoter {
 
   @Id
@@ -31,6 +33,7 @@ public class ElectionVoter {
   private Member member;
 
   @Id
+  @GeneratedValue(strategy = IDENTITY)
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "election_id", nullable = false)
   private Election election;

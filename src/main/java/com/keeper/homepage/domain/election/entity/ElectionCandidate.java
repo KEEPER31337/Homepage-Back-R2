@@ -55,13 +55,12 @@ public class ElectionCandidate extends BaseEntity {
   @Column(name = "vote_count", nullable = false)
   private Long voteCount;
 
-  @OneToMany(mappedBy = "election_candidate", cascade = REMOVE)
+  @OneToMany(mappedBy = "electionCandidate", cascade = REMOVE)
   private final List<ElectionChartLog> electionChartLogs = new ArrayList<>();
 
   @Builder
   private ElectionCandidate(Election election, Member member, MemberJob memberJob,
-      String description,
-      Long voteCount) {
+      String description, Long voteCount) {
     this.election = election;
     this.member = member;
     this.memberJob = memberJob;
