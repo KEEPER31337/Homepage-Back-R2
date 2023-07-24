@@ -11,49 +11,36 @@ import com.keeper.homepage.IntegrationTest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
 public class PostApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file,
-      MultiValueMap<String, String> params)
+  ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file, MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart("/posts")
         .file(file)
-        .queryParams(params)
-        .with(request -> {
-          request.setMethod("POST");
-          return request;
-        })
+        .part(mockPart)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
   ResultActions callCreatePostApiWithFiles(String accessToken,
-      MockMultipartFile thumbnail,
-      MockMultipartFile file, MultiValueMap<String, String> params) throws Exception {
+      MockMultipartFile thumbnail, MockMultipartFile file, MockPart mockPart) throws Exception {
     return mockMvc.perform(multipart("/posts")
         .file(thumbnail)
         .file(file)
-        .with(request -> {
-          request.setMethod("POST");
-          return request;
-        })
-        .queryParams(params)
+        .part(mockPart)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callCreatePostApi(String accessToken, MultiValueMap<String, String> params)
+  ResultActions callCreatePostApi(String accessToken, MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart("/posts")
-        .queryParams(params)
-        .with(request -> {
-          request.setMethod("POST");
-          return request;
-        })
+        .part(mockPart)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }

@@ -25,9 +25,9 @@ include::{snippets}/create-post/http-request.adoc[]
 
 include::{snippets}/create-post/request-cookies.adoc[]
 
-==== Query Parameters
+==== Request Body
 
-include::{snippets}/create-post/query-parameters.adoc[]
+include::{snippets}/create-post/request-part-request-fields.adoc[]
 
 ==== Request Parts
 
