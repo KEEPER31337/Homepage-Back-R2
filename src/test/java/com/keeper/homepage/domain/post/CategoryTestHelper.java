@@ -23,10 +23,6 @@ public class CategoryTestHelper {
 
     private String name;
 
-    private Category parent;
-
-    private String href;
-
     private CategoryBuilder() {
 
     }
@@ -36,21 +32,9 @@ public class CategoryTestHelper {
       return this;
     }
 
-    public CategoryBuilder parent(Category parent) {
-      this.parent = parent;
-      return this;
-    }
-
-    public CategoryBuilder href(String href) {
-      this.href = href;
-      return this;
-    }
-
     public Category build() {
       return categoryRepository.save(Category.builder()
           .name(name != null ? name : "카테고리 이름")
-          .parent(parent)
-          .href(href)
           .build());
     }
   }

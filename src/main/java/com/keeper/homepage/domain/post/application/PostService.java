@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
@@ -28,7 +28,6 @@ import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
