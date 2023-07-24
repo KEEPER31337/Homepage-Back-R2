@@ -7,10 +7,10 @@ import static com.keeper.homepage.domain.study.entity.embedded.NotionLink.NOTION
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.embedded.GitLink;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.domain.study.entity.embedded.NotionLink;
-import com.keeper.homepage.domain.study.entity.Study;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,11 +18,12 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
 public class StudyCreateRequest {
 
@@ -53,9 +54,6 @@ public class StudyCreateRequest {
 
   @Nullable
   private String etcLink;
-
-  @Nullable
-  private MultipartFile thumbnail;
 
   public Study toEntity(Member member) {
     return Study.builder()
