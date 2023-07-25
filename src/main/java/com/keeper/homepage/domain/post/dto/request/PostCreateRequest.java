@@ -30,16 +30,16 @@ public class PostCreateRequest {
   @Nullable
   private String content;
 
-  @Nullable
+  @NotNull
   private Boolean allowComment;
 
-  @Nullable
+  @NotNull
   private Boolean isNotice;
 
-  @Nullable
+  @NotNull
   private Boolean isSecret;
 
-  @Nullable
+  @NotNull
   private Boolean isTemp;
 
   @Nullable

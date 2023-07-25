@@ -9,8 +9,6 @@ import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FOUND;
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
@@ -58,10 +56,10 @@ public class PostService {
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
-    if (TRUE.equals(post.isSecret())) {
+    if (post.isSecret()) {
       checkPassword(post.getPassword());
     }
-    if (FALSE.equals(post.isTemp())) {
+    if (!post.isTemp()) {
       checkContent(post.getContent());
     }
 
@@ -186,10 +184,10 @@ public class PostService {
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-    if (TRUE.equals(newPost.isSecret())) {
+    if (newPost.isSecret()) {
       checkPassword(newPost.getPassword());
     }
-    if (FALSE.equals(newPost.isTemp())) {
+    if (!newPost.isTemp()) {
       checkContent(newPost.getContent());
     }
     post.update(newPost);

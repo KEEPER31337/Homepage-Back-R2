@@ -119,14 +119,10 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
                   fieldWithPath("content").description("게시글 내용을 입력해주세요. (임시 저장글이 아닐 경우 필수입니다.)")
                       .optional(),
-                  fieldWithPath("allowComment").description("댓글 허용 여부 (null일 때 default : " + true + ")")
-                      .optional(),
-                  fieldWithPath("isNotice").description("공지글 여부 (null일 때 default : " + false + ")")
-                      .optional(),
-                  fieldWithPath("isSecret").description("비밀글 여부 (null일 때 default : " + false + ")")
-                      .optional(),
-                  fieldWithPath("isTemp").description("임시 저장글 여부 (null일 때 default : " + false + ")")
-                      .optional(),
+                  fieldWithPath("allowComment").description("댓글 허용 여부"),
+                  fieldWithPath("isNotice").description("공지글 여부"),
+                  fieldWithPath("isSecret").description("비밀글 여부"),
+                  fieldWithPath("isTemp").description("임시 저장글 여부"),
                   fieldWithPath("password")
                       .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH + ", 비밀글일 경우 필수값입니다.)")
                       .optional(),
@@ -518,14 +514,10 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
                   fieldWithPath("content").description("게시글 내용을 입력해주세요. (임시 저장글이 아닐 경우 필수입니다.)")
                       .optional(),
-                  fieldWithPath("allowComment").description("댓글 허용 여부 (null일 때 default : " + true + ")")
-                      .optional(),
-                  fieldWithPath("isNotice").description("공지글 여부 (null일 때 default : " + false + ")")
-                      .optional(),
-                  fieldWithPath("isSecret").description("비밀글 여부 (null일 때 default : " + false + ")")
-                      .optional(),
-                  fieldWithPath("isTemp").description("임시 저장글 여부 (null일 때 default : " + false + ")")
-                      .optional(),
+                  fieldWithPath("allowComment").description("댓글 허용 여부"),
+                  fieldWithPath("isNotice").description("공지글 여부"),
+                  fieldWithPath("isSecret").description("비밀글 여부"),
+                  fieldWithPath("isTemp").description("임시 저장글 여부"),
                   fieldWithPath("password").description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
                           + ", 비밀글일 경우 필수값입니다.)")
                       .optional()

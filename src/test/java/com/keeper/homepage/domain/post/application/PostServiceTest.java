@@ -324,6 +324,10 @@ public class PostServiceTest extends IntegrationTest {
       Post newPost = Post.builder()
           .title("수정 제목")
           .content("수정 내용")
+          .allowComment(true)
+          .isNotice(false)
+          .isSecret(false)
+          .isTemp(false)
           .build();
 
       assertDoesNotThrow(() -> {

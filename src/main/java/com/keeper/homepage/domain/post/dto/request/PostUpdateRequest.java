@@ -6,6 +6,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.post.entity.Post;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,22 +24,22 @@ public class PostUpdateRequest {
   @Size(max = POST_TITLE_LENGTH, message = "게시글 제목은 {max}자 이하로 입력해주세요.")
   private String title;
 
-  @NotBlank(message = "게시글 본문을 입력해주세요.")
+  @Nullable
   private String content;
 
-  @Nullable
+  @NotNull
   private Boolean allowComment;
 
-  @Nullable
+  @NotNull
   private Boolean isNotice;
 
-  @Nullable
+  @NotNull
   private Boolean isSecret;
 
-  @Nullable
+  @NotNull
   private Boolean isTemp;
 
-  @Nullable
+  @NotNull
   @Size(max = POST_PASSWORD_LENGTH, message = "비밀번호는 {max}자 이하로 입력해주세요.")
   private String password;
 
