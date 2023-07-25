@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -69,13 +70,13 @@ public class PostService {
   }
 
   private void checkPassword(String password) {
-    if (password == null || password.isBlank()) {
+    if (!StringUtils.hasText(password)) {
       throw new BusinessException(password, "password", POST_PASSWORD_NEED);
     }
   }
 
   private void checkContent(String content) {
-    if (content == null || content.isBlank()) {
+    if (!StringUtils.hasText(content)) {
       throw new BusinessException(content, "content", POST_CONTENT_NEED);
     }
   }
