@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.library.api
 
+import com.keeper.homepage.domain.library.dto.req.BookRequest
 import com.keeper.homepage.domain.library.dto.req.MAX_AUTHOR_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TITLE_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TOTAL_QUANTITY_LENGTH
@@ -15,24 +16,26 @@ import com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.CsvSource
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.HttpHeaders
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
 import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.headers.HeaderDocumentation.headerWithName
 import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
-import org.springframework.restdocs.payload.PayloadDocumentation.requestFields
-import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Attributes.key
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.stream.Stream
 
 /**
  * 0.5ms를 의미합니다.
@@ -107,11 +110,11 @@ class BookManageControllerTest : BookManageApiTestHelper() {
     @Nested
     inner class `책 추가` {
 
-        private val validParams = multiValueMapOf(
-            "title" to "삶의 목적을 찾는 45가지 방법",
-            "author" to "ChatGPT",
-            "totalQuantity" to "10",
-            "bookDepartment" to "document"
+        private val validRequest = BookRequest(
+            title = "삶의 목적을 찾는 45가지 방법",
+            author = "ChatGPT",
+            totalQuantity = 10,
+            bookDepartment = BookDepartmentType.DOCUMENT
         )
 
         @Test
@@ -126,19 +129,21 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                             cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
                             cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
                         ),
-                        queryParameters(
-                            parameterWithName("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
-                            parameterWithName("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
-                            parameterWithName("bookDepartment")
+                        requestPartFields(
+                            "bookMetaData",
+                            fieldWithPath("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
+                            fieldWithPath("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
+                            fieldWithPath("bookDepartment")
                                 .attributes(
                                     key("format")
                                         .value(
                                             BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
                                         )
                                 ).description("책 카테고리"),
-                            parameterWithName("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
+                            fieldWithPath("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
                         ),
                         requestParts(
+                            partWithName("bookMetaData").description("책 정보"),
                             partWithName("thumbnail").description("책의 썸네일")
                                 .optional(),
                         ),
@@ -156,25 +161,27 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         }
 
         @ParameterizedTest
-        @CsvSource(
-            "title, ''", "title, ",
-            "author, ''", "author, ",
-            "totalQuantity, -1", "totalQuantity, 0", "totalQuantity, 21",
-            "bookDepartment, ''", "bookDepartment, ", "bookDepartment, NONE",
-        )
-        fun `유효하지 않은 요청의 책 등록은 실패해야 한다`(key: String, invalidValue: String?) {
-            val invalidParams = LinkedMultiValueMap(validParams)
-            invalidParams.replace(key, listOf(invalidValue))
-            callAddBookApi(params = invalidParams)
+        @MethodSource
+        fun `유효하지 않은 요청의 책 등록은 실패해야 한다`(key: String, invalidValue: Any?) {
+            val invalidRequest = validRequest.copy()
+            val property: Field = BookRequest::class.java.getDeclaredField(key)
+            property.isAccessible = true
+            property.set(invalidRequest, invalidValue)
+            callAddBookApi(request = invalidRequest)
                 .andExpect(status().isBadRequest)
         }
 
-        @Test
-        fun `존재하지 않는 책 종류의 책 등록은 실패해야 한다`() {
-            val invalidParams = LinkedMultiValueMap(validParams)
-            invalidParams.replace("bookDepartment", listOf("GUSAH"))
-            callAddBookApi(params = invalidParams)
-                .andExpect(status().isBadRequest)
+        fun `유효하지 않은 요청의 책 등록은 실패해야 한다`(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.arguments("title", ""),
+                Arguments.arguments("title", null),
+                Arguments.arguments("author", ""),
+                Arguments.arguments("author", null),
+                Arguments.arguments("totalQuantity", -1L),
+                Arguments.arguments("totalQuantity", 0L),
+                Arguments.arguments("totalQuantity", 21L),
+                Arguments.arguments("bookDepartment", null),
+            )
         }
 
         @Test

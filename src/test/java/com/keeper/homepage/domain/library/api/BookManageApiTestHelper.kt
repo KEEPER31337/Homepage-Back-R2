@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.IntegrationTest
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper
-import com.keeper.homepage.domain.library.BookTestHelper
+import com.keeper.homepage.domain.library.dto.req.BookRequest
 import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.Book
@@ -18,12 +18,15 @@ import io.mockk.just
 import jakarta.servlet.http.Cookie
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockPart
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*
 import org.springframework.restdocs.payload.FieldDescriptor
 import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.test.web.servlet.ResultActions
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
+import java.nio.charset.StandardCharsets
 import java.time.LocalDateTime
 
 const val BOOK_URL = "/manage/books"
@@ -109,11 +112,11 @@ class BookManageApiTestHelper : IntegrationTest() {
     }
 
     fun callAddBookApi(
-        params: MultiValueMap<String, String?> = multiValueMapOf(
-            "title" to "삶의 목적을 찾는 45가지 방법",
-            "author" to "ChatGPT",
-            "totalQuantity" to "10",
-            "bookDepartment" to "document"
+        request: BookRequest = BookRequest(
+            title = "삶의 목적을 찾는 45가지 방법",
+            author = "ChatGPT",
+            totalQuantity = 10,
+            bookDepartment = BookDepartmentType.DOCUMENT
         ),
         accessCookies: Array<Cookie> = bookManagerCookies,
         hasThumbnail: Boolean = false,
@@ -122,21 +125,26 @@ class BookManageApiTestHelper : IntegrationTest() {
         if (isMocking) {
             every { bookManageService.addBook(any(), any(), any(), any(), any()) } returns 1L
         }
+        val mockPart = MockPart(
+            "bookMetaData",
+            asJsonString(request).toByteArray(StandardCharsets.UTF_8)
+        )
+        mockPart.headers.contentType = MediaType.APPLICATION_JSON
         return if (hasThumbnail) {
             mockMvc.perform(
                 multipart(BOOK_URL)
                     .file(thumbnailTestHelper.smallThumbnailFile)
-                    .queryParams(params)
+                    .part(mockPart)
                     .cookie(*accessCookies)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
-            )
+            ).andDo(MockMvcResultHandlers.print())
         } else {
             mockMvc.perform(
                 multipart(BOOK_URL)
-                    .queryParams(params)
+                    .part(mockPart)
                     .cookie(*accessCookies)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
-            )
+            ).andDo(MockMvcResultHandlers.print())
         }
     }
 
