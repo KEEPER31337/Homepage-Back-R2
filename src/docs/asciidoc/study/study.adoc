@@ -27,11 +27,11 @@ include::{snippets}/create-study/http-request.adoc[]
 
 include::{snippets}/create-study/request-cookies.adoc[]
 
-==== Query Parameters
+==== Request Fields
 
 NOTE: 링크는 하나 이상 필수입니다.
 
-include::{snippets}/create-study/query-parameters.adoc[]
+include::{snippets}/create-study/request-part-request-fields.adoc[]
 
 ==== Request Parts
 

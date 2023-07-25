@@ -20,6 +20,7 @@ public class PostDetailResponse {
   private String categoryName;
   private String title;
   private String writerName;
+  private String writerThumbnailPath;
   private Integer visitCount;
   private String thumbnailPath;
   private String content;
@@ -40,12 +41,14 @@ public class PostDetailResponse {
   private AdjacentPostResponse previousPost;
   private AdjacentPostResponse nextPost;
 
-  public static PostDetailResponse of(Post post, String writerName, Post previousPost, Post nextPost) {
+  public static PostDetailResponse of(Post post, String writerName, String writerThumbnailPath, Post previousPost,
+      Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getName())
         .title(post.getTitle())
         .writerName(writerName)
+        .writerThumbnailPath(writerThumbnailPath)
         .registerTime(post.getRegisterTime())
         .updateTime(post.getUpdateTime())
         .visitCount(post.getVisitCount())

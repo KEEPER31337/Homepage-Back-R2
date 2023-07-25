@@ -6,7 +6,6 @@ import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.ST
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -14,6 +13,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.responseH
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
@@ -23,15 +23,17 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.api.PostController;
+import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import java.io.IOException;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -63,77 +65,86 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 유효한_요청_시_스터디_생성은_성공한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "createStudy");
 
-      addAllParams(params);
+      StudyCreateRequest request = StudyCreateRequest.builder()
+          .title("자바 스터디")
+          .information("자바 스터디 입니다")
+          .year(2023)
+          .season(1)
+          .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
+          .notionLink("https://www.notion.so/Java-Spring")
+          .etcLink("etc.com")
+          .build();
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
+      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
           .andExpect(status().isCreated())
           .andDo(document("create-study",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
                       .description("ACCESS TOKEN %s".formatted(securedValue) + " 스터디 생성자는 스터디장이 됩니다.")
               ),
-              queryParameters(
-                  parameterWithName("title")
-                      .description("스터디 이름을 입력해주세요. (최대 가능 길이 : " + STUDY_TITLE_LENGTH + ")"),
-                  parameterWithName("information")
-                      .description("스터디 설명을 입력해주세요. (최대 가능 길이 : " + STUDY_INFORMATION_LENGTH + ")"),
-                  parameterWithName("year")
-                      .description("스터디 년도를 입력해주세요."),
-                  parameterWithName("season")
-                      .attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기"))
+              requestPartFields(
+                  "request",
+                  fieldWithPath("title").description("스터디 이름을 입력해주세요. (최대 가능 길이 : " + STUDY_TITLE_LENGTH + ")"),
+                  fieldWithPath("information")
+                      .description("스터디 설명을 입력해주세요. (최대 가능 길이 : " + STUDY_INFORMATION_LENGTH + ")")
+                      .optional(),
+                  fieldWithPath("year").description("스터디 년도를 입력해주세요."),
+                  fieldWithPath("season").attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기"))
                       .description("스터디 학기를 입력해주세요."),
-                  parameterWithName("gitLink")
-                      .attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
+                  fieldWithPath("gitLink").attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
-                  parameterWithName("noteLink")
-                      .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
+                  fieldWithPath("notionLink").attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
                       .description("스터디 노트 링크를 입력해주세요.").optional(),
-                  parameterWithName("etcLink")
+                  fieldWithPath("etcLink")
                       .description("스터디 기타 링크를 입력해주세요.").optional()
               ),
               requestParts(
+                  partWithName("request").description("스터디 정보"),
                   partWithName("thumbnail").description("스터디의 썸네일")
                       .optional()
               )));
     }
 
-    private void addAllParams(MultiValueMap<String, String> params) {
-      params.add("title", "자바 스터디");
-      params.add("information", "자바 스터디 입니다");
-      params.add("year", "2023");
-      params.add("season", "1");
-      params.add("gitLink", "https://github.com/KEEPER31337/Homepage-Back-R2");
-      params.add("noteLink", "https://www.notion.so/Java-Spring");
-      params.add("etcLink", "etc.com");
-    }
-
     @Test
     @DisplayName("깃허브 링크가 아닌 링크를 입력할 경우 스터디 생성은 실패한다.")
     public void 깃허브_링크가_아닌_링크를_입력할_경우_스터디_생성은_실패한다() throws Exception {
-      params.add("title", "자바 스터디");
-      params.add("information", "자바 스터디 입니다");
-      params.add("year", "2023");
-      params.add("season", "1");
-      params.add("gitLink", "https://www.youtube.com/");
-      params.add("noteLink", "https://www.notion.so/Java-Spring");
-      params.add("etcLink", "etc.com");
+      StudyCreateRequest request = StudyCreateRequest.builder()
+          .title("자바 스터디")
+          .information("자바 스터디 입니다")
+          .year(2023)
+          .season(1)
+          .gitLink("https://www.youtube.com/")
+          .notionLink("https://www.notion.so/Java-Spring")
+          .etcLink("etc.com")
+          .build();
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
+      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
           .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("노션 링크가 아닌 링크를 입력할 경우 스터디 생성은 실패한다.")
     public void 노션_링크가_아닌_링크를_입력할_경우_스터디_생성은_실패한다() throws Exception {
-      params.add("title", "자바 스터디");
-      params.add("information", "자바 스터디 입니다");
-      params.add("year", "2023");
-      params.add("season", "1");
-      params.add("gitLink", "https://github.com/KEEPER31337/Homepage-Back-R2");
-      params.add("notionLink", "https://www.youtube.com/");
-      params.add("etcLink", "etc.com");
+      StudyCreateRequest request = StudyCreateRequest.builder()
+          .title("자바 스터디")
+          .information("자바 스터디 입니다")
+          .year(2023)
+          .season(1)
+          .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
+          .notionLink("https://www.youtube.com/")
+          .etcLink("etc.com")
+          .build();
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, params)
+      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
           .andExpect(status().isBadRequest());
     }
   }

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,12 +34,13 @@ public class StudyController {
 
   private final StudyService studyService;
 
-  @PostMapping
+  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<Void> createStudy(
       @LoginMember Member member,
-      @ModelAttribute @Valid StudyCreateRequest request
+      @RequestPart @Valid StudyCreateRequest request,
+      @RequestPart(required = false) MultipartFile thumbnail
   ) {
-    studyService.create(request.toEntity(member), request.getThumbnail());
+    studyService.create(request.toEntity(member), thumbnail);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }

@@ -13,18 +13,18 @@ import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
 public class StudyApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreateStudyApiWithThumbnail(String accessToken, MockMultipartFile thumbnail,
-      MultiValueMap<String, String> params)
+  ResultActions callCreateStudyApiWithThumbnail(String accessToken, MockMultipartFile thumbnail, MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart(POST, "/studies")
         .file(thumbnail)
-        .queryParams(params)
+        .part(mockPart)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }

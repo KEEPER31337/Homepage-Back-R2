@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -38,15 +40,16 @@ public class PostController {
 
   private final PostService postService;
 
-  @PostMapping
+  @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<Void> createPost(
       @LoginMember Member member,
-      @ModelAttribute @Valid PostCreateRequest request
+      @RequestPart @Valid PostCreateRequest request,
+      @RequestPart(required = false) MultipartFile thumbnail,
+      @RequestPart(required = false) List<MultipartFile> files
   ) {
     Long postId = postService.create(
         request.toEntity(member, WebUtil.getUserIP()),
-        request.getCategoryId(), request.getThumbnail(),
-        request.getFiles());
+        request.getCategoryId(), thumbnail, files);
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))
         .build();
@@ -67,10 +70,9 @@ public class PostController {
   public ResponseEntity<Void> updatePost(
       @LoginMember Member member,
       @PathVariable long postId,
-      @ModelAttribute @Valid PostUpdateRequest request
+      @RequestBody @Valid PostUpdateRequest request
   ) {
-    postService.update(member, postId,
-        request.toEntity(WebUtil.getUserIP()));
+    postService.update(member, postId, request.toEntity(WebUtil.getUserIP()));
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/posts/" + postId))
         .build();

@@ -3,11 +3,12 @@ package com.keeper.homepage.domain.post.application;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FOUND;
-import static java.lang.Boolean.TRUE;
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
@@ -17,9 +18,9 @@ import com.keeper.homepage.domain.post.application.convenience.PostDeleteService
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
-import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -51,14 +53,15 @@ public class PostService {
   private final CategoryFindService categoryFindService;
 
   public static final String ANONYMOUS_NAME = "익명";
-  public static final int EXAM_ACCESSIBLE_POINT = 20000;
-  public static final int EXAM_ACCESSIBLE_COMMENT_COUNT = 5;
-  public static final int EXAM_ACCESSIBLE_ATTENDANCE_COUNT = 10;
+  public static final int EXAM_ACCESSIBLE_POINT = 30000;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
-    if (TRUE.equals(post.isSecret())) {
+    if (post.isSecret()) {
       checkPassword(post.getPassword());
+    }
+    if (!post.isTemp()) {
+      checkContent(post.getContent());
     }
 
     savePostThumbnail(post, thumbnail);
@@ -67,8 +70,14 @@ public class PostService {
   }
 
   private void checkPassword(String password) {
-    if (password == null) {
+    if (!StringUtils.hasText(password)) {
       throw new BusinessException(password, "password", POST_PASSWORD_NEED);
+    }
+  }
+
+  private void checkContent(String content) {
+    if (!StringUtils.hasText(content)) {
+      throw new BusinessException(content, "content", POST_CONTENT_NEED);
     }
   }
 
@@ -103,10 +112,11 @@ public class PostService {
     post.addVisitCount();
 
     String writerName = getWriterName(post);
+    String writerThumbnailPath = getWriterThumbnailPath(post);
 
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
-    return PostDetailResponse.of(post, writerName, previousPost, nextPost);
+    return PostDetailResponse.of(post, writerName, writerThumbnailPath, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -119,12 +129,10 @@ public class PostService {
     if (post.isNotice()) {
       return;
     }
-    if (member.getPoint() >= EXAM_ACCESSIBLE_POINT
-        && member.getComments().size() >= EXAM_ACCESSIBLE_COMMENT_COUNT
-        && member.getMemberAttendance().size() >= EXAM_ACCESSIBLE_ATTENDANCE_COUNT) {
+    if (member.getPoint() >= EXAM_ACCESSIBLE_POINT) {
       return;
     }
-    throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
+    throw new BusinessException(member.getPoint(), "point", POST_ACCESS_CONDITION_NEED);
   }
 
   private void checkTempPost(Member member, Post post) {
@@ -163,6 +171,13 @@ public class PostService {
     return post.getWriterNickname();
   }
 
+  private String getWriterThumbnailPath(Post post) {
+    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
+      return null;
+    }
+    return post.getMember().getThumbnailPath();
+  }
+
   @Transactional
   public void update(Member member, long postId, Post newPost) {
     Post post = validPostFindService.findById(postId);
@@ -170,8 +185,11 @@ public class PostService {
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-    if (TRUE.equals(newPost.isSecret())) {
+    if (newPost.isSecret()) {
       checkPassword(newPost.getPassword());
+    }
+    if (!newPost.isTemp()) {
+      checkContent(newPost.getContent());
     }
     post.update(newPost);
   }
