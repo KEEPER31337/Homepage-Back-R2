@@ -52,6 +52,9 @@ public class Category {
     ANONYMOUS_CATEGORY(105),
     GRADUATE_CATEGORY(106),
     EXAM_CATEGORY(107),
+    PRESENTATION_CATEGORY(202),
+    TECHNIC_CATEGORY(203),
+    ACCOUNTING_CATEGORY(204),
     ;
 
     private final long id;
