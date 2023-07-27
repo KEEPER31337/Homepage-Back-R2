@@ -146,6 +146,7 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("id").description("게시글 ID"),
         fieldWithPath("title").description("게시글 제목"),
         fieldWithPath("writerName").description("게시글 작성자 닉네임"),
+        fieldWithPath("writerThumbnailPath").description("게시글 작성자 썸네일 주소"),
         fieldWithPath("visitCount").description("게시글 조회수"),
         fieldWithPath("commentCount").description("게시글 댓글수"),
         fieldWithPath("isSecret").description("비밀글 여부"),

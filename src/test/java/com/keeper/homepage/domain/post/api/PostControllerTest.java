@@ -673,6 +673,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("posts[].id").description("게시글 ID"),
                   fieldWithPath("posts[].title").description("게시글 제목"),
                   fieldWithPath("posts[].writerName").description("게시글 작성자 닉네임"),
+                  fieldWithPath("posts[].writerThumbnailPath").description("게시글 작성자 썸네일 주소"),
                   fieldWithPath("posts[].visitCount").description("게시글 조회수"),
                   fieldWithPath("posts[].commentCount").description("게시글 댓글 개수"),
                   fieldWithPath("posts[].isSecret").description("개시글 비밀글 여부"),

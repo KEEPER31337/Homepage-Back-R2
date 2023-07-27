@@ -33,4 +33,17 @@ public class CommentResponse {
         .dislikeCount(comment.getCommentDislikes().size())
         .build();
   }
+
+  public static CommentResponse of(Comment comment, String writerName, String writerThumbnailPath) {
+    return CommentResponse.builder()
+        .commentId(comment.getId())
+        .writerName(writerName)
+        .writerThumbnailPath(writerThumbnailPath)
+        .content(comment.getContent())
+        .registerTime(comment.getRegisterTime())
+        .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
+        .likeCount(comment.getCommentLikes().size())
+        .dislikeCount(comment.getCommentDislikes().size())
+        .build();
+  }
 }
