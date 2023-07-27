@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.PositiveOrZero
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
 import org.springframework.validation.annotation.Validated
@@ -40,16 +41,17 @@ class BookManageController(
                 .map { book -> BookDetailResponse(book) })
     }
 
-    @PostMapping
+    @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE])
     fun addBook(
-        @ModelAttribute @Valid request: BookRequest
+        @RequestPart @Valid bookMetaData: BookRequest,
+        @RequestPart thumbnail: MultipartFile?,
     ): ResponseEntity<Void> {
         val addedBookId = bookManageService.addBook(
-            request.title!!,
-            request.author!!,
-            request.totalQuantity!!,
-            request.bookDepartment!!,
-            request.thumbnail,
+            bookMetaData.title!!,
+            bookMetaData.author!!,
+            bookMetaData.totalQuantity!!,
+            bookMetaData.bookDepartment!!,
+            thumbnail,
         )
         return ResponseEntity.created(URI.create("/books/${addedBookId}"))
             .build()

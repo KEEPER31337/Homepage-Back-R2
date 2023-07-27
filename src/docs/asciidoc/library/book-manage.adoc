@@ -51,9 +51,9 @@ include::{snippets}/assign-book/http-request.adoc[]
 
 include::{snippets}/assign-book/request-cookies.adoc[]
 
-==== Request Parameters
+==== Request Fields
 
-include::{snippets}/assign-book/query-parameters.adoc[]
+include::{snippets}/assign-book/request-part-bookMetaData-fields.adoc[]
 
 ==== Request Parts
 
