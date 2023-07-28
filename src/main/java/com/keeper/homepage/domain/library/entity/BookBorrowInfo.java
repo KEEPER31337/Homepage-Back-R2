@@ -52,15 +52,20 @@ public class BookBorrowInfo extends BaseEntity {
   @Column(name = "expire_date", nullable = false)
   private LocalDateTime expireDate;
 
+  @Column(name = "last_request_date", nullable = true)
+  private LocalDateTime lastRequestDate;
+
   @Builder
   private BookBorrowInfo(Member member, Book book, BookBorrowStatus borrowStatus,
       LocalDateTime borrowDate,
-      LocalDateTime expireDate) {
+      LocalDateTime expireDate,
+      LocalDateTime lastRequestDate) {
     this.member = member;
     this.book = book;
     this.borrowStatus = borrowStatus;
     this.borrowDate = borrowDate;
     this.expireDate = expireDate;
+    this.lastRequestDate = lastRequestDate;
   }
 
   public Long getId() {
@@ -87,6 +92,10 @@ public class BookBorrowInfo extends BaseEntity {
     return expireDate;
   }
 
+  public LocalDateTime getLastRequestDate() {
+    return lastRequestDate;
+  }
+
   public boolean isInBorrowing() {
     BookBorrowStatusType type = getBorrowStatus().getType();
     return type.equals(대출승인) || type.equals(반납대기중);
@@ -94,5 +103,9 @@ public class BookBorrowInfo extends BaseEntity {
 
   public void changeBorrowStatus(BookBorrowStatusType type) {
     this.borrowStatus = BookBorrowStatus.getBookBorrowStatusBy(type);
+  }
+
+  public void changeLastRequestDate(LocalDateTime lastRequestDate) {
+    this.lastRequestDate = lastRequestDate;
   }
 }
