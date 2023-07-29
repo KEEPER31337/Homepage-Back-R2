@@ -36,3 +36,27 @@ include::{snippets}/create-ctf-team/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/create-ctf-team/http-response.adoc[]
+
+== *CTF 팀 정보 수정*
+
+NOTE: 팀원만 호출 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-ctf-team/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-ctf-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-ctf-team/http-response.adoc[]
