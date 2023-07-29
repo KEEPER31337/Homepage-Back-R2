@@ -33,15 +33,15 @@ class BaseballService(
         )
 
     @Transactional
-    fun isAlreadyPlayed(requestMember: Member): Boolean {
+    fun isAlreadyPlayedAllOfThem(requestMember: Member): Boolean {
         return gameFindService.findByMemberOrInit(requestMember)
             .baseball
-            .isAlreadyPlayed
+            .isAlreadyPlayedAllOfThem
     }
 
     @Transactional
     fun start(requestMember: Member, bettingPoint: Int) {
-        if (isAlreadyPlayed(requestMember)) {
+        if (isAlreadyPlayedAllOfThem(requestMember)) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.IS_ALREADY_PLAYED)
         }
         if (bettingPoint <= 0) {
@@ -110,7 +110,7 @@ class BaseballService(
     }
 
     fun getResult(requestMember: Member): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
-        if (!isAlreadyPlayed(requestMember)) {
+        if (isNotPlayedYet(requestMember)) {
             return Pair(listOf(), 0)
         }
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
@@ -122,5 +122,9 @@ class BaseballService(
         baseballResultEntity.updateTimeoutGames()
 
         return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+    }
+
+    private fun isNotPlayedYet(requestMember: Member): Boolean {
+        return gameFindService.findByMemberOrInit(requestMember).baseball.baseballPerDay == 0
     }
 }

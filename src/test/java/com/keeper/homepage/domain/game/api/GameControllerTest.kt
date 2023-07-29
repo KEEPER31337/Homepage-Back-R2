@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.domain.game.application.*
+import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.global.config.security.data.JwtType
@@ -96,7 +97,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `야구게임을 오늘 했으면 true가 나와야 한다`() {
-            gameStart()
+            (1..BASEBALL_MAX_PLAYTIME).forEach { _ -> gameStart() }
 
             callBaseballIsAlreadyPlayed()
                 .andExpect(status().isOk)
@@ -112,7 +113,7 @@ class GameControllerTest : GameApiTestHelper() {
                 .andExpect(status().isNoContent)
 
             val baseball = gameFindService.findByMemberOrInit(player).baseball
-            assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
+            assertThat(baseball.baseballPerDay).isEqualTo(1) // 게임을 시작하면 play count가 증가한다.
             val data = redisUtil.getData(
                 REDIS_KEY_PREFIX + player.id.toString() + "_" + baseball.baseballPerDay,
                 BaseballResultEntity::class.java
