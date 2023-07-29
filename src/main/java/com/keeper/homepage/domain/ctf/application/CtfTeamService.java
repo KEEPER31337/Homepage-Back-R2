@@ -9,11 +9,14 @@ import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
+import com.keeper.homepage.domain.ctf.dto.response.CtfTeamResponse;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,5 +67,11 @@ public class CtfTeamService {
   public CtfTeamDetailResponse getTeam(long teamId) {
     CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
     return CtfTeamDetailResponse.from(ctfTeam);
+  }
+
+  public Page<CtfTeamResponse> getTeams(long contestId, String search, Pageable pageable) {
+    CtfContest contest = ctfContestFindService.findJoinableById(contestId);
+    return ctfTeamRepository.findAllByCtfContestAndNameIgnoreCaseContaining(contest, search, pageable)
+        .map(CtfTeamResponse::from);
   }
 }

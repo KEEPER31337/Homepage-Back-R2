@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest.build
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -15,6 +16,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.FieldDescriptor;
 
 public class CtfTeamControllerTest extends IntegrationTest {
 
@@ -143,6 +146,42 @@ public class CtfTeamControllerTest extends IntegrationTest {
                   fieldWithPath("memberNames[]").description("팀원 실명 리스트"),
                   fieldWithPath("solves[]").description("푼 문제 리스트") // TODO: 푼 문제 세부 응답 작성
               )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 팀 목록 조회는 성공해야 한다.")
+    public void 유효한_요청일_경우_팀_목록_조회는_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(CtfTeamController.class, "getTeam");
+      ctfTeamTestHelper.builder().ctfContest(ctfContest).name("TEAM1").build();
+      ctfTeamTestHelper.builder().ctfContest(ctfContest).name("TEAM2").build();
+      ctfTeamTestHelper.builder().ctfContest(ctfContest).name("TEAM3").build();
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/ctf/teams")
+              .param("contestId", String.valueOf(ctfContest.getId()))
+              .param("search", "")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-ctf-teams",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("contestId").description("CTF 대회 ID"),
+                  parameterWithName("search").description("팀 이름 검색어 (안보낼 경우 전체 목록을 조회합니다.)")
+              ),
+              responseFields(
+                  pageHelper(getCtfTeamsResponse())
+              )));
+    }
+
+    FieldDescriptor[] getCtfTeamsResponse() {
+      return new FieldDescriptor[]{
+          fieldWithPath("id").description("팀 ID"),
+          fieldWithPath("name").description("팀 이름")
+      };
     }
   }
 }

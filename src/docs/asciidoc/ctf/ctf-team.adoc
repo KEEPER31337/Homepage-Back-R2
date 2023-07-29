@@ -86,3 +86,29 @@ include::{snippets}/get-ctf-team/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-ctf-team/response-fields.adoc[]
+
+== *CTF 팀 목록 조회 (검색)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-ctf-teams/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-ctf-teams/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-ctf-teams/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-ctf-teams/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-ctf-teams/response-fields.adoc[]

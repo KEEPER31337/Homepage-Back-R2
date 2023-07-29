@@ -4,10 +4,14 @@ import com.keeper.homepage.domain.ctf.application.CtfTeamService;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
+import com.keeper.homepage.domain.ctf.dto.response.CtfTeamResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -51,5 +56,15 @@ public class CtfTeamController {
       @PathVariable long teamId
   ) {
     return ResponseEntity.ok(ctfTeamService.getTeam(teamId));
+  }
+
+  @GetMapping
+  public ResponseEntity<Page<CtfTeamResponse>> getTeams(
+      @RequestParam long contestId,
+      @RequestParam(defaultValue = "") String search,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    return ResponseEntity.ok(ctfTeamService.getTeams(contestId, search, PageRequest.of(page, size)));
   }
 }
