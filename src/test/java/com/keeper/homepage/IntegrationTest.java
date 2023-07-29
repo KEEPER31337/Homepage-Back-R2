@@ -25,12 +25,13 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
+import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
 import com.keeper.homepage.domain.game.application.GameFindService;
 import com.keeper.homepage.domain.game.application.GameService;
-import com.keeper.homepage.domain.game.application.GameServiceTest;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
@@ -55,7 +56,6 @@ import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
-import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
@@ -340,6 +340,12 @@ public class IntegrationTest {
 
   @Autowired
   protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
+
+  @Autowired
+  protected CtfTeamTestHelper ctfTeamTestHelper;
+
+  @Autowired
+  protected CtfContestTestHelper ctfContestTestHelper;
 
   /******* Util *******/
   @SpyBean
