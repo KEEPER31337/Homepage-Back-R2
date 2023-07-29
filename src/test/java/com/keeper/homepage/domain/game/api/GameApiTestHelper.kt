@@ -93,7 +93,7 @@ class GameApiTestHelper : IntegrationTest() {
         )
     }
 
-    fun callGetBaseballResult(
+    fun  callGetBaseballResult(
         results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
         earnablePoints: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies

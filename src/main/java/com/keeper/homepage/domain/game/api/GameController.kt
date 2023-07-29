@@ -31,7 +31,7 @@ class GameController(
 
     @GetMapping("/baseball/is-already-played")
     fun baseballIsAlreadyPlayed(@LoginMember requestMember: Member): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(baseballService.isAlreadyPlayed(requestMember))
+        return ResponseEntity.ok(baseballService.isAlreadyPlayedAllOfThem(requestMember))
     }
 
     @PostMapping("/baseball/start")
