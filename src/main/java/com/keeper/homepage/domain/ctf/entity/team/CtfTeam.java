@@ -76,4 +76,9 @@ public class CtfTeam extends BaseEntity {
     this.ctfContest = ctfContest;
     this.lastSolveTime = lastSolveTime;
   }
+
+  public void update(String name, String description) {
+    this.name = name;
+    this.description = description;
+  }
 }

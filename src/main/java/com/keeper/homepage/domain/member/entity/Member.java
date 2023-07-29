@@ -343,4 +343,9 @@ public class Member {
     return ctfTeamHasMembers.stream()
         .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().getCtfContest().equals(contest));
   }
+
+  public boolean isJoin(CtfTeam ctfTeam) {
+    return ctfTeamHasMembers.stream()
+        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().equals(ctfTeam));
+  }
 }

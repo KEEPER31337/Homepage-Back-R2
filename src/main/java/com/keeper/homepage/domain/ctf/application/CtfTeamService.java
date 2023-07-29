@@ -1,10 +1,13 @@
 package com.keeper.homepage.domain.ctf.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.CTF_TEAM_ALREADY_JOIN;
+import static com.keeper.homepage.global.error.ErrorCode.CTF_TEAM_INACCESSIBLE;
 
 import com.keeper.homepage.domain.ctf.application.convenience.CtfContestFindService;
+import com.keeper.homepage.domain.ctf.application.convenience.CtfTeamFindService;
 import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -20,6 +23,7 @@ public class CtfTeamService {
 
   private final CtfTeamRepository ctfTeamRepository;
   private final CtfContestFindService ctfContestFindService;
+  private final CtfTeamFindService ctfTeamFindService;
 
   @Transactional
   public void createTeam(Member member, CreateTeamRequest request) {
@@ -44,5 +48,15 @@ public class CtfTeamService {
     if (member.hasTeam(contest)) {
       throw new BusinessException(contest.getName(), "contest", CTF_TEAM_ALREADY_JOIN);
     }
+  }
+
+  @Transactional
+  public void updateTeam(Member member, long teamId, UpdateTeamRequest request) {
+    CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
+
+    if (!member.isJoin(ctfTeam)) {
+      throw new BusinessException(ctfTeam.getName(), "ctfTeam", CTF_TEAM_INACCESSIBLE);
+    }
+    ctfTeam.update(request.getName(), request.getDescription());
   }
 }
