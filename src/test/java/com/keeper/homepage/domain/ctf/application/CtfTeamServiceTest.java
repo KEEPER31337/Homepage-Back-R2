@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
+import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,18 +18,18 @@ import org.junit.jupiter.api.Test;
 
 public class CtfTeamServiceTest extends IntegrationTest {
 
+  private Member member;
+  private CtfContest ctfContest;
+
+  @BeforeEach
+  void setUp() {
+    member = memberTestHelper.generate();
+    ctfContest = ctfContestTestHelper.generate();
+  }
+
   @Nested
   @DisplayName("CTF 팀 생성 테스트")
   class CtfTeamCreateTest {
-
-    private Member member;
-    private CtfContest ctfContest;
-
-    @BeforeEach
-    void setUp() {
-      member = memberTestHelper.generate();
-      ctfContest = ctfContestTestHelper.generate();
-    }
 
     @Test
     @DisplayName("팀을 생성한 사람은 팀에 가입되어야 한다.")
@@ -59,6 +61,29 @@ public class CtfTeamServiceTest extends IntegrationTest {
 
       assertThrows(BusinessException.class, () -> {
         ctfTeamService.createTeam(member, request);
+      });
+    }
+  }
+
+  @Nested
+  @DisplayName("CTF 팀 수정 테스트")
+  class CtfTeamUpdateTest {
+
+    @Test
+    @DisplayName("팀원이 아니라면 팀 정보 수정은 실패한다.")
+    public void 팀원이_아니라면_팀_정보_수정은_실패한다() throws Exception {
+      CtfTeam ctfTeam1 = ctfTeamTestHelper.generate();
+      CtfTeam ctfTeam2 = ctfTeamTestHelper.generate();
+
+      member.join(ctfTeam1);
+
+      UpdateTeamRequest request = UpdateTeamRequest.builder()
+          .name("팀 이름")
+          .description("팀 설명")
+          .build();
+
+      assertThrows(BusinessException.class, () -> {
+        ctfTeamService.updateTeam(member, ctfTeam2.getId(), request);
       });
     }
   }
