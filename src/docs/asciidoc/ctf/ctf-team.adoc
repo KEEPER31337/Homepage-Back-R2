@@ -1,0 +1,38 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= CTF TEAM API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *CTF 팀 생성*
+
+NOTE: 호출 시 생성된 팀의 팀원으로 추가됩니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-ctf-team/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-ctf-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-ctf-team/http-response.adoc[]
