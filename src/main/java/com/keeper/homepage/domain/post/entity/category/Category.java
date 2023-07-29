@@ -45,16 +45,16 @@ public class Category {
   @RequiredArgsConstructor
   public enum CategoryType {
     VIRTUAL_CATEGORY(1),
-    NOTICE_CATEGORY(101),
-    SUGGESTION_CATEGORY(102),
-    INFORMATION_CATEGORY(103),
-    FREE_CATEGORY(104),
-    ANONYMOUS_CATEGORY(105),
-    GRADUATE_CATEGORY(106),
-    EXAM_CATEGORY(107),
-    PRESENTATION_CATEGORY(202),
-    TECHNIC_CATEGORY(203),
-    ACCOUNTING_CATEGORY(204),
+    공지사항(101),
+    건의사항(102),
+    정보게시판(103),
+    자유게시판(104),
+    익명게시판(105),
+    졸업생게시판(106),
+    시험게시판(107),
+    발표자료(202),
+    기술문서(203),
+    회계부(204),
     ;
 
     private final long id;

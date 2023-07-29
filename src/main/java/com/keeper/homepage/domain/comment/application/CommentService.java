@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.comment.application;
 
 import static com.keeper.homepage.domain.post.application.PostService.ANONYMOUS_NAME;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_ALLOWED;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_WRITER;
@@ -66,7 +66,7 @@ public class CommentService {
 
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
-          if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
+          if (post.isCategory(익명게시판.getId())) {
             return CommentResponse.of(comment, ANONYMOUS_NAME, null);
           }
           return CommentResponse.from(comment);
