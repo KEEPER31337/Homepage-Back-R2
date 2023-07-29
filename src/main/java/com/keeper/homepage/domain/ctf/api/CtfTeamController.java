@@ -3,12 +3,14 @@ package com.keeper.homepage.domain.ctf.api;
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,5 +44,12 @@ public class CtfTeamController {
     ctfTeamService.updateTeam(member, teamId, request);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
+  }
+
+  @GetMapping("/{teamId}")
+  public ResponseEntity<CtfTeamDetailResponse> getTeam(
+      @PathVariable long teamId
+  ) {
+    return ResponseEntity.ok(ctfTeamService.getTeam(teamId));
   }
 }

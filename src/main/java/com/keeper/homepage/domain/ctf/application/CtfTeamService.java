@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.ctf.application.convenience.CtfTeamFindService
 import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -58,5 +59,10 @@ public class CtfTeamService {
       throw new BusinessException(ctfTeam.getName(), "ctfTeam", CTF_TEAM_INACCESSIBLE);
     }
     ctfTeam.update(request.getName(), request.getDescription());
+  }
+
+  public CtfTeamDetailResponse getTeam(long teamId) {
+    CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
+    return CtfTeamDetailResponse.from(ctfTeam);
   }
 }
