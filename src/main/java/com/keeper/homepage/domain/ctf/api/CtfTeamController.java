@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.ctf.api;
 
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.JoinTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamResponse;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,5 +68,25 @@ public class CtfTeamController {
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
     return ResponseEntity.ok(ctfTeamService.getTeams(contestId, search, PageRequest.of(page, size)));
+  }
+
+  @PostMapping("/{teamId}/members/{memberId}")
+  public ResponseEntity<Void> joinTeam(
+      @RequestBody @Valid JoinTeamRequest request,
+      @PathVariable long teamId,
+      @PathVariable long memberId
+  ) {
+    ctfTeamService.joinTeam(request.getContestId(), teamId, memberId);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .build();
+  }
+
+  @DeleteMapping("/{teamId}/members/{memberId}")
+  public ResponseEntity<Void> leaveTeam(
+      @PathVariable long teamId,
+      @PathVariable long memberId
+  ) {
+    ctfTeamService.leaveTeam(teamId, memberId);
+    return ResponseEntity.noContent().build();
   }
 }

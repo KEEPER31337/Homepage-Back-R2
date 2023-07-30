@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamResponse;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class CtfTeamService {
   private final CtfTeamRepository ctfTeamRepository;
   private final CtfContestFindService ctfContestFindService;
   private final CtfTeamFindService ctfTeamFindService;
+  private final MemberFindService memberFindService;
 
   @Transactional
   public void createTeam(Member member, CreateTeamRequest request) {
@@ -73,5 +75,22 @@ public class CtfTeamService {
     CtfContest contest = ctfContestFindService.findJoinableById(contestId);
     return ctfTeamRepository.findAllByCtfContestAndNameIgnoreCaseContaining(contest, search, pageable)
         .map(CtfTeamResponse::from);
+  }
+
+  @Transactional
+  public void joinTeam(long contestId, long teamId, long memberId) {
+    CtfContest contest = ctfContestFindService.findJoinableById(contestId);
+    Member member = memberFindService.findById(memberId);
+    checkMemberHasTeam(contest, member);
+
+    CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
+    member.join(ctfTeam);
+  }
+
+  @Transactional
+  public void leaveTeam(long teamId, long memberId) {
+    CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
+    Member member = memberFindService.findById(memberId);
+    member.leave(ctfTeam);
   }
 }
