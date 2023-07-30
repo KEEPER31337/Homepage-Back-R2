@@ -112,3 +112,51 @@ include::{snippets}/get-ctf-teams/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-ctf-teams/response-fields.adoc[]
+
+== *CTF 팀 가입*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/join-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/join-ctf-team/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/join-ctf-team/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/join-ctf-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/join-ctf-team/http-response.adoc[]
+
+== *CTF 팀 탈퇴*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/leave-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/leave-ctf-team/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/leave-ctf-team/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/leave-ctf-team/http-response.adoc[]

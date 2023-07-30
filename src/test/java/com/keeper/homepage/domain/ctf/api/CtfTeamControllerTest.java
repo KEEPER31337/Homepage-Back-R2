@@ -8,6 +8,7 @@ import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.JoinTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
@@ -152,9 +154,9 @@ public class CtfTeamControllerTest extends IntegrationTest {
     @DisplayName("유효한 요청일 경우 팀 목록 조회는 성공해야 한다.")
     public void 유효한_요청일_경우_팀_목록_조회는_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(CtfTeamController.class, "getTeam");
-      ctfTeamTestHelper.builder().ctfContest(ctfContest).name("TEAM1").build();
-      ctfTeamTestHelper.builder().ctfContest(ctfContest).name("TEAM2").build();
-      ctfTeamTestHelper.builder().ctfContest(ctfContest).name("TEAM3").build();
+      ctfTeamTestHelper.builder().ctfContest(ctfContest).build();
+      ctfTeamTestHelper.builder().ctfContest(ctfContest).build();
+      ctfTeamTestHelper.builder().ctfContest(ctfContest).build();
       em.flush();
       em.clear();
 
@@ -182,6 +184,64 @@ public class CtfTeamControllerTest extends IntegrationTest {
           fieldWithPath("id").description("팀 ID"),
           fieldWithPath("name").description("팀 이름")
       };
+    }
+  }
+
+  @Nested
+  @DisplayName("CTF 팀 가입 & 탈퇴 테스트")
+  class CtfTeamJoinAndLeaveTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 팀 가입은 성공한다.")
+    public void 유효한_요청일_경우_팀_가입은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(CtfTeamController.class, "joinTeam");
+      CtfTeam ctfTeam = ctfTeamTestHelper.generate();
+
+      em.flush();
+      em.clear();
+
+      JoinTeamRequest request = JoinTeamRequest.builder()
+          .contestId(ctfContest.getId())
+          .build();
+
+      mockMvc.perform(post("/ctf/teams/{teamId}/members/{memberId}", ctfTeam.getId(), member.getId())
+              .content(asJsonString(request))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isCreated())
+          .andDo(document("join-ctf-team",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("contestId").description("CTF 대회 ID")
+              ),
+              pathParameters(
+                  parameterWithName("teamId").description("가입하고자 하는 팀 ID"),
+                  parameterWithName("memberId").description("가입할 멤버 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 팀 탈퇴는 성공한다.")
+    public void 유효한_요청일_경우_팀_탈퇴는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(CtfTeamController.class, "leaveTeam");
+      CtfTeam ctfTeam = ctfTeamTestHelper.generate();
+      member.join(ctfTeam);
+
+      mockMvc.perform(delete("/ctf/teams/{teamId}/members/{memberId}", ctfTeam.getId(), member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isNoContent())
+          .andDo(document("leave-ctf-team",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("teamId").description("가입하고자 하는 팀 ID"),
+                  parameterWithName("memberId").description("가입할 멤버 ID")
+              )));
     }
   }
 }

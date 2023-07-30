@@ -87,4 +87,22 @@ public class CtfTeamServiceTest extends IntegrationTest {
       });
     }
   }
+
+  @Nested
+  @DisplayName("CTF 팀 가입 & 탈퇴 테스트")
+  class CtfTeamJoinAndLeaveTest {
+
+    @Test
+    @DisplayName("해당 대회에서 이미 가입한 팀이 있다면 팀 가입은 실패한다.")
+    public void 해당_대회에서_이미_가입한_팀이_있다면_팀_가입은_실패한다() throws Exception {
+      CtfTeam ctfTeam = ctfTeamTestHelper.builder().ctfContest(ctfContest).build();
+      member.join(ctfTeam);
+
+      CtfTeam anotherTeam = ctfTeamTestHelper.builder().ctfContest(ctfContest).build();
+
+      assertThrows(BusinessException.class, () -> {
+        ctfTeamService.joinTeam(ctfContest.getId(), anotherTeam.getId(), member.getId());
+      });
+    }
+  }
 }
