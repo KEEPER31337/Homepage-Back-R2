@@ -348,4 +348,8 @@ public class Member {
     return ctfTeamHasMembers.stream()
         .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().equals(ctfTeam));
   }
+
+  public boolean isCreator(CtfTeam ctfTeam) {
+    return this.equals(ctfTeam.getCreator());
+  }
 }

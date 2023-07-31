@@ -39,7 +39,7 @@ include::{snippets}/create-ctf-team/http-response.adoc[]
 
 == *CTF 팀 정보 수정*
 
-NOTE: 팀원만 호출 가능합니다.
+NOTE: 팀 생성자만 호출 가능합니다.
 
 === 요청
 

@@ -58,7 +58,7 @@ public class CtfTeamService {
   public void updateTeam(Member member, long teamId, String name, String description) {
     CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
 
-    if (!member.isJoin(ctfTeam)) {
+    if (!member.isCreator(ctfTeam)) {
       throw new BusinessException(ctfTeam.getName(), "ctfTeam", CTF_TEAM_INACCESSIBLE);
     }
     ctfTeam.update(name, description);

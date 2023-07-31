@@ -88,7 +88,7 @@ public class CtfTeamControllerTest extends IntegrationTest {
     @Test
     @DisplayName("유효한 요청일 경우 CTF 팀 수정은 성공한다.")
     public void 유효한_요청일_경우_CTF_팀_수정은_성공한다() throws Exception {
-      CtfTeam ctfTeam = ctfTeamTestHelper.generate();
+      CtfTeam ctfTeam = ctfTeamTestHelper.builder().creator(member).build();
       member.join(ctfTeam);
 
       String securedValue = getSecuredValue(CtfTeamController.class, "updateTeam");

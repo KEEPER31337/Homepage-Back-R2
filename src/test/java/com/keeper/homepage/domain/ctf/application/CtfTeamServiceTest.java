@@ -54,8 +54,8 @@ public class CtfTeamServiceTest extends IntegrationTest {
   class CtfTeamUpdateTest {
 
     @Test
-    @DisplayName("팀원이 아니라면 팀 정보 수정은 실패한다.")
-    public void 팀원이_아니라면_팀_정보_수정은_실패한다() throws Exception {
+    @DisplayName("팀 생성자가 아니라면 팀 정보 수정은 실패한다.")
+    public void 팀_생성자가_아니라면_팀_정보_수정은_실패한다() throws Exception {
       CtfTeam ctfTeam1 = ctfTeamTestHelper.generate();
       CtfTeam ctfTeam2 = ctfTeamTestHelper.generate();
 
