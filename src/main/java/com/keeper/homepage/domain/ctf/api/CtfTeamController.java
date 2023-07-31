@@ -37,7 +37,7 @@ public class CtfTeamController {
       @LoginMember Member member,
       @RequestBody @Valid CreateTeamRequest request
   ) {
-    ctfTeamService.createTeam(member, request);
+    ctfTeamService.createTeam(member, request.getName(), request.getDescription(), request.getContestId());
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }
@@ -48,7 +48,7 @@ public class CtfTeamController {
       @PathVariable long teamId,
       @RequestBody @Valid UpdateTeamRequest request
   ) {
-    ctfTeamService.updateTeam(member, teamId, request);
+    ctfTeamService.updateTeam(member, teamId, request.getName(), request.getDescription());
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }

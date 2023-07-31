@@ -6,8 +6,6 @@ import static com.keeper.homepage.global.error.ErrorCode.CTF_TEAM_INACCESSIBLE;
 import com.keeper.homepage.domain.ctf.application.convenience.CtfContestFindService;
 import com.keeper.homepage.domain.ctf.application.convenience.CtfTeamFindService;
 import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
-import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
 import com.keeper.homepage.domain.ctf.dto.response.CtfTeamResponse;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
@@ -32,13 +30,13 @@ public class CtfTeamService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public void createTeam(Member member, CreateTeamRequest request) {
-    CtfContest contest = ctfContestFindService.findJoinableById(request.getContestId());
+  public void createTeam(Member member, String name, String description, long contestId) {
+    CtfContest contest = ctfContestFindService.findJoinableById(contestId);
     checkMemberHasTeam(contest, member);
 
     CtfTeam ctfTeam = CtfTeam.builder()
-        .name(request.getName())
-        .description(request.getDescription())
+        .name(name)
+        .description(description)
         .creator(member)
         .score(0)
         .ctfContest(contest)
@@ -57,13 +55,13 @@ public class CtfTeamService {
   }
 
   @Transactional
-  public void updateTeam(Member member, long teamId, UpdateTeamRequest request) {
+  public void updateTeam(Member member, long teamId, String name, String description) {
     CtfTeam ctfTeam = ctfTeamFindService.findById(teamId);
 
     if (!member.isJoin(ctfTeam)) {
       throw new BusinessException(ctfTeam.getName(), "ctfTeam", CTF_TEAM_INACCESSIBLE);
     }
-    ctfTeam.update(request.getName(), request.getDescription());
+    ctfTeam.update(name, description);
   }
 
   public CtfTeamDetailResponse getTeam(long teamId) {

@@ -1,12 +1,9 @@
 package com.keeper.homepage.domain.ctf.application;
 
-import static com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest.builder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -34,15 +31,8 @@ public class CtfTeamServiceTest extends IntegrationTest {
     @Test
     @DisplayName("팀을 생성한 사람은 팀에 가입되어야 한다.")
     public void 팀을_생성한_사람은_팀에_가입되어야_한다() throws Exception {
-      //given
-      CreateTeamRequest request = builder()
-          .name("KEEPER TEAM")
-          .description("2024 CTF TEAM")
-          .contestId(ctfContest.getId())
-          .build();
-
       //when
-      ctfTeamService.createTeam(member, request);
+      ctfTeamService.createTeam(member, "KEEPER TEAM", "2024 CTF TEAM", ctfContest.getId());
 
       //then
       assertThat(member.getCtfTeamHasMembers()).hasSize(1);
@@ -53,14 +43,8 @@ public class CtfTeamServiceTest extends IntegrationTest {
     public void 해당_대회에서_이미_가입한_팀이_있다면_팀_생성은_실패한다() throws Exception {
       member.join(ctfTeamTestHelper.builder().ctfContest(ctfContest).build());
 
-      CreateTeamRequest request = builder()
-          .name("KEEPER TEAM")
-          .description("2024 CTF TEAM")
-          .contestId(ctfContest.getId())
-          .build();
-
       assertThrows(BusinessException.class, () -> {
-        ctfTeamService.createTeam(member, request);
+        ctfTeamService.createTeam(member, "KEEPER TEAM", "2024 CTF TEAM", ctfContest.getId());
       });
     }
   }
@@ -77,13 +61,8 @@ public class CtfTeamServiceTest extends IntegrationTest {
 
       member.join(ctfTeam1);
 
-      UpdateTeamRequest request = UpdateTeamRequest.builder()
-          .name("팀 이름")
-          .description("팀 설명")
-          .build();
-
       assertThrows(BusinessException.class, () -> {
-        ctfTeamService.updateTeam(member, ctfTeam2.getId(), request);
+        ctfTeamService.updateTeam(member, ctfTeam2.getId(), "팀 이름", "팀 설명");
       });
     }
   }
