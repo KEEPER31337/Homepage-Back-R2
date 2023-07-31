@@ -15,6 +15,7 @@ import static jakarta.persistence.CascadeType.REMOVE;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeamHasMember;
 import com.keeper.homepage.domain.library.entity.Book;
@@ -336,5 +337,19 @@ public class Member {
     return this.bookBorrowInfos.stream()
         .filter(BookBorrowInfo::isInBorrowing)
         .count();
+  }
+
+  public boolean hasTeam(CtfContest contest) {
+    return ctfTeamHasMembers.stream()
+        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().getCtfContest().equals(contest));
+  }
+
+  public boolean isJoin(CtfTeam ctfTeam) {
+    return ctfTeamHasMembers.stream()
+        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().equals(ctfTeam));
+  }
+
+  public boolean isCreator(CtfTeam ctfTeam) {
+    return this.equals(ctfTeam.getCreator());
   }
 }

@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 import java.time.LocalDateTime;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +75,7 @@ public class CtfTeamTestHelper {
 
     public CtfTeam build() {
       return ctfTeamRepository.save(CtfTeam.builder()
-          .name(name != null ? name : "KEEPER TEAM")
+          .name(name != null ? name : generateRandomAlphabeticString(10))
           .description(description != null ? description : "2023 CTF TEAM")
           .creator(creator != null ? creator : memberTestHelper.generate())
           .score(score != null ? score : 0)
@@ -84,4 +85,15 @@ public class CtfTeamTestHelper {
     }
   }
 
+  private static String generateRandomAlphabeticString(int length) {
+    final Random random = new Random();
+    char leftLimit = '0';
+    char rightLimit = 'z';
+
+    return random.ints(leftLimit, rightLimit + 1)
+        .filter(Character::isAlphabetic)
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+  }
 }
