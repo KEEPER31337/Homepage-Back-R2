@@ -6,7 +6,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
@@ -29,7 +29,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "election")
-public class Election extends BaseEntity {
+public class Election {
 
   private static final int MAX_NAME_LENGTH = 45;
   private static final int MAX_DESCRIPTION_LENGTH = 200;
@@ -49,6 +49,9 @@ public class Election extends BaseEntity {
   @JoinColumn(name = "creator", nullable = false)
   private Member member;
 
+  @Column(name = "register_time", nullable = false)
+  private LocalDateTime registerTime;
+
   @Column(name = "is_available", nullable = false)
   private Boolean isAvailable;
 
@@ -59,10 +62,12 @@ public class Election extends BaseEntity {
   private final List<ElectionVoter> electionVoters = new ArrayList<>();
 
   @Builder
-  private Election(String name, String description, Member member, Boolean isAvailable) {
+  private Election(String name, String description, Member member, LocalDateTime registerTime,
+      Boolean isAvailable) {
     this.name = name;
     this.description = description;
     this.member = member;
+    this.registerTime = registerTime;
     this.isAvailable = isAvailable;
   }
 
