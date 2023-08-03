@@ -47,8 +47,8 @@ public class ElectionTestHelper {
       return this;
     }
 
-    public ElectionBuilder registerTime(LocalDateTime registerTime) {
-      this.registerTime = registerTime;
+    public ElectionBuilder registerTime() {
+      this.registerTime = LocalDateTime.now();
       return this;
     }
 
@@ -62,7 +62,6 @@ public class ElectionTestHelper {
           .name(name != null ? name : "이름")
           .description(description)
           .member(member != null ? member : memberTestHelper.generate())
-          .registerTime(registerTime)
           .isAvailable(isAvailable != null ? isAvailable : true)
           .build());
     }
