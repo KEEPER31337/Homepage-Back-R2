@@ -62,12 +62,12 @@ public class Election {
   private final List<ElectionVoter> electionVoters = new ArrayList<>();
 
   @Builder
-  private Election(String name, String description, Member member, LocalDateTime registerTime,
+  private Election(String name, String description, Member member,
       Boolean isAvailable) {
     this.name = name;
     this.description = description;
     this.member = member;
-    this.registerTime = registerTime;
+    this.registerTime = LocalDateTime.now();
     this.isAvailable = isAvailable;
   }
 

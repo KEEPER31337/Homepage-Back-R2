@@ -63,11 +63,11 @@ public class ElectionCandidate {
 
   @Builder
   private ElectionCandidate(Election election, Member member, MemberJob memberJob,
-      LocalDateTime registerTime, String description, Long voteCount) {
+      String description, Long voteCount) {
     this.election = election;
     this.member = member;
     this.memberJob = memberJob;
-    this.registerTime = registerTime;
+    this.registerTime = LocalDateTime.now();
     this.description = description;
     this.voteCount = voteCount;
   }
