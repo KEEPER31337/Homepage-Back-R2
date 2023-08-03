@@ -17,11 +17,10 @@ public class ElectionRepositoryTest extends IntegrationTest {
   @DisplayName("선거 관리 테스트")
   class ElectionTest {
 
-    Member member = memberTestHelper.generate();
-
     @Test
     @DisplayName("유권자 목록 수 확인")
     public void getVotersInElection() throws Exception {
+      Member member = memberTestHelper.generate();
       Election election = electionTestHelper.generate();
       ElectionVoter electionVoter = electionVoterTestHelper.builder()
           .member(member)
@@ -32,7 +31,7 @@ public class ElectionRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Election getVoters = electionRepository.getById(election.getId());
+      Election getVoters = electionRepository.getReferenceById(election.getId());
 
       assertThat(getVoters.getElectionVoters().size()).isEqualTo(1);
     }

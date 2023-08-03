@@ -17,11 +17,10 @@ public class ElectionVoterRepositoryTest extends IntegrationTest {
   @DisplayName("선거 투표자 관리 테스트")
   class ElectionVoterTest {
 
-    Member member = memberTestHelper.generate();
-
     @Test
     @DisplayName("투표 완료 인원 목록 수 확인")
     public void getVoterIsVoted() throws Exception {
+      Member member = memberTestHelper.generate();
       Election election = electionTestHelper.generate();
       ElectionVoter electionVoter = electionVoterTestHelper.builder()
           .member(member)
