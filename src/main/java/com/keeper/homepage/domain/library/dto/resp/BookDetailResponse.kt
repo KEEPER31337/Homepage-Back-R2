@@ -9,7 +9,7 @@ data class BookDetailResponse(
     val bookDepartment: String,
     val totalCount: Long,
     val borrowingCount: Int,
-    val thumbnailPath: String,
+    val thumbnailPath: String?,
     val borrowInfos: List<BorrowDetailResponse>
 ) {
     constructor(book: Book) : this(
@@ -19,7 +19,7 @@ data class BookDetailResponse(
         bookDepartment = book.bookDepartment.type.name,
         totalCount = book.totalQuantity,
         borrowingCount = book.bookBorrowInfos.count { it.isInBorrowing },
-        thumbnailPath = book.thumbnailPath,
+        thumbnailPath = book.thumbnailPath ?: null,
         borrowInfos = book.bookBorrowInfos.map(::BorrowDetailResponse),
     )
 }
