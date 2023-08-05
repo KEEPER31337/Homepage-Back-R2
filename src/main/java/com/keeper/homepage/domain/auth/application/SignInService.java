@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.auth.application;
 
+import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
@@ -35,7 +36,7 @@ public class SignInService {
   private final MailUtil mailUtil;
 
   @Transactional
-  public List<String> signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
+  public SignInResponse signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
     Member member = memberRepository.findByProfileLoginId(loginId)
         .orElseThrow(
             () -> new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_NOT_FOUND));
@@ -44,7 +45,7 @@ public class SignInService {
     }
     authCookieService.setNewCookieInResponse(String.valueOf(member.getId()),
         getRoles(member), response);
-    return Arrays.stream(getRoles(member)).toList();
+    return SignInResponse.of(member, Arrays.stream(getRoles(member)).toList());
   }
 
   private static String[] getRoles(Member member) {
