@@ -6,12 +6,12 @@ import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
 import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.auth.dto.response.CheckAuthCodeResponse;
+import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +29,13 @@ public class SignInController {
   private final SignInService signInService;
 
   @PostMapping
-  public ResponseEntity<List<String>> signIn(@RequestBody @Valid SignInRequest request, HttpServletResponse response) {
-    List<String> roles = signInService.signIn(LoginId.from(request.getLoginId()), request.getRawPassword(), response);
-    return ResponseEntity.ok(roles);
+  public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest request,
+      HttpServletResponse response) {
+    return ResponseEntity.ok(
+        signInService.signIn(
+            LoginId.from(request.getLoginId()),
+            request.getRawPassword(),
+            response));
   }
 
   @PostMapping("/find-login-id")
