@@ -6,6 +6,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionVoter;
 import com.keeper.homepage.domain.member.entity.Member;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -30,10 +31,11 @@ public class ElectionVoterRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      ElectionVoter votedVoters = electionVoterRepository.findByMemberAndElectionAndIsVoted(
+      Optional<ElectionVoter> votedVoters = electionVoterRepository.findByMemberAndElectionAndIsVoted(
           member, election, true);
 
-      assertThat(votedVoters.getElection().getElectionVoters().size()).isEqualTo(1);
+      assertThat(votedVoters.isPresent()).isEqualTo(true);
+      assertThat(votedVoters.get().getElection().getElectionVoters().size()).isEqualTo(1);
     }
   }
 }
