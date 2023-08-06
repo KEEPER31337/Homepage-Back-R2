@@ -36,6 +36,7 @@ import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -359,6 +360,11 @@ public class PostControllerTest extends PostApiTestHelper {
               pathParameters(
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
               ),
+              queryParameters(
+                  parameterWithName("password")
+                      .description("조회하고자 하는 게시글의 비밀번호. 단, 작성자가 본인인 경우 필수가 아니며 비밀글이라면 필수값입니다.")
+                      .optional()
+              ),
               responseFields(
                   fieldWithPath("categoryId").description("게시글 카테고리의 ID"),
                   fieldWithPath("categoryName").description("게시글 카테고리의 이름"),
@@ -370,13 +376,6 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("visitCount").description("게시글 조회수"),
                   fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
                   fieldWithPath("content").description("게시글 내용"),
-                  fieldWithPath("files").description("게시글 첨부파일 리스트"),
-                  fieldWithPath("files[].id").description("게시글 첨부파일 ID"),
-                  fieldWithPath("files[].name").description("게시글 첨부파일 이름"),
-                  fieldWithPath("files[].path").description("게시글 첨부파일 경로"),
-                  fieldWithPath("files[].size").description("게시글 첨부파일 크기"),
-                  fieldWithPath("files[].uploadTime").description("게시글 첨부파일 업로드 시간"),
-                  fieldWithPath("files[].ipAddress").description("게시글 첨부파일 IP 주소"),
                   fieldWithPath("likeCount").description("게시글의 좋아요 수"),
                   fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
@@ -393,58 +392,13 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("비밀 게시글의 경우 패스워드가 일치하면 조회가 성공한다.")
     public void should_success_when_samePassword() throws Exception {
-      String securedValue = getSecuredValue(PostController.class, "getPost");
-
-      postTestHelper.builder().category(category).build();
       post = postTestHelper.builder().member(other).password("비밀비밀").build();
       postId = postService.create(post, category.getId(), thumbnail, List.of(file));
-      postTestHelper.builder().category(category).build();
       em.flush();
       em.clear();
 
       callFindPostApiWithPassword(memberToken, postId, "비밀비밀")
-          .andExpect(status().isOk())
-          .andDo(document("find-secret-post",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
-              ),
-              pathParameters(
-                  parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
-              ),
-              queryParameters(
-                  parameterWithName("password")
-                      .description("조회하고자 하는 게시글의 비밀번호. 단, 작성자가 본인인 경우 없어도 됩니다.")
-              ),
-              responseFields(
-                  fieldWithPath("categoryId").description("게시글 카테고리의 ID"),
-                  fieldWithPath("categoryName").description("게시글 카테고리의 이름"),
-                  fieldWithPath("title").description("게시글의 타이틀"),
-                  fieldWithPath("writerName").description("게시글 작성자의 이름(익명 게시판일 경우 \"익명\")"),
-                  fieldWithPath("writerThumbnailPath").description("게시글 작성자의 썸네일 경로(익명 게시판일 경우 null)"),
-                  fieldWithPath("registerTime").description("게시글 등록 시간"),
-                  fieldWithPath("updateTime").description("게시글 수정 시간"),
-                  fieldWithPath("visitCount").description("게시글 조회수"),
-                  fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
-                  fieldWithPath("content").description("게시글 내용"),
-                  fieldWithPath("files").description("게시글 첨부파일 리스트"),
-                  fieldWithPath("files[].id").description("게시글 첨부파일 ID"),
-                  fieldWithPath("files[].name").description("게시글 첨부파일 이름"),
-                  fieldWithPath("files[].path").description("게시글 첨부파일 경로"),
-                  fieldWithPath("files[].size").description("게시글 첨부파일 크기"),
-                  fieldWithPath("files[].uploadTime").description("게시글 첨부파일 업로드 시간"),
-                  fieldWithPath("files[].ipAddress").description("게시글 첨부파일 IP 주소"),
-                  fieldWithPath("likeCount").description("게시글의 좋아요 수"),
-                  fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
-                  fieldWithPath("allowComment").description("댓글 허용 여부"),
-                  fieldWithPath("isNotice").description("공지글 여부"),
-                  fieldWithPath("isSecret").description("비밀글 여부"),
-                  fieldWithPath("isTemp").description("임시 저장글 여부"),
-                  fieldWithPath("previousPost.postId").description("이전 게시글 ID"),
-                  fieldWithPath("previousPost.title").description("이전 게시글 제목"),
-                  fieldWithPath("nextPost.postId").description("다음 게시글 ID"),
-                  fieldWithPath("nextPost.title").description("다음 게시글 제목")
-              )));
+          .andExpect(status().isOk());
     }
 
     @Test
@@ -842,6 +796,41 @@ public class PostControllerTest extends PostApiTestHelper {
           .andDo(document("get-trend-posts",
               responseFields(
                   listHelper("", getPostsResponse())
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글의 파일 목록 조회")
+  class GetPostFiles {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 게시글 파일 목록 조회는 성공한다.")
+    public void 유효한_요청일_경우_게시글_파일_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getPostFiles");
+
+      postId = postService.create(post, category.getId(), thumbnail, List.of(file));
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/posts/{postId}/files", postId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-post-files",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
+              ),
+              responseFields(
+                  fieldWithPath("[].id").description("파일 ID"),
+                  fieldWithPath("[].name").description("파일 이름"),
+                  fieldWithPath("[].path").description("파일 경로"),
+                  fieldWithPath("[].size").description("파일 크기"),
+                  fieldWithPath("[].ipAddress").description("ipAddress"),
+                  fieldWithPath("[].uploadTime").description("파일 업로드 시간")
               )));
     }
   }
