@@ -6,10 +6,12 @@ import static lombok.AccessLevel.PRIVATE;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@Builder
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PACKAGE)
 public class SeminarAttendanceResponse {
@@ -17,8 +19,10 @@ public class SeminarAttendanceResponse {
   private Long id;
   private SeminarAttendanceStatusType statusType;
 
-  public static SeminarAttendanceResponse from(SeminarAttendance attendance) {
-    return new SeminarAttendanceResponse(attendance.getId(),
-        attendance.getSeminarAttendanceStatus().getType());
+  public static SeminarAttendanceResponse of(SeminarAttendance attendance) {
+    return SeminarAttendanceResponse.builder()
+        .id(attendance.getId())
+        .statusType(attendance.getSeminarAttendanceStatus().getType())
+        .build();
   }
 }

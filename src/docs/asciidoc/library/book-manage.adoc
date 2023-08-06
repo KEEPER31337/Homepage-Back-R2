@@ -13,6 +13,32 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
+== *책 목록 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/manager-get-books/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/manager-get-books/request-cookies.adoc[]
+
+==== Request Params
+
+include::{snippets}/manager-get-books/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/manager-get-books/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/manager-get-books/response-fields.adoc[]
+
 == *책 추가*
 
 === 요청
@@ -25,9 +51,9 @@ include::{snippets}/assign-book/http-request.adoc[]
 
 include::{snippets}/assign-book/request-cookies.adoc[]
 
-==== Request Parameters
+==== Request Fields
 
-include::{snippets}/assign-book/query-parameters.adoc[]
+include::{snippets}/assign-book/request-part-bookMetaData-fields.adoc[]
 
 ==== Request Parts
 
@@ -77,9 +103,9 @@ include::{snippets}/modify-book/http-request.adoc[]
 
 include::{snippets}/modify-book/request-cookies.adoc[]
 
-==== Request Parameters
+==== Path Parameters
 
-include::{snippets}/modify-book/query-parameters.adoc[]
+include::{snippets}/modify-book/path-parameters.adoc[]
 
 == *책 썸네일 수정*
 

@@ -14,6 +14,7 @@ import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteSubtitleImageRepository;
 import com.keeper.homepage.domain.about.dao.StaticWriteTitleRepository;
 import com.keeper.homepage.domain.attendance.AttendanceTestHelper;
+import com.keeper.homepage.domain.attendance.application.AttendanceService;
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
@@ -30,10 +31,14 @@ import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
 import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
+import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
+import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
+import com.keeper.homepage.domain.ctf.application.CtfTeamService;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
 import com.keeper.homepage.domain.game.application.GameFindService;
+import com.keeper.homepage.domain.game.application.GameService;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
@@ -45,6 +50,8 @@ import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
+import com.keeper.homepage.domain.member.application.MemberJobService;
+import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
@@ -56,12 +63,15 @@ import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
+import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
+import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
 import com.keeper.homepage.domain.seminar.SeminarTestHelper;
+import com.keeper.homepage.domain.seminar.application.SeminarAttendanceService;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceExcuseRepository;
@@ -181,6 +191,9 @@ public class IntegrationTest {
   protected PostRepository postRepository;
 
   @SpyBean
+  protected PostHasFileRepository postHasFileRepository;
+
+  @SpyBean
   protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
   @SpyBean
@@ -228,7 +241,19 @@ public class IntegrationTest {
   @SpyBean
   protected ElectionVoterRepository electionVoterRepository;
 
+  @Autowired
+  protected FileRepository fileRepository;
+
+  @Autowired
+  protected ThumbnailRepository thumbnailRepository;
+
+  @Autowired
+  protected PointLogRepository pointLogRepository;
+
   /******* Service *******/
+  @SpyBean
+  protected MemberService memberService;
+
   @SpyBean
   protected EmailAuthService emailAuthService;
 
@@ -243,9 +268,6 @@ public class IntegrationTest {
 
   @SpyBean
   protected AuthCookieService authCookieService;
-
-  @SpyBean
-  protected MailUtil mailUtil;
 
   @Autowired
   protected StaticWriteService staticWriteService;
@@ -283,15 +305,24 @@ public class IntegrationTest {
   @SpykBean
   protected GameFindService gameFindService;
 
+  @SpykBean
+  protected GameService gameService;
+
+  @SpyBean
+  protected MemberJobService memberJobService;
+
+  @SpyBean
+  protected AttendanceService attendanceService;
+
+  @SpyBean
+  protected SeminarAttendanceService seminarAttendanceService;
+
+  @SpyBean
+  protected CtfTeamService ctfTeamService;
+
   /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
-
-  @Autowired
-  protected FileRepository fileRepository;
-
-  @Autowired
-  protected ThumbnailRepository thumbnailRepository;
 
   @Autowired
   protected MemberTestHelper memberTestHelper;
@@ -338,6 +369,12 @@ public class IntegrationTest {
   @Autowired
   protected ElectionVoterTestHelper electionVoterTestHelper;
 
+  @Autowired
+  protected CtfTeamTestHelper ctfTeamTestHelper;
+
+  @Autowired
+  protected CtfContestTestHelper ctfContestTestHelper;
+
   /******* Util *******/
   @SpyBean
   protected ThumbnailUtil thumbnailUtil;
@@ -347,6 +384,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected RedisUtil redisUtil;
+
+  @SpyBean
+  protected MailUtil mailUtil;
 
   protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
 

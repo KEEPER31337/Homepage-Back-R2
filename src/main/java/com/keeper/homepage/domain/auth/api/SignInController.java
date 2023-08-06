@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
 import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.auth.dto.response.CheckAuthCodeResponse;
+import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,11 +29,13 @@ public class SignInController {
   private final SignInService signInService;
 
   @PostMapping
-  public ResponseEntity<Void> signIn(@RequestBody @Valid SignInRequest request,
-      HttpServletResponse httpServletResponse) {
-    signInService.signIn(LoginId.from(request.getLoginId()),
-        request.getRawPassword(), httpServletResponse);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest request,
+      HttpServletResponse response) {
+    return ResponseEntity.ok(
+        signInService.signIn(
+            LoginId.from(request.getLoginId()),
+            request.getRawPassword(),
+            response));
   }
 
   @PostMapping("/find-login-id")

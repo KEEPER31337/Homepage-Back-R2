@@ -1,9 +1,9 @@
 package com.keeper.homepage.domain.game.api
 
-import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
-import com.keeper.homepage.domain.game.application.REDIS_KEY_PREFIX
-import com.keeper.homepage.domain.game.dto.BaseballResult
-import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
+import com.keeper.homepage.domain.game.application.*
+import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -22,7 +22,62 @@ class GameControllerTest : GameApiTestHelper() {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
+    inner class `게임 랭킹` {
+        @Test
+        fun `게임 랭킹을 불러온다`() {
+            (1..2).forEach { _ -> gameTestHelper.generate() }
+
+            callGetGameRank()
+                .andExpect(status().isOk)
+                .andDo(
+                    document(
+                        "game-rank",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        ),
+                        responseFields(
+                            fieldWithPath("[].rank").description("순위 (1~${MAX_RANK_COUNT})"),
+                            fieldWithPath("[].nickname").description("닉네임"),
+                            fieldWithPath("[].generation").description("기수"),
+                            fieldWithPath("[].todayEarnedPoint").description("오늘 얻은 포인트"),
+                            fieldWithPath("[].profileImageUrl").description("프로필 이미지 url (상대경로)"),
+                            fieldWithPath("[].memberId").description("회원 id")
+                        )
+                    )
+                )
+        }
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
     inner class `야구 게임` {
+        @Test
+        fun `야구게임 정보를 불러온다`() {
+            callBaseballGameInfo()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.guessNumberLength").value(4))
+                .andExpect(jsonPath("$.tryCount").value(9))
+                .andExpect(jsonPath("$.maxBettingPoint").value(1000L))
+                .andExpect(jsonPath("$.minBettingPoint").value(10L))
+                .andDo(
+                    document(
+                        "baseball-game-info",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        ),
+                        responseFields(
+                            fieldWithPath("guessNumberLength").description("추측할 숫자 길이"),
+                            fieldWithPath("tryCount").description("라운드 수"),
+                            fieldWithPath("maxBettingPoint").description("최대 베팅 포인트"),
+                            fieldWithPath("minBettingPoint").description("최소 베팅 포인트"),
+
+                            )
+                    )
+                )
+        }
+
         @Test
         fun `야구게임을 오늘 안했으면 false가 나와야 한다`() {
             callBaseballIsAlreadyPlayed()
@@ -42,7 +97,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `야구게임을 오늘 했으면 true가 나와야 한다`() {
-            gameStart()
+            (1..BASEBALL_MAX_PLAYTIME).forEach { _ -> gameStart() }
 
             callBaseballIsAlreadyPlayed()
                 .andExpect(status().isOk)
@@ -50,7 +105,7 @@ class GameControllerTest : GameApiTestHelper() {
         }
 
         @Test
-        fun `베팅 포인트가 양수면 게임이 시작된다`() {
+        fun `베팅 포인트가 10포인트 이상, 1000포인트 이하면 게임이 시작된다`() {
             player.addPoint(1000)
             memberRepository.save(player)
 
@@ -58,8 +113,11 @@ class GameControllerTest : GameApiTestHelper() {
                 .andExpect(status().isNoContent)
 
             val baseball = gameFindService.findByMemberOrInit(player).baseball
-            assertThat(baseball.isAlreadyPlayed).isTrue() // 게임을 시작하면 play count가 증가한다.
-            val data = redisUtil.getData(REDIS_KEY_PREFIX + player.id.toString(), BaseballResult::class.java)
+            assertThat(baseball.baseballPerDay).isEqualTo(1) // 게임을 시작하면 play count가 증가한다.
+            val data = redisUtil.getData(
+                REDIS_KEY_PREFIX + player.id.toString() + "_" + baseball.baseballPerDay,
+                BaseballResultEntity::class.java
+            )
             assertThat(data).isNotEmpty
             assertThat(data.get().correctNumber).hasSize(4)
             assertThat(data.get().correctNumber).containsOnlyDigits()
@@ -75,19 +133,34 @@ class GameControllerTest : GameApiTestHelper() {
                         cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                     ),
                     requestFields(
-                        fieldWithPath("bettingPoint").description("베팅을 할 포인트"),
+                        fieldWithPath("bettingPoint").description("베팅을 할 포인트 (${MIN_BETTING_POINT}이상 ${MAX_BETTING_POINT}이하)"),
                     ),
                 )
             )
         }
 
         @Test
-        fun `베팅 포인트가 음수거나 0이면 게임을 플레이 할 수 없다`() {
+        fun `베팅 포인트가 1000포인트보다 크면 게임을 플레이할 수 없다`() {
+            player.addPoint(1000)
+            memberRepository.save(player)
+            callBaseballStart(1001)
+                .andExpect(status().isBadRequest)
+            callBaseballStart(2000)
+                .andExpect(status().isBadRequest)
+            @Suppress("INTEGER_OVERFLOW")
+            callBaseballStart(Int.MAX_VALUE + 1)
+                .andExpect(status().isBadRequest)
+        }
+
+        @Test
+        fun `베팅 포인트가 음수거나 10포인트보다 작으면 게임을 플레이 할 수 없다`() {
             player.addPoint(1000)
             memberRepository.save(player)
             callBaseballStart(-1000)
                 .andExpect(status().isBadRequest)
             callBaseballStart(0)
+                .andExpect(status().isBadRequest)
+            callBaseballStart(9)
                 .andExpect(status().isBadRequest)
         }
 
@@ -103,11 +176,15 @@ class GameControllerTest : GameApiTestHelper() {
         fun `valid한 request면 guess는 성공해야 한다`() {
             val result = callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(GuessResult("1357", 0, 0), GuessResult("2468", 2, 2), GuessResult("7890", 3, 0))
+                results = mutableListOf(
+                    GuessResultEntity("1357", 0, 0),
+                    GuessResultEntity("2468", 2, 2),
+                    GuessResultEntity("7890", 3, 0)
+                )
             ).andExpect(status().isOk)
-                .andExpect(jsonPath("$.result").isArray)
-                .andExpect(jsonPath("$.result[0]").exists())
-                .andExpect(jsonPath("$.earnedPoint").isNumber)
+                .andExpect(jsonPath("$.results").isArray)
+                .andExpect(jsonPath("$.results[0]").exists())
+                .andExpect(jsonPath("$.earnablePoints").isNumber)
 
             result.andDo(
                 document(
@@ -120,11 +197,11 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("guessNumber").description("추측한 숫자 (반드시 ${GUESS_NUMBER_LENGTH}자 여야 합니다)"),
                     ),
                     responseFields(
-                        fieldWithPath("result").description("타임아웃난 round는 null"),
-                        fieldWithPath("result[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
-                        fieldWithPath("result[].strike").description("strike"),
-                        fieldWithPath("result[].ball").description("ball"),
-                        fieldWithPath("earnedPoint").description("획득한 포인트 (마지막 게임이 아니면 0)"),
+                        fieldWithPath("results").description("타임아웃난 round는 null"),
+                        fieldWithPath("results[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
+                        fieldWithPath("results[].strike").description("strike"),
+                        fieldWithPath("results[].ball").description("ball"),
+                        fieldWithPath("earnablePoints").description("획득한 포인트 (마지막 게임이 아니면 0)"),
                     ),
                 )
             )
@@ -139,15 +216,16 @@ class GameControllerTest : GameApiTestHelper() {
         }
 
         @Test
-        fun `맞췄으면 guess는 포인트를 부여해야 한다`() {
+        fun `맞췄으면 guess는 earnablePoints만큼 포인트를 부여해야 한다`() {
             val beforePlayerPoint = player.point
+            val earnablePoints = 3000
 
             callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 3, 0))
+                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000, earnablePoints = earnablePoints,
+                results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 3, 0))
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint + 2000).isEqualTo(player.point)
+            assertThat(beforePlayerPoint + earnablePoints).isEqualTo(player.point)
         }
 
         @Test
@@ -156,7 +234,7 @@ class GameControllerTest : GameApiTestHelper() {
 
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
-                results = mutableListOf(GuessResult("1234", 2, 2), null, GuessResult("5678", 4, 0))
+                results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0))
             ).andExpect(status().isOk)
 
             assertThat(beforePlayerPoint).isEqualTo(player.point)
@@ -169,7 +247,7 @@ class GameControllerTest : GameApiTestHelper() {
             callBaseballGuess(
                 guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(
-                    GuessResult("1234", 2, 2), null, GuessResult("5678", 4, 0),
+                    GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0),
                     null, null, null, null, null, null
                 )
             ).andExpect(status().isOk)
@@ -183,14 +261,14 @@ class GameControllerTest : GameApiTestHelper() {
 
             callGetBaseballResult(
                 results = mutableListOf(
-                    GuessResult("1234", 2, 2),
-                    null, GuessResult("3456", 1, 0),
-                    null, null, GuessResult("5678", 3, 0)
+                    GuessResultEntity("1234", 2, 2),
+                    null, GuessResultEntity("3456", 1, 0),
+                    null, null, GuessResultEntity("5678", 3, 0)
                 )
             ).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
                 .andExpect(
-                    jsonPath("$.result[0]").value(
+                    jsonPath("$.results[0]").value(
                         linkedMapOf(
                             "guessNumber" to "1234",
                             "strike" to 2,
@@ -198,9 +276,9 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.result[1]").value(null))
+                .andExpect(jsonPath("$.results[1]").value(null))
                 .andExpect(
-                    jsonPath("$.result[2]").value(
+                    jsonPath("$.results[2]").value(
                         linkedMapOf(
                             "guessNumber" to "3456",
                             "strike" to 1,
@@ -208,10 +286,10 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.result[3]").value(null))
-                .andExpect(jsonPath("$.result[4]").value(null))
+                .andExpect(jsonPath("$.results[3]").value(null))
+                .andExpect(jsonPath("$.results[4]").value(null))
                 .andExpect(
-                    jsonPath("$.result[5]").value(
+                    jsonPath("$.results[5]").value(
                         linkedMapOf(
                             "guessNumber" to "5678",
                             "strike" to 3,
@@ -219,17 +297,17 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.earnedPoint").value(0))
+                .andExpect(jsonPath("$.earnablePoints").value(0))
                 .andDo(
                     document(
-                        "get-baseball-result",
+                        "get-baseball-results",
                         requestCookies(
                             cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                         ),
                         responseFields(
-                            subsectionWithPath("result").description("타임아웃난 round는 null"),
-                            fieldWithPath("earnedPoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
+                            subsectionWithPath("results").description("타임아웃난 round는 null"),
+                            fieldWithPath("earnablePoints").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
                         ),
                     )
                 )

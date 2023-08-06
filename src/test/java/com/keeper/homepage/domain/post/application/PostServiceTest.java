@@ -1,12 +1,9 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_ATTENDANCE_COUNT;
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_COMMENT_COUNT;
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.ANONYMOUS_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.EXAM_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.DefaultCategory.VIRTUAL_CATEGORY;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.VIRTUAL_CATEGORY;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
 import static java.io.File.separator;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,6 +16,7 @@ import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
+import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -29,12 +27,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 public class PostServiceTest extends IntegrationTest {
@@ -77,7 +76,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.getIsTemp()).isEqualTo(false);
       assertThat(findPost.getCategory().getId()).isEqualTo(category.getId());
       assertThat(findPost.getThumbnail()).isNotNull();
-      assertThat(findPost.getFiles()).isNotEmpty();
+      assertThat(findPost.getPostHasFiles()).isNotEmpty();
     }
 
     @Test
@@ -95,23 +94,13 @@ public class PostServiceTest extends IntegrationTest {
 
     private Member bestMember;
     private Category virtualCategory, examCategory;
-    private Thumbnail thumbnail;
     private final long virtualPostId = 1;
 
     @BeforeEach
     void setUp() {
       bestMember = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      for (int i = 0; i < EXAM_ACCESSIBLE_COMMENT_COUNT; i++) {
-        commentRepository.save(commentTestHelper.builder().member(bestMember).build());
-      }
-      for (int i = 0; i < EXAM_ACCESSIBLE_ATTENDANCE_COUNT; i++) {
-        LocalDate attendanceDate = LocalDate.now().plusDays(i);
-        attendanceRepository
-            .save(attendanceTestHelper.builder().member(bestMember).date(attendanceDate).build());
-      }
       virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
       examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
-      thumbnail = thumbnailRepository.findById(DEFAULT_POST_THUMBNAIL.getId()).orElseThrow();
     }
 
     @Test
@@ -121,7 +110,6 @@ public class PostServiceTest extends IntegrationTest {
           .member(bestMember)
           .password("비밀비밀")
           .category(virtualCategory)
-          .thumbnail(thumbnail)
           .build();
 
       em.flush();
@@ -130,12 +118,10 @@ public class PostServiceTest extends IntegrationTest {
       post = postRepository.findById(post.getId()).orElseThrow();
       PostDetailResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
 
-      assertThat(response.getCategoryName()).isEqualTo(VIRTUAL_CATEGORY.getName());
       assertThat(response.getTitle()).isEqualTo(post.getTitle());
       assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getNickname().get());
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
-      assertThat(response.getThumbnailPath()).isEqualTo(DEFAULT_POST_THUMBNAIL.getPath());
       assertThat(response.getContent()).isEqualTo(post.getContent());
     }
 
@@ -166,7 +152,6 @@ public class PostServiceTest extends IntegrationTest {
       post = postTestHelper.builder()
           .member(bestMember)
           .category(anonymousCategory)
-          .thumbnail(thumbnail)
           .build();
 
       em.flush();
@@ -206,46 +191,6 @@ public class PostServiceTest extends IntegrationTest {
     @DisplayName("족보 글은 포인트가 20000점 미만이면 조회할 수 없다.")
     public void should_failGetExamPost_when_pointLessThan20000() throws Exception {
       member = memberTestHelper.builder().point(0).build();
-      post = postTestHelper.builder()
-          .member(bestMember)
-          .category(examCategory)
-          .build();
-
-      em.flush();
-      em.clear();
-      member = memberRepository.findById(member.getId()).orElseThrow();
-      post = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThrows(BusinessException.class, () -> {
-        postService.find(member, post.getId(), null);
-      });
-    }
-
-    @Test
-    @DisplayName("족보 글은 회원의 댓글 수가 5개 미만이면 조회할 수 없다.")
-    public void should_failGetExamPost_when_commentLessThan5() throws Exception {
-      member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      commentRepository.deleteAll();
-      post = postTestHelper.builder()
-          .member(bestMember)
-          .category(examCategory)
-          .build();
-
-      em.flush();
-      em.clear();
-      member = memberRepository.findById(member.getId()).orElseThrow();
-      post = postRepository.findById(post.getId()).orElseThrow();
-
-      assertThrows(BusinessException.class, () -> {
-        postService.find(member, post.getId(), null);
-      });
-    }
-
-    @Test
-    @DisplayName("족보 글은 회원의 출석 수가 10회 미만이면 조회할 수 없다.")
-    public void should_failGetExamPost_when_attendanceLessThan10() throws Exception {
-      member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      attendanceRepository.deleteAll();
       post = postTestHelper.builder()
           .member(bestMember)
           .category(examCategory)
@@ -303,6 +248,50 @@ public class PostServiceTest extends IntegrationTest {
         postService.find(bestMember, post.getId(), null);
       });
     }
+
+    @Test
+    @DisplayName("id 기준으로 카테고리에 해당하는 이전과 다음 게시글 하나는 성공적으로 조회된다.")
+    public void id_기준으로_카테고리에_해당하는_이전과_다음_게시글_하나는_성공적으로_조회된다() throws Exception {
+      Post first = postTestHelper.builder().category(category).build();
+      Post middle = postTestHelper.builder().member(member).category(category).build();
+      Post last = postTestHelper.builder().category(category).build();
+
+      em.flush();
+      em.clear();
+      PostDetailResponse response = postService.find(member, middle.getId(), null);
+
+      assertThat(response.getPreviousPost().getPostId()).isEqualTo(first.getId());
+      assertThat(response.getNextPost().getPostId()).isEqualTo(last.getId());
+    }
+
+    @Test
+    @DisplayName("이전, 다음 게시글으로 임시 저장글은 조회되면 안돤다.")
+    public void 이전_다음_게시글으로_임시_저장글은_조회되면_안돤다() throws Exception {
+      Post first = postTestHelper.builder().category(category).isTemp(true).build();
+      Post middle = postTestHelper.builder().member(member).category(category).build();
+      Post last = postTestHelper.builder().category(category).build();
+
+      em.flush();
+      em.clear();
+      PostDetailResponse response = postService.find(member, middle.getId(), null);
+
+      assertThat(response.getPreviousPost().getPostId()).isNotEqualTo(first.getId());
+      assertThat(response.getNextPost().getPostId()).isEqualTo(last.getId());
+    }
+
+    @Test
+    @DisplayName("이전, 혹은 다음 게시글이 없을 경우 null로 조회된다.")
+    public void 이전_혹은_다음_게시글이_없을_경우_null로_조회된다() throws Exception {
+      Post first = postTestHelper.builder().category(category).build();
+      Post middle = postTestHelper.builder().member(member).category(category).build();
+
+      em.flush();
+      em.clear();
+      PostDetailResponse response = postService.find(member, middle.getId(), null);
+
+      assertThat(response.getPreviousPost().getPostId()).isEqualTo(first.getId());
+      assertThat(response.getNextPost()).isEqualTo(null);
+    }
   }
 
   @Nested
@@ -329,10 +318,14 @@ public class PostServiceTest extends IntegrationTest {
       Post newPost = Post.builder()
           .title("수정 제목")
           .content("수정 내용")
+          .allowComment(true)
+          .isNotice(false)
+          .isSecret(false)
+          .isTemp(false)
           .build();
 
       assertDoesNotThrow(() -> {
-        postService.update(member, postId, newPost, null);
+        postService.update(member, postId, newPost);
       });
     }
 
@@ -374,32 +367,6 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 파일 수정은 성공한다.")
-    public void should_success_when_updateFiles() throws Exception {
-      post = postTestHelper.builder().member(member).build();
-      postId = postService.create(post, category.getId(), null, List.of(file1));
-      List<FileEntity> beforeFiles = fileRepository.findAllByPost(post);
-
-      Post newPost = Post.builder()
-          .title("수정 제목")
-          .content("수정 내용")
-          .ipAddress(WebUtil.getUserIP())
-          .build();
-
-      postService.update(member, postId, newPost, List.of(file2));
-      List<FileEntity> afterFiles = fileRepository.findAllByPost(post);
-
-      for (FileEntity fileEntity : beforeFiles) {
-        assertThat(new File(fileEntity.getFilePath())).doesNotExist();
-        assertThat(fileRepository.findById(fileEntity.getId())).isEmpty();
-      }
-      for (FileEntity fileEntity : afterFiles) {
-        assertThat(new File(fileEntity.getFilePath())).exists();
-        assertThat(fileRepository.findById(fileEntity.getId())).isNotEmpty();
-      }
-    }
-
-    @Test
     @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_secretPostWithoutPassword() throws Exception {
       postId = postTestHelper.builder().member(member).build().getId();
@@ -411,7 +378,7 @@ public class PostServiceTest extends IntegrationTest {
           .build();
 
       assertThrows(BusinessException.class, () -> {
-        postService.update(member, postId, newPost, null);
+        postService.update(member, postId, newPost);
       });
     }
   }
@@ -506,6 +473,85 @@ public class PostServiceTest extends IntegrationTest {
 
       assertThat(member.isLike(post)).isFalse();
       assertThat(member.isDislike(post)).isFalse();
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 파일 삭제")
+  class DeletePostFile {
+
+    @Test
+    @DisplayName("게시글 파일 삭제는 성공해야 한다.")
+    public void 게시글_파일_삭제는_성공해야_한다() throws Exception {
+      postService.addPostFiles(member, postId, List.of(thumbnail));
+
+      FileEntity beforeFile = postHasFileRepository.findByPost(post)
+          .orElseThrow()
+          .getFile();
+
+      assertThat(new File(beforeFile.getFilePath())).exists();
+      assertThat(fileRepository.findById(beforeFile.getId())).isNotEmpty();
+
+      postService.deletePostFile(member, postId, beforeFile.getId());
+
+      assertThat(new File(beforeFile.getFilePath())).doesNotExist();
+      assertThat(fileRepository.findById(beforeFile.getId())).isEmpty();
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 목록 조회")
+  class FindPosts {
+
+    Category category;
+
+    @BeforeEach
+    void setUp() {
+      category = categoryTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("공지글과 임시글은 조회되지 않아야 한다.")
+    public void 공지글과_임시글은_조회되지_않아야_한다() throws Exception {
+      Long postId1 = postTestHelper.builder().category(category).isTemp(true).build().getId();
+      Long postId2 = postTestHelper.builder().category(category).isNotice(true).build().getId();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), null, null, PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(postId1);
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(postId2);
+    }
+
+    @Test
+    @DisplayName("제목 검색은 대소문자 구분 없이 조회되어야 한다.")
+    public void 제목_검색은_대소문자_구분_없이_조회되어야_한다() throws Exception {
+      postTestHelper.builder().category(category).title("ABCD").build();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "title", "abc", PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getTitle).toList()).contains("ABCD");
+    }
+
+    @Test
+    @DisplayName("내용 검색은 대소문자 구분 없이 조회되어야 한다.")
+    public void 내용_검색은_대소문자_구분_없이_조회되어야_한다() throws Exception {
+      Long postId = postTestHelper.builder().category(category).content("ABCD").build().getId();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "content", "abc", PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId);
+    }
+
+    @Test
+    @DisplayName("제목 or 내용 검색은 대소문자 구분 없이 모두 조회되어야 한다.")
+    public void 제목_or_내용_검색은_대소문자_구분_없이_모두_조회되어야_한다() throws Exception {
+      Long postId1 = postTestHelper.builder().category(category).title("ABCD").build().getId();
+      Long postId2 = postTestHelper.builder().category(category).content("BCD").build().getId();
+
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "title+content", "bc", PageRequest.of(0, 10));
+
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId1);
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId2);
     }
   }
 }

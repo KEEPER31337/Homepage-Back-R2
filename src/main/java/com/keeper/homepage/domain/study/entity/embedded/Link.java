@@ -17,14 +17,18 @@ public class Link {
   private GitLink gitLink;
 
   @Embedded
-  private NoteLink noteLink;
+  private NotionLink notionLink;
 
   private String etcLink;
 
   @Builder
-  private Link(GitLink gitLink, NoteLink noteLink, String etcLink) {
+  private Link(GitLink gitLink, NotionLink notionLink, String etcLink) {
     this.gitLink = gitLink;
-    this.noteLink = noteLink;
+    this.notionLink = notionLink;
     this.etcLink = etcLink;
+  }
+
+  public boolean isEmpty() {
+    return gitLink == null && notionLink == null && etcLink == null;
   }
 }

@@ -68,13 +68,31 @@ class SignInControllerTest extends IntegrationTest {
       mockMvc.perform(post("/sign-in")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(validRequest)))
-          .andExpect(status().isNoContent())
+          .andExpect(status().isOk())
           .andExpect(cookie().exists(ACCESS_TOKEN.getTokenName()))
           .andExpect(cookie().exists(REFRESH_TOKEN.getTokenName()))
           .andDo(document("sign-in",
               requestFields(
                   fieldWithPath("loginId").description("로그인 아이디"),
                   fieldWithPath("password").description("비밀번호")
+              ),
+              responseFields(
+                  fieldWithPath("id").description("회원 아이디"),
+                  fieldWithPath("emailAddress").description("이메일"),
+                  fieldWithPath("realName").description("실명"),
+                  fieldWithPath("nickname").description("닉네임"),
+                  fieldWithPath("birthday").description("생일"),
+                  fieldWithPath("studentId").description("학번"),
+                  fieldWithPath("thumbnailPath").description("썸네일 경로"),
+                  fieldWithPath("generation").description("기수"),
+                  fieldWithPath("point").description("보유 포인트"),
+                  fieldWithPath("level").description("레벨"),
+                  fieldWithPath("merit").description("상점"),
+                  fieldWithPath("demerit").description("벌점"),
+                  fieldWithPath("totalAttendance").description("총 출석 횟수"),
+                  fieldWithPath("memberType").description("회원 타입"),
+                  fieldWithPath("memberRank").description("회원 랭크"),
+                  fieldWithPath("memberJobs[]").description("회원 역할")
               ),
               responseCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),

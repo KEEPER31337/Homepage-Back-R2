@@ -8,11 +8,15 @@ import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REA
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_MEMBER_THUMBNAIL;
-import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REMOVE;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.ctf.entity.CtfContest;
+import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
+import com.keeper.homepage.domain.ctf.entity.team.CtfTeamHasMember;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
@@ -29,6 +33,7 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
+import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
@@ -47,7 +52,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -138,6 +142,12 @@ public class Member {
 
   @OneToMany(mappedBy = "member")
   private final List<Comment> comments = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member")
+  private final List<PointLog> pointLogs = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<CtfTeamHasMember> ctfTeamHasMembers = new HashSet<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
@@ -270,6 +280,17 @@ public class Member {
     studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
   }
 
+  public void join(CtfTeam ctfTeam) {
+    ctfTeamHasMembers.add(CtfTeamHasMember.builder()
+        .ctfTeam(ctfTeam)
+        .member(this)
+        .build());
+  }
+
+  public void leave(CtfTeam ctfTeam) {
+    ctfTeamHasMembers.removeIf(ctfTeamMember -> ctfTeamMember.getCtfTeam().equals(ctfTeam));
+  }
+
   public Long getId() {
     return this.id;
   }
@@ -304,7 +325,7 @@ public class Member {
   public String getThumbnailPath() {
     return Optional.ofNullable(this.profile.getThumbnail())
         .map(Thumbnail::getPath)
-        .orElse(DEFAULT_MEMBER_THUMBNAIL.getPath());
+        .orElse(null);
   }
 
   public boolean isHeadMember(Study study) {
@@ -315,5 +336,19 @@ public class Member {
     return this.bookBorrowInfos.stream()
         .filter(BookBorrowInfo::isInBorrowing)
         .count();
+  }
+
+  public boolean hasTeam(CtfContest contest) {
+    return ctfTeamHasMembers.stream()
+        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().getCtfContest().equals(contest));
+  }
+
+  public boolean isJoin(CtfTeam ctfTeam) {
+    return ctfTeamHasMembers.stream()
+        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().equals(ctfTeam));
+  }
+
+  public boolean isCreator(CtfTeam ctfTeam) {
+    return this.equals(ctfTeam.getCreator());
   }
 }

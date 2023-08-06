@@ -4,22 +4,16 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
-import com.keeper.homepage.global.util.web.WebUtil;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,12 +33,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     long memberId = member.getId();
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
-    post = Post.builder()
-        .title("게시글 제목")
-        .content("게시글 내용")
-        .member(member)
-        .ipAddress(WebUtil.getUserIP())
-        .build();
+    post = postTestHelper.generate();
     category = categoryTestHelper.generate();
   }
 
@@ -57,7 +46,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     public void should_success_when_admin() throws Exception {
       String securedValue = getSecuredValue(AdminPostController.class, "deletePost");
 
-      long postId = postService.create(post, category.getId(), null, null);
+      long postId = post.getId();
 
       callAdminDeletePostApi(adminToken, postId)
           .andExpect(status().isNoContent())
@@ -75,7 +64,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("일반 회원이라면 게시글 삭제가 실패한다.")
     public void should_fail_when_member() throws Exception {
-      long postId = postService.create(post, category.getId(), null, null);
+      long postId = post.getId();
 
       callAdminDeletePostApi(memberToken, postId)
           .andExpect(status().isForbidden());

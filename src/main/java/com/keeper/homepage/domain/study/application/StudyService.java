@@ -1,25 +1,21 @@
 package com.keeper.homepage.domain.study.application;
 
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
-import static com.keeper.homepage.global.error.ErrorCode.POST_CANNOT_ACCESSIBLE;
-import static com.keeper.homepage.global.error.ErrorCode.STUDY_CANNOT_ACCESSIBLE;
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_HEAD_MEMBER_CANNOT_LEAVE;
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_LINK_NEED;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
-import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyListResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyResponse;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
-import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +32,16 @@ public class StudyService {
   private final MemberFindService memberFindService;
 
   public void create(Study study, MultipartFile thumbnail) {
+    checkLink(study);
     saveStudyThumbnail(study, thumbnail);
-    studyRepository.save(study);
+    long studyId = studyRepository.save(study).getId();
+    joinStudy(studyId, study.getHeadMember().getId());
+  }
+
+  private void checkLink(Study study) {
+    if (study.getLink().isEmpty()) {
+      throw new BusinessException(study.getId(), "studyId", STUDY_LINK_NEED);
+    }
   }
 
   private void saveStudyThumbnail(Study study, MultipartFile thumbnail) {
@@ -49,7 +53,7 @@ public class StudyService {
     Study study = studyFindService.findById(studyId);
 
     if (!member.isHeadMember(study)) {
-      throw new BusinessException(study.getId(), "study", STUDY_CANNOT_ACCESSIBLE);
+      throw new BusinessException(study.getId(), "study", STUDY_INACCESSIBLE);
     }
     studyRepository.delete(study);
   }
@@ -71,8 +75,9 @@ public class StudyService {
   public void update(Member member, long studyId, Study newStudy) {
     Study study = studyFindService.findById(studyId);
     if (!member.isHeadMember(study)) {
-      throw new BusinessException(studyId, "studyId", STUDY_CANNOT_ACCESSIBLE);
+      throw new BusinessException(studyId, "studyId", STUDY_INACCESSIBLE);
     }
+    checkLink(newStudy);
     study.update(newStudy);
   }
 
@@ -80,7 +85,7 @@ public class StudyService {
   public void updateStudyThumbnail(Member member, long studyId, MultipartFile thumbnail) {
     Study study = studyFindService.findById(studyId);
     if (!member.isHeadMember(study)) {
-      throw new BusinessException(studyId, "studyId", STUDY_CANNOT_ACCESSIBLE);
+      throw new BusinessException(studyId, "studyId", STUDY_INACCESSIBLE);
     }
     Thumbnail newThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
     study.changeThumbnail(newThumbnail);
@@ -97,6 +102,9 @@ public class StudyService {
   public void leaveStudy(long studyId, long memberId) {
     Study study = studyFindService.findById(studyId);
     Member member = memberFindService.findById(memberId);
+    if (member.isHeadMember(study)) {
+      throw new BusinessException(studyId, "studyId", STUDY_HEAD_MEMBER_CANNOT_LEAVE);
+    }
     member.leave(study);
   }
 }

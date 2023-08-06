@@ -15,7 +15,9 @@ link:auth/auth.html[API 문서 보기]
 
 == *MEMBER API*
 
-link:member/member.html[API 문서 보기]
+link:member/member.html[회원 API 문서 보기]
+
+link:member/member-job.html[직책 API 문서 보기]
 
 == *ABOUT API*
 
@@ -46,3 +48,11 @@ link:study/study.html[API 문서 보기]
 == *GAME API*
 
 link:game/game.html[API 문서 보기]
+
+== *ATTENDANCE API*
+
+link:attendance/attendance.html[API 문서 보기]
+
+== *CTF API*
+
+link:ctf/ctf-team[CTF TEAM API 문서 보기]

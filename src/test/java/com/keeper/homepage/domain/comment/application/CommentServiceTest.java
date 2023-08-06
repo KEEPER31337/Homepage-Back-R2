@@ -37,6 +37,8 @@ public class CommentServiceTest extends IntegrationTest {
     @BeforeEach
     void setUp() {
       parent = commentTestHelper.generate();
+      em.flush();
+      em.clear();
     }
 
     @Test

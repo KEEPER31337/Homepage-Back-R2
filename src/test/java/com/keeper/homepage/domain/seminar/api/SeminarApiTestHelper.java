@@ -75,28 +75,31 @@ public class SeminarApiTestHelper extends IntegrationTest {
 
   ResultActions attendanceSeminarUsingApi(String token, Long seminarId, SeminarAttendanceCodeRequest request)
       throws Exception {
-    return mockMvc.perform(post("/seminars/{seminarId}/attendances", seminarId)
+    return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
 
   ResultActions attendanceSeminarUsingApi(String token, Long seminarId, String strJson) throws Exception {
-    return mockMvc.perform(post("/seminars/{seminarId}/attendances", seminarId)
+    return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
   }
 
-  ResultActions changeAttendanceStatusUsingApi(String token, Long seminarId, SeminarAttendanceStatusRequest request) throws Exception {
-    return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
+  ResultActions changeAttendanceStatusUsingApi(String token, long seminarId, long memberId,
+      SeminarAttendanceStatusRequest request)
+      throws Exception {
+    return mockMvc.perform(patch("/seminars/{seminarId}/attendances/{memberId}", seminarId, memberId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
 
-  ResultActions changeAttendanceStatusUsingApi(String token, Long seminarId, String strJson) throws Exception {
-    return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
+  ResultActions changeAttendanceStatusUsingApi(String token, long seminarId, long memberId, String strJson)
+      throws Exception {
+    return mockMvc.perform(patch("/seminars/{seminarId}/attendances/{memberId}", seminarId, memberId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));

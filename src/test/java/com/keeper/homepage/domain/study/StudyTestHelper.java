@@ -5,7 +5,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.study.entity.embedded.GitLink;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
-import com.keeper.homepage.domain.study.entity.embedded.NoteLink;
+import com.keeper.homepage.domain.study.entity.embedded.NotionLink;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class StudyTestHelper {
     private Integer year;
     private Integer season;
     private GitLink gitLink;
-    private NoteLink noteLink;
+    private NotionLink notionLink;
     private String etcLink;
     private Thumbnail thumbnail;
     private Member headMember;
@@ -64,8 +64,8 @@ public class StudyTestHelper {
       return this;
     }
 
-    public StudyBuilder NoteLink(NoteLink noteLink) {
-      this.noteLink = noteLink;
+    public StudyBuilder NotionLink(NotionLink notionLink) {
+      this.notionLink = notionLink;
       return this;
     }
 
@@ -92,7 +92,7 @@ public class StudyTestHelper {
           .season(season)
           .link(Link.builder()
               .gitLink(gitLink != null ? gitLink : GitLink.from("https://github.com/KEEPER31337/Homepage-Back-R2"))
-              .noteLink(noteLink != null ? noteLink : NoteLink.from("https://www.notion.so/Java-Spring"))
+              .notionLink(notionLink != null ? notionLink : NotionLink.from("https://www.notion.so/Java-Spring"))
               .etcLink(etcLink != null ? etcLink : "etc.com")
               .build())
           .thumbnail(thumbnail)

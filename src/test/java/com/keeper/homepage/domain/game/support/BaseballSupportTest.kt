@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.game.support
 
-import com.keeper.homepage.domain.game.dto.BaseballResult.GuessResult
+import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -16,70 +16,53 @@ class BaseballSupportTest {
     @Nested
     inner class `timeout 테스트` {
         @Test
-        fun `시간안에 플레이 했으면 null인 게임은 없어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
+        fun `시간안에 플레이 했으면 pass한 게임은 없어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(15)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(0)
+            val passedGameCount = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(0)
         }
 
         @Test
-        fun `34초가 지난 후면 1게임은 null이 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
+        fun `34초가 지난 후면 1게임은 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(34)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(1)
-            assertThat(results[0]).isNull()
+            val passedGameCount = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(1)
         }
 
         @Test
-        fun `90초가 지난 후면 3게임은 null이 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
+        fun `90초가 지난 후면 3게임은 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(90)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(3)
-            assertThat(results).containsExactly(null, null, null)
+            val passedGameCount = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(3)
         }
 
         @Test
-        fun `92초가 지난 후면 3게임은 null이 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
+        fun `92초가 지난 후면 3게임은 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(92)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(3)
-            assertThat(results).containsExactly(null, null, null)
+            val passedGameCount = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(3)
         }
 
         @Test
-        fun `300초가 지난 후면 9게임은 null이 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
+        fun `300초가 지난 후면 9게임은 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(300)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(9)
-            assertThat(results).containsExactly(null, null, null, null, null, null, null, null, null)
+            val passedGameCount = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(9)
         }
 
         @Test
-        fun `1000초가 지났더라도 9게임만 null이 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
+        fun `1000초가 지났더라도 9게임만 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(1000)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(9)
-            assertThat(results).containsExactly(null, null, null, null, null, null, null, null, null)
+            val passedGameCount = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(9)
         }
 
         @Test
-        fun `기존에 플레이 하던 게임에서 1000초가 지났더라도 나머지 게임만 null이 되어야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf(GuessResult("1234", 1, 2), GuessResult("5678", 3, 1))
+        fun `2게임을 플레이했으면 1000초가 지났더라도 7 게임만 pass 되어야 한다`() {
+            val results: MutableList<GuessResultEntity?> = mutableListOf(GuessResultEntity("1234", 1, 2), GuessResultEntity("5678", 3, 1))
             val lastGuessTime = LocalDateTime.now().minusSeconds(1000)
-            BaseballSupport.updateTimeoutGames(results, lastGuessTime)
-            assertThat(results).hasSize(9)
-            assertThat(results).containsExactly(
-                GuessResult("1234", 1, 2),
-                GuessResult("5678", 3, 1),
-                null, null, null, null,
-                null, null, null
-            )
+            val passedGameCount = BaseballSupport.getPassedGameCount(results.size, lastGuessTime)
+            assertThat(passedGameCount).isEqualTo(7)
         }
     }
 
@@ -88,20 +71,18 @@ class BaseballSupportTest {
     inner class `guess 테스트` {
         @ParameterizedTest
         @MethodSource
-        fun `시간안에 플레이 했으면 null인 게임은 없어야 한다`(
+        fun `같은 숫자면 ball, 같은 위치이면 strike를 올려야 한다`(
             correctNumber: String,
             guessNumber: String,
             expectedStrike: Int,
             expectedBall: Int
         ) {
-            val results: MutableList<GuessResult?> = mutableListOf()
-            BaseballSupport.updateResults(results, correctNumber, guessNumber)
-            assertThat(results).hasSize(1)
-            assertThat(results.last()!!.strike).isEqualTo(expectedStrike)
-            assertThat(results.last()!!.ball).isEqualTo(expectedBall)
+            val result = BaseballSupport.guessAndGetResult(correctNumber, guessNumber)
+            assertThat(result.strike).isEqualTo(expectedStrike)
+            assertThat(result.ball).isEqualTo(expectedBall)
         }
 
-        fun `시간안에 플레이 했으면 null인 게임은 없어야 한다`() = Stream.of(
+        fun `같은 숫자면 ball, 같은 위치이면 strike를 올려야 한다`() = Stream.of(
             Arguments.arguments("1234", "1234", 4, 0),
             Arguments.arguments("1234", "1256", 2, 0),
             Arguments.arguments("1234", "4321", 0, 4),
@@ -114,11 +95,9 @@ class BaseballSupportTest {
 
         @Test
         fun `guessNumber 길이가 4가 아니면 무의미한 결과를 줘야 한다`() {
-            val results: MutableList<GuessResult?> = mutableListOf()
-            BaseballSupport.updateResults(results, "1234", "456")
-            assertThat(results).hasSize(1)
-            assertThat(results.last()!!.strike).isEqualTo(0)
-            assertThat(results.last()!!.ball).isEqualTo(0)
+            val result = BaseballSupport.guessAndGetResult("1234", "456")
+            assertThat(result.strike).isEqualTo(0)
+            assertThat(result.ball).isEqualTo(0)
         }
     }
 }

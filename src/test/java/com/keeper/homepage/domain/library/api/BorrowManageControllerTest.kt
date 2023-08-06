@@ -24,13 +24,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-fun BookBorrowInfoTestHelper.generate(
-    borrowStatus: BookBorrowStatus.BookBorrowStatusType,
-    expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2)
-): BookBorrowInfo {
-    return this.builder().borrowStatus(getBookBorrowStatusBy(borrowStatus)).expireDate(expiredDate).build()
-}
-
 class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -41,7 +34,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @BeforeEach
         fun setBorrowInfo() {
-            borrowInfoList = (1..20).map { bookBorrowInfoTestHelper.generate(대출대기중) }
+            borrowInfoList = (1..20).map { bookBorrowInfoTestHelper.generate(대출대기중, bookTestHelper.generate()) }
         }
 
         @Test
@@ -146,9 +139,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `status 없이 보낼 경우 모든 대출 관련 목록을 가져와야 한다`() {
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
             callGetBorrowApi(borrowStatus = null)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.number").value("0"))
@@ -159,9 +152,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `대출 대기중인 목록만 가져와야 한다`() {
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
             callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
@@ -181,9 +174,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `반납 대기중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
-            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부) }
-            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인) }
-            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중) }
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "3"),
                 borrowStatus = BorrowStatusDto.WILL_RETURN
@@ -197,11 +190,11 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `연체중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
-            (1..2).map { bookBorrowInfoTestHelper.generate(대출승인) } // 연체 안됨
-            (1..2).map { bookBorrowInfoTestHelper.generate(반납대기중) } // 연체 안됨
-            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부) }
-            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인, LocalDateTime.now().minusDays(1)) }
-            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중, LocalDateTime.now().minusDays(1)) }
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate(), LocalDateTime.now().minusDays(1)) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate(), LocalDateTime.now().minusDays(1)) }
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "5"),
                 borrowStatus = BorrowStatusDto.OVERDUE
@@ -222,7 +215,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @BeforeEach
         fun setBorrowInfo() {
-            borrowInfo = bookBorrowInfoTestHelper.generate(대출대기중)
+            borrowInfo = bookBorrowInfoTestHelper.generate(대출대기중, bookTestHelper.generate())
         }
 
         @Test
@@ -276,7 +269,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @BeforeEach
         fun setBorrowInfo() {
-            borrowInfo = bookBorrowInfoTestHelper.generate(반납대기중)
+            borrowInfo = bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate())
         }
 
         @Test

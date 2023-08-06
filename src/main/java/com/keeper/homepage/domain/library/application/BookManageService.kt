@@ -7,6 +7,8 @@ import com.keeper.homepage.domain.library.entity.BookDepartment
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -20,6 +22,13 @@ class BookManageService(
     val bookRepository: BookRepository,
     val thumbnailUtil: ThumbnailUtil
 ) {
+    fun getBooks(bookKeyword: String?, pageable: PageRequest): Page<Book> {
+        if (bookKeyword.isNullOrBlank()) {
+            return bookRepository.findAll(pageable)
+        }
+        return bookRepository.findAllByTitleOrAuthor(bookKeyword, pageable)
+    }
+
     @Transactional
     fun addBook(
         title: String,

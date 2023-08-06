@@ -13,6 +13,8 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
 
   List<Seminar> findAllByIdIsNot(Long seminarId);
 
+  Optional<Seminar> findByIdAndIdNot(Long seminarId, Long virtualId);
+
   @Query("SELECT s FROM Seminar s WHERE DATE(s.openTime) =:localDate")
   Optional<Seminar> findByOpenTime(@Param("localDate") LocalDate localDate);
 
@@ -21,4 +23,19 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
       + "AND s.latenessCloseTime is not null "
       + "AND s.latenessCloseTime > :dateTime")
   Optional<Seminar> findByAvailable(@Param("dateTime") LocalDateTime dateTime);
+
+  @Query("SELECT s FROM Seminar s "
+      + "WHERE s.id <> 1 " // virtual seminar data 제외
+      + "AND DATE(s.openTime) < :localDate "
+      + "AND DATE(s.latenessCloseTime) < :localDate "
+      + "ORDER BY s.openTime DESC "
+      + "LIMIT 1")
+  Optional<Seminar> findRecentlyDoneSeminar(@Param("localDate") LocalDate localDate);
+
+  @Query("SELECT s FROM Seminar s "
+      + "WHERE s.id <> 1 " // virtual seminar data 제외"
+      + "AND DATE(s.openTime) >= :localDate "
+      + "ORDER BY s.openTime ASC "
+      + "LIMIT 2")
+  List<Seminar> findRecentlyUpcomingSeminar(@Param("localDate") LocalDate localDate);
 }

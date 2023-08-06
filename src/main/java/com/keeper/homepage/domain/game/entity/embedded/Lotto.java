@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Getter
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
@@ -37,5 +36,13 @@ public class Lotto {
 
   public void resetLottoDayPoint() {
     this.lottoDayPoint = 0;
+  }
+
+  public Integer getLottoPerDay() {
+    return lottoPerDay;
+  }
+
+  public Integer getLottoDayPoint() {
+    return lottoDayPoint;
   }
 }

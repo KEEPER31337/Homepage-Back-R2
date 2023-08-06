@@ -1,8 +1,6 @@
 package com.keeper.homepage.domain.study.entity;
 
 
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
-
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -63,7 +61,7 @@ public class Study extends BaseEntity {
   @Embedded
   @AttributeOverrides({
       @AttributeOverride(name = "gitLink", column = @Column(name = "git_link", length = MAX_LINK_LENGTH)),
-      @AttributeOverride(name = "noteLink", column = @Column(name = "note_link", length = MAX_LINK_LENGTH)),
+      @AttributeOverride(name = "notionLink", column = @Column(name = "notion_link", length = MAX_LINK_LENGTH)),
       @AttributeOverride(name = "etcLink", column = @Column(name = "etc_link", length = MAX_LINK_LENGTH))
   })
   private Link link;
@@ -98,7 +96,7 @@ public class Study extends BaseEntity {
   public String getThumbnailPath() {
     return Optional.ofNullable(this.thumbnail)
         .map(Thumbnail::getPath)
-        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
+        .orElse(null);
   }
 
   public String getGitLink() {
@@ -106,7 +104,7 @@ public class Study extends BaseEntity {
   }
 
   public String getNotionLink() {
-    return this.link.getNoteLink().get();
+    return this.link.getNotionLink().get();
   }
 
   public String getEtcLink() {

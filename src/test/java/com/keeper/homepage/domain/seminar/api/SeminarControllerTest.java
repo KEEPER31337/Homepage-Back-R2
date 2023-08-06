@@ -4,12 +4,16 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.restdocs.RestDocsHelper.*;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateFormat;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateTimeFormat;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -21,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -105,6 +110,10 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
                       "ACCESS TOKEN %s".formatted(securedValue))),
+              pathParameters(
+                  parameterWithName("seminarId")
+                      .description("세미나의 ID")
+              ),
               requestFields(
                   field("attendanceCloseTime", "출석 마감 시간", dateTimeFormat()),
                   field("latenessCloseTime", "지각 마감 시간", dateTimeFormat())),
@@ -279,14 +288,12 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
         em.clear();
 
         var responseSeminarDescriptors = new FieldDescriptor[]{
-            field("id", "세미나 ID"),
+            field("seminarId", "세미나 ID"),
             field("openTime", "세미나 생성 시간"),
             field("attendanceCloseTime", "출석 마감 시간"),
             field("latenessCloseTime", "지각 마감 시간"),
-            field("attendanceCode", "출석 코드"),
-            field("name", "세미나명"),
-            field("registerTime", "DB 생성 시간"),
-            field("updateTime", "DB 업데이트 시간")
+            field("seminarName", "세미나명"),
+            field("statusType", "세미나 출석 상태")
         };
 
         searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())
@@ -305,12 +312,6 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       @DisplayName("존재하지 않는 세미나를 조회했을 때 실패한다.")
       public void should_failSearchSeminarNotExistId_when_admin() throws Exception {
         searchSeminarUsingApi(adminToken, 0L).andExpect(status().isNotFound());
-      }
-
-      @Test
-      @DisplayName("관리자 권한이 아니면 id 값으로 세미나 조회를 실패한다.")
-      public void should_failSearchSeminarUsingId_when_notAdmin() throws Exception {
-        searchSeminarUsingApi(userToken, 2L).andExpect(status().isForbidden());
       }
     }
 
@@ -507,6 +508,67 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
     @DisplayName("존재하지 않는 세미나를 삭제했을 때 실패한다.")
     public void should_failDeleteNotExistsSeminar_when_admin() throws Exception {
       deleteSeminarUsingApi(adminToken, -1L).andExpect(status().isNotFound());
+    }
+  }
+
+  @Nested
+  @DisplayName("가장 최근에 마감된 세미나 조회 테스트")
+  class GetRecentlyDoneSeminarTest {
+
+    @Test
+    @DisplayName("가장 최근에 마감된 세미나는 성공적으로 조회된다.")
+    public void 가장_최근에_마감된_세미나는_성공적으로_조회된다() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "getRecentlyDoneSeminar");
+
+      seminarTestHelper.builder()
+          .openTime(LocalDateTime.now().minusDays(1))
+          .latenessCloseTime(LocalDateTime.now().minusDays(1))
+          .build();
+
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/seminars/recently-done")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-recently-done-seminar",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(field("id", "세미나 ID"))
+          ));
+    }
+  }
+
+  @Nested
+  @DisplayName("가장 최근의 예정된 세미나 조회 테스트")
+  class GetRecentlyUpcomingSeminarTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 가장 최근의 예정된 세미나는 성공적으로 조회된다.")
+    public void 유효한_요청일_경우_가장_최근의_예정된_세미나는_성공적으로_조회된다() throws Exception {
+      String securedValue = getSecuredValue(SeminarController.class, "getRecentlyUpcomingSeminars");
+
+      seminarTestHelper.builder()
+          .openTime(LocalDateTime.now())
+          .build();
+      seminarTestHelper.builder()
+          .openTime(LocalDateTime.now().plusDays(1))
+          .build();
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/seminars/recently-upcoming")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-recently-upcoming-seminars",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(field("[].id", "세미나 ID"))
+          ));
     }
   }
 }

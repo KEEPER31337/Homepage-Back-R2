@@ -1,8 +1,10 @@
 package com.keeper.homepage.domain.file.entity;
 
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.PostHasFile;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,8 +12,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -48,9 +54,8 @@ public class FileEntity {
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
 
-  @ManyToOne(fetch = LAZY)
-  @JoinColumn(name = "posting_id")
-  private Post post;
+  @OneToOne(mappedBy = "file", cascade = REMOVE, fetch = LAZY)
+  private PostHasFile postHasFile;
 
   @Builder
   private FileEntity(String fileName, String filePath, Long fileSize, LocalDateTime uploadTime,
@@ -60,9 +65,5 @@ public class FileEntity {
     this.fileSize = fileSize;
     this.uploadTime = uploadTime;
     this.ipAddress = ipAddress;
-  }
-
-  public void registerPost(Post post) {
-    this.post = post;
   }
 }

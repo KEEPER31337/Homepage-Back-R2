@@ -18,7 +18,7 @@ public class StudyDetailResponse {
   private String information;
   private List<String> members;
   private String gitLink;
-  private String noteLink;
+  private String notionLink;
   private String etcLink;
 
   public static StudyDetailResponse from(Study study) {
@@ -30,7 +30,7 @@ public class StudyDetailResponse {
             .map(Member::getRealName)
             .toList())
         .gitLink(study.getGitLink())
-        .noteLink(study.getNotionLink())
+        .notionLink(study.getNotionLink())
         .etcLink(study.getEtcLink())
         .build();
   }

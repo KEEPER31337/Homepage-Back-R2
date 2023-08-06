@@ -8,15 +8,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Builder
+@NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
 public class PostCreateRequest {
 
@@ -27,19 +27,19 @@ public class PostCreateRequest {
   @Size(max = POST_TITLE_LENGTH, message = "게시글 제목은 {max}자 이하로 입력해주세요.")
   private String title;
 
-  @NotBlank(message = "게시글 본문을 입력해주세요.")
+  @Nullable
   private String content;
 
-  @Nullable
+  @NotNull
   private Boolean allowComment;
 
-  @Nullable
+  @NotNull
   private Boolean isNotice;
 
-  @Nullable
+  @NotNull
   private Boolean isSecret;
 
-  @Nullable
+  @NotNull
   private Boolean isTemp;
 
   @Nullable
@@ -49,12 +49,6 @@ public class PostCreateRequest {
   @NotNull(message = "카테고리 아이디를 입력해주세요.")
   @PositiveOrZero(message = "올바른 카테고리 아이디를 입력해주세요.")
   private Long categoryId;
-
-  @Nullable
-  private MultipartFile thumbnail;
-
-  @Nullable
-  private List<MultipartFile> files;
 
   public Post toEntity(Member member, String ipAddress) {
     return Post.builder()

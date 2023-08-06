@@ -3,14 +3,11 @@ package com.keeper.homepage.domain.post.dao;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.file.entity.FileEntity;
-import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
-import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
-import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import java.util.List;
+import com.keeper.homepage.global.util.web.WebUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,19 +53,6 @@ public class PostRepositoryTest extends IntegrationTest {
   @Nested
   @DisplayName("Post Remove 테스트")
   class PostRemoveTest {
-
-    @Test
-    @DisplayName("포스팅을 지우면 파일들도 함께 지워진다.")
-    void should_deletedFiles_when_deletePost() {
-      FileEntity file = fileUtil.saveFile(thumbnailTestHelper.getThumbnailFile()).orElseThrow();
-      post.addFile(file);
-
-      postRepository.delete(post);
-
-      em.flush();
-      em.clear();
-      assertThat(fileRepository.findById(file.getId())).isEmpty();
-    }
 
     @Test
     @DisplayName("포스팅을 지우면 댓글들도 함께 지워진다.")
@@ -130,6 +114,14 @@ public class PostRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
     void should_processDefault_when_EmptyValue() {
+      Post post = postRepository.save(Post.builder()
+          .title("게시글 제목")
+          .content("게시글 내용")
+          .category(categoryTestHelper.generate())
+          .ipAddress(WebUtil.getUserIP())
+          .member(member)
+          .build()
+      );
       em.flush();
       em.clear();
       Post findPost = postRepository.findById(post.getId()).orElseThrow();

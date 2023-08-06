@@ -1,5 +1,8 @@
 package com.keeper.homepage.domain.member.entity.job;
 
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_출제자;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
+
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,17 +58,20 @@ public class MemberJob {
     this.type = type;
   }
 
+  @Getter
   public enum MemberJobType {
     ROLE_회장(1),
     ROLE_부회장(2),
     ROLE_대외부장(3),
     ROLE_학술부장(4),
-    ROLE_전산관리자(5),
-    ROLE_서기(6),
-    ROLE_총무(7),
-    ROLE_사서(8),
-    ROLE_회원(9),
-    ROLE_출제자(10),
+    ROLE_FRONT_전산관리자(5),
+    ROLE_BACK_전산관리자(6),
+    ROLE_서기(7),
+    ROLE_총무(8),
+    ROLE_사서(9),
+    ROLE_회원(10),
+    ROLE_출제자(11),
+    ROLE_INFRA_전산관리자(12),
     ;
 
     private final long id;
@@ -73,5 +79,9 @@ public class MemberJob {
     MemberJobType(long id) {
       this.id = id;
     }
+  }
+
+  public boolean isExecutive() {
+    return this.type != ROLE_회원 && this.type != ROLE_출제자;
   }
 }
