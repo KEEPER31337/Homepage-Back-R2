@@ -31,10 +31,10 @@ public class ElectionVoterRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      List<ElectionVoter> votedVoters = electionVoterRepository.findByMemberAndElectionAndIsVoted(
+      ElectionVoter votedVoters = electionVoterRepository.findByMemberAndElectionAndIsVoted(
           member, election, true);
 
-      assertThat(votedVoters.size()).isEqualTo(1);
+      assertThat(votedVoters.getElection().getElectionVoters().size()).isEqualTo(1);
     }
   }
 }
