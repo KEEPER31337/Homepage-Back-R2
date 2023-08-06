@@ -1,9 +1,10 @@
 package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.VIRTUAL_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
 import static java.io.File.separator;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,7 @@ public class PostServiceTest extends IntegrationTest {
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    category = categoryTestHelper.generate();
+    category = getCategoryBy(자유게시판);
     thumbnail = thumbnailTestHelper.getThumbnailFile();
     post = postTestHelper.builder().member(member).category(category).build();
     postId = post.getId();
@@ -93,14 +94,14 @@ public class PostServiceTest extends IntegrationTest {
   class FindPost {
 
     private Member bestMember;
-    private Category virtualCategory, examCategory;
+    private Category category, examCategory;
     private final long virtualPostId = 1;
 
     @BeforeEach
     void setUp() {
       bestMember = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
-      examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
+      category = getCategoryBy(자유게시판);
+      examCategory = getCategoryBy(시험게시판);
     }
 
     @Test
@@ -109,7 +110,7 @@ public class PostServiceTest extends IntegrationTest {
       post = postTestHelper.builder()
           .member(bestMember)
           .password("비밀비밀")
-          .category(virtualCategory)
+          .category(category)
           .build();
 
       em.flush();
@@ -147,7 +148,7 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("익명 글은 작성자가 익명으로 조회되어야 한다.")
     public void should_getAnonymousName_when_getAnonymousPost() throws Exception {
-      Category anonymousCategory = categoryRepository.findById(ANONYMOUS_CATEGORY.getId())
+      Category anonymousCategory = categoryRepository.findById(익명게시판.getId())
           .orElseThrow();
       post = postTestHelper.builder()
           .member(bestMember)
@@ -507,7 +508,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-      category = categoryTestHelper.generate();
+      category = getCategoryBy(자유게시판);
     }
 
     @Test

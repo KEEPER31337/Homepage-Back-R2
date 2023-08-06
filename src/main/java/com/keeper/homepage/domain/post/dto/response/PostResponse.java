@@ -17,6 +17,7 @@ public class PostResponse {
   private Long id;
   private String title;
   private String writerName;
+  private String writerThumbnailPath;
   private Integer visitCount;
   private Integer commentCount;
   private Boolean isSecret;
@@ -30,6 +31,21 @@ public class PostResponse {
         .id(post.getId())
         .title(post.getTitle())
         .writerName(post.getWriterNickname())
+        .writerThumbnailPath(post.getMember().getThumbnailPath())
+        .visitCount(post.getVisitCount())
+        .commentCount(post.getComments().size())
+        .isSecret(post.isSecret())
+        .thumbnailPath(post.getThumbnailPath())
+        .registerTime(post.getRegisterTime())
+        .build();
+  }
+
+  public static PostResponse of(Post post, String writerName, String writerThumbnailPath) {
+    return PostResponse.builder()
+        .id(post.getId())
+        .title(post.getTitle())
+        .writerName(writerName)
+        .writerThumbnailPath(writerThumbnailPath)
         .visitCount(post.getVisitCount())
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())

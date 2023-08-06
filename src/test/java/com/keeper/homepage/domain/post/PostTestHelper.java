@@ -1,5 +1,8 @@
 package com.keeper.homepage.domain.post;
 
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
+
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dao.PostRepository;
@@ -22,9 +25,6 @@ public class PostTestHelper {
 
   @Autowired
   ThumbnailTestHelper thumbnailTestHelper;
-
-  @Autowired
-  CategoryTestHelper categoryTestHelper;
 
   public Post generate() {
     return this.builder().build();
@@ -125,7 +125,7 @@ public class PostTestHelper {
           .isSecret(isSecret != null ? isSecret : false)
           .isTemp(isTemp != null ? isTemp : false)
           .password(password)
-          .category(category != null ? category : categoryTestHelper.generate())
+          .category(category != null ? category : getCategoryBy(자유게시판))
           .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
           .build());
     }

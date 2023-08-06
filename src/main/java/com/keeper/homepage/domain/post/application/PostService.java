@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
@@ -120,7 +120,7 @@ public class PostService {
   }
 
   private void checkExamPost(Member member, Post post) {
-    if (post.isCategory(EXAM_CATEGORY.getId())) {
+    if (post.isCategory(시험게시판)) {
       checkAccessibleExamPost(member, post);
     }
   }
@@ -165,14 +165,14 @@ public class PostService {
   }
 
   private String getWriterName(Post post) {
-    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
+    if (post.isCategory(익명게시판)) {
       return ANONYMOUS_NAME;
     }
     return post.getWriterNickname();
   }
 
   private String getWriterThumbnailPath(Post post) {
-    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
+    if (post.isCategory(익명게시판)) {
       return null;
     }
     return post.getMember().getThumbnailPath();
@@ -215,6 +215,7 @@ public class PostService {
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
   }
 
+  @Transactional
   public void delete(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
@@ -282,30 +283,37 @@ public class PostService {
     Category category = categoryFindService.findById(categoryId);
     if (searchType == null) {
       return postRepository.findAllRecentByCategory(category, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("title")) {
       return postRepository.findAllRecentByCategoryAndTitle(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("content")) {
       return postRepository.findAllRecentByCategoryAndContent(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("writer")) {
       return postRepository.findAllRecentByCategoryAndWriter(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("title+content")) {
       return postRepository.findAllRecentByCategoryAndTitleOrContent(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     throw new BusinessException(searchType, "searchType", POST_SEARCH_TYPE_NOT_FOUND);
   }
 
+  private PostResponse getPostResponse(Post post) {
+    if (post.isCategory(익명게시판)) {
+      return PostResponse.of(post, ANONYMOUS_NAME, null);
+    }
+    return PostResponse.from(post);
+  }
+
   public List<PostResponse> getRecentPosts() {
     return postRepository.findAllRecent().stream()
-        .map(PostResponse::from)
+        .map(this::getPostResponse)
         .limit(10)
         .toList();
   }
@@ -320,7 +328,7 @@ public class PostService {
       return Integer.compare(postScore2, postScore1);
     });
     return posts.stream()
-        .map(PostResponse::from)
+        .map(this::getPostResponse)
         .limit(10)
         .toList();
   }
