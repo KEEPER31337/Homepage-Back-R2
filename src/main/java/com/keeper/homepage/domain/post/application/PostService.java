@@ -120,7 +120,7 @@ public class PostService {
   }
 
   private void checkExamPost(Member member, Post post) {
-    if (post.isCategory(시험게시판.getId())) {
+    if (post.isCategory(시험게시판)) {
       checkAccessibleExamPost(member, post);
     }
   }
@@ -165,14 +165,14 @@ public class PostService {
   }
 
   private String getWriterName(Post post) {
-    if (post.isCategory(익명게시판.getId())) {
+    if (post.isCategory(익명게시판)) {
       return ANONYMOUS_NAME;
     }
     return post.getWriterNickname();
   }
 
   private String getWriterThumbnailPath(Post post) {
-    if (post.isCategory(익명게시판.getId())) {
+    if (post.isCategory(익명게시판)) {
       return null;
     }
     return post.getMember().getThumbnailPath();
@@ -305,7 +305,7 @@ public class PostService {
   }
 
   private PostResponse getPostResponse(Post post) {
-    if (post.isCategory(익명게시판.getId())) {
+    if (post.isCategory(익명게시판)) {
       return PostResponse.of(post, ANONYMOUS_NAME, null);
     }
     return PostResponse.from(post);

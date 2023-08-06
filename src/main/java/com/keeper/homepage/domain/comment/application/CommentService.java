@@ -66,7 +66,7 @@ public class CommentService {
 
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
-          if (post.isCategory(익명게시판.getId())) {
+          if (post.isCategory(익명게시판)) {
             return CommentResponse.of(comment, ANONYMOUS_NAME, null);
           }
           return CommentResponse.from(comment);

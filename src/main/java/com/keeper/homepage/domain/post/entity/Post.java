@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.post.entity;
 
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
@@ -7,15 +8,24 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
-import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,7 +36,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -135,8 +144,8 @@ public class Post extends BaseEntity {
     this.visitCount++;
   }
 
-  public boolean isCategory(long categoryId) {
-    return this.category.getId().equals(categoryId);
+  public boolean isCategory(CategoryType category) {
+    return this.category.equals(getCategoryBy(category));
   }
 
   public boolean isMine(Member member) {

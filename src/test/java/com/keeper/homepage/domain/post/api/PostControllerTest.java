@@ -4,6 +4,8 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
@@ -67,7 +69,7 @@ public class PostControllerTest extends PostApiTestHelper {
     other = memberTestHelper.generate();
     memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
-    category = categoryTestHelper.generate();
+    category = getCategoryBy(자유게시판);
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     file = new MockMultipartFile("files", "testImage_1x1.png", "image/png",
         new FileInputStream("src/test/resources/images/testImage_1x1.png"));

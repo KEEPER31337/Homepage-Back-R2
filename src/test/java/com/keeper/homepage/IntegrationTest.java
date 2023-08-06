@@ -57,7 +57,6 @@ import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
-import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
@@ -316,9 +315,6 @@ public class IntegrationTest {
 
   @Autowired
   protected SeminarTestHelper seminarTestHelper;
-
-  @Autowired
-  protected CategoryTestHelper categoryTestHelper;
 
   @Autowired
   protected PostTestHelper postTestHelper;

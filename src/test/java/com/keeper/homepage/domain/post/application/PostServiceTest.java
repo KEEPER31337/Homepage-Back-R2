@@ -1,9 +1,10 @@
 package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.VIRTUAL_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
 import static java.io.File.separator;
@@ -48,7 +49,7 @@ public class PostServiceTest extends IntegrationTest {
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    category = categoryTestHelper.generate();
+    category = getCategoryBy(자유게시판);
     thumbnail = thumbnailTestHelper.getThumbnailFile();
     post = postTestHelper.builder().member(member).category(category).build();
     postId = post.getId();
@@ -94,15 +95,15 @@ public class PostServiceTest extends IntegrationTest {
   class FindPost {
 
     private Member bestMember;
-    private Category virtualCategory, examCategory;
+    private Category category, examCategory;
     private Thumbnail thumbnail;
     private final long virtualPostId = 1;
 
     @BeforeEach
     void setUp() {
       bestMember = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
-      virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
-      examCategory = categoryRepository.findById(시험게시판.getId()).orElseThrow();
+      category = getCategoryBy(자유게시판);
+      examCategory = getCategoryBy(시험게시판);
       thumbnail = thumbnailRepository.findById(DEFAULT_POST_THUMBNAIL.getId()).orElseThrow();
     }
 
@@ -112,7 +113,7 @@ public class PostServiceTest extends IntegrationTest {
       post = postTestHelper.builder()
           .member(bestMember)
           .password("비밀비밀")
-          .category(virtualCategory)
+          .category(category)
           .thumbnail(thumbnail)
           .build();
 
@@ -258,9 +259,9 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("id 기준으로 카테고리에 해당하는 이전과 다음 게시글 하나는 성공적으로 조회된다.")
     public void id_기준으로_카테고리에_해당하는_이전과_다음_게시글_하나는_성공적으로_조회된다() throws Exception {
-      Post first = postTestHelper.builder().category(category).build();
-      Post middle = postTestHelper.builder().member(member).category(category).build();
-      Post last = postTestHelper.builder().category(category).build();
+      Post first = postTestHelper.builder().category(PostServiceTest.this.category).build();
+      Post middle = postTestHelper.builder().member(member).category(PostServiceTest.this.category).build();
+      Post last = postTestHelper.builder().category(PostServiceTest.this.category).build();
 
       em.flush();
       em.clear();
@@ -273,9 +274,9 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("이전, 다음 게시글으로 임시 저장글은 조회되면 안돤다.")
     public void 이전_다음_게시글으로_임시_저장글은_조회되면_안돤다() throws Exception {
-      Post first = postTestHelper.builder().category(category).isTemp(true).build();
-      Post middle = postTestHelper.builder().member(member).category(category).build();
-      Post last = postTestHelper.builder().category(category).build();
+      Post first = postTestHelper.builder().category(PostServiceTest.this.category).isTemp(true).build();
+      Post middle = postTestHelper.builder().member(member).category(PostServiceTest.this.category).build();
+      Post last = postTestHelper.builder().category(PostServiceTest.this.category).build();
 
       em.flush();
       em.clear();
@@ -288,8 +289,8 @@ public class PostServiceTest extends IntegrationTest {
     @Test
     @DisplayName("이전, 혹은 다음 게시글이 없을 경우 null로 조회된다.")
     public void 이전_혹은_다음_게시글이_없을_경우_null로_조회된다() throws Exception {
-      Post first = postTestHelper.builder().category(category).build();
-      Post middle = postTestHelper.builder().member(member).category(category).build();
+      Post first = postTestHelper.builder().category(PostServiceTest.this.category).build();
+      Post middle = postTestHelper.builder().member(member).category(PostServiceTest.this.category).build();
 
       em.flush();
       em.clear();
@@ -513,7 +514,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-      category = categoryTestHelper.generate();
+      category = getCategoryBy(자유게시판);
     }
 
     @Test
