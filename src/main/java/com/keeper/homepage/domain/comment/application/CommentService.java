@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.comment.application;
 
-import static com.keeper.homepage.domain.post.application.PostService.ANONYMOUS_NAME;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_ALLOWED;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
@@ -35,7 +34,8 @@ public class CommentService {
   private final MemberFindService memberFindService;
   private final CommentDeleteService commentDeleteService;
 
-  public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  private static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  private static final String ANONYMOUS_NAME = "익명";
 
   @Transactional
   public long create(Member member, CommentCreateRequest request) {

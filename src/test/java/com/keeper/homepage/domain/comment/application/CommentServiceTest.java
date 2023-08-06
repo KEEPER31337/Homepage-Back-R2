@@ -1,11 +1,9 @@
 package com.keeper.homepage.domain.comment.application;
 
-import static com.keeper.homepage.domain.comment.application.CommentService.DELETED_COMMENT_CONTENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -20,6 +18,7 @@ public class CommentServiceTest extends IntegrationTest {
 
   private Member member;
   private Post post;
+  private static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
 
   @BeforeEach
   void setUp() {
