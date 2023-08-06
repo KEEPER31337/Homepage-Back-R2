@@ -15,7 +15,7 @@ data class GameRankResponse(
         nickname = member.nickname,
         generation = member.generation.toString(),
         todayEarnedPoint = todayEarnedPoint,
-        profileImageUrl = member.thumbnailPath ?: null,
+        profileImageUrl = member.thumbnailPath,
         memberId = member.id,
     )
 }
