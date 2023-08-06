@@ -25,6 +25,12 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.election.ElectionTestHelper;
+import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
+import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
+import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
+import com.keeper.homepage.domain.election.dao.ElectionRepository;
+import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
 import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
 import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
@@ -223,6 +229,18 @@ public class IntegrationTest {
   @SpyBean
   protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
+  @SpyBean
+  protected ElectionCandidateRepository electionCandidateRepository;
+
+  @SpyBean
+  protected ElectionChartLogRepository electionChartLogRepository;
+
+  @SpyBean
+  protected ElectionRepository electionRepository;
+
+  @SpyBean
+  protected ElectionVoterRepository electionVoterRepository;
+
   @Autowired
   protected FileRepository fileRepository;
 
@@ -344,6 +362,12 @@ public class IntegrationTest {
 
   @Autowired
   protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
+
+  @Autowired
+  protected ElectionTestHelper electionTestHelper;
+
+  @Autowired
+  protected ElectionVoterTestHelper electionVoterTestHelper;
 
   @Autowired
   protected CtfTeamTestHelper ctfTeamTestHelper;
