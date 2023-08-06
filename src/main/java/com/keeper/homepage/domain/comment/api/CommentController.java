@@ -51,7 +51,7 @@ public class CommentController {
   public ResponseEntity<Void> updateComment(
       @LoginMember Member member,
       @PathVariable Long commentId,
-      @Valid @RequestBody CommentUpdateRequest request
+      @RequestBody @Valid CommentUpdateRequest request
   ) {
     long postId = commentService.update(member, commentId, request.getContent());
     return ResponseEntity.status(HttpStatus.CREATED)
