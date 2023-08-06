@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.post.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
@@ -62,6 +61,7 @@ public class PostControllerTest extends PostApiTestHelper {
   private Post post;
   private static final long virtualPostId = 1;
   private long postId;
+  private static final int EXAM_ACCESSIBLE_POINT = 30000;
 
   @BeforeEach
   void setUp() throws IOException {

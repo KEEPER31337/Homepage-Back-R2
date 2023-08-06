@@ -4,9 +4,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.post.entity.PostHasFile;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +22,6 @@ public class PostDetailResponse {
   private Integer visitCount;
   private String thumbnailPath;
   private String content;
-  private List<FileResponse> files;
   private Integer likeCount;
   private Integer dislikeCount;
   private Boolean allowComment;
@@ -54,10 +51,6 @@ public class PostDetailResponse {
         .visitCount(post.getVisitCount())
         .thumbnailPath(post.getThumbnailPath())
         .content(post.getContent())
-        .files(post.getPostHasFiles().stream()
-            .map(PostHasFile::getFile)
-            .map(FileResponse::from)
-            .toList())
         .likeCount(post.getPostLikes().size())
         .dislikeCount(post.getPostDislikes().size())
         .allowComment(post.allowComment())

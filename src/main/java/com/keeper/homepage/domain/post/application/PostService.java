@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
@@ -18,10 +18,12 @@ import com.keeper.homepage.domain.post.application.convenience.PostDeleteService
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
@@ -52,8 +54,9 @@ public class PostService {
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
 
-  public static final String ANONYMOUS_NAME = "익명";
-  public static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final String ANONYMOUS_NAME = "익명";
+  private static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final int EXAM_VIEW_DEDUCTION_POINT = 10000;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
@@ -176,6 +179,20 @@ public class PostService {
       return null;
     }
     return post.getMember().getThumbnailPath();
+  }
+
+  @Transactional
+  public List<FileResponse> getFiles(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+
+    if (post.isCategory(시험게시판)) {
+      member.minusPoint(EXAM_VIEW_DEDUCTION_POINT);
+    }
+    return post.getPostHasFiles()
+        .stream()
+        .map(PostHasFile::getFile)
+        .map(FileResponse::from)
+        .toList();
   }
 
   @Transactional
