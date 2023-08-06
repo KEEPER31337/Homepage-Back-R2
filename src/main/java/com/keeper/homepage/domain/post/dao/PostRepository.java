@@ -23,6 +23,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
   @Query("SELECT p FROM Post p "
       + "WHERE p.isTemp = false "
+      + "AND p.id <> 1 " // virtual post
       + "ORDER BY p.registerTime DESC")
   List<Post> findAllRecent();
 
@@ -30,6 +31,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.isNotice = false "
       + "AND p.isTemp = false "
+      + "AND p.id <> 1 " // virtual post
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategory(@Param("category") Category category, Pageable pageable);
 

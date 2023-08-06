@@ -8,7 +8,6 @@ import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REA
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_MEMBER_THUMBNAIL;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
@@ -326,7 +325,7 @@ public class Member {
   public String getThumbnailPath() {
     return Optional.ofNullable(this.profile.getThumbnail())
         .map(Thumbnail::getPath)
-        .orElse(DEFAULT_MEMBER_THUMBNAIL.getPath());
+        .orElse(null);
   }
 
   public boolean isHeadMember(Study study) {

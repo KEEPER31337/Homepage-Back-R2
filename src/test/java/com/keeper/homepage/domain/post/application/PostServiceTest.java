@@ -4,7 +4,6 @@ import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCES
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.VIRTUAL_CATEGORY;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static com.keeper.homepage.global.util.file.server.FileServerConstants.ROOT_PATH;
 import static java.io.File.separator;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -95,7 +94,6 @@ public class PostServiceTest extends IntegrationTest {
 
     private Member bestMember;
     private Category virtualCategory, examCategory;
-    private Thumbnail thumbnail;
     private final long virtualPostId = 1;
 
     @BeforeEach
@@ -103,7 +101,6 @@ public class PostServiceTest extends IntegrationTest {
       bestMember = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
       virtualCategory = categoryRepository.findById(VIRTUAL_CATEGORY.getId()).orElseThrow();
       examCategory = categoryRepository.findById(EXAM_CATEGORY.getId()).orElseThrow();
-      thumbnail = thumbnailRepository.findById(DEFAULT_POST_THUMBNAIL.getId()).orElseThrow();
     }
 
     @Test
@@ -113,7 +110,6 @@ public class PostServiceTest extends IntegrationTest {
           .member(bestMember)
           .password("비밀비밀")
           .category(virtualCategory)
-          .thumbnail(thumbnail)
           .build();
 
       em.flush();
@@ -126,7 +122,6 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getNickname().get());
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
-      assertThat(response.getThumbnailPath()).isEqualTo(DEFAULT_POST_THUMBNAIL.getPath());
       assertThat(response.getContent()).isEqualTo(post.getContent());
     }
 
@@ -157,7 +152,6 @@ public class PostServiceTest extends IntegrationTest {
       post = postTestHelper.builder()
           .member(bestMember)
           .category(anonymousCategory)
-          .thumbnail(thumbnail)
           .build();
 
       em.flush();
