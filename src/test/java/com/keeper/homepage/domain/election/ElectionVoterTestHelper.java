@@ -51,7 +51,7 @@ public class ElectionVoterTestHelper {
       return electionVoterRepository.save(ElectionVoter.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .election(election != null ? election : electionTestHelper.generate())
-          .isVoted(isVoted)
+          .isVoted(isVoted != null ? isVoted : false)
           .build());
     }
   }
