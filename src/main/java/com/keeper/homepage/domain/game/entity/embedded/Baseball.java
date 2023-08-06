@@ -5,7 +5,6 @@ import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class Baseball {
 
-  private static final int BASEBALL_MAX_PLAYTIME = 1;
+  public static final int BASEBALL_MAX_PLAYTIME = 10;
 
   @Column(name = "baseball_per_day", nullable = false)
   private Integer baseballPerDay;
@@ -38,7 +37,7 @@ public class Baseball {
     this.baseballDayPoint = baseballDayPoint;
   }
 
-  public boolean isAlreadyPlayed() {
+  public boolean isAlreadyPlayedAllOfThem() {
     return baseballPerDay >= BASEBALL_MAX_PLAYTIME;
   }
 

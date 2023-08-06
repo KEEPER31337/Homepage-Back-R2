@@ -1,0 +1,162 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= CTF TEAM API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *CTF 팀 생성*
+
+NOTE: 호출 시 생성된 팀의 팀원으로 추가됩니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-ctf-team/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-ctf-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-ctf-team/http-response.adoc[]
+
+== *CTF 팀 정보 수정*
+
+NOTE: 팀 생성자만 호출 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-ctf-team/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-ctf-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-ctf-team/http-response.adoc[]
+
+== *CTF 팀 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-ctf-team/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-ctf-team/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-ctf-team/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-ctf-team/response-fields.adoc[]
+
+== *CTF 팀 목록 조회 (검색)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-ctf-teams/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-ctf-teams/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-ctf-teams/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-ctf-teams/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-ctf-teams/response-fields.adoc[]
+
+== *CTF 팀 가입*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/join-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/join-ctf-team/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/join-ctf-team/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/join-ctf-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/join-ctf-team/http-response.adoc[]
+
+== *CTF 팀 탈퇴*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/leave-ctf-team/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/leave-ctf-team/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/leave-ctf-team/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/leave-ctf-team/http-response.adoc[]

@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.post.entity;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
@@ -194,6 +193,6 @@ public class Post extends BaseEntity {
   public String getThumbnailPath() {
     return Optional.ofNullable(this.thumbnail)
         .map(Thumbnail::getPath)
-        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
+        .orElse(null);
   }
 }

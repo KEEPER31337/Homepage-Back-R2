@@ -9,7 +9,7 @@ data class BookDetailResponse(
     val bookDepartment: String,
     val totalCount: Long,
     val borrowingCount: Int,
-    val thumbnailPath: String,
+    val thumbnailPath: String?,
     val borrowInfos: List<BorrowDetailResponse>
 ) {
     constructor(book: Book) : this(

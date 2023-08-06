@@ -76,6 +76,11 @@ public enum ErrorCode {
   FILE_NOT_FOUND("해당 파일은 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
   // ATTENDANCE
   ATTENDANCE_ALREADY("이미 출석을 완료했습니다.", HttpStatus.BAD_REQUEST),
+  // CTF
+  CTF_CONTEST_NOT_FOUND("해당 대회는 끝났거나 없는 대회입니다.", HttpStatus.BAD_REQUEST),
+  CTF_TEAM_ALREADY_JOIN("이미 가입한 팀이 있어 팀 가입이 불가합니다.", HttpStatus.BAD_REQUEST),
+  CTF_TEAM_NOT_FOUND("해당 팀을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
+  CTF_TEAM_INACCESSIBLE("해당 팀에 접근이 불가합니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;

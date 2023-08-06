@@ -13,9 +13,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,17 +39,6 @@ public class Thumbnail {
   private Thumbnail(String path, FileEntity fileEntity) {
     this.path = path;
     this.fileEntity = fileEntity;
-  }
-
-  @Getter
-  @RequiredArgsConstructor
-  public enum DefaultThumbnail {
-    DEFAULT_MEMBER_THUMBNAIL(1, "keeper_files/thumbnail/default/default_thumbnail_member.png"),
-    DEFAULT_POST_THUMBNAIL(2, "keeper_files/thumbnail/default/default_thumbnail_posting.png"),
-    ;
-
-    private final long id;
-    private final String path;
   }
 
   public Long getId() {
