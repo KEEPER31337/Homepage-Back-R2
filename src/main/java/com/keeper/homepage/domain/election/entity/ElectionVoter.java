@@ -29,13 +29,11 @@ import org.hibernate.annotations.DynamicUpdate;
 public class ElectionVoter {
 
   @Id
-  @GeneratedValue(strategy = IDENTITY)
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "voter_id", nullable = false)
   private Member member;
 
   @Id
-  @GeneratedValue(strategy = IDENTITY)
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "election_id", nullable = false)
   private Election election;
