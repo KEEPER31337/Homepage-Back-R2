@@ -1,0 +1,36 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= ADMIN POST API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *게시글 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/admin-delete-post/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/admin-delete-post/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/admin-delete-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/admin-delete-post/http-response.adoc[]
