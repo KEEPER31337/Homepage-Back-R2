@@ -31,11 +31,11 @@ public class ElectionVoterRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Optional<ElectionVoter> votedVoters = electionVoterRepository.findByMemberAndElectionAndIsVoted(
+      Optional<ElectionVoter> votedVoter = electionVoterRepository.findByMemberAndElectionAndIsVoted(
           member, election, true);
 
-      assertThat(votedVoters.isPresent()).isEqualTo(true);
-      assertThat(votedVoters.get().getElection().getElectionVoters().size()).isEqualTo(1);
+      assertThat(votedVoter.isPresent()).isEqualTo(true);
+      assertThat(votedVoter.get().getElection().getElectionVoters().size()).isEqualTo(1);
     }
   }
 }
