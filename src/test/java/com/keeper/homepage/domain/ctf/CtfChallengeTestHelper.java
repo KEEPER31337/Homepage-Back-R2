@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallenge;
 import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeType;
+import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeType.ChallengeType;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,8 @@ public class CtfChallengeTestHelper {
       return this;
     }
 
-    public CtfChallengeBuilder type(CtfChallengeType type) {
-      this.type = type;
+    public CtfChallengeBuilder type(ChallengeType type) {
+      this.type = getCtfChallengeType(type);
       return this;
     }
 
