@@ -20,8 +20,10 @@ public class CommentResponse {
   private Long parentId;
   private Integer likeCount;
   private Integer dislikeCount;
+  private Boolean isLiked;
+  private Boolean isDisliked;
 
-  public static CommentResponse from(Comment comment) {
+  public static CommentResponse from(Comment comment, boolean isLiked, boolean isDisliked) {
     return CommentResponse.builder()
         .commentId(comment.getId())
         .writerName(comment.getMember().getNickname())
@@ -31,10 +33,13 @@ public class CommentResponse {
         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
         .likeCount(comment.getCommentLikes().size())
         .dislikeCount(comment.getCommentDislikes().size())
+        .isLiked(isLiked)
+        .isDisliked(isDisliked)
         .build();
   }
 
-  public static CommentResponse of(Comment comment, String writerName, String writerThumbnailPath) {
+  public static CommentResponse of(Comment comment, String writerName, String writerThumbnailPath, boolean isLiked,
+      boolean isDisliked) {
     return CommentResponse.builder()
         .commentId(comment.getId())
         .writerName(writerName)
@@ -44,6 +49,8 @@ public class CommentResponse {
         .parentId(comment.getParent() != null ? comment.getParent().getId() : null)
         .likeCount(comment.getCommentLikes().size())
         .dislikeCount(comment.getCommentDislikes().size())
+        .isLiked(isLiked)
+        .isDisliked(isDisliked)
         .build();
   }
 }

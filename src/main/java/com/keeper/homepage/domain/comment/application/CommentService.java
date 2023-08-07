@@ -60,16 +60,19 @@ public class CommentService {
     return parent;
   }
 
-  public CommentListResponse getComments(Long postId) {
+  public CommentListResponse getComments(Member member, Long postId) {
     Post post = validPostFindService.findById(postId);
     List<Comment> comments = post.getComments();
+
+    boolean isLiked = member.isLike(post);
+    boolean isDisliked = member.isDislike(post);
 
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
           if (post.isCategory(익명게시판)) {
-            return CommentResponse.of(comment, ANONYMOUS_NAME, null);
+            return CommentResponse.of(comment, ANONYMOUS_NAME, null, isLiked, isDisliked);
           }
-          return CommentResponse.from(comment);
+          return CommentResponse.from(comment, isLiked, isDisliked);
         })
         .toList();
     return CommentListResponse.from(commentResponses);

@@ -28,6 +28,8 @@ public class PostDetailResponse {
   private Boolean isNotice;
   private Boolean isSecret;
   private Boolean isTemp;
+  private Boolean isLiked;
+  private Boolean isDisliked;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
@@ -38,8 +40,34 @@ public class PostDetailResponse {
   private AdjacentPostResponse previousPost;
   private AdjacentPostResponse nextPost;
 
-  public static PostDetailResponse of(Post post, String writerName, String writerThumbnailPath, Post previousPost,
+  public static PostDetailResponse of(Post post, boolean isLiked, boolean isDisliked, Post previousPost,
       Post nextPost) {
+    return PostDetailResponse.builder()
+        .categoryId(post.getCategory().getId())
+        .categoryName(post.getCategory().getType().toString())
+        .title(post.getTitle())
+        .writerName(post.getMember().getNickname())
+        .writerThumbnailPath(post.getMember().getThumbnailPath())
+        .registerTime(post.getRegisterTime())
+        .updateTime(post.getUpdateTime())
+        .visitCount(post.getVisitCount())
+        .thumbnailPath(post.getThumbnailPath())
+        .content(post.getContent())
+        .likeCount(post.getPostLikes().size())
+        .dislikeCount(post.getPostDislikes().size())
+        .allowComment(post.allowComment())
+        .isNotice(post.isNotice())
+        .isSecret(post.isSecret())
+        .isTemp(post.isTemp())
+        .isLiked(isLiked)
+        .isDisliked(isDisliked)
+        .previousPost(previousPost != null ? AdjacentPostResponse.from(previousPost) : null)
+        .nextPost(nextPost != null ? AdjacentPostResponse.from(nextPost) : null)
+        .build();
+  }
+
+  public static PostDetailResponse of(Post post, String writerName, String writerThumbnailPath, boolean isLiked,
+      boolean isDisliked, Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
@@ -57,6 +85,8 @@ public class PostDetailResponse {
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
         .isTemp(post.isTemp())
+        .isLiked(isLiked)
+        .isDisliked(isDisliked)
         .previousPost(previousPost != null ? AdjacentPostResponse.from(previousPost) : null)
         .nextPost(nextPost != null ? AdjacentPostResponse.from(nextPost) : null)
         .build();

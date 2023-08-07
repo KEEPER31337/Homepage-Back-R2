@@ -114,12 +114,15 @@ public class PostService {
     //visitCountValidation(post, request, response); TODO: 게시글 조회수 중복 방지 기능 구현
     post.addVisitCount();
 
-    String writerName = getWriterName(post);
-    String writerThumbnailPath = getWriterThumbnailPath(post);
-
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
-    return PostDetailResponse.of(post, writerName, writerThumbnailPath, previousPost, nextPost);
+    boolean isLiked = member.isLike(post);
+    boolean isDisliked = member.isDislike(post);
+
+    if (post.isCategory(익명게시판)) {
+      return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLiked, isDisliked, previousPost, nextPost);
+    }
+    return PostDetailResponse.of(post, isLiked, isDisliked, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -165,20 +168,6 @@ public class PostService {
       return;
     }
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
-  }
-
-  private String getWriterName(Post post) {
-    if (post.isCategory(익명게시판)) {
-      return ANONYMOUS_NAME;
-    }
-    return post.getWriterNickname();
-  }
-
-  private String getWriterThumbnailPath(Post post) {
-    if (post.isCategory(익명게시판)) {
-      return null;
-    }
-    return post.getMember().getThumbnailPath();
   }
 
   @Transactional
