@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.ctf.entity.challenge;
 
+import static com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeCategory.getCtfChallengeCategoryBy;
 import static com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeType.ChallengeType.DYNAMIC;
 import static com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeType.getCtfChallengeType;
 import static jakarta.persistence.CascadeType.ALL;
@@ -105,7 +106,7 @@ public class CtfChallenge extends BaseEntity {
   public void addCategory(CtfChallengeCategoryType categoryType) {
     this.ctfCategories.add(CtfChallengeHasCtfChallengeCategory.builder()
         .ctfChallenge(this)
-        .ctfChallengeCategory(CtfChallengeCategory.getCtfChallengeCategoryBy(categoryType))
+        .ctfChallengeCategory(getCtfChallengeCategoryBy(categoryType))
         .build());
   }
 
