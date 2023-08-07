@@ -14,7 +14,7 @@ data class BorrowDetailResponse constructor(
     val borrowerId: Long,
     val borrowerNickname: String,
     @JsonFormat(pattern = RESPONSE_DATETIME_FORMAT)
-    val requestDatetime: LocalDateTime,
+    val requestDatetime: LocalDateTime?,
     @JsonFormat(pattern = RESPONSE_DATETIME_FORMAT)
     val borrowDateTime: LocalDateTime?,
     @JsonFormat(pattern = RESPONSE_DATETIME_FORMAT)
@@ -28,7 +28,7 @@ data class BorrowDetailResponse constructor(
         author = borrowInfo.book.author,
         borrowerId = borrowInfo.member.id,
         borrowerNickname = borrowInfo.member.nickname,
-        requestDatetime = borrowInfo.registerTime,
+        requestDatetime = borrowInfo.lastRequestDate,
         borrowDateTime = borrowInfo.borrowDate,
         expiredDateTime = borrowInfo.expireDate,
         status = borrowInfo.borrowStatus.type.name,
