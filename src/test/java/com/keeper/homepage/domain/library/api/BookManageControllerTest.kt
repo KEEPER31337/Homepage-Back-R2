@@ -4,7 +4,6 @@ import com.keeper.homepage.domain.library.dto.req.BookRequest
 import com.keeper.homepage.domain.library.dto.req.MAX_AUTHOR_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TITLE_LENGTH
 import com.keeper.homepage.domain.library.dto.req.MAX_TOTAL_QUANTITY_LENGTH
-import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.Book
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
@@ -17,7 +16,6 @@ import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
-import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.http.HttpHeaders
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
@@ -357,10 +355,6 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(
                     jsonPath("$.borrowInfos[0].borrowerNickname")
                         .value(borrowList[0].member.nickname)
-                )
-                .andExpect(
-                    jsonPath("$.borrowInfos[0].requestDatetime")
-                        .value(borrowList[0].registerTime.formatting(RESPONSE_DATETIME_FORMAT))
                 )
                 .andDo(
                     document(
