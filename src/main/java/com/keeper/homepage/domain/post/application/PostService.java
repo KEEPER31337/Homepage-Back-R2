@@ -56,7 +56,7 @@ public class PostService {
 
   private static final String ANONYMOUS_NAME = "익명";
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
-  private static final int EXAM_VIEW_DEDUCTION_POINT = 10000;
+  private static final int EXAM_READ_DEDUCTION_POINT = 10000;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
@@ -185,8 +185,9 @@ public class PostService {
   public List<FileResponse> getFiles(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
-    if (post.isCategory(시험게시판)) {
-      member.minusPoint(EXAM_VIEW_DEDUCTION_POINT);
+    if (post.isCategory(시험게시판) && !post.isRead()) {
+      post.read();
+      member.minusPoint(EXAM_READ_DEDUCTION_POINT);
     }
     return post.getPostHasFiles()
         .stream()
