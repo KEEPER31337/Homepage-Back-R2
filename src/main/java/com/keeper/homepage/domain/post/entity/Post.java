@@ -88,6 +88,9 @@ public class Post extends BaseEntity {
   @Column(name = "is_temp", nullable = false)
   private Boolean isTemp;
 
+  @Column(name = "is_read", nullable = false)
+  private Boolean isRead;
+
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
 
@@ -108,7 +111,7 @@ public class Post extends BaseEntity {
 
   @Builder
   private Post(String title, String content, Member member, Integer visitCount, String ipAddress,
-      Boolean allowComment, Boolean isNotice, Boolean isSecret, Boolean isTemp, String password,
+      Boolean allowComment, Boolean isNotice, Boolean isSecret, Boolean isTemp, Boolean isRead, String password,
       Category category, Thumbnail thumbnail) {
     this.title = title;
     this.content = content;
@@ -119,6 +122,7 @@ public class Post extends BaseEntity {
     this.isNotice = isNotice;
     this.isSecret = isSecret;
     this.isTemp = isTemp;
+    this.isRead = isRead != null ? isRead : false;
     this.password = password;
     this.category = category;
     this.thumbnail = thumbnail;
@@ -165,6 +169,14 @@ public class Post extends BaseEntity {
 
   public Boolean isSecret() {
     return isSecret;
+  }
+
+  public boolean isRead() {
+    return isRead;
+  }
+
+  public void read() {
+    this.isRead = true;
   }
 
   public Boolean allowComment() {
