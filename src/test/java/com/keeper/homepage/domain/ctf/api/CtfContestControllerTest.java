@@ -58,8 +58,8 @@ public class CtfContestControllerTest extends IntegrationTest {
                       .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
               requestFields(
-                  fieldWithPath("name").description("CTF 팀명"),
-                  fieldWithPath("description").description("CTF 팀 설명")
+                  fieldWithPath("name").description("CTF 대회 명"),
+                  fieldWithPath("description").description("CTF 대회 설명")
               )));
     }
   }
