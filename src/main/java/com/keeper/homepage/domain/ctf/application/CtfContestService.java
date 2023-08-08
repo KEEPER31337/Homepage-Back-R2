@@ -34,4 +34,16 @@ public class CtfContestService {
 
     contest.update(name, description, isJoinable);
   }
+
+  @Transactional
+  public void openContest(long contestId) {
+    CtfContest contest = ctfContestFindService.findById(contestId);
+    contest.open();
+  }
+
+  @Transactional
+  public void closeContest(long contestId) {
+    CtfContest contest = ctfContestFindService.findById(contestId);
+    contest.close();
+  }
 }

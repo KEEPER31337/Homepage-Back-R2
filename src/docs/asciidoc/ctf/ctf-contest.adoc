@@ -61,4 +61,47 @@ include::{snippets}/update-ctf-contest/request-fields.adoc[]
 
 include::{snippets}/update-ctf-contest/http-response.adoc[]
 
+== *CTF 대회 공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/open-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/open-ctf-contest/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/open-ctf-contest/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/open-ctf-contest/http-response.adoc[]
+
+== *CTF 대회 비공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/close-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/close-ctf-contest/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/close-ctf-contest/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/close-ctf-contest/http-response.adoc[]
 

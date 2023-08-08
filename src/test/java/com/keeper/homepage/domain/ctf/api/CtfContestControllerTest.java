@@ -7,6 +7,7 @@ import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -105,6 +106,50 @@ public class CtfContestControllerTest extends IntegrationTest {
                   fieldWithPath("joinable").description("CTF 대회 공개 여부")
               )));
     }
+  }
 
+  @Nested
+  @DisplayName("CTF 공개 비공개 테스트")
+  class CtfOpenAndCloseTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 CTF 공개는 성공한다.")
+    public void 유효한_요청일_경우_CTF_공개는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(CtfContestController.class, "openContest");
+
+      CtfContest ctfContest = ctfContestTestHelper.generate();
+
+      mockMvc.perform(patch("/ctf/contests/{contestId}/open", ctfContest.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+          .andExpect(status().isNoContent())
+          .andDo(document("open-ctf-contest",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("contestId").description("대회 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 CTF 비공개는 성공한다.")
+    public void 유효한_요청일_경우_CTF_비공개는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(CtfContestController.class, "closeContest");
+
+      CtfContest ctfContest = ctfContestTestHelper.generate();
+
+      mockMvc.perform(patch("/ctf/contests/{contestId}/close", ctfContest.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+          .andExpect(status().isNoContent())
+          .andDo(document("close-ctf-contest",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("contestId").description("대회 ID")
+              )));
+    }
   }
 }

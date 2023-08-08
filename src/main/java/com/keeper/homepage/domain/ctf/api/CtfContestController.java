@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -43,5 +44,21 @@ public class CtfContestController {
     ctfContestService.updateContest(contestId, request.getName(), request.getDescription(), request.isJoinable());
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
+  }
+
+  @PatchMapping("/{contestId}/open")
+  public ResponseEntity<Void> openContest(
+      @PathVariable long contestId
+  ) {
+    ctfContestService.openContest(contestId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{contestId}/close")
+  public ResponseEntity<Void> closeContest(
+      @PathVariable long contestId
+  ) {
+    ctfContestService.closeContest(contestId);
+    return ResponseEntity.noContent().build();
   }
 }
