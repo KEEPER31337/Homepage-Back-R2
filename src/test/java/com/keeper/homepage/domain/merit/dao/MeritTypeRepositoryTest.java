@@ -21,19 +21,15 @@ public class MeritTypeRepositoryTest extends IntegrationTest {
     @Component
     class MeritTypeTest {
 
-        @Autowired
-        MeritTypeRepository meritTypeRepository;
-
         @Test
         @DisplayName("DB에 상벌점 타입 등록을 성공해야 한다.")
         void should_success_when_registerMeritType() {
-            MeritType meritType = meritTypeRepository.save(MeritType.builder()
-                    .merit(1)
-                    .isMerit(false)
-                    .detail("지각")
-                    .build());
+            MeritType meritType = meritTypeHelper.generate();
 
-            MeritType findMeritType = meritTypeRepository.findByDetail("지각").orElseThrow();
+            em.flush();
+            em.clear();
+
+            MeritType findMeritType = meritTypeRepository.findByDetail("무단 결석").orElseThrow();
 
             assertThat(meritType.getMerit()).isEqualTo(findMeritType.getMerit());
             assertThat(meritType.getIsMerit()).isEqualTo(findMeritType.getIsMerit());

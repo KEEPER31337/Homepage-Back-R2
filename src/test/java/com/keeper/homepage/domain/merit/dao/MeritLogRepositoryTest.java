@@ -23,32 +23,10 @@ public class MeritLogRepositoryTest extends IntegrationTest {
     @Component
     class MeritTest {
 
-        @Autowired
-        MeritLogRepository meritLogRepository;
-
-        @Autowired
-        MeritTypeRepository meritTypeRepository;
-
-        @Autowired
-        MemberTestHelper memberTestHelper;
-
         @Test
         @DisplayName("DB에 상벌점 로그 등록을 성공해야 한다.")
         void should_success_when_registerMeritType() {
-            Member member1 = memberTestHelper.generate();
-            Member member2 = memberTestHelper.generate();
-
-            MeritType meritType = meritTypeRepository.save(MeritType.builder()
-                    .merit(3)
-                    .isMerit(false)
-                    .detail("결석")
-                    .build());
-
-            MeritLog meritLog = meritLogRepository.save(MeritLog.builder()
-                    .awarder(member1)
-                    .giver(member2)
-                    .meritType(meritType)
-                    .build());
+            MeritLog meritLog = meritLogTestHelper.generate();
 
             em.flush();
             em.clear();
@@ -58,7 +36,7 @@ public class MeritLogRepositoryTest extends IntegrationTest {
             assertThat(meritLog.getId()).isEqualTo(findMeritLog.getId());
             assertThat(meritLog.getGiver()).isEqualTo(findMeritLog.getGiver());
             assertThat(meritLog.getAwarder()).isEqualTo(findMeritLog.getAwarder());
-            assertThat(meritLog.getTime()).isEqualTo(findMeritLog.getTime());
+            assertThat(meritLog.getTime()).isBefore(findMeritLog.getTime());
             assertThat(meritLog.getMeritType().getId()).isEqualTo(findMeritLog.getMeritType().getId());
 
         }
