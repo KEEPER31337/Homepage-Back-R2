@@ -24,7 +24,7 @@ public class CreateTeamRequest {
   private String name;
 
   @NotBlank(message = "CTF 팀 설명을 입력해주세요.")
-  @Size(max = TEAM_DESCRIPTION_LENGTH, message = "게시글 제목은 {max}자 이하로 입력해주세요.")
+  @Size(max = TEAM_DESCRIPTION_LENGTH, message = "CTF 팀 설명은 {max}자 이하로 입력해주세요.")
   private String description;
 
   @NotNull(message = "CTF Contest ID를 입력해주세요.")
