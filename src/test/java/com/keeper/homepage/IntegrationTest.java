@@ -26,6 +26,12 @@ import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
+import com.keeper.homepage.domain.election.ElectionTestHelper;
+import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
+import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
+import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
+import com.keeper.homepage.domain.election.dao.ElectionRepository;
+import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
 import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
 import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
 import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
@@ -63,7 +69,6 @@ import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
-import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
@@ -228,6 +233,18 @@ public class IntegrationTest {
   @SpyBean
   protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
+  @SpyBean
+  protected ElectionCandidateRepository electionCandidateRepository;
+
+  @SpyBean
+  protected ElectionChartLogRepository electionChartLogRepository;
+
+  @SpyBean
+  protected ElectionRepository electionRepository;
+
+  @SpyBean
+  protected ElectionVoterRepository electionVoterRepository;
+
   @Autowired
   protected FileRepository fileRepository;
 
@@ -336,9 +353,6 @@ public class IntegrationTest {
   protected SeminarTestHelper seminarTestHelper;
 
   @Autowired
-  protected CategoryTestHelper categoryTestHelper;
-
-  @Autowired
   protected PostTestHelper postTestHelper;
 
   @Autowired
@@ -358,6 +372,12 @@ public class IntegrationTest {
 
   @Autowired
   protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
+
+  @Autowired
+  protected ElectionTestHelper electionTestHelper;
+
+  @Autowired
+  protected ElectionVoterTestHelper electionVoterTestHelper;
 
   @Autowired
   protected CtfTeamTestHelper ctfTeamTestHelper;

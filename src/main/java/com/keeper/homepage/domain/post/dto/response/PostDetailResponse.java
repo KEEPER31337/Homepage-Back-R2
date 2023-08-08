@@ -45,7 +45,7 @@ public class PostDetailResponse {
       Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
-        .categoryName(post.getCategory().getName())
+        .categoryName(post.getCategory().getType().toString())
         .title(post.getTitle())
         .writerName(writerName)
         .writerThumbnailPath(writerThumbnailPath)

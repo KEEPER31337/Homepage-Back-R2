@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.library.entity;
 
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
@@ -103,7 +102,7 @@ public class Book extends BaseEntity {
   public String getThumbnailPath() {
     return Optional.ofNullable(this.thumbnail)
         .map(Thumbnail::getPath)
-        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
+        .orElse(null);
   }
 
   public List<BookBorrowInfo> getBookBorrowInfos() {

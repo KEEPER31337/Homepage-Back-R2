@@ -1,8 +1,6 @@
 package com.keeper.homepage.domain.study.entity;
 
 
-import static com.keeper.homepage.domain.thumbnail.entity.Thumbnail.DefaultThumbnail.DEFAULT_POST_THUMBNAIL;
-
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -98,7 +96,7 @@ public class Study extends BaseEntity {
   public String getThumbnailPath() {
     return Optional.ofNullable(this.thumbnail)
         .map(Thumbnail::getPath)
-        .orElse(DEFAULT_POST_THUMBNAIL.getPath());
+        .orElse(null);
   }
 
   public String getGitLink() {
