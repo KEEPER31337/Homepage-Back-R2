@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.ctf.api;
 
 import com.keeper.homepage.domain.ctf.application.CtfContestService;
-import com.keeper.homepage.domain.ctf.dto.request.CreateContestRequest;
+import com.keeper.homepage.domain.ctf.dto.request.contest.CreateContestRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;

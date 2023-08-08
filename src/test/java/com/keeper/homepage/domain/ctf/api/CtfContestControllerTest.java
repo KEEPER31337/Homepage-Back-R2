@@ -13,7 +13,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.ctf.dto.request.CreateContestRequest;
+import com.keeper.homepage.domain.ctf.dto.request.contest.CreateContestRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
