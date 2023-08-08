@@ -64,15 +64,15 @@ public class CommentService {
     Post post = validPostFindService.findById(postId);
     List<Comment> comments = post.getComments();
 
-    boolean isLiked = member.isLike(post);
-    boolean isDisliked = member.isDislike(post);
+    boolean isLike = member.isLike(post);
+    boolean isDislike = member.isDislike(post);
 
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
           if (post.isCategory(익명게시판)) {
-            return CommentResponse.of(comment, ANONYMOUS_NAME, null, isLiked, isDisliked);
+            return CommentResponse.of(comment, ANONYMOUS_NAME, null, isLike, isDislike);
           }
-          return CommentResponse.from(comment, isLiked, isDisliked);
+          return CommentResponse.from(comment, isLike, isDislike);
         })
         .toList();
     return CommentListResponse.from(commentResponses);

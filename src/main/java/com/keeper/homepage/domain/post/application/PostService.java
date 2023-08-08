@@ -116,13 +116,13 @@ public class PostService {
 
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
-    boolean isLiked = member.isLike(post);
-    boolean isDisliked = member.isDislike(post);
+    boolean isLike = member.isLike(post);
+    boolean isDislike = member.isDislike(post);
 
     if (post.isCategory(익명게시판)) {
-      return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLiked, isDisliked, previousPost, nextPost);
+      return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLike, isDislike, previousPost, nextPost);
     }
-    return PostDetailResponse.of(post, isLiked, isDisliked, previousPost, nextPost);
+    return PostDetailResponse.of(post, isLike, isDislike, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {

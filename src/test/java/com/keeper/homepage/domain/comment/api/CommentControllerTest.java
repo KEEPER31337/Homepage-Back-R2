@@ -158,8 +158,8 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   fieldWithPath("comments[].parentId").description("부모 댓글 ID"),
                   fieldWithPath("comments[].likeCount").description("댓글 좋아요 개수"),
                   fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수"),
-                  fieldWithPath("comments[].isLiked").description("댓글 좋아요 했는지 여부"),
-                  fieldWithPath("comments[].isDisliked").description("댓글 싫어요 했는지 여부")
+                  fieldWithPath("comments[].isLike").description("댓글 좋아요 했는지 여부"),
+                  fieldWithPath("comments[].isDislike").description("댓글 싫어요 했는지 여부")
               )));
     }
   }

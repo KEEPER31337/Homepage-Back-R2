@@ -28,8 +28,8 @@ public class PostDetailResponse {
   private Boolean isNotice;
   private Boolean isSecret;
   private Boolean isTemp;
-  private Boolean isLiked;
-  private Boolean isDisliked;
+  private Boolean isLike;
+  private Boolean isDislike;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
@@ -40,7 +40,7 @@ public class PostDetailResponse {
   private AdjacentPostResponse previousPost;
   private AdjacentPostResponse nextPost;
 
-  public static PostDetailResponse of(Post post, boolean isLiked, boolean isDisliked, Post previousPost,
+  public static PostDetailResponse of(Post post, boolean isLike, boolean isDislike, Post previousPost,
       Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
@@ -59,15 +59,15 @@ public class PostDetailResponse {
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
         .isTemp(post.isTemp())
-        .isLiked(isLiked)
-        .isDisliked(isDisliked)
+        .isLike(isLike)
+        .isDislike(isDislike)
         .previousPost(previousPost != null ? AdjacentPostResponse.from(previousPost) : null)
         .nextPost(nextPost != null ? AdjacentPostResponse.from(nextPost) : null)
         .build();
   }
 
-  public static PostDetailResponse of(Post post, String writerName, String writerThumbnailPath, boolean isLiked,
-      boolean isDisliked, Post previousPost, Post nextPost) {
+  public static PostDetailResponse of(Post post, String writerName, String writerThumbnailPath, boolean isLike,
+      boolean isDislike, Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
@@ -85,8 +85,8 @@ public class PostDetailResponse {
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
         .isTemp(post.isTemp())
-        .isLiked(isLiked)
-        .isDisliked(isDisliked)
+        .isLike(isLike)
+        .isDislike(isDislike)
         .previousPost(previousPost != null ? AdjacentPostResponse.from(previousPost) : null)
         .nextPost(nextPost != null ? AdjacentPostResponse.from(nextPost) : null)
         .build();
