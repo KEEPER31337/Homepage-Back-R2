@@ -24,10 +24,10 @@ public class MeritLogService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void recordMerit(GiveMeritPointRequest request) {
-        Member awarder = memberRepository.findById(request.getAwarderId()).orElseThrow();
-        Member giver = memberRepository.findById(request.getGiverId()).orElseThrow();
-        MeritType meritType = meritTypeRepository.findByDetail(request.getReason()).orElseThrow();
+    public void recordMerit(long awarderId, long giverId, String reason) {
+        Member awarder = memberRepository.findById(awarderId).orElseThrow();
+        Member giver = memberRepository.findById(giverId).orElseThrow();
+        MeritType meritType = meritTypeRepository.findByDetail(reason).orElseThrow();
 
         meritLogRepository.save(MeritLog.builder()
                 .awarder(awarder)

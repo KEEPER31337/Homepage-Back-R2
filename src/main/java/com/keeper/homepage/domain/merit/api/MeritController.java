@@ -19,15 +19,15 @@ public class MeritController {
     private final MeritTypeService meritTypeService;
     private final MeritLogService meritLogService;
 
-    @PostMapping("/register-merit")
+    @PostMapping
     public ResponseEntity<Void> registerMerit(
             @RequestBody @Valid GiveMeritPointRequest request
     ) {
-        meritLogService.recordMerit(request);
+        meritLogService.recordMerit(request.getAwarderId(), request.getGiverId(), request.getReason());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/register-type")
+    @PostMapping("/type")
     public ResponseEntity<Void> registerMeritType(
             @RequestBody @Valid AddMeritTypeRequest request
     ) {
