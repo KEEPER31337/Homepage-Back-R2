@@ -174,8 +174,8 @@ public class PostService {
   public List<FileResponse> getFiles(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
-    if (post.isCategory(시험게시판) && !post.isRead()) {
-      post.read();
+    if (post.isCategory(시험게시판) && !member.hasRead(post)) {
+      member.read(post);
       member.minusPoint(EXAM_READ_DEDUCTION_POINT);
     }
     return post.getPostHasFiles()
