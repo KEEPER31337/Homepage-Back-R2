@@ -25,6 +25,7 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
 import com.keeper.homepage.domain.election.ElectionTestHelper;
 import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
 import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
@@ -32,8 +33,12 @@ import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
 import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
+import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
 import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeCategoryRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeTypeRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
@@ -249,6 +254,15 @@ public class IntegrationTest {
   @Autowired
   protected PointLogRepository pointLogRepository;
 
+  @Autowired
+  protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
+
+  @Autowired
+  protected CtfChallengeTypeRepository ctfChallengeTypeRepository;
+
+  @Autowired
+  protected CtfChallengeRepository ctfChallengeRepository;
+
   /******* Service *******/
   @SpyBean
   protected MemberService memberService;
@@ -370,6 +384,12 @@ public class IntegrationTest {
 
   @Autowired
   protected CtfContestTestHelper ctfContestTestHelper;
+
+  @Autowired
+  protected CtfChallengeTestHelper ctfChallengeTestHelper;
+
+  @Autowired
+  protected CtfFlagTestHelper ctfFlagTestHelper;
 
   /******* Util *******/
   @SpyBean
