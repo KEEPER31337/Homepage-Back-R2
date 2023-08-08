@@ -35,8 +35,8 @@ public class MeritLogRepositoryTest extends IntegrationTest {
         @Test
         @DisplayName("DB에 상벌점 로그 등록을 성공해야 한다.")
         void should_success_when_registerMeritType() {
-            Member member1 = memberTestHelper.builder().build();
-            Member member2 = memberTestHelper.builder().build();
+            Member member1 = memberTestHelper.generate();
+            Member member2 = memberTestHelper.generate();
 
             MeritType meritType = meritTypeRepository.save(MeritType.builder()
                     .merit(3)
@@ -45,24 +45,25 @@ public class MeritLogRepositoryTest extends IntegrationTest {
                     .build());
 
             MeritLog meritLog = meritLogRepository.save(MeritLog.builder()
-                    .awarderId(member1)
-                    .giverId(member2)
+                    .awarder(member1)
+                    .giver(member2)
                     .meritType(meritType)
                     .build());
+
+            em.flush();
+            em.clear();
 
             MeritLog findMeritLog = meritLogRepository.findById(meritLog.getId()).orElseThrow();
 
             assertThat(meritLog.getId()).isEqualTo(findMeritLog.getId());
-            assertThat(meritLog.getGiverId()).isEqualTo(findMeritLog.getGiverId());
-            assertThat(meritLog.getAwarderId()).isEqualTo(findMeritLog.getAwarderId());
+            assertThat(meritLog.getGiver()).isEqualTo(findMeritLog.getGiver());
+            assertThat(meritLog.getAwarder()).isEqualTo(findMeritLog.getAwarder());
             assertThat(meritLog.getTime()).isEqualTo(findMeritLog.getTime());
             assertThat(meritLog.getMeritType().getId()).isEqualTo(findMeritLog.getMeritType().getId());
 
         }
 
     }
-
-
 
 
 }

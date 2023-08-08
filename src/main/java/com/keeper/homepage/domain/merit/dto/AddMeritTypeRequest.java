@@ -12,14 +12,13 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class AddMeritTypeRequest {
 
-    @NotNull
-    private Integer reward;
+    @NotNull(message = "상점을 입력해주세요.")
+    private int reward;
 
-    @NotNull
-    private Integer penalty;
+    @NotNull(message = "벌점을 입력해주세요.")
+    private int penalty;
 
-    @NotNull
+    @NotNull(message = "상벌점 타입에 대해서 입력해주세요.")
     private String detail;
-
 
 }

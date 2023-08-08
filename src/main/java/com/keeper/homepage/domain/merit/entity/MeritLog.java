@@ -23,11 +23,11 @@ public class MeritLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "awarder_id")
-    private Member awarderId;
+    private Member awarder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "giver_id")
-    private Member giverId;
+    private Member giver;
 
     @Column(name = "time", nullable = false)
     private LocalDateTime time;
@@ -37,12 +37,10 @@ public class MeritLog {
     private MeritType meritType;
 
     @Builder
-    public MeritLog(Member awarderId, Member giverId, MeritType meritType) {
-        this.awarderId = awarderId;
-        this.giverId = giverId;
+    public MeritLog(Member awarder, Member giver, MeritType meritType) {
+        this.awarder = awarder;
+        this.giver = giver;
         this.time = LocalDateTime.now();
         this.meritType = meritType;
-
     }
-
 }

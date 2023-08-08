@@ -13,13 +13,13 @@ import static lombok.AccessLevel.PRIVATE;
 @AllArgsConstructor(access = PRIVATE)
 public class GiveMeritPointRequest {
 
-    @NotNull
-    private Long awarderId;
+    @NotNull(message = "수여자를 입력해주세요.")
+    private long awarderId;
 
-    @NotNull
-    private Long giverId;
+    @NotNull(message = "수상자를 입력해주세요.")
+    private long giverId;
 
-    @NotNull
+    @NotNull(message = "상벌점 이유에 대해서 입력해주세요.")
     private String reason;
 
 }

@@ -19,25 +19,20 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class MeritLogService {
 
-    private MeritLogRepository meritLogRepository;
-    private MeritTypeRepository meritTypeRepository;
-    private MemberRepository memberRepository;
-
+    private final MeritLogRepository meritLogRepository;
+    private final MeritTypeRepository meritTypeRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public void recordMerit(GiveMeritPointRequest request) {
-        Member awarderId = memberRepository.findById(request.getAwarderId()).orElseThrow();
-        Member giverId = memberRepository.findById(request.getGiverId()).orElseThrow();
-        MeritType meritType = meritTypeRepository.findByDetail(request.getReason())
-                .orElseThrow();
+        Member awarder = memberRepository.findById(request.getAwarderId()).orElseThrow();
+        Member giver = memberRepository.findById(request.getGiverId()).orElseThrow();
+        MeritType meritType = meritTypeRepository.findByDetail(request.getReason()).orElseThrow();
 
         meritLogRepository.save(MeritLog.builder()
-                .awarderId(awarderId)
-                .giverId(giverId)
+                .awarder(awarder)
+                .giver(giver)
                 .meritType(meritType)
                 .build());
-
     }
-
-
 }

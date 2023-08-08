@@ -33,8 +33,4 @@ public class MeritType {
         this.isMerit = isMerit;
         this.detail = detail;
     }
-
-
-
-
 }

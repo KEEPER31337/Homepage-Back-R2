@@ -9,13 +9,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/merit")
 @RequiredArgsConstructor
-public class MeritLogController {
+public class MeritController {
 
     private final MeritTypeService meritTypeService;
     private final MeritLogService meritLogService;
@@ -23,14 +22,15 @@ public class MeritLogController {
     @PostMapping("/register-merit")
     public ResponseEntity<Void> registerMerit(
             @RequestBody @Valid GiveMeritPointRequest request
-            ) {
+    ) {
         meritLogService.recordMerit(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/register-type")
     public ResponseEntity<Void> registerMeritType(
-            @RequestBody @Valid AddMeritTypeRequest request) {
+            @RequestBody @Valid AddMeritTypeRequest request
+    ) {
         meritTypeService.addMeritType(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
