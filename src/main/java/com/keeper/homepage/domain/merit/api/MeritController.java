@@ -16,23 +16,23 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class MeritController {
 
-    private final MeritTypeService meritTypeService;
-    private final MeritLogService meritLogService;
+  private final MeritTypeService meritTypeService;
+  private final MeritLogService meritLogService;
 
-    @PostMapping
-    public ResponseEntity<Void> registerMerit(
-            @RequestBody @Valid GiveMeritPointRequest request
-    ) {
-        meritLogService.recordMerit(request.getAwarderId(), request.getGiverId(), request.getReason());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+  @PostMapping
+  public ResponseEntity<Void> registerMerit(
+      @RequestBody @Valid GiveMeritPointRequest request
+  ) {
+    meritLogService.recordMerit(request.getAwarderId(), request.getGiverId(), request.getReason());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
 
-    @PostMapping("/type")
-    public ResponseEntity<Void> registerMeritType(
-            @RequestBody @Valid AddMeritTypeRequest request
-    ) {
-        meritTypeService.addMeritType(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+  @PostMapping("/type")
+  public ResponseEntity<Void> registerMeritType(
+      @RequestBody @Valid AddMeritTypeRequest request
+  ) {
+    meritTypeService.addMeritType(request);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
 
 }

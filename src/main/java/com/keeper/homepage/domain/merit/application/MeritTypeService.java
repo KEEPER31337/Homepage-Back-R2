@@ -12,20 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MeritTypeService {
 
-    private MeritTypeRepository meritTypeRepository;
+  private MeritTypeRepository meritTypeRepository;
 
-    @Transactional
-    public void addMeritType(AddMeritTypeRequest request) {
-        boolean isMerit = request.getReward() > 0;
-        int merit = isMerit ? request.getReward() : request.getPenalty();
+  @Transactional
+  public void addMeritType(AddMeritTypeRequest request) {
+    boolean isMerit = request.getReward() > 0;
+    int merit = isMerit ? request.getReward() : request.getPenalty();
 
-        meritTypeRepository.save(MeritType.builder()
-                .merit(merit)
-                .isMerit(isMerit)
-                .detail(request.getDetail())
-                .build());
+    meritTypeRepository.save(MeritType.builder()
+        .merit(merit)
+        .isMerit(isMerit)
+        .detail(request.getDetail())
+        .build());
 
-    }
+  }
 
 
 }

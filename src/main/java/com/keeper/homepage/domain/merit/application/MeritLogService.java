@@ -23,21 +23,21 @@ import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
 @Transactional(readOnly = true)
 public class MeritLogService {
 
-    private final MeritLogRepository meritLogRepository;
-    private final MeritTypeRepository meritTypeRepository;
-    private final MemberRepository memberRepository;
+  private final MeritLogRepository meritLogRepository;
+  private final MeritTypeRepository meritTypeRepository;
+  private final MemberRepository memberRepository;
 
-    @Transactional
-    public void recordMerit(long awarderId, long giverId, String reason) {
-        Member awarder = memberRepository.findById(awarderId).orElseThrow();
-        Member giver = memberRepository.findById(giverId).orElseThrow();
-        MeritType meritType = meritTypeRepository.findByDetail(reason)
-                .orElseThrow(() -> new BusinessException(reason, "meritType", MERIT_TYPE_NOT_FOUND));
+  @Transactional
+  public void recordMerit(long awarderId, long giverId, String reason) {
+    Member awarder = memberRepository.findById(awarderId).orElseThrow();
+    Member giver = memberRepository.findById(giverId).orElseThrow();
+    MeritType meritType = meritTypeRepository.findByDetail(reason)
+        .orElseThrow(() -> new BusinessException(reason, "meritType", MERIT_TYPE_NOT_FOUND));
 
-        meritLogRepository.save(MeritLog.builder()
-                .awarder(awarder)
-                .giver(giver)
-                .meritType(meritType)
-                .build());
-    }
+    meritLogRepository.save(MeritLog.builder()
+        .awarder(awarder)
+        .giver(giver)
+        .meritType(meritType)
+        .build());
+  }
 }

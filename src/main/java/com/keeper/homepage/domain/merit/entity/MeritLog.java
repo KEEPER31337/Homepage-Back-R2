@@ -16,31 +16,31 @@ import java.time.LocalDateTime;
 @Table(name = "merit_log")
 public class MeritLog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false, updatable = false)
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "awarder_id")
-    private Member awarder;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "awarder_id")
+  private Member awarder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "giver_id")
-    private Member giver;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "giver_id")
+  private Member giver;
 
-    @Column(name = "time", nullable = false)
-    private LocalDateTime time;
+  @Column(name = "time", nullable = false)
+  private LocalDateTime time;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "merit_type_id")
-    private MeritType meritType;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "merit_type_id")
+  private MeritType meritType;
 
-    @Builder
-    public MeritLog(Member awarder, Member giver, MeritType meritType) {
-        this.awarder = awarder;
-        this.giver = giver;
-        this.time = LocalDateTime.now();
-        this.meritType = meritType;
-    }
+  @Builder
+  public MeritLog(Member awarder, Member giver, MeritType meritType) {
+    this.awarder = awarder;
+    this.giver = giver;
+    this.time = LocalDateTime.now();
+    this.meritType = meritType;
+  }
 }

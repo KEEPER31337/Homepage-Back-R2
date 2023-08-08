@@ -18,30 +18,29 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MeritLogRepositoryTest extends IntegrationTest {
 
-    @Nested
-    @DisplayName("상벌점 기능 테스트")
-    @Component
-    class MeritTest {
+  @Nested
+  @DisplayName("상벌점 기능 테스트")
+  @Component
+  class MeritTest {
 
-        @Test
-        @DisplayName("DB에 상벌점 로그 등록을 성공해야 한다.")
-        void should_success_when_registerMeritType() {
-            MeritLog meritLog = meritLogTestHelper.generate();
+    @Test
+    @DisplayName("DB에 상벌점 로그 등록을 성공해야 한다.")
+    void should_success_when_registerMeritType() {
+      MeritLog meritLog = meritLogTestHelper.generate();
 
-            em.flush();
-            em.clear();
+      em.flush();
+      em.clear();
 
-            MeritLog findMeritLog = meritLogRepository.findById(meritLog.getId()).orElseThrow();
+      MeritLog findMeritLog = meritLogRepository.findById(meritLog.getId()).orElseThrow();
 
-            assertThat(meritLog.getId()).isEqualTo(findMeritLog.getId());
-            assertThat(meritLog.getGiver()).isEqualTo(findMeritLog.getGiver());
-            assertThat(meritLog.getAwarder()).isEqualTo(findMeritLog.getAwarder());
-            assertThat(meritLog.getTime()).isBefore(findMeritLog.getTime());
-            assertThat(meritLog.getMeritType().getId()).isEqualTo(findMeritLog.getMeritType().getId());
-
-        }
+      assertThat(meritLog.getId()).isEqualTo(findMeritLog.getId());
+      assertThat(meritLog.getGiver()).isEqualTo(findMeritLog.getGiver());
+      assertThat(meritLog.getAwarder()).isEqualTo(findMeritLog.getAwarder());
+      assertThat(meritLog.getTime()).isBefore(findMeritLog.getTime());
+      assertThat(meritLog.getMeritType().getId()).isEqualTo(findMeritLog.getMeritType().getId());
 
     }
+  }
 
 
 }

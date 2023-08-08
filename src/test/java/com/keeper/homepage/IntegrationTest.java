@@ -130,353 +130,353 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @SpringBootTest
 public class IntegrationTest {
 
-    public static final Random RANDOM = new Random();
+  public static final Random RANDOM = new Random();
 
-    /******* Repository *******/
-    @SpyBean
-    protected MemberRepository memberRepository;
+  /******* Repository *******/
+  @SpyBean
+  protected MemberRepository memberRepository;
 
-    @SpyBean
-    protected MemberJobRepository memberJobRepository;
+  @SpyBean
+  protected MemberJobRepository memberJobRepository;
 
-    @SpyBean
-    protected MemberHasMemberJobRepository memberHasMemberJobRepository;
+  @SpyBean
+  protected MemberHasMemberJobRepository memberHasMemberJobRepository;
 
-    @SpyBean
-    protected MemberRankRepository memberRankRepository;
+  @SpyBean
+  protected MemberRankRepository memberRankRepository;
 
-    @SpyBean
-    protected MemberTypeRepository memberTypeRepository;
+  @SpyBean
+  protected MemberTypeRepository memberTypeRepository;
 
-    @SpyBean
-    protected StaticWriteTitleRepository staticWriteTitleRepository;
+  @SpyBean
+  protected StaticWriteTitleRepository staticWriteTitleRepository;
 
-    @SpyBean
-    protected StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
+  @SpyBean
+  protected StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
 
-    @SpyBean
-    protected StaticWriteContentRepository staticWriteContentRepository;
+  @SpyBean
+  protected StaticWriteContentRepository staticWriteContentRepository;
 
-    @SpyBean
-    protected AttendanceRepository attendanceRepository;
+  @SpyBean
+  protected AttendanceRepository attendanceRepository;
 
-    @SpyBean
-    protected BookRepository bookRepository;
+  @SpyBean
+  protected BookRepository bookRepository;
 
-    @SpyBean
-    protected BookBorrowInfoRepository bookBorrowInfoRepository;
+  @SpyBean
+  protected BookBorrowInfoRepository bookBorrowInfoRepository;
 
-    @SpyBean
-    protected BookDepartmentRepository bookDepartmentRepository;
+  @SpyBean
+  protected BookDepartmentRepository bookDepartmentRepository;
 
-    @SpyBean
-    protected BookBorrowStatusRepository bookBorrowStatusRepository;
+  @SpyBean
+  protected BookBorrowStatusRepository bookBorrowStatusRepository;
 
-    @SpyBean
-    protected SeminarRepository seminarRepository;
+  @SpyBean
+  protected SeminarRepository seminarRepository;
 
-    @SpyBean
-    protected SeminarAttendanceRepository seminarAttendanceRepository;
+  @SpyBean
+  protected SeminarAttendanceRepository seminarAttendanceRepository;
 
-    @SpyBean
-    protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
+  @SpyBean
+  protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
 
-    @SpyBean
-    protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+  @SpyBean
+  protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
 
-    @SpyBean
-    protected FriendRepository friendRepository;
+  @SpyBean
+  protected FriendRepository friendRepository;
 
-    @SpyBean
-    protected CategoryRepository categoryRepository;
+  @SpyBean
+  protected CategoryRepository categoryRepository;
 
-    @SpyBean
-    protected CommentRepository commentRepository;
+  @SpyBean
+  protected CommentRepository commentRepository;
 
-    @SpyBean
-    protected PostRepository postRepository;
+  @SpyBean
+  protected PostRepository postRepository;
 
-    @SpyBean
-    protected PostHasFileRepository postHasFileRepository;
+  @SpyBean
+  protected PostHasFileRepository postHasFileRepository;
 
-    @SpyBean
-    protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
+  @SpyBean
+  protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
-    @SpyBean
-    protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
+  @SpyBean
+  protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
-    @SpyBean
-    protected MemberHasPostDislikeRepository memberHasPostDislikeRepository;
+  @SpyBean
+  protected MemberHasPostDislikeRepository memberHasPostDislikeRepository;
 
-    @SpyBean
-    protected MemberHasPostLikeRepository memberHasPostLikeRepository;
+  @SpyBean
+  protected MemberHasPostLikeRepository memberHasPostLikeRepository;
 
-    @Autowired
-    protected EmailAuthRedisRepository emailAuthRedisRepository;
+  @Autowired
+  protected EmailAuthRedisRepository emailAuthRedisRepository;
 
-    @Autowired
-    protected GameRepository gameRepository;
+  @Autowired
+  protected GameRepository gameRepository;
 
-    @SpyBean
-    protected StudyRepository studyRepository;
+  @SpyBean
+  protected StudyRepository studyRepository;
 
-    @SpyBean
-    protected StudyHasMemberRepository studyHasMemberRepository;
+  @SpyBean
+  protected StudyHasMemberRepository studyHasMemberRepository;
 
-    @SpyBean
-    protected SurveyRepository surveyRepository;
+  @SpyBean
+  protected SurveyRepository surveyRepository;
 
-    @SpyBean
-    protected SurveyReplyRepository surveyReplyRepository;
+  @SpyBean
+  protected SurveyReplyRepository surveyReplyRepository;
 
-    @SpyBean
-    protected SurveyMemberReplyRepository surveyMemberReplyRepository;
+  @SpyBean
+  protected SurveyMemberReplyRepository surveyMemberReplyRepository;
 
-    @SpyBean
-    protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
+  @SpyBean
+  protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
-    @SpyBean
-    protected ElectionCandidateRepository electionCandidateRepository;
+  @SpyBean
+  protected ElectionCandidateRepository electionCandidateRepository;
 
-    @SpyBean
-    protected ElectionChartLogRepository electionChartLogRepository;
+  @SpyBean
+  protected ElectionChartLogRepository electionChartLogRepository;
 
-    @SpyBean
-    protected ElectionRepository electionRepository;
+  @SpyBean
+  protected ElectionRepository electionRepository;
 
-    @SpyBean
-    protected ElectionVoterRepository electionVoterRepository;
+  @SpyBean
+  protected ElectionVoterRepository electionVoterRepository;
 
-    @Autowired
-    protected FileRepository fileRepository;
+  @Autowired
+  protected FileRepository fileRepository;
 
-    @Autowired
-    protected ThumbnailRepository thumbnailRepository;
+  @Autowired
+  protected ThumbnailRepository thumbnailRepository;
 
-    @Autowired
-    protected PointLogRepository pointLogRepository;
+  @Autowired
+  protected PointLogRepository pointLogRepository;
 
-    @Autowired
-    protected MeritLogRepository meritLogRepository;
+  @Autowired
+  protected MeritLogRepository meritLogRepository;
 
-    @Autowired
-    protected MeritTypeRepository meritTypeRepository;
+  @Autowired
+  protected MeritTypeRepository meritTypeRepository;
 
-    /******* Service *******/
-    @SpyBean
-    protected MemberService memberService;
+  /******* Service *******/
+  @SpyBean
+  protected MemberService memberService;
 
-    @SpyBean
-    protected EmailAuthService emailAuthService;
+  @SpyBean
+  protected EmailAuthService emailAuthService;
 
-    @SpyBean
-    protected SignUpService signUpService;
+  @SpyBean
+  protected SignUpService signUpService;
 
-    @SpyBean
-    protected CheckDuplicateService checkDuplicateService;
+  @SpyBean
+  protected CheckDuplicateService checkDuplicateService;
 
-    @SpyBean
-    protected SignInService signInService;
+  @SpyBean
+  protected SignInService signInService;
 
-    @SpyBean
-    protected AuthCookieService authCookieService;
+  @SpyBean
+  protected AuthCookieService authCookieService;
 
-    @Autowired
-    protected StaticWriteService staticWriteService;
+  @Autowired
+  protected StaticWriteService staticWriteService;
 
-    @Autowired
-    protected SeminarService seminarService;
+  @Autowired
+  protected SeminarService seminarService;
 
-    @SpyBean
-    protected PostService postService;
+  @SpyBean
+  protected PostService postService;
 
-    @Autowired
-    protected ValidSeminarFindService validSeminarFindService;
+  @Autowired
+  protected ValidSeminarFindService validSeminarFindService;
 
-    @SpykBean
-    protected BookManageService bookManageService;
+  @SpykBean
+  protected BookManageService bookManageService;
 
-    @SpykBean
-    protected BorrowManageService borrowManageService;
+  @SpykBean
+  protected BorrowManageService borrowManageService;
 
-    @SpyBean
-    protected BookService bookService;
+  @SpyBean
+  protected BookService bookService;
 
-    @SpyBean
-    protected CommentService commentService;
+  @SpyBean
+  protected CommentService commentService;
 
-    @SpyBean
-    protected MemberFindService memberFindService;
+  @SpyBean
+  protected MemberFindService memberFindService;
 
-    @SpyBean
-    protected StudyService studyService;
+  @SpyBean
+  protected StudyService studyService;
 
-    @SpyBean
-    protected BaseballService baseballService;
+  @SpyBean
+  protected BaseballService baseballService;
 
-    @SpykBean
-    protected GameFindService gameFindService;
+  @SpykBean
+  protected GameFindService gameFindService;
 
-    @SpykBean
-    protected GameService gameService;
+  @SpykBean
+  protected GameService gameService;
 
-    @SpyBean
-    protected MemberJobService memberJobService;
+  @SpyBean
+  protected MemberJobService memberJobService;
 
-    @SpyBean
-    protected AttendanceService attendanceService;
+  @SpyBean
+  protected AttendanceService attendanceService;
 
-    @SpyBean
-    protected SeminarAttendanceService seminarAttendanceService;
+  @SpyBean
+  protected SeminarAttendanceService seminarAttendanceService;
 
-    @SpyBean
-    protected CtfTeamService ctfTeamService;
+  @SpyBean
+  protected CtfTeamService ctfTeamService;
 
-    /******* Helper *******/
-    @SpyBean
-    protected StaticWriteTestHelper staticWriteTestHelper;
+  /******* Helper *******/
+  @SpyBean
+  protected StaticWriteTestHelper staticWriteTestHelper;
 
-    @Autowired
-    protected MemberTestHelper memberTestHelper;
+  @Autowired
+  protected MemberTestHelper memberTestHelper;
 
-    @Autowired
-    protected AttendanceTestHelper attendanceTestHelper;
+  @Autowired
+  protected AttendanceTestHelper attendanceTestHelper;
 
-    @Autowired
-    protected BookTestHelper bookTestHelper;
+  @Autowired
+  protected BookTestHelper bookTestHelper;
 
-    @Autowired
-    protected BookBorrowInfoTestHelper bookBorrowInfoTestHelper;
+  @Autowired
+  protected BookBorrowInfoTestHelper bookBorrowInfoTestHelper;
 
-    @Autowired
-    protected SeminarTestHelper seminarTestHelper;
+  @Autowired
+  protected SeminarTestHelper seminarTestHelper;
 
-    @Autowired
-    protected CategoryTestHelper categoryTestHelper;
+  @Autowired
+  protected CategoryTestHelper categoryTestHelper;
 
-    @Autowired
-    protected PostTestHelper postTestHelper;
+  @Autowired
+  protected PostTestHelper postTestHelper;
 
-    @Autowired
-    protected CommentTestHelper commentTestHelper;
+  @Autowired
+  protected CommentTestHelper commentTestHelper;
 
-    @Autowired
-    protected GameTestHelper gameTestHelper;
+  @Autowired
+  protected GameTestHelper gameTestHelper;
 
-    @Autowired
-    protected StudyTestHelper studyTestHelper;
+  @Autowired
+  protected StudyTestHelper studyTestHelper;
 
-    @Autowired
-    protected ThumbnailTestHelper thumbnailTestHelper;
+  @Autowired
+  protected ThumbnailTestHelper thumbnailTestHelper;
 
-    @Autowired
-    protected SurveyTestHelper surveyTestHelper;
+  @Autowired
+  protected SurveyTestHelper surveyTestHelper;
 
-    @Autowired
-    protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
+  @Autowired
+  protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
 
-    @Autowired
-    protected ElectionTestHelper electionTestHelper;
+  @Autowired
+  protected ElectionTestHelper electionTestHelper;
 
-    @Autowired
-    protected ElectionVoterTestHelper electionVoterTestHelper;
+  @Autowired
+  protected ElectionVoterTestHelper electionVoterTestHelper;
 
-    @Autowired
-    protected CtfTeamTestHelper ctfTeamTestHelper;
+  @Autowired
+  protected CtfTeamTestHelper ctfTeamTestHelper;
 
-    @Autowired
-    protected CtfContestTestHelper ctfContestTestHelper;
+  @Autowired
+  protected CtfContestTestHelper ctfContestTestHelper;
 
-    @Autowired
-    protected MeritLogTestHelper meritLogTestHelper;
+  @Autowired
+  protected MeritLogTestHelper meritLogTestHelper;
 
-    @Autowired
-    protected MeritTypeHelper meritTypeHelper;
+  @Autowired
+  protected MeritTypeHelper meritTypeHelper;
 
-    /******* Util *******/
-    @SpyBean
-    protected ThumbnailUtil thumbnailUtil;
+  /******* Util *******/
+  @SpyBean
+  protected ThumbnailUtil thumbnailUtil;
 
-    @SpyBean
-    protected FileUtil fileUtil;
+  @SpyBean
+  protected FileUtil fileUtil;
 
-    @SpyBean
-    protected RedisUtil redisUtil;
+  @SpyBean
+  protected RedisUtil redisUtil;
 
-    @SpyBean
-    protected MailUtil mailUtil;
+  @SpyBean
+  protected MailUtil mailUtil;
 
-    protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
+  protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
 
-    /******* Spring Bean *******/
-    @Autowired
-    protected WebApplicationContext webApplicationContext;
+  /******* Spring Bean *******/
+  @Autowired
+  protected WebApplicationContext webApplicationContext;
 
-    @Autowired
-    protected JwtTokenProvider jwtTokenProvider;
+  @Autowired
+  protected JwtTokenProvider jwtTokenProvider;
 
-    @Autowired
-    protected ObjectMapper objectMapper;
+  @Autowired
+  protected ObjectMapper objectMapper;
 
-    @PersistenceContext
-    protected EntityManager em;
+  @PersistenceContext
+  protected EntityManager em;
 
-    protected MockMvc mockMvc;
+  protected MockMvc mockMvc;
 
-    @BeforeEach
-    protected void setUpAll(RestDocumentationContextProvider restDocumentationContextProvider) {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(new CharacterEncodingFilter("UTF-8", true))
-                .apply(springSecurity())
-                .apply(documentationConfiguration(restDocumentationContextProvider)
-                        .operationPreprocessors()
-                        .withRequestDefaults(
-                                modifyUris().scheme("https").host("docs.api.com").removePort(), prettyPrint())
-                        .withResponseDefaults(prettyPrint())
-                )
-                .build();
+  @BeforeEach
+  protected void setUpAll(RestDocumentationContextProvider restDocumentationContextProvider) {
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+        .addFilter(new CharacterEncodingFilter("UTF-8", true))
+        .apply(springSecurity())
+        .apply(documentationConfiguration(restDocumentationContextProvider)
+            .operationPreprocessors()
+            .withRequestDefaults(
+                modifyUris().scheme("https").host("docs.api.com").removePort(), prettyPrint())
+            .withResponseDefaults(prettyPrint())
+        )
+        .build();
+  }
+
+  @AfterAll
+  static void deleteAllFiles() throws IOException {
+    File todayThumbnailDirectory = new File(getTodayFilesPath());
+    if (todayThumbnailDirectory.exists()) {
+      FileUtils.cleanDirectory(todayThumbnailDirectory);
     }
+  }
 
-    @AfterAll
-    static void deleteAllFiles() throws IOException {
-        File todayThumbnailDirectory = new File(getTodayFilesPath());
-        if (todayThumbnailDirectory.exists()) {
-            FileUtils.cleanDirectory(todayThumbnailDirectory);
-        }
+  private static String getTodayFilesPath() {
+    return DEFAULT_FILE_PATH + LocalDate.now();
+  }
+
+  @AfterAll
+  static void deleteAllThumbnails() throws IOException {
+    File todayThumbnailDirectory = new File(getTodayThumbnailFilesPath());
+    if (todayThumbnailDirectory.exists()) {
+      FileUtils.cleanDirectory(todayThumbnailDirectory);
     }
+  }
 
-    private static String getTodayFilesPath() {
-        return DEFAULT_FILE_PATH + LocalDate.now();
+  private static String getTodayThumbnailFilesPath() {
+    return DEFAULT_THUMBNAIL_PATH + LocalDate.now();
+  }
+
+  protected String asJsonString(final Object obj) {
+    try {
+      return objectMapper.writeValueAsString(obj);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    @AfterAll
-    static void deleteAllThumbnails() throws IOException {
-        File todayThumbnailDirectory = new File(getTodayThumbnailFilesPath());
-        if (todayThumbnailDirectory.exists()) {
-            FileUtils.cleanDirectory(todayThumbnailDirectory);
-        }
-    }
+  public static String generateRandomString(int length) {
+    char leftLimit = '0';
+    char rightLimit = 'z';
 
-    private static String getTodayThumbnailFilesPath() {
-        return DEFAULT_THUMBNAIL_PATH + LocalDate.now();
-    }
-
-    protected String asJsonString(final Object obj) {
-        try {
-            return objectMapper.writeValueAsString(obj);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String generateRandomString(int length) {
-        char leftLimit = '0';
-        char rightLimit = 'z';
-
-        return RANDOM.ints(leftLimit, rightLimit + 1)
-                .filter(i -> Character.isAlphabetic(i) || Character.isDigit(i))
-                .limit(length)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
+    return RANDOM.ints(leftLimit, rightLimit + 1)
+        .filter(i -> Character.isAlphabetic(i) || Character.isDigit(i))
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+  }
 }

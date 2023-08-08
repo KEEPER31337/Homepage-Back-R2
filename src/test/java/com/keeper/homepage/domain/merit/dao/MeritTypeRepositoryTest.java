@@ -16,24 +16,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MeritTypeRepositoryTest extends IntegrationTest {
 
-    @Nested
-    @DisplayName("상벌점 타입 생성 테스트")
-    @Component
-    class MeritTypeTest {
+  @Nested
+  @DisplayName("상벌점 타입 생성 테스트")
+  @Component
+  class MeritTypeTest {
 
-        @Test
-        @DisplayName("DB에 상벌점 타입 등록을 성공해야 한다.")
-        void should_success_when_registerMeritType() {
-            MeritType meritType = meritTypeHelper.generate();
+    @Test
+    @DisplayName("DB에 상벌점 타입 등록을 성공해야 한다.")
+    void should_success_when_registerMeritType() {
+      MeritType meritType = meritTypeHelper.generate();
 
-            em.flush();
-            em.clear();
+      em.flush();
+      em.clear();
 
-            MeritType findMeritType = meritTypeRepository.findByDetail("무단 결석").orElseThrow();
+      MeritType findMeritType = meritTypeRepository.findByDetail("무단 결석").orElseThrow();
 
-            assertThat(meritType.getMerit()).isEqualTo(findMeritType.getMerit());
-            assertThat(meritType.getIsMerit()).isEqualTo(findMeritType.getIsMerit());
-            assertThat(meritType.getDetail()).isEqualTo(findMeritType.getDetail());
-        }
+      assertThat(meritType.getMerit()).isEqualTo(findMeritType.getMerit());
+      assertThat(meritType.getIsMerit()).isEqualTo(findMeritType.getIsMerit());
+      assertThat(meritType.getDetail()).isEqualTo(findMeritType.getDetail());
     }
+  }
 }

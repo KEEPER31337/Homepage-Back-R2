@@ -8,49 +8,49 @@ import org.springframework.stereotype.Component;
 @Component
 public class MeritTypeHelper {
 
-    @Autowired
-    MeritTypeRepository meritTypeRepository;
+  @Autowired
+  MeritTypeRepository meritTypeRepository;
 
-    public MeritType generate() {
-        return this.builder().build();
+  public MeritType generate() {
+    return this.builder().build();
+  }
+
+  public MeritTypeBuilder builder() {
+    return new MeritTypeBuilder();
+  }
+
+  public final class MeritTypeBuilder {
+
+    private Integer merit;
+    private Boolean isMerit;
+    private String detail;
+
+    private MeritTypeBuilder() {
     }
 
-    public MeritTypeBuilder builder() {
-        return new MeritTypeBuilder();
+    public MeritTypeBuilder merit(Integer merit) {
+      this.merit = merit;
+      return this;
     }
 
-    public final class MeritTypeBuilder {
-
-        private Integer merit;
-        private Boolean isMerit;
-        private String detail;
-
-        private MeritTypeBuilder() {
-        }
-
-        public MeritTypeBuilder merit(Integer merit) {
-            this.merit = merit;
-            return this;
-        }
-
-        public MeritTypeBuilder isMerit(Boolean isMerit) {
-            this.isMerit = isMerit;
-            return this;
-        }
-
-        public MeritTypeBuilder detail(String detail) {
-            this.detail = detail;
-            return this;
-        }
-
-        public MeritType build() {
-            return meritTypeRepository.save(MeritType.builder()
-                    .merit(merit != null ? merit : 3)
-                    .isMerit(isMerit != null ? isMerit : true)
-                    .detail(detail != null ? detail : "무단 결석")
-                    .build());
-        }
+    public MeritTypeBuilder isMerit(Boolean isMerit) {
+      this.isMerit = isMerit;
+      return this;
     }
+
+    public MeritTypeBuilder detail(String detail) {
+      this.detail = detail;
+      return this;
+    }
+
+    public MeritType build() {
+      return meritTypeRepository.save(MeritType.builder()
+          .merit(merit != null ? merit : 3)
+          .isMerit(isMerit != null ? isMerit : true)
+          .detail(detail != null ? detail : "무단 결석")
+          .build());
+    }
+  }
 
 
 }
