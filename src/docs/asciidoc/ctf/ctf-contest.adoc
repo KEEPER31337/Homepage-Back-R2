@@ -35,3 +35,30 @@ include::{snippets}/create-ctf-contest/request-fields.adoc[]
 
 include::{snippets}/create-ctf-contest/http-response.adoc[]
 
+== *CTF 대회 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-ctf-contest/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-ctf-contest/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-ctf-contest/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-ctf-contest/http-response.adoc[]
+
+

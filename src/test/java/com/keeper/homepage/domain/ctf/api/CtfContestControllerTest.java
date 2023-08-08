@@ -8,12 +8,17 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.ctf.dto.request.contest.CreateContestRequest;
+import com.keeper.homepage.domain.ctf.dto.request.contest.UpdateContestRequest;
+import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,5 +67,44 @@ public class CtfContestControllerTest extends IntegrationTest {
                   fieldWithPath("description").description("CTF 대회 설명")
               )));
     }
+  }
+
+  @Nested
+  @DisplayName("CTF 대회 수정 테스트")
+  class CtfContestUpdateTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 CTF 대회 수정은 성공한다.")
+    public void 유효한_요청일_경우_CTF_대회_수정은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(CtfContestController.class, "updateContest");
+
+      CtfContest ctfContest = ctfContestTestHelper.generate();
+
+      UpdateContestRequest request = UpdateContestRequest.builder()
+          .name("2024 KEEPER CTF")
+          .description("2024 KEEPER CTF 입니다.")
+          .isJoinable(true)
+          .build();
+
+      mockMvc.perform(put("/ctf/contests/{contestId}", ctfContest.getId())
+              .content(asJsonString(request))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isCreated())
+          .andDo(document("update-ctf-contest",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("contestId").description("대회 ID")
+              ),
+              requestFields(
+                  fieldWithPath("name").description("CTF 대회명"),
+                  fieldWithPath("description").description("CTF 대회 설명"),
+                  fieldWithPath("joinable").description("CTF 대회 공개 여부")
+              )));
+    }
+
   }
 }

@@ -22,4 +22,9 @@ public class CtfContestFindService {
     return ctfContestRepository.findByIdAndIdNotAndIsJoinableTrue(contestId, VIRTUAL_CONTEST_ID)
         .orElseThrow(() -> new BusinessException(contestId, "contestId", CTF_CONTEST_NOT_FOUND));
   }
+
+  public CtfContest findById(long contestId) {
+    return ctfContestRepository.findByIdAndIdNot(contestId, VIRTUAL_CONTEST_ID)
+        .orElseThrow(() -> new BusinessException(contestId, "contestId", CTF_CONTEST_NOT_FOUND));
+  }
 }

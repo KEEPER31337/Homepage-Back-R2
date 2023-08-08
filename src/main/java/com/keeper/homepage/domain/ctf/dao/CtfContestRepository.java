@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CtfContestRepository extends JpaRepository<CtfContest, Long> {
 
   Optional<CtfContest> findByIdAndIdNotAndIsJoinableTrue(long contestId, long virtualId);
+
+  Optional<CtfContest> findByIdAndIdNot(long contestId, long virtualId);
 }
