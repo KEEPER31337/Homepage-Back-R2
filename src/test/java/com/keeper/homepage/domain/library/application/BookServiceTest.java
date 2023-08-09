@@ -174,11 +174,13 @@ public class BookServiceTest extends IntegrationTest {
 
       long borrowId = bookBorrowInfo.getId();
 
-      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime beforeRequestDate = LocalDateTime.now();
       bookService.requestReturn(member, borrowId);
-      BookBorrowInfo updateTime = bookBorrowInfoRepository.findById(borrowId).orElseThrow();
+      LocalDateTime afterRequestDate = LocalDateTime.now();
+      BookBorrowInfo updateInfo = bookBorrowInfoRepository.findById(borrowId).orElseThrow();
 
-      assertNotEquals(now, updateTime.getLastRequestDate());
+      assertThat(updateInfo.getLastRequestDate()).isAfter(beforeRequestDate);
+      assertThat(updateInfo.getLastRequestDate()).isBefore(afterRequestDate);
     }
 
     @Test
