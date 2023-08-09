@@ -176,9 +176,8 @@ public class BookServiceTest extends IntegrationTest {
 
       LocalDateTime now = LocalDateTime.now();
       bookService.requestReturn(member, borrowId);
-      BookBorrowInfo updateTime = bookBorrowInfoRepository.findById(borrowId).orElse(null);
+      BookBorrowInfo updateTime = bookBorrowInfoRepository.findById(borrowId).orElseThrow();
 
-      assertThat(updateTime).isNotNull();
       assertNotEquals(now, updateTime.getLastRequestDate());
     }
 
@@ -194,9 +193,8 @@ public class BookServiceTest extends IntegrationTest {
       long borrowId = bookBorrowInfo.getId();
 
       bookService.requestReturn(member, borrowId);
-      BookBorrowInfo borrowInfo = bookBorrowInfoRepository.findById(borrowId).orElse(null);
+      BookBorrowInfo borrowInfo = bookBorrowInfoRepository.findById(borrowId).orElseThrow();
 
-      assertThat(borrowInfo).isNotNull();
       assertThat(borrowInfo.getBorrowStatus().getType()).isEqualTo(반납대기중);
     }
 
