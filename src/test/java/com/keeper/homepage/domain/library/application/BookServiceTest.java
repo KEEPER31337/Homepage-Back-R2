@@ -164,8 +164,8 @@ public class BookServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("도서 반납 요청 시 requestDateTime이 갱신되어야 한다.")
-    public void 도서_반납_요청_시_requestDateTime이_갱신되어야_한다() throws Exception {
+    @DisplayName("도서 반납 요청 시 lastRequestDate가 갱신되어야 한다.")
+    public void 도서_반납_요청_시_lastRequestDate가_갱신되어야_한다() throws Exception {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
@@ -183,7 +183,7 @@ public class BookServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("도서 반납 요청 시 requestDateTime이 갱신되어야 한다.")
+    @DisplayName("도서 반납 요청 시 도서 상태가 갱신되어야 한다.")
     public void 도서_반납_요청_시_도서_상태가_갱신되어야_한다() throws Exception {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
