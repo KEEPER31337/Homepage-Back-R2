@@ -210,7 +210,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("본인이 아니라면 도서 반납 요청이 실패해야 한다.")
-    public void 본인이_아니라면_도서_반납_요청이_실패해아_한다() throws Exception {
+    public void 본인이_아니라면_도서_반납_요청이_실패해야_한다() throws Exception {
       Member otherMember = memberTestHelper.generate();
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(otherMember)
