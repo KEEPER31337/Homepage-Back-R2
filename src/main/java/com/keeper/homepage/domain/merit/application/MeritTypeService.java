@@ -19,13 +19,13 @@ public class MeritTypeService {
   private final MeritTypeRepository meritTypeRepository;
 
   @Transactional
-  public void addMeritType(AddMeritTypeRequest request) {
-    boolean isMerit = request.getScore() > 0;
+  public void addMeritType(Integer score, String reason) {
+    boolean isMerit = score > 0;
 
     meritTypeRepository.save(MeritType.builder()
-        .merit(request.getScore())
+        .merit(score)
         .isMerit(isMerit)
-        .detail(request.getReason())
+        .detail(reason)
         .build());
   }
 
