@@ -8,7 +8,7 @@ import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OV
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FOUND;
-import static com.keeper.homepage.global.error.ErrorCode.BORROW_INFO_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_RETURN_DENY;
 
@@ -100,16 +100,14 @@ public class BookService {
 
   @Transactional
   public void requestReturn(Member member, long borrowId) {
-    Optional<BookBorrowInfo> bookBorrowInfo = bookBorrowInfoRepository
-        .findByMemberAndBorrowStatus(member, getBookBorrowStatusBy(대출승인));
-    if (bookBorrowInfo.isEmpty()) {
-      throw new BusinessException(borrowId, "borrowId", BORROW_INFO_NOT_FOUND);
-    }
-    if (!bookBorrowInfo.get().getMember().equals(member)) {
+    BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
+        .findByMemberAndBorrowStatus(member, getBookBorrowStatusBy(대출승인))
+        .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
+    if (!bookBorrowInfo.getMember().equals(member)) {
       throw new BusinessException(borrowId, "borrowId", BORROW_REQUEST_RETURN_DENY);
     }
-    bookBorrowInfo.get().changeLastRequestDate(LocalDateTime.now());
-    bookBorrowInfo.get().changeBorrowStatus(반납대기중);
+    bookBorrowInfo.changeLastRequestDate(LocalDateTime.now());
+    bookBorrowInfo.changeBorrowStatus(반납대기중);
   }
 
   public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {
