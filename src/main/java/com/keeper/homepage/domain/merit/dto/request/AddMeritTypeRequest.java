@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.merit.dto;
+package com.keeper.homepage.domain.merit.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
