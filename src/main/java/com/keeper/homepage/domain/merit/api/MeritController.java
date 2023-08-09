@@ -9,6 +9,7 @@ import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import jakarta.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,5 +43,14 @@ public class MeritController {
     return ResponseEntity.ok(map);
   }
 
+  @PutMapping("/types/{meritTypeId}")
+  public ResponseEntity<Void> updateMeritType(
+      @PathVariable Long meritTypeId,
+      @RequestBody @Valid UpdateMeritTypeRequest request) {
+    meritTypeService.updateMeritType(meritTypeId, request.getScore(), request.getReason());
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .location(URI.create("/merits/types/" + meritTypeId))
+        .build();
+  }
 
 }
