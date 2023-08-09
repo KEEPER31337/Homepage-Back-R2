@@ -20,17 +20,14 @@ public class MeritTypeService {
 
   @Transactional
   public void addMeritType(AddMeritTypeRequest request) {
-    boolean isMerit = request.getReward() > 0;
-    int merit = isMerit ? request.getReward() : request.getPenalty();
+    boolean isMerit = request.getScore() > 0;
 
     meritTypeRepository.save(MeritType.builder()
-        .merit(merit)
+        .merit(request.getScore())
         .isMerit(isMerit)
-        .detail(request.getDetail())
+        .detail(request.getReason())
         .build());
-
   }
-
 
   public Page<MeritType> findAll(Pageable pageable) {
     return meritTypeRepository.findAll(pageable);
