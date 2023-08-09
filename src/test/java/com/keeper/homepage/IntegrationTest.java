@@ -65,6 +65,7 @@ import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.merit.MeritLogTestHelper;
 import com.keeper.homepage.domain.merit.MeritTypeHelper;
+import com.keeper.homepage.domain.merit.application.MeritLogService;
 import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
@@ -335,6 +336,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected MeritTypeService meritTypeService;
+
+  @SpyBean
+  protected MeritLogService meritLogService;
 
   /******* Helper *******/
   @SpyBean
