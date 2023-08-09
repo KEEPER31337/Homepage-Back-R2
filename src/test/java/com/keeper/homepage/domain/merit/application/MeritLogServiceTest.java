@@ -2,9 +2,9 @@ package com.keeper.homepage.domain.merit.application;
 
 import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import java.util.Optional;
@@ -57,6 +57,24 @@ class MeritLogServiceTest extends IntegrationTest {
       assertThat(meritLogs.stream().map(MeritLog::getId).collect(toList())).contains(meritLogId1,
           meritLogId2);
 
+    }
+
+    @Test
+    @DisplayName("상벌점 페이지를 ID 값으로 조회할 수 있어야 한다.")
+    void 상벌점_페이즈를_ID_값으로_조회할_수_있어야_한다() {
+      Member giver = memberTestHelper.generate();
+      Long meritLogId1 = meritLogTestHelper.builder().giver(giver).build().getId();
+      Long meritLogId2 = meritLogTestHelper.builder().giver(giver).build().getId();
+      Long meritLogId3 = meritLogTestHelper.builder().giver(giver).build().getId();
+
+      em.flush();
+      em.clear();
+
+      Page<MeritLog> meritLogPage = meritLogService.findByGiver_Id(PageRequest.of(0, 10),
+          giver.getId());
+
+      assertThat(meritLogPage.stream().map(MeritLog::getId).collect(toList()))
+          .contains(meritLogId1, meritLogId2, meritLogId3);
     }
   }
 }
