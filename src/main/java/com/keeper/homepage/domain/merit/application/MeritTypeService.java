@@ -19,14 +19,14 @@ public class MeritTypeService {
   private final MeritTypeRepository meritTypeRepository;
 
   @Transactional
-  public void addMeritType(Integer score, String reason) {
+  public Long addMeritType(Integer score, String reason) {
     boolean isMerit = score > 0;
 
-    meritTypeRepository.save(MeritType.builder()
+    return meritTypeRepository.save(MeritType.builder()
         .merit(score)
         .isMerit(isMerit)
         .detail(reason)
-        .build());
+        .build()).getId();
   }
 
   public Page<MeritType> findAll(Pageable pageable) {

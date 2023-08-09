@@ -15,6 +15,33 @@ import org.junit.jupiter.api.Test;
 class MeritTypeServiceTest extends IntegrationTest {
 
   @Nested
+  @DisplayName("상벌점 타입 추가")
+  class AddMeritType {
+
+    @Test
+    @DisplayName("상벌점 타입 추가가 성공해야 한다.")
+    void 상벌점_타입_추가가_성공해야_한다() {
+      Long meritTypeId1 = meritTypeService.addMeritType(3, "우수기술문서 작성");
+      Long meritTypeId2 = meritTypeService.addMeritType(-3, "무단 결석");
+
+      em.flush();
+      em.clear();
+
+      MeritType findMeritType1 = meritTypeRepository.findById(meritTypeId1).orElseThrow();
+      MeritType findMeritType2 = meritTypeRepository.findById(meritTypeId2).orElseThrow();
+
+      assertThat(findMeritType1.getMerit()).isEqualTo(3);
+      assertThat(findMeritType2.getMerit()).isEqualTo(-3);
+
+      assertThat(findMeritType1.getDetail()).isEqualTo("우수기술문서 작성");
+      assertThat(findMeritType2.getDetail()).isEqualTo("무단 결석");
+
+      assertThat(findMeritType1.getIsMerit()).isEqualTo(true);
+      assertThat(findMeritType2.getIsMerit()).isEqualTo(false);
+    }
+  }
+
+  @Nested
   @DisplayName("상벌점 수정")
   class UpdateMeritType {
 
