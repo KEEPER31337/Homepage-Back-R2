@@ -201,9 +201,9 @@ public class BookServiceTest extends IntegrationTest {
     @Test
     @DisplayName("대출 내역이 없다면 도서 반납 요청이 실패해야 한다.")
     public void 대출_내역이_없다면_도서_반납_요청이_실패해야_한다() throws Exception {
-      long borrowId = 5;
+      long notExistBorrowId = 5;
 
-      assertThrows(BusinessException.class, () -> bookService.requestReturn(member, borrowId));
+      assertThrows(BusinessException.class, () -> bookService.requestReturn(member, notExistBorrowId));
     }
 
     @Test
