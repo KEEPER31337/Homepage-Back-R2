@@ -2,6 +2,8 @@ package com.keeper.homepage.domain.merit.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.keeper.homepage.IntegrationTest;
@@ -9,6 +11,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
+import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.config.security.data.JwtType;
 import io.jsonwebtoken.io.IOException;
@@ -32,7 +35,7 @@ public class MeritControllerTest extends IntegrationTest {
 
 
   @Nested
-  @DisplayName("상벌점 타입 조회")
+  @DisplayName("상벌점 테스트")
   @Component
   class ControllerTest {
 
@@ -50,14 +53,28 @@ public class MeritControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("상벌점 타입 조회를 성공해야 한다.")
-    void 상벌점_조회는_성공해야_한다() throws Exception {
+    @DisplayName("상벌점 목록 조회를 성공해야 한다.")
+    void 상벌점_목록_조회를_성공해야_한다() throws Exception {
+      meritLogTestHelper.generate();
+      meritLogTestHelper.generate();
+      meritLogTestHelper.generate();
 
-      ResultActions perform = mockMvc.perform(RestDocumentationRequestBuilders.get("/merits/types")
+      ResultActions perform = mockMvc.perform(get("/merits")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-          .andDo(MockMvcResultHandlers.print());
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("상벌점 타입 조회를 성공해야 한다.")
+    void 상벌점_조회는_성공해야_한다() throws Exception {
+
+      ResultActions perform = mockMvc.perform(get("/merits/types")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andDo(print());
 
     }
 

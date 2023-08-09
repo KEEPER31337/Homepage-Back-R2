@@ -7,6 +7,8 @@ import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
+import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
+import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -26,6 +28,14 @@ public class MeritController {
 
   private final MeritTypeService meritTypeService;
   private final MeritLogService meritLogService;
+
+  @GetMapping
+  public ResponseEntity<Page<SearchMeritLogListResponse>> searchMeritLogList(
+      @PageableDefault(size = 10) Pageable pageable
+  ) {
+    return ResponseEntity
+        .ok(meritLogService.findAll(pageable).map(SearchMeritLogListResponse::from));
+  }
 
   @PostMapping
   public ResponseEntity<Void> registerMerit(
