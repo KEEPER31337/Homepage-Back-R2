@@ -37,6 +37,15 @@ public class MeritController {
         .ok(meritLogService.findAll(pageable).map(SearchMeritLogListResponse::from));
   }
 
+  @GetMapping("/members/{memberId}")
+  public ResponseEntity<Page<SearchMeritLogListResponse>> findMeritLogByMemberId(
+      @PathVariable Long memberId,
+      @PageableDefault(size = 10) Pageable pageable
+  ) {
+    return ResponseEntity.ok(
+        meritLogService.findByGiver_Id(pageable, memberId).map(SearchMeritLogListResponse::from));
+  }
+
   @PostMapping
   public ResponseEntity<Void> registerMerit(
       @RequestBody @Valid GiveMeritPointRequest request
