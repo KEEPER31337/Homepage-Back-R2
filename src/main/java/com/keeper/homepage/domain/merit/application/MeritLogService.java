@@ -9,6 +9,8 @@ import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,5 +38,9 @@ public class MeritLogService {
             .meritType(meritType)
             .build())
         .getId();
+  }
+
+  public Page<MeritLog> findAll(Pageable pageable) {
+    return meritLogRepository.findAll(pageable);
   }
 }
