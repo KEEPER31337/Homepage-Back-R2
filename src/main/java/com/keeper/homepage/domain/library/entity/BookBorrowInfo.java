@@ -108,4 +108,8 @@ public class BookBorrowInfo extends BaseEntity {
   public void changeLastRequestDate(LocalDateTime lastRequestDate) {
     this.lastRequestDate = lastRequestDate;
   }
+
+  public boolean isMine(Member member) {
+    return this.member.equals(member);
+  }
 }

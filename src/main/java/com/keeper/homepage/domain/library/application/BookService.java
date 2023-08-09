@@ -103,7 +103,7 @@ public class BookService {
     BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
         .findByMemberAndBorrowStatus(member, getBookBorrowStatusBy(대출승인))
         .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
-    if (!bookBorrowInfo.getMember().equals(member)) {
+    if (!bookBorrowInfo.isMine(member)) {
       throw new BusinessException(borrowId, "borrowId", BORROW_REQUEST_RETURN_DENY);
     }
     bookBorrowInfo.changeLastRequestDate(LocalDateTime.now());
