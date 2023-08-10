@@ -784,7 +784,7 @@ public class PostControllerTest extends PostApiTestHelper {
           .andExpect(status().isOk())
           .andDo(document("get-recent-posts",
               responseFields(
-                  listHelper("", getPostsResponse())
+                  listHelper("", getMainPostsResponse())
               )));
     }
 
@@ -797,7 +797,7 @@ public class PostControllerTest extends PostApiTestHelper {
           .andExpect(status().isOk())
           .andDo(document("get-trend-posts",
               responseFields(
-                  listHelper("", getPostsResponse())
+                  listHelper("", getMainPostsResponse())
               )));
     }
 

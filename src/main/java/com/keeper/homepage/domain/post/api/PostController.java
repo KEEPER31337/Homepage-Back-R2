@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
+import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
 import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
@@ -178,13 +179,13 @@ public class PostController {
   }
 
   @GetMapping("/recent")
-  public ResponseEntity<List<PostResponse>> getRecentPosts() {
+  public ResponseEntity<List<MainPostResponse>> getRecentPosts() {
     return ResponseEntity.ok(postService.getRecentPosts());
   }
 
 
   @GetMapping("/trend")
-  public ResponseEntity<List<PostResponse>> getTrendPosts() {
+  public ResponseEntity<List<MainPostResponse>> getTrendPosts() {
     return ResponseEntity.ok(postService.getTrendPosts());
   }
 

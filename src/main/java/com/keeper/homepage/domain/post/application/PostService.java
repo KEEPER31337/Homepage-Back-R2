@@ -20,6 +20,7 @@ import com.keeper.homepage.domain.post.application.convenience.ValidPostFindServ
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
+import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
 import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
@@ -322,14 +323,21 @@ public class PostService {
     return PostResponse.from(post);
   }
 
-  public List<PostResponse> getRecentPosts() {
+  private MainPostResponse getMainPostResponse(Post post) {
+    if (post.isCategory(익명게시판)) {
+      return MainPostResponse.of(post, ANONYMOUS_NAME, null);
+    }
+    return MainPostResponse.from(post);
+  }
+
+  public List<MainPostResponse> getRecentPosts() {
     return postRepository.findAllRecent().stream()
-        .map(this::getPostResponse)
+        .map(this::getMainPostResponse)
         .limit(10)
         .toList();
   }
 
-  public List<PostResponse> getTrendPosts() {
+  public List<MainPostResponse> getTrendPosts() {
     LocalDateTime startDateTime = LocalDateTime.now().minusWeeks(2);
     LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
     List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
@@ -339,7 +347,7 @@ public class PostService {
       return Integer.compare(postScore2, postScore1);
     });
     return posts.stream()
-        .map(this::getPostResponse)
+        .map(this::getMainPostResponse)
         .limit(10)
         .toList();
   }
