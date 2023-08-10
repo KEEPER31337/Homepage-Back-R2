@@ -34,24 +34,26 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class MeritControllerTest extends IntegrationTest {
 
 
+  private MeritType meritType;
+  private Member member, other;
+  private String memberToken, otherToken;
+
+  @BeforeEach
+  void setUp() throws IOException {
+    meritType = meritTypeHelper.builder().merit(3).detail("우수기술문서작성").build();
+    meritType = meritTypeHelper.builder().merit(-3).detail("무단 결석").build();
+    member = memberTestHelper.generate();
+    other = memberTestHelper.generate();
+    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(),
+        MemberJobType.ROLE_회원);
+  }
+
+
   @Nested
   @DisplayName("상벌점 테스트")
   @Component
   class ControllerTest {
 
-    private MeritType meritType;
-    private Member member, other;
-    private String memberToken, otherToken;
-
-    @BeforeEach
-    void setUp() throws IOException {
-      meritType = meritTypeHelper.builder().merit(3).detail("우수기술문서작성").build();
-      meritType = meritTypeHelper.builder().merit(-3).detail("무단 결석").build();
-      member = memberTestHelper.generate();
-      other = memberTestHelper.generate();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(),
-          MemberJobType.ROLE_회원);
-    }
 
     @Test
     @DisplayName("상벌점 목록 조회를 성공해야 한다.")
@@ -93,4 +95,24 @@ public class MeritControllerTest extends IntegrationTest {
           .andDo(print());
     }
   }
+
+  @Nested
+  @DisplayName("상벌점 타입 생성 테스트")
+  class MeritTypeTest {
+
+    @Test
+    @DisplayName("상벌점 타입 생성을 성공해야 한다.")
+    void 상벌점_타입_생성을_성공해야_한다() throws Exception {
+      String requestJson = "{\"score\":\"3\", \"reason\":\"우수기술문서 작성\"}";
+      mockMvc.perform(multipart("/merits/types")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(requestJson))
+          .andExpect(status().isCreated())
+          .andDo(print());
+    }
+
+  }
+
+
 }
