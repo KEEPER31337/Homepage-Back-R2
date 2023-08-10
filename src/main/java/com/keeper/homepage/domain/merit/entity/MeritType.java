@@ -36,8 +36,8 @@ public class MeritType {
 
   public void update(Integer score, String reason) {
     this.merit = score;
+    this.isMerit = score > 0;
     this.detail = reason;
   }
-
 
 }

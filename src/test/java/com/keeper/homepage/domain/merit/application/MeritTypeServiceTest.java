@@ -49,14 +49,14 @@ class MeritTypeServiceTest extends IntegrationTest {
     @DisplayName("상벌점 수정이 성공해야 한다.")
     void 상벌점_수정이_성공해야_한다() {
       Long meritTypeId = meritTypeHelper.generate().getId();
-      MeritType findMeritType = meritTypeRepository.findById(meritTypeId).orElseThrow();
-      findMeritType.update(1, "수정된 사유");
 
       em.flush();
       em.clear();
 
+      meritTypeService.updateMeritType(meritTypeId, -1, "수정된 사유");
       MeritType updatedMeritType = meritTypeRepository.findById(meritTypeId).orElseThrow();
-      assertThat(updatedMeritType.getMerit()).isEqualTo(1);
+      assertThat(updatedMeritType.getMerit()).isEqualTo(-1);
+      assertThat(updatedMeritType.getIsMerit()).isEqualTo(false);
       assertThat(updatedMeritType.getDetail()).isEqualTo("수정된 사유");
     }
   }
