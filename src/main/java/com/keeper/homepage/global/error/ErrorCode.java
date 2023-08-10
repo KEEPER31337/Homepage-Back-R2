@@ -60,6 +60,7 @@ public enum ErrorCode {
   BORROW_NOT_FOUND("존재하지 않는 대출 기록입니다.", HttpStatus.NOT_FOUND),
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
+  BORROW_STATUS_IS_NOT_BORROW_APPROVAL("대출 승인된 도서가 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_REQUEST_RETURN_DENY("대출자가 본인이 아니므로 반납 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
   // SURVEY
   SURVEY_REPLY_TYPE_NOT_FOUND("존재하지 않는 응답 종류입니다.", HttpStatus.NOT_FOUND),

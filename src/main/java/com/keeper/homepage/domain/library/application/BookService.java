@@ -11,6 +11,7 @@ import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FO
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_RETURN_DENY;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_APPROVAL;
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -101,8 +102,11 @@ public class BookService {
   @Transactional
   public void requestReturn(Member member, long borrowId) {
     BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
-        .findByMemberAndBorrowStatus(member, getBookBorrowStatusBy(대출승인))
+        .findById(borrowId)
         .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
+    if (!bookBorrowInfo.getBorrowStatus().equals(대출승인)) {
+      throw new BusinessException(borrowId, "borrowId", BORROW_STATUS_IS_NOT_BORROW_APPROVAL);
+    }
     if (!bookBorrowInfo.isMine(member)) {
       throw new BusinessException(borrowId, "borrowId", BORROW_REQUEST_RETURN_DENY);
     }
