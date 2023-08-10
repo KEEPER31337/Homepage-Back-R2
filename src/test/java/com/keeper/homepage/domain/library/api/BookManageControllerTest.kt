@@ -76,7 +76,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].author").value(bookList[0].author))
                 .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[0].bookDepartment.type.name))
                 .andExpect(jsonPath("$.content[0].totalCount").value(2))
-                .andExpect(jsonPath("$.content[0].borrowingCount").value(1))
+                .andExpect(jsonPath("$.content[0].borrowingCount").value(2))
                 .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[0].thumbnailPath))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))

@@ -86,7 +86,6 @@ class BookManageServiceTest : IntegrationTest() {
 
         @Test
         fun `대출중인 사람이 없으면 책 삭제는 성공해야 하고 대출 이력도 지워져야 한다`() {
-            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출대기중)
             bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출거부)
             em.flush()
             em.clear()
