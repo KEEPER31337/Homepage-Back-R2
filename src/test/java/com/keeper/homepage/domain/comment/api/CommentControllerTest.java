@@ -157,7 +157,9 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   fieldWithPath("comments[].registerTime").description("댓글 등록 시간"),
                   fieldWithPath("comments[].parentId").description("부모 댓글 ID"),
                   fieldWithPath("comments[].likeCount").description("댓글 좋아요 개수"),
-                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수")
+                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수"),
+                  fieldWithPath("comments[].isLike").description("댓글 좋아요 했는지 여부"),
+                  fieldWithPath("comments[].isDislike").description("댓글 싫어요 했는지 여부")
               )));
     }
   }

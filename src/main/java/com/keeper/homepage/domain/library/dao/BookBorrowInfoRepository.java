@@ -14,7 +14,26 @@ import org.springframework.data.repository.query.Param;
 
 public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, Long> {
 
-  Page<BookBorrowInfo> findAllByBorrowStatus(BookBorrowStatus status, Pageable pageable);
+  @Query(value = "select borrow "
+      + "from BookBorrowInfo borrow join borrow.book book join borrow.member member "
+      + "where borrow.borrowStatus.id = :statusId "
+      + "and (book.title like %:keyword% " // 도서명
+      + "or book.author like %:keyword% " // 저자
+      + "or member.profile.nickname.nickName like %:keyword%) " // 닉네임
+  )
+  Page<BookBorrowInfo> findAllByBorrowStatus(@Param("statusId") long statusIdId,
+      @Param("keyword") String keyword, Pageable pageable);
+
+  @Query(value = "select borrow "
+      + "from BookBorrowInfo borrow join borrow.book book join borrow.member member "
+      + "where (borrow.borrowStatus.id = :statusId1 "
+      + "or borrow.borrowStatus.id = :statusId2) "
+      + "and (book.title like %:keyword% " // 도서명
+      + "or book.author like %:keyword% " // 저자
+      + "or member.profile.nickname.nickName like %:keyword%) " // 닉네임
+  )
+  Page<BookBorrowInfo> findAllByTwoBorrowStatus(@Param("statusId1") long borrowStatusId,
+      @Param("statusId2") long borrowStatus2Id, @Param("keyword") String keyword, Pageable pageable);
 
   @Query(value = "select borrow "
       + "from BookBorrowInfo borrow "

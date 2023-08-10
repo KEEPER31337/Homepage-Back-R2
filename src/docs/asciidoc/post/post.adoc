@@ -59,6 +59,10 @@ include::{snippets}/find-post/request-cookies.adoc[]
 
 include::{snippets}/find-post/path-parameters.adoc[]
 
+==== Query Parameters
+
+include::{snippets}/find-post/query-parameters.adoc[]
+
 === 응답
 
 ==== Response
@@ -68,36 +72,6 @@ include::{snippets}/find-post/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/find-post/response-fields.adoc[]
-
-== *비밀 게시글 조회*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/find-secret-post/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/find-secret-post/request-cookies.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/find-secret-post/path-parameters.adoc[]
-
-==== Query Parameters
-
-include::{snippets}/find-secret-post/query-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/find-secret-post/http-response.adoc[]
-
-==== Response Fields
-
-include::{snippets}/find-secret-post/response-fields.adoc[]
 
 == *게시글 수정*
 
@@ -196,28 +170,6 @@ include::{snippets}/delete-post/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/delete-post/http-response.adoc[]
-
-== *[관리자 권한] 게시글 삭제*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/admin-delete-post/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/admin-delete-post/request-cookies.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/admin-delete-post/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/admin-delete-post/http-response.adoc[]
 
 == *게시글 좋아요 또는 좋아요 취소*
 
@@ -406,3 +358,30 @@ include::{snippets}/get-trend-posts/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-trend-posts/response-fields.adoc[]
+
+== *게시글의 첨부파일 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-post-files/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-post-files/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-post-files/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-post-files/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-post-files/response-fields.adoc[]
+

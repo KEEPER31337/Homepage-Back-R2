@@ -25,9 +25,20 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
+import com.keeper.homepage.domain.election.ElectionTestHelper;
+import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
+import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
+import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
+import com.keeper.homepage.domain.election.dao.ElectionRepository;
+import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
 import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
+import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
 import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeCategoryRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeTypeRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
@@ -58,7 +69,6 @@ import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
-import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
@@ -223,6 +233,18 @@ public class IntegrationTest {
   @SpyBean
   protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
+  @SpyBean
+  protected ElectionCandidateRepository electionCandidateRepository;
+
+  @SpyBean
+  protected ElectionChartLogRepository electionChartLogRepository;
+
+  @SpyBean
+  protected ElectionRepository electionRepository;
+
+  @SpyBean
+  protected ElectionVoterRepository electionVoterRepository;
+
   @Autowired
   protected FileRepository fileRepository;
 
@@ -231,6 +253,15 @@ public class IntegrationTest {
 
   @Autowired
   protected PointLogRepository pointLogRepository;
+
+  @Autowired
+  protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
+
+  @Autowired
+  protected CtfChallengeTypeRepository ctfChallengeTypeRepository;
+
+  @Autowired
+  protected CtfChallengeRepository ctfChallengeRepository;
 
   /******* Service *******/
   @SpyBean
@@ -322,9 +353,6 @@ public class IntegrationTest {
   protected SeminarTestHelper seminarTestHelper;
 
   @Autowired
-  protected CategoryTestHelper categoryTestHelper;
-
-  @Autowired
   protected PostTestHelper postTestHelper;
 
   @Autowired
@@ -346,10 +374,22 @@ public class IntegrationTest {
   protected SurveyMemberReplyTestHelper surveyMemberReplyTestHelper;
 
   @Autowired
+  protected ElectionTestHelper electionTestHelper;
+
+  @Autowired
+  protected ElectionVoterTestHelper electionVoterTestHelper;
+
+  @Autowired
   protected CtfTeamTestHelper ctfTeamTestHelper;
 
   @Autowired
   protected CtfContestTestHelper ctfContestTestHelper;
+
+  @Autowired
+  protected CtfChallengeTestHelper ctfChallengeTestHelper;
+
+  @Autowired
+  protected CtfFlagTestHelper ctfFlagTestHelper;
 
   /******* Util *******/
   @SpyBean
