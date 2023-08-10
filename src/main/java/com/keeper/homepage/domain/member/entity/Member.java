@@ -215,7 +215,7 @@ public class Member {
         .build());
   }
 
-  public boolean hasRead(Post post) {
+  public boolean isRead(Post post) {
     return postReads.stream()
         .anyMatch(postRead -> postRead.getPost().equals(post));
   }
