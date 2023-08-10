@@ -18,7 +18,16 @@ import org.springframework.data.domain.PageRequest;
 
 class MeritTypeServiceTest extends IntegrationTest {
 
-  MeritType meritType, otherMeritType;
+  private MeritType meritType, otherMeritType;
+  private long meritTypeId, otherMeritTypeId;
+
+  @BeforeEach
+  void setUp() {
+    meritType = meritTypeHelper.generate();
+    otherMeritType = meritTypeHelper.generate();
+    meritTypeId = meritType.getId();
+    otherMeritTypeId = otherMeritType.getId();
+  }
 
   @Nested
   @DisplayName("상벌점 타입 추가")
@@ -27,23 +36,23 @@ class MeritTypeServiceTest extends IntegrationTest {
     @Test
     @DisplayName("상벌점 타입 추가가 성공해야 한다.")
     void 상벌점_타입_추가가_성공해야_한다() {
-      Long meritTypeId1 = meritTypeService.addMeritType(3, "우수기술문서 작성");
-      Long meritTypeId2 = meritTypeService.addMeritType(-3, "무단 결석");
+      meritTypeId = meritTypeService.addMeritType(3, "우수기술문서 작성");
+      otherMeritTypeId = meritTypeService.addMeritType(-3, "무단 결석");
 
       em.flush();
       em.clear();
 
-      MeritType findMeritType1 = meritTypeRepository.findById(meritTypeId1).orElseThrow();
-      MeritType findMeritType2 = meritTypeRepository.findById(meritTypeId2).orElseThrow();
+      MeritType findMeritType = meritTypeRepository.findById(meritTypeId).orElseThrow();
+      MeritType findOtherMeritType = meritTypeRepository.findById(otherMeritTypeId).orElseThrow();
 
-      assertThat(findMeritType1.getMerit()).isEqualTo(3);
-      assertThat(findMeritType2.getMerit()).isEqualTo(-3);
+      assertThat(findMeritType.getMerit()).isEqualTo(3);
+      assertThat(findOtherMeritType.getMerit()).isEqualTo(-3);
 
-      assertThat(findMeritType1.getDetail()).isEqualTo("우수기술문서 작성");
-      assertThat(findMeritType2.getDetail()).isEqualTo("무단 결석");
+      assertThat(findMeritType.getDetail()).isEqualTo("우수기술문서 작성");
+      assertThat(findOtherMeritType.getDetail()).isEqualTo("무단 결석");
 
-      assertThat(findMeritType1.getIsMerit()).isEqualTo(true);
-      assertThat(findMeritType2.getIsMerit()).isEqualTo(false);
+      assertThat(findMeritType.getIsMerit()).isEqualTo(true);
+      assertThat(findOtherMeritType.getIsMerit()).isEqualTo(false);
     }
   }
 
@@ -54,8 +63,6 @@ class MeritTypeServiceTest extends IntegrationTest {
     @Test
     @DisplayName("상벌점 수정이 성공해야 한다.")
     void 상벌점_수정이_성공해야_한다() {
-      Long meritTypeId = meritTypeHelper.generate().getId();
-
       em.flush();
       em.clear();
 
@@ -74,9 +81,6 @@ class MeritTypeServiceTest extends IntegrationTest {
     @Test
     @DisplayName("모든 상벌점 타입을 조회할 수 있어야 한다.")
     void 모든_상벌점_타입을_조회할_수_있어야_한다() {
-      meritType = meritTypeHelper.generate();
-      otherMeritType = meritTypeHelper.generate();
-
       em.flush();
       em.clear();
 
@@ -85,7 +89,7 @@ class MeritTypeServiceTest extends IntegrationTest {
       assertThat(findPages.stream()
           .map(MeritType::getId)
           .collect(toList()))
-          .contains(meritType.getId(), otherMeritType.getId());
+          .contains(meritTypeId, otherMeritTypeId);
     }
   }
 }
