@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -13,6 +14,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.FieldDescriptor;
 
 public class CtfContestControllerTest extends IntegrationTest {
 
@@ -181,7 +184,20 @@ public class CtfContestControllerTest extends IntegrationTest {
                       .optional(),
                   parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
                       .optional()
+              ),
+              responseFields(
+                  pageHelper(getCtfContestResponse())
               )));
+    }
+
+    FieldDescriptor[] getCtfContestResponse() {
+      return new FieldDescriptor[]{
+          fieldWithPath("id").description("대회 ID"),
+          fieldWithPath("name").description("대회 이름"),
+          fieldWithPath("description").description("대회 설명"),
+          fieldWithPath("creatorName").description("대회 개최자 이름"),
+          fieldWithPath("joinable").description("대회 참여 가능 여부")
+      };
     }
   }
 }

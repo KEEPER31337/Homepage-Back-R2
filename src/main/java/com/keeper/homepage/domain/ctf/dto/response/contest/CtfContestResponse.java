@@ -12,6 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class CtfContestResponse {
 
+  private Long id;
   private String name;
   private String description;
   private String creatorName;
@@ -19,6 +20,7 @@ public class CtfContestResponse {
 
   public static CtfContestResponse from(CtfContest ctfContest) {
     return CtfContestResponse.builder()
+        .id(ctfContest.getId())
         .name(ctfContest.getName())
         .description(ctfContest.getDescription())
         .creatorName(ctfContest.getCreator().getRealName())

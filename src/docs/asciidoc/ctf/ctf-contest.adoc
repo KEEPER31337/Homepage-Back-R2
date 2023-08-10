@@ -127,4 +127,8 @@ include::{snippets}/get-ctf-contests/query-parameters.adoc[]
 
 include::{snippets}/get-ctf-contests/http-response.adoc[]
 
+==== Response Fields
+
+include::{snippets}/get-ctf-contests/response-fields.adoc[]
+
 
