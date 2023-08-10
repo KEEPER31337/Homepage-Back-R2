@@ -114,5 +114,23 @@ public class MeritControllerTest extends IntegrationTest {
 
   }
 
+  @Nested
+  @DisplayName("상벌점 부여 로그 생성 테스트")
+  class MeritLogTest {
+
+    @Test
+    @DisplayName("상벌점 부여 로그 생성을 성공해야 한다.")
+    void 상벌점_부여_로그_생성을_성공해야_한다() throws Exception {
+      String requestJson = "{\"meritTypeId\":\"1\", \"awarderId\":\"" + other.getId() + "\"}";
+      mockMvc.perform(multipart("/merits")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(requestJson))
+          .andExpect(status().isCreated())
+          .andDo(print());
+
+    }
+  }
+
 
 }
