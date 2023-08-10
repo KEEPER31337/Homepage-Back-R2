@@ -776,6 +776,18 @@ public class PostControllerTest extends PostApiTestHelper {
     }
 
     @Test
+    @DisplayName("page 또는 size가 음수면 게시글 목록 조회는 실패한다.")
+    public void page_또는_size가_음수면_게시글_목록_조회는_실패한다() throws Exception {
+      params.add("categoryId", String.valueOf(category.getId()));
+      params.add("searchType", null);
+      params.add("search", null);
+      params.add("page", "-1");
+      params.add("size", "3");
+      callGetPostsApi(memberToken, params)
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("유효한 요청이면 최근 게시글 목록 조회는 성공한다.")
     public void 유효한_요청이면_최근_게시글_목록_조회는_성공한다() throws Exception {
       em.flush();
