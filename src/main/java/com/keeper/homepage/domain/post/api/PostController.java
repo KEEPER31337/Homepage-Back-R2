@@ -5,8 +5,9 @@ import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
-import com.keeper.homepage.domain.post.dto.response.PostListResponse;
+import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
+import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
@@ -185,5 +186,15 @@ public class PostController {
   @GetMapping("/trend")
   public ResponseEntity<List<PostResponse>> getTrendPosts() {
     return ResponseEntity.ok(postService.getTrendPosts());
+  }
+
+  @GetMapping("/members/{memberId}")
+  public ResponseEntity<Page<MemberPostResponse>> getMemberPosts(
+      @PathVariable long memberId,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    Page<MemberPostResponse> responses = postService.getMemberPosts(memberId, PageRequest.of(page, size));
+    return ResponseEntity.ok(responses);
   }
 }

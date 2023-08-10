@@ -12,6 +12,7 @@ import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FO
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
@@ -19,6 +20,7 @@ import com.keeper.homepage.domain.post.application.convenience.ValidPostFindServ
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
+import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
@@ -34,6 +36,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -53,6 +56,7 @@ public class PostService {
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
+  private final MemberFindService memberFindService;
 
   private static final String ANONYMOUS_NAME = "익명";
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
@@ -342,5 +346,11 @@ public class PostService {
 
   private int getPostScore(Post post) {
     return post.getVisitCount() + post.getPostLikes().size() * 2 - post.getPostDislikes().size();
+  }
+
+  public Page<MemberPostResponse> getMemberPosts(long memberId, Pageable pageable) {
+    Member member = memberFindService.findById(memberId);
+    return postRepository.findAllByMember(member, pageable)
+        .map(MemberPostResponse::from);
   }
 }
