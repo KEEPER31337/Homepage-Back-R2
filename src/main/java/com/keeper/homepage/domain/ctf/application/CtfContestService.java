@@ -2,9 +2,12 @@ package com.keeper.homepage.domain.ctf.application;
 
 import com.keeper.homepage.domain.ctf.application.convenience.CtfContestFindService;
 import com.keeper.homepage.domain.ctf.dao.CtfContestRepository;
+import com.keeper.homepage.domain.ctf.dto.response.contest.CtfContestResponse;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.member.entity.Member;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,5 +48,10 @@ public class CtfContestService {
   public void closeContest(long contestId) {
     CtfContest contest = ctfContestFindService.findById(contestId);
     contest.close();
+  }
+
+  public Page<CtfContestResponse> getContests(Pageable pageable) {
+    return ctfContestFindService.findAll(pageable)
+        .map(CtfContestResponse::from);
   }
 }

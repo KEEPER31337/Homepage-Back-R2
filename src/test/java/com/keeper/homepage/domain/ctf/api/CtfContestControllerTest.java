@@ -7,6 +7,7 @@ import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -14,6 +15,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
@@ -149,6 +151,36 @@ public class CtfContestControllerTest extends IntegrationTest {
               ),
               pathParameters(
                   parameterWithName("contestId").description("대회 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("CTF 대회 목록 조회 테스트")
+  class CtfContestGetTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 CTF 대회 목록 조회는 성공한다.")
+    public void 유효한_요청일_경우_CTF_대회_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(CtfContestController.class, "getContests");
+
+      ctfContestTestHelper.generate();
+      ctfContestTestHelper.generate();
+      ctfContestTestHelper.generate();
+
+      mockMvc.perform(get("/ctf/contests")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-ctf-contests",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
               )));
     }
   }

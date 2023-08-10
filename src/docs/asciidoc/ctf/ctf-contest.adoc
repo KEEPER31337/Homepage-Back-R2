@@ -105,3 +105,26 @@ include::{snippets}/close-ctf-contest/path-parameters.adoc[]
 
 include::{snippets}/close-ctf-contest/http-response.adoc[]
 
+== *CTF 대회 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-ctf-contests/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-ctf-contests/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-ctf-contests/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-ctf-contests/http-response.adoc[]
+
+
