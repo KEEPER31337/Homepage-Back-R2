@@ -23,13 +23,14 @@ class MeritLogServiceTest extends IntegrationTest {
   private Member giver, awarder;
   private MeritType meritType;
   private long giverId, awarderId;
-  private long meritLogId, otherMeritLogId;
+  private long meritLogId, otherMeritLogId, meritTypeId;
 
 
   @BeforeEach
   void setUp() {
     giver = memberTestHelper.generate();
     awarder = memberTestHelper.generate();
+    meritType = meritTypeHelper.generate();
   }
 
   @Nested
@@ -41,9 +42,9 @@ class MeritLogServiceTest extends IntegrationTest {
     void 상벌점_부여를_성공해야_한다() {
       awarderId = awarder.getId();
       giverId = giver.getId();
-      meritType = meritTypeHelper.generate();
+      meritTypeId = meritType.getId();
 
-      Long meritLogId = meritLogService.recordMerit(awarderId, giverId, "무단 결석");
+      Long meritLogId = meritLogService.recordMerit(awarderId, giverId, meritTypeId);
 
       em.flush();
       em.clear();

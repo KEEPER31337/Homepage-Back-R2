@@ -26,11 +26,11 @@ public class MeritLogService {
   private final MemberRepository memberRepository;
 
   @Transactional
-  public Long recordMerit(long awarderId, long giverId, String reason) {
+  public Long recordMerit(long awarderId, long giverId, long meritTypeId) {
     Member awarder = memberRepository.findById(awarderId).orElseThrow();
     Member giver = memberRepository.findById(giverId).orElseThrow();
-    MeritType meritType = meritTypeRepository.findByDetail(reason)
-        .orElseThrow(() -> new BusinessException(reason, "meritType", MERIT_TYPE_NOT_FOUND));
+    MeritType meritType = meritTypeRepository.findById(meritTypeId)
+        .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
 
     return meritLogRepository.save(MeritLog.builder()
             .awarder(awarder)

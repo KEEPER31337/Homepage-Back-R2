@@ -17,10 +17,7 @@ public class GiveMeritPointRequest {
   @NotNull(message = "수여자를 입력해주세요.")
   private long awarderId;
 
-  @NotNull(message = "수상자를 입력해주세요.")
-  private long giverId;
-
-  @NotEmpty(message = "상벌점 이유에 대해서 입력해주세요.")
-  private String reason;
+  @NotEmpty(message = "상벌점 사유를 선택해주세요.")
+  private long meritTypeId;
 
 }

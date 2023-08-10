@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.merit.api;
 
 
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.application.MeritLogService;
 import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
@@ -10,6 +11,7 @@ import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
 import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
+import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -50,12 +52,13 @@ public class MeritController {
 
   @PostMapping
   public ResponseEntity<Void> registerMerit(
-      @RequestBody @Valid GiveMeritPointRequest request
+      @RequestBody @Valid GiveMeritPointRequest request,
+      @LoginMember Member member
   ) {
     meritLogService.recordMerit(
         request.getAwarderId(),
-        request.getGiverId(),
-        request.getReason());
+        member.getId(),
+        request.getMeritTypeId());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
