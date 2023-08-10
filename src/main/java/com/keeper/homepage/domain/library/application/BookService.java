@@ -104,7 +104,7 @@ public class BookService {
     BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
         .findById(borrowId)
         .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
-    if (!bookBorrowInfo.getBorrowStatus().equals(대출승인)) {
+    if (!bookBorrowInfo.isReadyToReturn(대출승인)) {
       throw new BusinessException(borrowId, "borrowId", BORROW_STATUS_IS_NOT_BORROW_APPROVAL);
     }
     if (!bookBorrowInfo.isMine(member)) {
