@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
+import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
@@ -64,6 +65,16 @@ public class PostController {
     PostDetailResponse postDetailResponse = postService.find(member, postId, password);
     return ResponseEntity.status(HttpStatus.OK)
         .body(postDetailResponse);
+  }
+
+  @GetMapping("/{postId}/files")
+  public ResponseEntity<List<FileResponse>> getPostFiles(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    List<FileResponse> responses = postService.getFiles(member, postId);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(responses);
   }
 
   @PutMapping("/{postId}")

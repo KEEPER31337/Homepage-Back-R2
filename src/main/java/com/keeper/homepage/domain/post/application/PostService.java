@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
@@ -18,10 +18,12 @@ import com.keeper.homepage.domain.post.application.convenience.PostDeleteService
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
@@ -52,8 +54,9 @@ public class PostService {
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
 
-  public static final String ANONYMOUS_NAME = "익명";
-  public static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final String ANONYMOUS_NAME = "익명";
+  private static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final int EXAM_READ_DEDUCTION_POINT = 10000;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
@@ -111,12 +114,15 @@ public class PostService {
     //visitCountValidation(post, request, response); TODO: 게시글 조회수 중복 방지 기능 구현
     post.addVisitCount();
 
-    String writerName = getWriterName(post);
-    String writerThumbnailPath = getWriterThumbnailPath(post);
-
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
-    return PostDetailResponse.of(post, writerName, writerThumbnailPath, previousPost, nextPost);
+    boolean isLike = member.isLike(post);
+    boolean isDislike = member.isDislike(post);
+
+    if (post.isCategory(익명게시판)) {
+      return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLike, isDislike, previousPost, nextPost);
+    }
+    return PostDetailResponse.of(post, isLike, isDislike, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {
@@ -164,18 +170,19 @@ public class PostService {
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
   }
 
-  private String getWriterName(Post post) {
-    if (post.isCategory(익명게시판)) {
-      return ANONYMOUS_NAME;
-    }
-    return post.getWriterNickname();
-  }
+  @Transactional
+  public List<FileResponse> getFiles(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
 
-  private String getWriterThumbnailPath(Post post) {
-    if (post.isCategory(익명게시판)) {
-      return null;
+    if (post.isCategory(시험게시판) && !member.isRead(post)) {
+      member.read(post);
+      member.minusPoint(EXAM_READ_DEDUCTION_POINT);
     }
-    return post.getMember().getThumbnailPath();
+    return post.getPostHasFiles()
+        .stream()
+        .map(PostHasFile::getFile)
+        .map(FileResponse::from)
+        .toList();
   }
 
   @Transactional

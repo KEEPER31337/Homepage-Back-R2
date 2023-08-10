@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.comment.application;
 
-import static com.keeper.homepage.domain.post.application.PostService.ANONYMOUS_NAME;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_ALLOWED;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
@@ -35,7 +34,8 @@ public class CommentService {
   private final MemberFindService memberFindService;
   private final CommentDeleteService commentDeleteService;
 
-  public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  private static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  private static final String ANONYMOUS_NAME = "익명";
 
   @Transactional
   public long create(Member member, CommentCreateRequest request) {
@@ -60,16 +60,19 @@ public class CommentService {
     return parent;
   }
 
-  public CommentListResponse getComments(Long postId) {
+  public CommentListResponse getComments(Member member, Long postId) {
     Post post = validPostFindService.findById(postId);
     List<Comment> comments = post.getComments();
+
+    boolean isLike = member.isLike(post);
+    boolean isDislike = member.isDislike(post);
 
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
           if (post.isCategory(익명게시판)) {
-            return CommentResponse.of(comment, ANONYMOUS_NAME, null);
+            return CommentResponse.of(comment, ANONYMOUS_NAME, null, isLike, isDislike);
           }
-          return CommentResponse.from(comment);
+          return CommentResponse.from(comment, isLike, isDislike);
         })
         .toList();
     return CommentListResponse.from(commentResponses);

@@ -25,7 +25,9 @@ link:about/about.html[API 문서 보기]
 
 == *POST API*
 
-link:post/post.html[API 문서 보기]
+link:post/post.html[게시글 API 문서 보기]
+
+link:post/admin-post.html[관리자 API 문서 보기]
 
 == *COMMENT API*
 

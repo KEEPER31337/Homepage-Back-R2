@@ -4,7 +4,6 @@ import static com.keeper.homepage.domain.comment.dto.request.CommentCreateReques
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -158,7 +157,9 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   fieldWithPath("comments[].registerTime").description("댓글 등록 시간"),
                   fieldWithPath("comments[].parentId").description("부모 댓글 ID"),
                   fieldWithPath("comments[].likeCount").description("댓글 좋아요 개수"),
-                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수")
+                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수"),
+                  fieldWithPath("comments[].isLike").description("댓글 좋아요 했는지 여부"),
+                  fieldWithPath("comments[].isDislike").description("댓글 싫어요 했는지 여부")
               )));
     }
   }
