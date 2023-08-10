@@ -1,18 +1,24 @@
 package com.keeper.homepage.domain.merit.application;
 
+import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 
 class MeritTypeServiceTest extends IntegrationTest {
+
+  MeritType meritType, otherMeritType;
 
   @Nested
   @DisplayName("상벌점 타입 추가")
@@ -61,4 +67,25 @@ class MeritTypeServiceTest extends IntegrationTest {
     }
   }
 
+  @Nested
+  @DisplayName("상벌점 타입 조회")
+  class SearchMeritType {
+
+    @Test
+    @DisplayName("모든 상벌점 타입을 조회할 수 있어야 한다.")
+    void 모든_상벌점_타입을_조회할_수_있어야_한다() {
+      meritType = meritTypeHelper.generate();
+      otherMeritType = meritTypeHelper.generate();
+
+      em.flush();
+      em.clear();
+
+      Page<MeritType> findPages = meritTypeService.findAll(PageRequest.of(0, 10));
+
+      assertThat(findPages.stream()
+          .map(MeritType::getId)
+          .collect(toList()))
+          .contains(meritType.getId(), otherMeritType.getId());
+    }
+  }
 }
