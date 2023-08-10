@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
+import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.config.security.data.JwtType;
@@ -130,6 +131,29 @@ public class MeritControllerTest extends IntegrationTest {
           .andDo(print());
 
     }
+  }
+
+  @Nested
+  @DisplayName("상벌점 부여 로그 수정 테스트")
+  class MeritLogUpdateTest {
+
+    @Test
+    @DisplayName("상벌점 부여 로그 수정을 성공해야 한다.")
+    void 상벌점_부여_로그_수정을_성공해야_한다() throws Exception {
+      UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
+          .score(5)
+          .reason("거짓 스터디")
+          .build();
+
+      mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
+          .andExpect(status().isCreated())
+          .andDo(print());
+
+    }
+
   }
 
 
