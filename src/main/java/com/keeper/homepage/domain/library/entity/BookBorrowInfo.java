@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
 import static jakarta.persistence.FetchType.LAZY;
@@ -98,7 +99,7 @@ public class BookBorrowInfo extends BaseEntity {
 
   public boolean isInBorrowing() {
     BookBorrowStatusType type = getBorrowStatus().getType();
-    return type.equals(대출승인) || type.equals(반납대기중);
+    return type.equals(대출대기중) || type.equals(대출승인) || type.equals(반납대기중);
   }
 
   public boolean isReadyToReturn(BookBorrowStatusType type) {
