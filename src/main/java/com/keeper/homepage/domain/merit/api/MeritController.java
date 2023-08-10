@@ -66,6 +66,14 @@ public class MeritController {
         .map(MeritTypeResponse::from));
   }
 
+  @PostMapping("/types")
+  public ResponseEntity<Void> registerMeritType(
+      @RequestBody @Valid AddMeritTypeRequest request
+  ) {
+    meritTypeService.addMeritType(request.getScore(), request.getReason());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
   @PutMapping("/types/{meritTypeId}")
   public ResponseEntity<Void> updateMeritType(
       @PathVariable long meritTypeId,
