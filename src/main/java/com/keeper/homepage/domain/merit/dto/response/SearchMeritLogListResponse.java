@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SearchMeritLogListResponse {
 
-  private Long id;
+  private long id;
   private LocalDateTime giveTime;
   private String awarderName;
-  private Float awarderGeneration;
-  private Integer score;
-  private Long meritTypeId;
+  private float awarderGeneration;
+  private int score;
+  private long meritTypeId;
   private String reason;
 
   public static SearchMeritLogListResponse from(MeritLog meritLog) {

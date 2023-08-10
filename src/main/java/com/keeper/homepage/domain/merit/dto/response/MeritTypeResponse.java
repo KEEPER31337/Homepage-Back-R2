@@ -11,8 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class MeritTypeResponse {
 
-  private Long id;
-  private Integer score;
+  private long id;
+  private int score;
   private String detail;
 
   public static MeritTypeResponse from(MeritType meritType) {
