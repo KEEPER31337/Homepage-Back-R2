@@ -44,8 +44,7 @@ public class MeritLogService {
     return meritLogRepository.findAll(pageable);
   }
 
-  public Page<MeritLog> findByGiver_Id(Pageable pageable, Long memberId) {
+  public Page<MeritLog> findByGiver_Id(Pageable pageable, long memberId) {
     return meritLogRepository.findByGiver_Id(pageable, memberId);
   }
-
 }

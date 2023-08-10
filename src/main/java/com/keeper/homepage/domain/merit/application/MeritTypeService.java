@@ -19,7 +19,7 @@ public class MeritTypeService {
   private final MeritTypeRepository meritTypeRepository;
 
   @Transactional
-  public Long addMeritType(Integer score, String reason) {
+  public Long addMeritType(int score, String reason) {
     boolean isMerit = score > 0;
 
     return meritTypeRepository.save(MeritType.builder()
@@ -34,7 +34,7 @@ public class MeritTypeService {
   }
 
   @Transactional
-  public void updateMeritType(Long meritTypeId, Integer score, String reason) {
+  public void updateMeritType(long meritTypeId, int score, String reason) {
     MeritType meritType = meritTypeRepository.findById(meritTypeId).orElseThrow();
     meritType.update(score, reason);
   }

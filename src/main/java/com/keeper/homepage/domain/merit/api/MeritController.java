@@ -34,39 +34,46 @@ public class MeritController {
       @PageableDefault(size = 10) Pageable pageable
   ) {
     return ResponseEntity
-        .ok(meritLogService.findAll(pageable).map(SearchMeritLogListResponse::from));
+        .ok(meritLogService.findAll(pageable)
+            .map(SearchMeritLogListResponse::from));
   }
 
   @GetMapping("/members/{memberId}")
   public ResponseEntity<Page<SearchMeritLogListResponse>> findMeritLogByMemberId(
-      @PathVariable Long memberId,
+      @PathVariable long memberId,
       @PageableDefault(size = 10) Pageable pageable
   ) {
     return ResponseEntity.ok(
-        meritLogService.findByGiver_Id(pageable, memberId).map(SearchMeritLogListResponse::from));
+        meritLogService.findByGiver_Id(pageable, memberId)
+            .map(SearchMeritLogListResponse::from));
   }
 
   @PostMapping
   public ResponseEntity<Void> registerMerit(
       @RequestBody @Valid GiveMeritPointRequest request
   ) {
-    meritLogService.recordMerit(request.getAwarderId(), request.getGiverId(), request.getReason());
+    meritLogService.recordMerit(
+        request.getAwarderId(),
+        request.getGiverId(),
+        request.getReason());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
   @GetMapping("/types")
   public ResponseEntity<Page<MeritTypeResponse>> registerMeritType(
       @PageableDefault(size = 10) Pageable pageable) {
-    Page<MeritType> page = meritTypeService.findAll(pageable);
-    Page<MeritTypeResponse> map = page.map(MeritTypeResponse::from);
-    return ResponseEntity.ok(map);
+    return ResponseEntity.ok(meritTypeService.findAll(pageable)
+        .map(MeritTypeResponse::from));
   }
 
   @PutMapping("/types/{meritTypeId}")
   public ResponseEntity<Void> updateMeritType(
-      @PathVariable Long meritTypeId,
+      @PathVariable long meritTypeId,
       @RequestBody @Valid UpdateMeritTypeRequest request) {
-    meritTypeService.updateMeritType(meritTypeId, request.getScore(), request.getReason());
+    meritTypeService.updateMeritType(
+        meritTypeId,
+        request.getScore(),
+        request.getReason());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/merits/types/" + meritTypeId))
         .build();
