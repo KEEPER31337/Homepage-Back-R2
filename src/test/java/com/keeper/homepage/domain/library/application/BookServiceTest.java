@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.application;
 
 import static com.keeper.homepage.domain.library.application.BookService.MAX_BORROWING_COUNT;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출거부;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
@@ -198,6 +199,20 @@ public class BookServiceTest extends IntegrationTest {
       BookBorrowInfo borrowInfo = bookBorrowInfoRepository.findById(borrowId).orElseThrow();
 
       assertThat(borrowInfo.getBorrowStatus().getType()).isEqualTo(반납대기중);
+    }
+
+    @Test
+    @DisplayName("도서가 대출 승인 상태가 아니라면 도서 반납 요청은 실패해야 한다.")
+    public void 도서가_대출_승인_상태가_아니라면_도서_반납_요청은_실패해야_한다() throws Exception {
+      BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .book(book)
+          .borrowStatus(getBookBorrowStatusBy(대출거부))
+          .build();
+
+      long borrowId = bookBorrowInfo.getId();
+
+      assertThrows(BusinessException.class, () -> bookService.requestReturn(member, borrowId));
     }
 
     @Test
