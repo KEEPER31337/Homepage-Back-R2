@@ -180,4 +180,14 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("registerTime").description("게시글 등록 시간")
     };
   }
+
+  FieldDescriptor[] getTempPostsResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("게시글 ID"),
+        fieldWithPath("title").description("게시글 제목"),
+        fieldWithPath("categoryId").description("게시글 카테고리 ID"),
+        fieldWithPath("categoryName").description("게시글 카테고리 이름"),
+        fieldWithPath("registerTime").description("게시글 등록 시간")
+    };
+  }
 }

@@ -415,5 +415,30 @@ include::{snippets}/get-member-posts/http-response.adoc[]
 
 include::{snippets}/get-member-posts/response-fields.adoc[]
 
+== *임시글 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-temp-posts/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-temp-posts/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-temp-posts/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-temp-posts/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-temp-posts/response-fields.adoc[]
 
 

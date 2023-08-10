@@ -829,6 +829,36 @@ public class PostControllerTest extends PostApiTestHelper {
                   pageHelper(getMemberPostsResponse())
               )));
     }
+
+    @Test
+    @DisplayName("유효한 요청이면 회원의 임시글 목록 조회는 성공한다.")
+    public void 유효한_요청이면_회원의_임시글_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getTempPosts");
+
+      postTestHelper.builder().member(member).isTemp(true).build();
+      postTestHelper.builder().member(member).isTemp(true).build();
+      postTestHelper.builder().member(member).isTemp(true).build();
+
+      em.flush();
+      em.clear();
+      mockMvc.perform(get("/posts/temp")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-temp-posts",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getTempPostsResponse())
+              )));
+    }
   }
 
   @Nested

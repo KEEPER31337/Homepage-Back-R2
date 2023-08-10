@@ -25,6 +25,7 @@ import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
@@ -360,5 +361,10 @@ public class PostService {
     Member member = memberFindService.findById(memberId);
     return postRepository.findAllByMember(member, pageable)
         .map(MemberPostResponse::from);
+  }
+
+  public Page<TempPostResponse> getTempPosts(Member member, Pageable pageable) {
+    return postRepository.findAllByMemberAndIsTempTrue(member, pageable)
+        .map(TempPostResponse::from);
   }
 }

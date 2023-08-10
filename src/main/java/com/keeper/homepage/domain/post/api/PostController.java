@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
@@ -196,6 +197,16 @@ public class PostController {
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
     Page<MemberPostResponse> responses = postService.getMemberPosts(memberId, PageRequest.of(page, size));
+    return ResponseEntity.ok(responses);
+  }
+
+  @GetMapping("/temp")
+  public ResponseEntity<Page<TempPostResponse>> getTempPosts(
+      @LoginMember Member member,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    Page<TempPostResponse> responses = postService.getTempPosts(member, PageRequest.of(page, size));
     return ResponseEntity.ok(responses);
   }
 }

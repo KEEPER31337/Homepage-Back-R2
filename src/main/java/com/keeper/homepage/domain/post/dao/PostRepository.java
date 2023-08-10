@@ -144,4 +144,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Optional<Post> findPreviousPost(@Param("postId") Long postId, @Param("category") Category category);
 
   Page<Post> findAllByMember(Member member, Pageable pageable);
+
+  Page<Post> findAllByMemberAndIsTempTrue(Member member, Pageable pageable);
 }
