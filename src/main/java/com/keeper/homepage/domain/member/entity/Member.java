@@ -334,7 +334,7 @@ public class Member {
 
   public long getCountInBorrowing() {
     return this.bookBorrowInfos.stream()
-        .filter(BookBorrowInfo::isInBorrowing)
+        .filter(BookBorrowInfo::isCanBorrow)
         .count();
   }
 

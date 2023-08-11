@@ -8,7 +8,6 @@ import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBor
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
@@ -103,13 +102,19 @@ public class BookServiceTest extends IntegrationTest {
     @Test
     @DisplayName("도서 대출중인 권수가 5권 초과면 도서 대출은 실패해야 한다.")
     public void 도서_대출중인_권수가_5권_초과면_도서_대출은_실패해야_한다() throws Exception {
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 4; i++) {
         bookBorrowInfoTestHelper.builder()
             .member(member)
             .book(book)
             .borrowStatus(getBookBorrowStatusBy(대출승인))
             .build();
       }
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .book(book)
+          .borrowStatus(getBookBorrowStatusBy(대출대기중))
+          .build();
+
       em.flush();
       em.clear();
       member = memberRepository.findById(member.getId()).get();

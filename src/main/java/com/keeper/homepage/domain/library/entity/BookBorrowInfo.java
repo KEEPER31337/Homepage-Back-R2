@@ -97,6 +97,11 @@ public class BookBorrowInfo extends BaseEntity {
     return lastRequestDate;
   }
 
+  public boolean isCanBorrow() {
+    BookBorrowStatusType type = getBorrowStatus().getType();
+    return type.equals(대출대기중) || isInBorrowing();
+  }
+
   public boolean isInBorrowing() {
     BookBorrowStatusType type = getBorrowStatus().getType();
     return type.equals(대출승인) || type.equals(반납대기중);
