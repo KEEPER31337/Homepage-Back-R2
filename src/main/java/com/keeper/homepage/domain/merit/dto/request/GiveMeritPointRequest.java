@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.merit.dto.request;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.entity.MeritType;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

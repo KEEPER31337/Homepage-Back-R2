@@ -1,24 +1,16 @@
 package com.keeper.homepage.domain.merit.dao;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.member.MemberTestHelper;
-import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
-import com.keeper.homepage.domain.merit.entity.MeritType;
-import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class MeritLogRepositoryTest extends IntegrationTest {
 

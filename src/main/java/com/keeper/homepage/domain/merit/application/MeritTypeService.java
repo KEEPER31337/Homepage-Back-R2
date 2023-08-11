@@ -3,11 +3,8 @@ package com.keeper.homepage.domain.merit.application;
 import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
 
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
-import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

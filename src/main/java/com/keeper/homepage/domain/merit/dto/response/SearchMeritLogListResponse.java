@@ -2,13 +2,11 @@ package com.keeper.homepage.domain.merit.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder

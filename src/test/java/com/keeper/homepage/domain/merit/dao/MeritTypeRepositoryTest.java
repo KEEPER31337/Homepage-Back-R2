@@ -2,17 +2,12 @@ package com.keeper.homepage.domain.merit.dao;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class MeritTypeRepositoryTest extends IntegrationTest {
 
