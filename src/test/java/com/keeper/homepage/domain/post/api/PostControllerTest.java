@@ -776,6 +776,18 @@ public class PostControllerTest extends PostApiTestHelper {
     }
 
     @Test
+    @DisplayName("page 또는 size가 음수면 게시글 목록 조회는 실패한다.")
+    public void page_또는_size가_음수면_게시글_목록_조회는_실패한다() throws Exception {
+      params.add("categoryId", String.valueOf(category.getId()));
+      params.add("searchType", null);
+      params.add("search", null);
+      params.add("page", "-1");
+      params.add("size", "3");
+      callGetPostsApi(memberToken, params)
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("유효한 요청이면 최근 게시글 목록 조회는 성공한다.")
     public void 유효한_요청이면_최근_게시글_목록_조회는_성공한다() throws Exception {
       em.flush();
@@ -784,7 +796,7 @@ public class PostControllerTest extends PostApiTestHelper {
           .andExpect(status().isOk())
           .andDo(document("get-recent-posts",
               responseFields(
-                  listHelper("", getPostsResponse())
+                  listHelper("", getMainPostsResponse())
               )));
     }
 
@@ -797,7 +809,66 @@ public class PostControllerTest extends PostApiTestHelper {
           .andExpect(status().isOk())
           .andDo(document("get-trend-posts",
               responseFields(
-                  listHelper("", getPostsResponse())
+                  listHelper("", getMainPostsResponse())
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 회원의 게시글 목록 조회는 성공한다.")
+    public void 유효한_요청이면_회원의_게시글_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getMemberPosts");
+
+      em.flush();
+      em.clear();
+      mockMvc.perform(get("/posts/members/{memberId}", member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-member-posts",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId").description("회원의 ID")
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getMemberPostsResponse())
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청이면 회원의 임시글 목록 조회는 성공한다.")
+    public void 유효한_요청이면_회원의_임시글_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getTempPosts");
+
+      postTestHelper.builder().member(member).isTemp(true).build();
+      postTestHelper.builder().member(member).isTemp(true).build();
+      postTestHelper.builder().member(member).isTemp(true).build();
+
+      em.flush();
+      em.clear();
+      mockMvc.perform(get("/posts/temp")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andDo(document("get-temp-posts",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getTempPostsResponse())
               )));
     }
   }

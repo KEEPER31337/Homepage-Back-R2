@@ -12,6 +12,7 @@ import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FO
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
@@ -19,9 +20,12 @@ import com.keeper.homepage.domain.post.application.convenience.ValidPostFindServ
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
+import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
+import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
@@ -34,6 +38,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -53,6 +58,7 @@ public class PostService {
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
+  private final MemberFindService memberFindService;
 
   private static final String ANONYMOUS_NAME = "익명";
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
@@ -318,14 +324,21 @@ public class PostService {
     return PostResponse.from(post);
   }
 
-  public List<PostResponse> getRecentPosts() {
+  private MainPostResponse getMainPostResponse(Post post) {
+    if (post.isCategory(익명게시판)) {
+      return MainPostResponse.of(post, ANONYMOUS_NAME, null);
+    }
+    return MainPostResponse.from(post);
+  }
+
+  public List<MainPostResponse> getRecentPosts() {
     return postRepository.findAllRecent().stream()
-        .map(this::getPostResponse)
+        .map(this::getMainPostResponse)
         .limit(10)
         .toList();
   }
 
-  public List<PostResponse> getTrendPosts() {
+  public List<MainPostResponse> getTrendPosts() {
     LocalDateTime startDateTime = LocalDateTime.now().minusWeeks(2);
     LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
     List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
@@ -335,12 +348,23 @@ public class PostService {
       return Integer.compare(postScore2, postScore1);
     });
     return posts.stream()
-        .map(this::getPostResponse)
+        .map(this::getMainPostResponse)
         .limit(10)
         .toList();
   }
 
   private int getPostScore(Post post) {
     return post.getVisitCount() + post.getPostLikes().size() * 2 - post.getPostDislikes().size();
+  }
+
+  public Page<MemberPostResponse> getMemberPosts(long memberId, Pageable pageable) {
+    Member member = memberFindService.findById(memberId);
+    return postRepository.findAllByMemberAndIsTempFalse(member, pageable)
+        .map(MemberPostResponse::from);
+  }
+
+  public Page<TempPostResponse> getTempPosts(Member member, Pageable pageable) {
+    return postRepository.findAllByMemberAndIsTempTrue(member, pageable)
+        .map(TempPostResponse::from);
   }
 }

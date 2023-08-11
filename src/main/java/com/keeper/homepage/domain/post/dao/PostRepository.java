@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.post.dao;
 
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import java.time.LocalDateTime;
@@ -141,4 +142,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "ORDER BY p.id DESC "
       + "LIMIT 1")
   Optional<Post> findPreviousPost(@Param("postId") Long postId, @Param("category") Category category);
+
+  Page<Post> findAllByMemberAndIsTempFalse(Member member, Pageable pageable);
+
+  Page<Post> findAllByMemberAndIsTempTrue(Member member, Pageable pageable);
 }
