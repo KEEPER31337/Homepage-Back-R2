@@ -1,0 +1,150 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= MERIT API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *상벌점 로그 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-meritLog/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-meritLog/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-meritLog/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/search-meritLog/response-fields.adoc[]
+
+== *회원별 상벌점 로그 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-member-meritLog/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-member-meritLog/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/search-member-meritLog/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-member-meritLog/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/search-member-meritLog/response-fields.adoc[]
+
+== *상벌점 로그 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-meritLog/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-meritLog/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-meritLog/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-meritLog/http-response.adoc[]
+
+== *상벌점 타입 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-meritType/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-meritType/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-meritType/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/search-meritType/response-fields.adoc[]
+
+== *상벌점 타입 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-meritType/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-meritType/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-meritType/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-meritType/http-response.adoc[]
+
+== *api 이름*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-meritType/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-meritType/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-meritType/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-meritType/http-response.adoc[]
