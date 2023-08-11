@@ -30,4 +30,14 @@ public class MeritApiTestHelper extends IntegrationTest {
     };
   }
 
+
+  FieldDescriptor[] getMeritTypeResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("상벌점 타입의 ID"),
+        fieldWithPath("score").description("상벌점 점수"),
+        fieldWithPath("detail").description("상벌점의 사유")
+    };
+  }
+
+
 }

@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
+import com.keeper.homepage.domain.merit.dto.response.SearchMemberMeritLogResponse;
 import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
@@ -41,13 +42,13 @@ public class MeritController {
   }
 
   @GetMapping("/members/{memberId}")
-  public ResponseEntity<Page<SearchMeritLogListResponse>> findMeritLogByMemberId(
+  public ResponseEntity<Page<SearchMemberMeritLogResponse>> findMeritLogByMemberId(
       @PathVariable long memberId,
       @PageableDefault(size = 10) Pageable pageable
   ) {
     return ResponseEntity.ok(
         meritLogService.findByGiver_Id(pageable, memberId)
-            .map(SearchMeritLogListResponse::from));
+            .map(SearchMemberMeritLogResponse::from));
   }
 
   @PostMapping
@@ -63,7 +64,7 @@ public class MeritController {
   }
 
   @GetMapping("/types")
-  public ResponseEntity<Page<MeritTypeResponse>> registerMeritType(
+  public ResponseEntity<Page<MeritTypeResponse>> searchMeritType(
       @PageableDefault(size = 10) Pageable pageable) {
     return ResponseEntity.ok(meritTypeService.findAll(pageable)
         .map(MeritTypeResponse::from));
