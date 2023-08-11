@@ -70,7 +70,7 @@ class MeritLogServiceTest extends IntegrationTest {
 
       assertThat(meritLogs.stream()
           .map(MeritLog::getId)
-          .collect(toList())).contains(meritLogId, otherMeritLogId);
+          .toList()).contains(meritLogId, otherMeritLogId);
 
     }
 
@@ -88,7 +88,7 @@ class MeritLogServiceTest extends IntegrationTest {
 
       assertThat(meritLogPage.stream()
           .map(MeritLog::getId)
-          .collect(toList()))
+          .toList())
           .contains(meritLogId, otherMeritLogId);
     }
   }

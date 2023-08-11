@@ -1,8 +1,11 @@
 package com.keeper.homepage.domain.merit.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
+
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
+import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +38,8 @@ public class MeritTypeService {
 
   @Transactional
   public void updateMeritType(long meritTypeId, int score, String reason) {
-    MeritType meritType = meritTypeRepository.findById(meritTypeId).orElseThrow();
+    MeritType meritType = meritTypeRepository.findById(meritTypeId)
+        .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
     meritType.update(score, reason);
   }
 }

@@ -88,7 +88,7 @@ class MeritTypeServiceTest extends IntegrationTest {
 
       assertThat(findPages.stream()
           .map(MeritType::getId)
-          .collect(toList()))
+          .toList())
           .contains(meritTypeId, otherMeritTypeId);
     }
   }

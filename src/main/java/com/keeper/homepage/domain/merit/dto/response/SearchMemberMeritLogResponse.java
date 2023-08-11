@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.merit.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -13,6 +14,7 @@ import lombok.Getter;
 public class SearchMemberMeritLogResponse {
 
   private long id;
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime giveTime;
   private int score;
   private long meritTypeId;

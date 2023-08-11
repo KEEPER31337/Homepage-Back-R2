@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.merit.application;
 
 
-import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
@@ -23,12 +23,12 @@ public class MeritLogService {
 
   private final MeritLogRepository meritLogRepository;
   private final MeritTypeRepository meritTypeRepository;
-  private final MemberRepository memberRepository;
+  private final MemberFindService memberFindService;
 
   @Transactional
   public Long recordMerit(long awarderId, long giverId, long meritTypeId) {
-    Member awarder = memberRepository.findById(awarderId).orElseThrow();
-    Member giver = memberRepository.findById(giverId).orElseThrow();
+    Member awarder = memberFindService.findById(awarderId);
+    Member giver = memberFindService.findById(giverId);
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
 

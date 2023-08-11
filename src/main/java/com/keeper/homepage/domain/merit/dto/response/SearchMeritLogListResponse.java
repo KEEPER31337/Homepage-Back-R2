@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.merit.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ import lombok.NoArgsConstructor;
 public class SearchMeritLogListResponse {
 
   private long id;
+
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime giveTime;
   private String awarderName;
   private float awarderGeneration;
