@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.merit.dao;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
+import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,9 +32,8 @@ public class MeritLogRepositoryTest extends IntegrationTest {
       assertThat(meritLog.getId()).isEqualTo(findMeritLog.getId());
       assertThat(meritLog.getGiver()).isEqualTo(findMeritLog.getGiver());
       assertThat(meritLog.getAwarder()).isEqualTo(findMeritLog.getAwarder());
-//      assertThat(meritLog.getTime()).isBefore(findMeritLog.getTime());
+      assertThat(findMeritLog.getTime()).isNotNull();
       assertThat(meritLog.getMeritType().getId()).isEqualTo(findMeritLog.getMeritType().getId());
-
     }
   }
 
