@@ -48,7 +48,6 @@ public enum ErrorCode {
   COMMENT_NOT_ALLOWED("댓글 작성이 허용되지 않습니다.", HttpStatus.BAD_REQUEST),
   // BOOK
   BOOK_NOT_FOUND("존재하지 않는 도서입니다.", HttpStatus.NOT_FOUND),
-  BOOK_TYPE_NOT_FOUND("존재하지 않는 도서 타입입니다.", HttpStatus.NOT_FOUND),
   BOOK_DELETE_FAILED_IN_BORROWING("누군가가 책을 빌리고 있어 책을 삭제할 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_BORROW("책을 빌릴 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY("전체 수량을 초과하여 책을 반납할 수 없습니다.", HttpStatus.BAD_REQUEST),
