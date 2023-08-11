@@ -19,6 +19,7 @@ public class MemberPostResponse {
   private Long categoryId;
   private String categoryName;
   private Integer visitCount;
+  private Boolean isSecret;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
@@ -30,6 +31,7 @@ public class MemberPostResponse {
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
         .visitCount(post.getVisitCount())
+        .isSecret(post.isSecret())
         .registerTime(post.getRegisterTime())
         .build();
   }

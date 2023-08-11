@@ -177,6 +177,7 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("categoryId").description("게시글 카테고리 ID"),
         fieldWithPath("categoryName").description("게시글 카테고리 이름"),
         fieldWithPath("visitCount").description("게시글 조회수"),
+        fieldWithPath("isSecret").description("비밀글 여부"),
         fieldWithPath("registerTime").description("게시글 등록 시간")
     };
   }
