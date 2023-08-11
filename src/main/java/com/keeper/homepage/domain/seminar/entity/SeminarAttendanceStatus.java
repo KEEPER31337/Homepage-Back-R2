@@ -1,9 +1,6 @@
 package com.keeper.homepage.domain.seminar.entity;
 
-import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TYPE_NOT_FOUND;
-
 import com.keeper.homepage.domain.seminar.converter.SeminarAttendanceStatusTypeConverter;
-import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -68,7 +65,7 @@ public class SeminarAttendanceStatus {
       return Arrays.stream(SeminarAttendanceStatusType.values())
           .filter(EnumType -> EnumType.getType().equals(type))
           .findAny()
-          .orElseThrow(() -> new BusinessException(type, "type", SEMINAR_TYPE_NOT_FOUND));
+          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 세미나 타입입니다."));
     }
   }
 }
