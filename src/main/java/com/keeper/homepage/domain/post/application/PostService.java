@@ -359,7 +359,7 @@ public class PostService {
 
   public Page<MemberPostResponse> getMemberPosts(long memberId, Pageable pageable) {
     Member member = memberFindService.findById(memberId);
-    return postRepository.findAllByMember(member, pageable)
+    return postRepository.findAllByMemberAndIsTempFalse(member, pageable)
         .map(MemberPostResponse::from);
   }
 
