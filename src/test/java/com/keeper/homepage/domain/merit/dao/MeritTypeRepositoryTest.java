@@ -20,11 +20,12 @@ public class MeritTypeRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 상벌점 타입 등록을 성공해야 한다.")
     void should_success_when_registerMeritType() {
       MeritType meritType = meritTypeHelper.generate();
+      String meritTypeDetail = meritType.getDetail();
 
       em.flush();
       em.clear();
 
-      MeritType findMeritType = meritTypeRepository.findByDetail("무단 결석").orElseThrow();
+      MeritType findMeritType = meritTypeRepository.findByDetail(meritTypeDetail).orElseThrow();
 
       assertThat(meritType.getMerit()).isEqualTo(findMeritType.getMerit());
       assertThat(meritType.getIsMerit()).isEqualTo(findMeritType.getIsMerit());

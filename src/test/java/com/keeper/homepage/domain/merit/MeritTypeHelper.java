@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.merit;
 
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.entity.MeritType;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,7 +48,7 @@ public class MeritTypeHelper {
       return meritTypeRepository.save(MeritType.builder()
           .merit(merit != null ? merit : 3)
           .isMerit(isMerit != null ? isMerit : true)
-          .detail(detail != null ? detail : "무단 결석")
+          .detail(detail != null ? detail : UUID.randomUUID().toString())
           .build());
     }
   }

@@ -45,6 +45,7 @@ public class MeritLogService {
   }
 
   public Page<MeritLog> findByGiver_Id(Pageable pageable, long memberId) {
-    return meritLogRepository.findByGiver_Id(pageable, memberId);
+    long findMemberId = memberFindService.findById(memberId).getId();
+    return meritLogRepository.findByGiver_Id(pageable, findMemberId);
   }
 }

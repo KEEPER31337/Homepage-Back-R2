@@ -85,6 +85,7 @@ public enum ErrorCode {
   CTF_TEAM_INACCESSIBLE("해당 팀에 접근이 불가합니다.", HttpStatus.BAD_REQUEST),
   // MERIT
   MERIT_TYPE_NOT_FOUND("해당 상벌점 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  MERIT_TYPE_DETAIL_DUPLICATE("해당 상벌점 타입의 사유가 존재합니다.", HttpStatus.CONFLICT),
   ;
 
   private final String message;
