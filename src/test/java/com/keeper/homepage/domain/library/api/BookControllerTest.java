@@ -4,34 +4,23 @@ import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBor
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 
-import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
-import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
-import com.keeper.homepage.domain.member.api.MemberController;
+import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.member.entity.Member;
-import jakarta.servlet.http.Cookie;
-import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto;
 import com.keeper.homepage.domain.library.entity.Book;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -79,7 +68,8 @@ public class BookControllerTest extends BookApiTestHelper {
               ),
               queryParameters(
                   parameterWithName("searchType")
-                      .attributes(new Attribute("format", "title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회"))
+                      .attributes(new Attribute("format",
+                          "title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회"))
                       .description("검색 타입")
                       .optional(),
                   parameterWithName("search").description("검색할 단어")
@@ -163,6 +153,36 @@ public class BookControllerTest extends BookApiTestHelper {
               responseFields(
                   pageHelper(getBorrowBooksResponse())
               )));
+    }
+
+    @Nested
+    @DisplayName("도서 반납 요청")
+    class RequestReturn {
+
+      @Test
+      @DisplayName("유효한 도서 반납 요청은 성공해야 한다.")
+      public void 유효한_도서_반납_요청은_성공해야_한다() throws Exception {
+        String securedValue = getSecuredValue(BookController.class, "requestReturn");
+        BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
+            .member(member)
+            .book(book)
+            .borrowStatus(getBookBorrowStatusBy(대출승인))
+            .build();
+
+        long borrowId = bookBorrowInfo.getId();
+
+        callRequestReturnBookApi(memberToken, borrowId)
+            .andExpect(status().isNoContent())
+            .andDo(document("request-book-return",
+                requestCookies(
+                    cookieWithName(ACCESS_TOKEN.getTokenName())
+                        .description("ACCESS TOKEN %s".formatted(securedValue))
+                ),
+                pathParameters(
+                    parameterWithName("borrowId")
+                        .description("도서 대출 내역 ID")
+                )));
+      }
     }
   }
 }
