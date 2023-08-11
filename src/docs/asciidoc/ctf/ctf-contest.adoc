@@ -1,0 +1,134 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= CTF CONTEST API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *CTF 대회 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-ctf-contest/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-ctf-contest/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-ctf-contest/http-response.adoc[]
+
+== *CTF 대회 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-ctf-contest/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-ctf-contest/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-ctf-contest/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-ctf-contest/http-response.adoc[]
+
+== *CTF 대회 공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/open-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/open-ctf-contest/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/open-ctf-contest/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/open-ctf-contest/http-response.adoc[]
+
+== *CTF 대회 비공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/close-ctf-contest/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/close-ctf-contest/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/close-ctf-contest/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/close-ctf-contest/http-response.adoc[]
+
+== *CTF 대회 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-ctf-contests/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-ctf-contests/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-ctf-contests/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-ctf-contests/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-ctf-contests/response-fields.adoc[]
+
+

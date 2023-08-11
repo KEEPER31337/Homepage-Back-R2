@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.ctf.dto.request;
+package com.keeper.homepage.domain.ctf.dto.request.team;
 
 import static lombok.AccessLevel.PRIVATE;
 

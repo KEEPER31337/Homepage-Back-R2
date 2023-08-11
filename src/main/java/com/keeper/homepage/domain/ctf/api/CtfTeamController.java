@@ -1,11 +1,11 @@
 package com.keeper.homepage.domain.ctf.api;
 
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
-import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.request.JoinTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.response.CtfTeamDetailResponse;
-import com.keeper.homepage.domain.ctf.dto.response.CtfTeamResponse;
+import com.keeper.homepage.domain.ctf.dto.request.team.CreateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.team.JoinTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.team.UpdateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.response.team.CtfTeamDetailResponse;
+import com.keeper.homepage.domain.ctf.dto.response.team.CtfTeamResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ctf/teams")
