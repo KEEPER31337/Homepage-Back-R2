@@ -1,8 +1,6 @@
 package com.keeper.homepage.domain.seminar.dto.response;
 
 import com.keeper.homepage.domain.seminar.entity.Seminar;
-import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
-import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -21,6 +19,7 @@ public class SeminarDetailResponse {
   private LocalDateTime attendanceCloseTime;
   private LocalDateTime latenessCloseTime;
   private String statusType;
+  private String attendanceCode;
 
   public static SeminarDetailResponse from(Seminar seminar, SeminarAttendanceStatusType seminarAttendanceStatusType) {
     return SeminarDetailResponse.builder()
@@ -30,6 +29,7 @@ public class SeminarDetailResponse {
         .attendanceCloseTime(seminar.getAttendanceCloseTime())
         .latenessCloseTime(seminar.getLatenessCloseTime())
         .statusType(seminarAttendanceStatusType.getType())
+        .attendanceCode(seminar.getAttendanceCode())
         .build();
   }
 }
