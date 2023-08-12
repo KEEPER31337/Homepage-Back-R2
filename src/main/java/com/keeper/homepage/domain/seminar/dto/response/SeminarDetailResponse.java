@@ -28,7 +28,7 @@ public class SeminarDetailResponse {
         .openTime(seminar.getOpenTime())
         .attendanceCloseTime(seminar.getAttendanceCloseTime())
         .latenessCloseTime(seminar.getLatenessCloseTime())
-        .statusType(seminarAttendanceStatusType.getType())
+        .statusType(seminarAttendanceStatusType.toString())
         .attendanceCode(seminar.getAttendanceCode())
         .build();
   }
