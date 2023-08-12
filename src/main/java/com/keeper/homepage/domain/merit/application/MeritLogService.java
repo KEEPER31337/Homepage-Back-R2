@@ -32,6 +32,7 @@ public class MeritLogService {
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
 
+    updateMemberMeritDemerit(awarder, meritType);
     return meritLogRepository.save(MeritLog.builder()
             .awarder(awarder)
             .giver(giver)
@@ -47,5 +48,13 @@ public class MeritLogService {
   public Page<MeritLog> findAllByGiverId(Pageable pageable, long memberId) {
     long findMemberId = memberFindService.findById(memberId).getId();
     return meritLogRepository.findAllByGiverId(pageable, findMemberId);
+  }
+
+  private void updateMemberMeritDemerit(Member member, MeritType meritType) {
+    if (meritType.getIsMerit()) {
+      member.updateMerit(meritType.getMerit());
+    } else {
+      member.updateDemerit(meritType.getMerit());
+    }
   }
 }
