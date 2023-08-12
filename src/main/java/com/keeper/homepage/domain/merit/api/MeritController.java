@@ -12,9 +12,12 @@ import com.keeper.homepage.domain.merit.dto.response.SearchMemberMeritLogRespons
 import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -33,20 +36,22 @@ public class MeritController {
 
   @GetMapping
   public ResponseEntity<Page<SearchMeritLogListResponse>> searchMeritLogList(
-      @PageableDefault(size = 10) Pageable pageable
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity
-        .ok(meritLogService.findAll(pageable)
+        .ok(meritLogService.findAll(PageRequest.of(page, size))
             .map(SearchMeritLogListResponse::from));
   }
 
   @GetMapping("/members/{memberId}")
   public ResponseEntity<Page<SearchMemberMeritLogResponse>> findMeritLogByMemberId(
       @PathVariable long memberId,
-      @PageableDefault(size = 10) Pageable pageable
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity.ok(
-        meritLogService.findByGiver_Id(pageable, memberId)
+        meritLogService.findAllByGiverId(PageRequest.of(page, size), memberId)
             .map(SearchMemberMeritLogResponse::from));
   }
 
@@ -64,8 +69,10 @@ public class MeritController {
 
   @GetMapping("/types")
   public ResponseEntity<Page<MeritTypeResponse>> searchMeritType(
-      @PageableDefault(size = 10) Pageable pageable) {
-    return ResponseEntity.ok(meritTypeService.findAll(pageable)
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
+  ) {
+    return ResponseEntity.ok(meritTypeService.findAll(PageRequest.of(page, size))
         .map(MeritTypeResponse::from));
   }
 

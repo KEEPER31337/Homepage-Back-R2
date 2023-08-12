@@ -63,7 +63,7 @@ class MeritLogServiceTest extends IntegrationTest {
 
       Page<MeritLog> meritLogs = meritLogService.findAll(PageRequest.of(0, 10));
 
-      assertThat(meritLogs.stream()
+      assertThat(meritLogs
           .map(MeritLog::getId)
           .toList()).contains(meritLogId, otherMeritLogId);
 
@@ -78,10 +78,10 @@ class MeritLogServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<MeritLog> meritLogPage = meritLogService.findByGiver_Id(PageRequest.of(0, 10),
+      Page<MeritLog> meritLogPage = meritLogService.findAllByGiverId(PageRequest.of(0, 10),
           giver.getId());
 
-      assertThat(meritLogPage.stream()
+      assertThat(meritLogPage
           .map(MeritLog::getId)
           .toList())
           .contains(meritLogId, otherMeritLogId);

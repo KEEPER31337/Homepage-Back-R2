@@ -52,7 +52,7 @@ public class MeritLogRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<MeritLog> pages = meritLogRepository.findByGiver_Id(PageRequest.of(0, 10),
+      Page<MeritLog> pages = meritLogRepository.findAllByGiverId(PageRequest.of(0, 10),
           giver.getId());
 
       assertThat(pages.stream().map(MeritLog::getId).collect(toList()))

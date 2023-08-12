@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MeritLogRepository extends JpaRepository<MeritLog, Long> {
-  Page<MeritLog> findByGiver_Id(Pageable pageable, Long memberId);
+  Page<MeritLog> findAllByGiverId(Pageable pageable, Long memberId);
 }
