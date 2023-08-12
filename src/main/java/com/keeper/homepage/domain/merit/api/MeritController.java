@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/merits")
 @RequiredArgsConstructor
-@Secured({"ROLE_회장", "ROLE_부회장", "ROLE_사서"})
+@Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
 public class MeritController {
 
   private final MeritTypeService meritTypeService;

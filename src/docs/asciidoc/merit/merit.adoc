@@ -127,7 +127,7 @@ include::{snippets}/create-meritType/request-fields.adoc[]
 
 include::{snippets}/create-meritType/http-response.adoc[]
 
-== *api 이름*
+== *상벌점 타입 수정*
 
 === 요청
 
