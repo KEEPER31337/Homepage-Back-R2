@@ -60,3 +60,11 @@ link:attendance/attendance.html[API 문서 보기]
 link:ctf/ctf-team.html[CTF TEAM API 문서 보기]
 
 link:ctf/ctf-contest.html[CTF CONTEST API 문서 보기]
+
+== *MERIT API*
+
+link:merit/merit.html[MERIT API 문서 보기]
+
+== *POiNT API*
+
+link:point/point.html[POINT API 문서 보기]
