@@ -1,8 +1,10 @@
 package com.keeper.homepage.domain.point.application;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.point.entity.PointLog;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,18 @@ public class PointLogService {
         .point(attendance.getTotalPoint())
         .detail(ATTENDANCE_POINT_MESSAGE)
         .isSpent(true)
+        .build());
+  }
+
+  @Transactional
+  public void create(Member member, int point, String message) {
+    boolean isSpent = point > 0;
+    pointLogRepository.save(PointLog.builder()
+        .time(LocalDateTime.now())
+        .member(member)
+        .point(point)
+        .detail(message)
+        .isSpent(isSpent)
         .build());
   }
 }
