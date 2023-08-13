@@ -1,12 +1,15 @@
 package com.keeper.homepage.global.util.thumbnail.server;
 
+import static com.keeper.homepage.global.util.thumbnail.server.ThumbnailServerValidator.checkInvalidImageFile;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.FileCopyUtils;
 
 class ThumbnailServerValidatorTest {
 
@@ -17,7 +20,10 @@ class ThumbnailServerValidatorTest {
         "fakeImage.png", "image/png",
         new FileInputStream("src/test/resources/images/fakeImage.png"));
 
-    assertThatThrownBy(() -> ThumbnailServerValidator.checkInvalidImageFile(fakeImageFile))
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    FileCopyUtils.copy(fakeImageFile.getInputStream(), outputStream);
+
+    assertThatThrownBy(() -> checkInvalidImageFile(outputStream.toByteArray(), fakeImageFile.getOriginalFilename()))
         .isInstanceOf(IllegalArgumentException.class);
   }
 }

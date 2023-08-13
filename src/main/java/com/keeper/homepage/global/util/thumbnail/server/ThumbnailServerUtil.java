@@ -13,6 +13,8 @@ import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import com.keeper.homepage.global.util.thumbnail.exception.ThumbnailException;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -48,16 +51,23 @@ class ThumbnailServerUtil extends ThumbnailUtil {
   }
 
   private Thumbnail trySave(MultipartFile file, ThumbnailType type) throws IOException {
-    checkInvalidImageFile(file);
+    byte[] fileData = getFileData(file);
+    checkInvalidImageFile(fileData, file.getOriginalFilename());
     FileEntity fileEntity = fileUtil.saveFile(file).orElseThrow(RuntimeException::new);
     String fullPath = ThumbnailServerPathGenerator.generate();
-    tryResizingAndSave(fullPath, file, type);
+    tryResizingAndSave(fullPath, fileData, type);
     return saveThumbnailEntity(fullPath, type, fileEntity);
   }
 
-  private static void tryResizingAndSave(String path, MultipartFile file, ThumbnailType type)
+  private static byte[] getFileData(MultipartFile file) throws IOException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    FileCopyUtils.copy(file.getInputStream(), outputStream);
+    return outputStream.toByteArray();
+  }
+
+  private static void tryResizingAndSave(String path, byte[] fileData, ThumbnailType type)
       throws IOException {
-    BufferedImage bufferedImage = ImageIO.read(new BufferedInputStream(file.getInputStream()));
+    BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(fileData));
     BufferedImage resizingBufferedImage = type.resizing(bufferedImage);
     File thumbnail = new File(path);
     ImageIO.write(resizingBufferedImage, THUMBNAIL_EXTENSION.substring(1), thumbnail);
