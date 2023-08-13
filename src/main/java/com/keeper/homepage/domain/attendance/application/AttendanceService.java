@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.attendance.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_ALREADY;
-import static java.util.Comparator.comparing;
 
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
 import com.keeper.homepage.domain.attendance.dto.response.AttendanceResponse;
@@ -61,7 +60,7 @@ public class AttendanceService {
         .member(member)
         .build();
     attendanceRepository.save(attendance);
-    pointLogService.create(attendance);
+    pointLogService.createAttendanceLog(attendance);
   }
 
   private void checkAlreadyAttendance(Member member) {

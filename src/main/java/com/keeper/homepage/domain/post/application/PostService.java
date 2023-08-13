@@ -14,6 +14,7 @@ import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
@@ -59,6 +60,7 @@ public class PostService {
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
   private final MemberFindService memberFindService;
+  private final PointLogService pointLogService;
 
   private static final String ANONYMOUS_NAME = "익명";
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
@@ -183,6 +185,7 @@ public class PostService {
     if (post.isCategory(시험게시판) && !member.isRead(post)) {
       member.read(post);
       member.minusPoint(EXAM_READ_DEDUCTION_POINT);
+      pointLogService.createExamLog(member, EXAM_READ_DEDUCTION_POINT);
     }
     return post.getPostHasFiles()
         .stream()
