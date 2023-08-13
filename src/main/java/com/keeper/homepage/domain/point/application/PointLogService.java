@@ -35,7 +35,7 @@ public class PointLogService {
     pointLogRepository.save(PointLog.builder()
         .time(LocalDateTime.now())
         .member(member)
-        .point(point)
+        .point(-point)
         .detail(EXAM_READ_POINT_MESSAGE)
         .isSpent(false)
         .build());
