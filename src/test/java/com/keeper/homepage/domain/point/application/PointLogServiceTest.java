@@ -60,5 +60,17 @@ class PointLogServiceTest extends IntegrationTest {
     }
   }
 
+  @Nested
+  @DisplayName("포인트 내역 조회 테스트")
+  class findPointLogTest {
+
+    @Test
+    @DisplayName("포인트 내역 조회를 성공해야 한다.")
+    void 포인트_내역_조회를_성공해야_한다() {
+
+    }
+  }
+
+
 
 }
