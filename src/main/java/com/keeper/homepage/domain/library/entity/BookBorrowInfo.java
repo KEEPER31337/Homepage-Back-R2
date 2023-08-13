@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.library.entity;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
 import static jakarta.persistence.FetchType.LAZY;
@@ -52,15 +53,20 @@ public class BookBorrowInfo extends BaseEntity {
   @Column(name = "expire_date", nullable = false)
   private LocalDateTime expireDate;
 
+  @Column(name = "last_request_date", nullable = true)
+  private LocalDateTime lastRequestDate;
+
   @Builder
   private BookBorrowInfo(Member member, Book book, BookBorrowStatus borrowStatus,
       LocalDateTime borrowDate,
-      LocalDateTime expireDate) {
+      LocalDateTime expireDate,
+      LocalDateTime lastRequestDate) {
     this.member = member;
     this.book = book;
     this.borrowStatus = borrowStatus;
     this.borrowDate = borrowDate;
     this.expireDate = expireDate;
+    this.lastRequestDate = lastRequestDate;
   }
 
   public Long getId() {
@@ -87,12 +93,34 @@ public class BookBorrowInfo extends BaseEntity {
     return expireDate;
   }
 
+  public LocalDateTime getLastRequestDate() {
+    return lastRequestDate;
+  }
+
+  public boolean isCanBorrow() {
+    BookBorrowStatusType type = getBorrowStatus().getType();
+    return type.equals(대출대기중) || isInBorrowing();
+  }
+
   public boolean isInBorrowing() {
     BookBorrowStatusType type = getBorrowStatus().getType();
     return type.equals(대출승인) || type.equals(반납대기중);
   }
 
+  public boolean isReadyToReturn(BookBorrowStatusType type) {
+    type = getBorrowStatus().getType();
+    return 대출승인.equals(type);
+  }
+
   public void changeBorrowStatus(BookBorrowStatusType type) {
     this.borrowStatus = BookBorrowStatus.getBookBorrowStatusBy(type);
+  }
+
+  public void changeLastRequestDate(LocalDateTime lastRequestDate) {
+    this.lastRequestDate = lastRequestDate;
+  }
+
+  public boolean isMine(Member member) {
+    return this.member.equals(member);
   }
 }

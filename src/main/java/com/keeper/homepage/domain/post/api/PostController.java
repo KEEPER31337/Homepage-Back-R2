@@ -4,9 +4,13 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
-import com.keeper.homepage.domain.post.dto.response.PostListResponse;
+import com.keeper.homepage.domain.post.dto.response.FileResponse;
+import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
+import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
+import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
@@ -19,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/posts")
@@ -64,6 +70,16 @@ public class PostController {
     PostDetailResponse postDetailResponse = postService.find(member, postId, password);
     return ResponseEntity.status(HttpStatus.OK)
         .body(postDetailResponse);
+  }
+
+  @GetMapping("/{postId}/files")
+  public ResponseEntity<List<FileResponse>> getPostFiles(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    List<FileResponse> responses = postService.getFiles(member, postId);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(responses);
   }
 
   @PutMapping("/{postId}")
@@ -166,13 +182,33 @@ public class PostController {
   }
 
   @GetMapping("/recent")
-  public ResponseEntity<List<PostResponse>> getRecentPosts() {
+  public ResponseEntity<List<MainPostResponse>> getRecentPosts() {
     return ResponseEntity.ok(postService.getRecentPosts());
   }
 
 
   @GetMapping("/trend")
-  public ResponseEntity<List<PostResponse>> getTrendPosts() {
+  public ResponseEntity<List<MainPostResponse>> getTrendPosts() {
     return ResponseEntity.ok(postService.getTrendPosts());
+  }
+
+  @GetMapping("/members/{memberId}")
+  public ResponseEntity<Page<MemberPostResponse>> getMemberPosts(
+      @PathVariable long memberId,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    Page<MemberPostResponse> responses = postService.getMemberPosts(memberId, PageRequest.of(page, size));
+    return ResponseEntity.ok(responses);
+  }
+
+  @GetMapping("/temp")
+  public ResponseEntity<Page<TempPostResponse>> getTempPosts(
+      @LoginMember Member member,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+  ) {
+    Page<TempPostResponse> responses = postService.getTempPosts(member, PageRequest.of(page, size));
+    return ResponseEntity.ok(responses);
   }
 }

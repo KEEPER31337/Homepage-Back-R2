@@ -31,6 +31,7 @@ import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
+import com.keeper.homepage.domain.member.entity.post.MemberReadPost;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.point.entity.PointLog;
@@ -132,6 +133,9 @@ public class Member {
   private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  private final Set<MemberReadPost> postReads = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -202,6 +206,18 @@ public class Member {
         .book(book)
         .borrowStatus(borrowStatus)
         .build());
+  }
+
+  public void read(Post post) {
+    postReads.add(MemberReadPost.builder()
+        .member(this)
+        .post(post)
+        .build());
+  }
+
+  public boolean isRead(Post post) {
+    return postReads.stream()
+        .anyMatch(postRead -> postRead.getPost().equals(post));
   }
 
   public void like(Post post) {
@@ -334,7 +350,7 @@ public class Member {
 
   public long getCountInBorrowing() {
     return this.bookBorrowInfos.stream()
-        .filter(BookBorrowInfo::isInBorrowing)
+        .filter(BookBorrowInfo::isCanBorrow)
         .count();
   }
 

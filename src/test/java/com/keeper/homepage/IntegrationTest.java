@@ -25,6 +25,7 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
+import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
 import com.keeper.homepage.domain.election.ElectionTestHelper;
 import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
 import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
@@ -32,8 +33,12 @@ import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
 import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
+import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
 import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
 import com.keeper.homepage.domain.ctf.application.CtfTeamService;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeCategoryRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeTypeRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
@@ -70,7 +75,6 @@ import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
-import com.keeper.homepage.domain.post.CategoryTestHelper;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
@@ -263,6 +267,15 @@ public class IntegrationTest {
 
   @Autowired
   protected MeritTypeRepository meritTypeRepository;
+  
+  @Autowired
+  protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
+
+  @Autowired
+  protected CtfChallengeTypeRepository ctfChallengeTypeRepository;
+
+  @Autowired
+  protected CtfChallengeRepository ctfChallengeRepository;
 
   /******* Service *******/
   @SpyBean
@@ -360,9 +373,6 @@ public class IntegrationTest {
   protected SeminarTestHelper seminarTestHelper;
 
   @Autowired
-  protected CategoryTestHelper categoryTestHelper;
-
-  @Autowired
   protected PostTestHelper postTestHelper;
 
   @Autowired
@@ -400,6 +410,12 @@ public class IntegrationTest {
 
   @Autowired
   protected MeritTypeHelper meritTypeHelper;
+  
+  @Autowired
+  protected CtfChallengeTestHelper ctfChallengeTestHelper;
+
+  @Autowired
+  protected CtfFlagTestHelper ctfFlagTestHelper;
 
   /******* Util *******/
   @SpyBean

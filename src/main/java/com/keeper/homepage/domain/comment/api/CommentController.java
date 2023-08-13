@@ -1,15 +1,12 @@
 package com.keeper.homepage.domain.comment.api;
 
-import static com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest.MAX_REQUEST_COMMENT_LENGTH;
-
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
+import com.keeper.homepage.domain.comment.dto.request.CommentUpdateRequest;
 import com.keeper.homepage.domain.comment.dto.response.CommentListResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,7 +33,7 @@ public class CommentController {
       @LoginMember Member member,
       @RequestBody @Valid CommentCreateRequest request
   ) {
-    commentService.create(member, request);
+    commentService.create(member, request.getPostId(), request.getParentId(), request.getContent());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/comments/posts/" + request.getPostId()))
         .build();
@@ -45,9 +41,10 @@ public class CommentController {
 
   @GetMapping("/posts/{postId}")
   public ResponseEntity<CommentListResponse> getComments(
+      @LoginMember Member member,
       @PathVariable Long postId
   ) {
-    CommentListResponse comments = commentService.getComments(postId);
+    CommentListResponse comments = commentService.getComments(member, postId);
     return ResponseEntity.ok(comments);
   }
 
@@ -55,9 +52,9 @@ public class CommentController {
   public ResponseEntity<Void> updateComment(
       @LoginMember Member member,
       @PathVariable Long commentId,
-      @RequestParam @NotBlank @Size(max = MAX_REQUEST_COMMENT_LENGTH) String content
+      @RequestBody @Valid CommentUpdateRequest request
   ) {
-    long postId = commentService.update(member, commentId, content);
+    long postId = commentService.update(member, commentId, request.getContent());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/comments/posts/" + postId))
         .build();

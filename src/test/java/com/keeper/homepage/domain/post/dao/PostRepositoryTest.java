@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.post.dao;
 
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
@@ -117,7 +119,7 @@ public class PostRepositoryTest extends IntegrationTest {
       Post post = postRepository.save(Post.builder()
           .title("게시글 제목")
           .content("게시글 내용")
-          .category(categoryTestHelper.generate())
+          .category(getCategoryBy(자유게시판))
           .ipAddress(WebUtil.getUserIP())
           .member(member)
           .build()

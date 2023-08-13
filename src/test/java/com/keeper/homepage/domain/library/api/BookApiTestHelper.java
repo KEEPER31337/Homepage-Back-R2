@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.library.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
@@ -42,6 +43,12 @@ public class BookApiTestHelper extends IntegrationTest {
       throws Exception {
     return mockMvc.perform(get("/books/book-borrows")
         .params(params)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
+  ResultActions callRequestReturnBookApi(String accessToken, long borrowId)
+    throws Exception {
+    return mockMvc.perform(patch("/books/borrows/{borrowId}/request-return", borrowId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 

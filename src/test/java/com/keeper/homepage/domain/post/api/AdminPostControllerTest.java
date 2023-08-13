@@ -2,6 +2,8 @@ package com.keeper.homepage.domain.post.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -34,7 +36,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
     post = postTestHelper.generate();
-    category = categoryTestHelper.generate();
+    category = getCategoryBy(자유게시판);
   }
 
   @Nested

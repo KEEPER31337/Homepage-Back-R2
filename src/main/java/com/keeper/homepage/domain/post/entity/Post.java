@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.post.entity;
 
+import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
@@ -12,6 +13,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -105,9 +107,8 @@ public class Post extends BaseEntity {
   private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @Builder
-  private Post(String title, String content, Member member, Integer visitCount, String ipAddress,
-      Boolean allowComment, Boolean isNotice, Boolean isSecret, Boolean isTemp, String password,
-      Category category, Thumbnail thumbnail) {
+  private Post(String title, String content, Member member, Integer visitCount, String ipAddress, Boolean allowComment,
+      Boolean isNotice, Boolean isSecret, Boolean isTemp, String password, Category category, Thumbnail thumbnail) {
     this.title = title;
     this.content = content;
     this.member = member;
@@ -141,8 +142,8 @@ public class Post extends BaseEntity {
     this.visitCount++;
   }
 
-  public boolean isCategory(long categoryId) {
-    return this.category.getId().equals(categoryId);
+  public boolean isCategory(CategoryType category) {
+    return this.category.equals(getCategoryBy(category));
   }
 
   public boolean isMine(Member member) {

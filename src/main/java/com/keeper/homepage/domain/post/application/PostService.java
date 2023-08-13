@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.ANONYMOUS_CATEGORY;
-import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.EXAM_CATEGORY;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
@@ -12,16 +12,22 @@ import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FO
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.file.entity.FileEntity;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.dto.response.FileResponse;
+import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
+import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
+import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
@@ -32,6 +38,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -51,9 +58,11 @@ public class PostService {
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
+  private final MemberFindService memberFindService;
 
-  public static final String ANONYMOUS_NAME = "익명";
-  public static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final String ANONYMOUS_NAME = "익명";
+  private static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final int EXAM_READ_DEDUCTION_POINT = 10000;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
@@ -111,16 +120,19 @@ public class PostService {
     //visitCountValidation(post, request, response); TODO: 게시글 조회수 중복 방지 기능 구현
     post.addVisitCount();
 
-    String writerName = getWriterName(post);
-    String writerThumbnailPath = getWriterThumbnailPath(post);
-
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
-    return PostDetailResponse.of(post, writerName, writerThumbnailPath, previousPost, nextPost);
+    boolean isLike = member.isLike(post);
+    boolean isDislike = member.isDislike(post);
+
+    if (post.isCategory(익명게시판)) {
+      return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLike, isDislike, previousPost, nextPost);
+    }
+    return PostDetailResponse.of(post, isLike, isDislike, previousPost, nextPost);
   }
 
   private void checkExamPost(Member member, Post post) {
-    if (post.isCategory(EXAM_CATEGORY.getId())) {
+    if (post.isCategory(시험게시판)) {
       checkAccessibleExamPost(member, post);
     }
   }
@@ -164,18 +176,19 @@ public class PostService {
     throw new BusinessException(password, "password", POST_PASSWORD_MISMATCH);
   }
 
-  private String getWriterName(Post post) {
-    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
-      return ANONYMOUS_NAME;
-    }
-    return post.getWriterNickname();
-  }
+  @Transactional
+  public List<FileResponse> getFiles(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
 
-  private String getWriterThumbnailPath(Post post) {
-    if (post.isCategory(ANONYMOUS_CATEGORY.getId())) {
-      return null;
+    if (post.isCategory(시험게시판) && !member.isRead(post)) {
+      member.read(post);
+      member.minusPoint(EXAM_READ_DEDUCTION_POINT);
     }
-    return post.getMember().getThumbnailPath();
+    return post.getPostHasFiles()
+        .stream()
+        .map(PostHasFile::getFile)
+        .map(FileResponse::from)
+        .toList();
   }
 
   @Transactional
@@ -215,6 +228,7 @@ public class PostService {
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
   }
 
+  @Transactional
   public void delete(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
@@ -282,35 +296,49 @@ public class PostService {
     Category category = categoryFindService.findById(categoryId);
     if (searchType == null) {
       return postRepository.findAllRecentByCategory(category, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("title")) {
       return postRepository.findAllRecentByCategoryAndTitle(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("content")) {
       return postRepository.findAllRecentByCategoryAndContent(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("writer")) {
       return postRepository.findAllRecentByCategoryAndWriter(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     if (searchType.equals("title+content")) {
       return postRepository.findAllRecentByCategoryAndTitleOrContent(category, search, pageable)
-          .map(PostResponse::from);
+          .map(this::getPostResponse);
     }
     throw new BusinessException(searchType, "searchType", POST_SEARCH_TYPE_NOT_FOUND);
   }
 
-  public List<PostResponse> getRecentPosts() {
+  private PostResponse getPostResponse(Post post) {
+    if (post.isCategory(익명게시판)) {
+      return PostResponse.of(post, ANONYMOUS_NAME, null);
+    }
+    return PostResponse.from(post);
+  }
+
+  private MainPostResponse getMainPostResponse(Post post) {
+    if (post.isCategory(익명게시판)) {
+      return MainPostResponse.of(post, ANONYMOUS_NAME, null);
+    }
+    return MainPostResponse.from(post);
+  }
+
+  public List<MainPostResponse> getRecentPosts() {
     return postRepository.findAllRecent().stream()
-        .map(PostResponse::from)
+        .map(this::getMainPostResponse)
         .limit(10)
         .toList();
   }
 
-  public List<PostResponse> getTrendPosts() {
+  public List<MainPostResponse> getTrendPosts() {
     LocalDateTime startDateTime = LocalDateTime.now().minusWeeks(2);
     LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
     List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
@@ -320,12 +348,23 @@ public class PostService {
       return Integer.compare(postScore2, postScore1);
     });
     return posts.stream()
-        .map(PostResponse::from)
+        .map(this::getMainPostResponse)
         .limit(10)
         .toList();
   }
 
   private int getPostScore(Post post) {
     return post.getVisitCount() + post.getPostLikes().size() * 2 - post.getPostDislikes().size();
+  }
+
+  public Page<MemberPostResponse> getMemberPosts(long memberId, Pageable pageable) {
+    Member member = memberFindService.findById(memberId);
+    return postRepository.findAllByMemberAndIsTempFalse(member, pageable)
+        .map(MemberPostResponse::from);
+  }
+
+  public Page<TempPostResponse> getTempPosts(Member member, Pageable pageable) {
+    return postRepository.findAllByMemberAndIsTempTrue(member, pageable)
+        .map(TempPostResponse::from);
   }
 }
