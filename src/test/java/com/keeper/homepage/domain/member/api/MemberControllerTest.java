@@ -11,23 +11,23 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
-import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -153,6 +153,56 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               responseFields(
                   pageHelper(getPointRankResponse())
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 팔로우 언팔로우 테스트")
+  class FriendTest {
+
+    private String memberToken;
+    private long memberId;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      memberId = memberTestHelper.generate().getId();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 회원 팔로우는 성공한다.")
+    public void 유효한_요청일_경우_회원_팔로우는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "follow");
+
+      mockMvc.perform(post("/members/{memberId}/follow", memberId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isCreated())
+          .andDo(document("follow-member",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId").description("회원 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 회원 언팔로우는 성공한다.")
+    public void 유효한_요청일_경우_회원_언팔로우는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "unfollow");
+
+      mockMvc.perform(delete("/members/{memberId}/unfollow", memberId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isNoContent())
+          .andDo(document("unfollow-member",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId").description("회원 ID")
               )));
     }
   }
