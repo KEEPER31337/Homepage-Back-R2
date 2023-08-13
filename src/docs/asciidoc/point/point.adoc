@@ -34,3 +34,25 @@ include::{snippets}/create-presentPointLog/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/create-presentPointLog/http-response.adoc[]
+
+== *포인트 내역 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-pointLogs/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-pointLogs/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-pointLogs/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-pointLogs/response-fields.adoc[]
