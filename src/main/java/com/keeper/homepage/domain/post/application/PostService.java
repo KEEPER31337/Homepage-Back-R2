@@ -185,7 +185,6 @@ public class PostService {
     if (post.isCategory(시험게시판) && !member.isRead(post)) {
       member.read(post);
       member.minusPoint(EXAM_READ_DEDUCTION_POINT);
-      pointLogService.createExamLog(member, EXAM_READ_DEDUCTION_POINT);
     }
     return post.getPostHasFiles()
         .stream()

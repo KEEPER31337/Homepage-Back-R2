@@ -107,7 +107,8 @@ class GameControllerTest : GameApiTestHelper() {
         @Test
         fun `베팅 포인트가 10포인트 이상, 1000포인트 이하면 게임이 시작된다`() {
             player.addPoint(1000)
-            memberRepository.save(player)
+            em.flush()
+            em.clear()
 
             val result = callBaseballStart(1000)
                 .andExpect(status().isNoContent)
