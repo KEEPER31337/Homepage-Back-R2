@@ -145,8 +145,8 @@ public class AttendanceControllerTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("유효한 요청일 경우 오늘 춣석 포인트 조회는 성공한다.")
-    public void 유효한_요청일_경우_오늘_춣석_포인트_조회는_성공한다() throws Exception {
+    @DisplayName("유효한 요청일 경우 오늘 출석 포인트 조회는 성공한다.")
+    public void 유효한_요청일_경우_오늘_출석_포인트_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AttendanceController.class, "getTodayAttendancePoint");
 
       mockMvc.perform(get("/attendances/point")
@@ -223,7 +223,7 @@ public class AttendanceControllerTest extends IntegrationTest {
               ),
               responseFields(
                   fieldWithPath("[].id").description("출석 ID"),
-                  fieldWithPath("[].date").description("춣석 날짜")
+                  fieldWithPath("[].date").description("출석 날짜")
               )));
     }
   }
