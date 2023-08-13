@@ -30,14 +30,14 @@ public class PointLogService {
   }
 
   @Transactional
-  public void create(Member member, int point, String message) {
+  public Long create(Member member, int point, String message) {
     boolean isSpent = point < 0;
-    pointLogRepository.save(PointLog.builder()
+    return pointLogRepository.save(PointLog.builder()
         .time(LocalDateTime.now())
         .member(member)
         .point(point)
         .detail(message)
         .isSpent(isSpent)
-        .build());
+        .build()).getId();
   }
 }
