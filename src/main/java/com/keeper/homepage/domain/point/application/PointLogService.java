@@ -31,7 +31,7 @@ public class PointLogService {
 
   @Transactional
   public void create(Member member, int point, String message) {
-    boolean isSpent = point > 0;
+    boolean isSpent = point < 0;
     pointLogRepository.save(PointLog.builder()
         .time(LocalDateTime.now())
         .member(member)

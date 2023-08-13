@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.point.application;
 
-import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -12,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class GiverPointService {
+public class GivePointService {
 
   private final MemberRepository memberRepository;
   private final MemberFindService memberFindService;
@@ -20,7 +19,7 @@ public class GiverPointService {
   private final PointLogService pointLogService;
 
   @Transactional
-  public void GivePoint(long giverId, long receiverId, int point, String message) {
+  public void givePoint(long giverId, long receiverId, int point, String message) {
 
     Member giver = memberFindService.findById(giverId);
     Member receiver = memberFindService.findById(receiverId);
@@ -28,7 +27,7 @@ public class GiverPointService {
     giver.minusPoint(point);
     receiver.plusPoint(point);
 
-    pointLogService.create(giver, point, message);
+    pointLogService.create(giver, -point, message);
     pointLogService.create(receiver, point, message);
 
 
