@@ -25,8 +25,8 @@ public class GivePointService {
     giver.minusPoint(point);
     receiver.plusPoint(point);
 
-    pointLogService.create(giver, -point, message);
-    pointLogService.create(receiver, point, message);
+    pointLogService.create(giver, receiver, -point, message);
+    pointLogService.create(receiver, null, point, message);
 
 
   }

@@ -38,8 +38,8 @@ class PointLogServiceTest extends IntegrationTest {
     @Test
     @DisplayName("선물 포인트 로그가 만들어져야 한다.")
     void 선물_포인트_로그가_만들어져야_한다() {
-      Long giverPointLogId = pointLogService.create(giver, -GIVEPOINT, GIVEMESSAGE);
-      Long receiverPointLogId = pointLogService.create(receiver, GIVEPOINT, GIVEMESSAGE);
+      Long giverPointLogId = pointLogService.create(giver, receiver, -GIVEPOINT, GIVEMESSAGE);
+      Long receiverPointLogId = pointLogService.create(receiver, null, GIVEPOINT, GIVEMESSAGE);
 
       em.flush();
       em.clear();
@@ -52,6 +52,9 @@ class PointLogServiceTest extends IntegrationTest {
 
       assertThat(findGiverPointLog.getMember().getId()).isEqualTo(giverId);
       assertThat(findReceiverPointLog.getMember().getId()).isEqualTo(receiverId);
+
+      assertThat(findGiverPointLog.getPresented().getId()).isEqualTo(receiverId);
+      assertThat(findReceiverPointLog.getPresented()).isNull();
 
       assertThat(findGiverPointLog.getDetail()).isEqualTo(GIVEMESSAGE);
       assertThat(findReceiverPointLog.getDetail()).isEqualTo(GIVEMESSAGE);
