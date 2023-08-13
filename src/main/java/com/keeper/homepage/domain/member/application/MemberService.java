@@ -43,4 +43,16 @@ public class MemberService {
     return memberRepository.findAllByIdIsNotOrderByPointDesc(VIRTUAL_MEMBER_ID, pageable)
         .map(MemberPointRankResponse::from);
   }
+
+  @Transactional
+  public void follow(Member member, long memberId) {
+    Member other = memberFindService.findById(memberId);
+    member.follow(other);
+  }
+
+  @Transactional
+  public void unfollow(Member member, long memberId) {
+    Member other = memberFindService.findById(memberId);
+    member.unfollow(other);
+  }
 }
