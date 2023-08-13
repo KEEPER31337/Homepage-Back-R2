@@ -82,3 +82,83 @@ include::{snippets}/get-continuous-attendance-ranks/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-continuous-attendance-ranks/response-fields.adoc[]
+
+== *당일 출석 포인트 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-today-attendance-point/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-today-attendance-point/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-today-attendance-point/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-today-attendance-point/response-fields.adoc[]
+
+== *출석 정보 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-attendance-info/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-attendance-info/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-attendance-info/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-attendance-info/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-attendance-info/response-fields.adoc[]
+
+== *출석 정보 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-total-attendance/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-total-attendance/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-total-attendance/path-parameters.adoc[]
+
+==== Query Parameters
+
+NOTE: 보낸 날짜로부터 1년 전 ~ 오늘까지의 출석 정보를 조회합니다.
+
+include::{snippets}/get-total-attendance/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-total-attendance/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-total-attendance/response-fields.adoc[]
