@@ -13,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GivePointService {
 
-  private final MemberRepository memberRepository;
   private final MemberFindService memberFindService;
-  private final PointLogRepository pointLogRepository;
   private final PointLogService pointLogService;
 
   @Transactional
