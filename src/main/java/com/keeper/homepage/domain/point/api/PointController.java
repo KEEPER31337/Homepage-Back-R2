@@ -41,7 +41,7 @@ public class PointController {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
-  @GetMapping()
+  @GetMapping
   public ResponseEntity<Page<FindAllPointLogsResponse>> findAllPointLogs(
       @RequestParam(defaultValue = "0") @PositiveOrZero int size,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int page
