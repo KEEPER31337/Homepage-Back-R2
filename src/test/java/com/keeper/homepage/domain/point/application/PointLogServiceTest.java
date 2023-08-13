@@ -11,11 +11,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 class PointLogServiceTest extends IntegrationTest {
 
   private Member giver, receiver;
   private long giverId, receiverId;
+  private long pointLogId, otherPointLogId;
 
   private static final int GIVEPOINT = 1000;
   private static final String GIVEMESSAGE = "TEST MESSAGE";
@@ -64,13 +67,26 @@ class PointLogServiceTest extends IntegrationTest {
   @DisplayName("포인트 내역 조회 테스트")
   class findPointLogTest {
 
+    @BeforeEach
+    void setUp() {
+      pointLogId = pointLogTestHelper.generate().getId();
+      otherPointLogId = pointLogTestHelper.generate().getId();
+    }
+
     @Test
     @DisplayName("포인트 내역 조회를 성공해야 한다.")
     void 포인트_내역_조회를_성공해야_한다() {
+      em.flush();
+      em.clear();
 
+      Page<PointLog> findPointLogPages = pointLogService.findAllPointLogs(PageRequest.of(0, 10));
+
+      assertThat(findPointLogPages
+          .map(PointLog::getId)
+          .toList())
+          .contains(pointLogId, otherPointLogId);
     }
   }
-
 
 
 }
