@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.point.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.keeper.homepage.domain.point.entity.PointLog;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ public class FindAllPointLogsResponse {
 
   private int point;
   private String description;
-  @DateTimeFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
 
   public static FindAllPointLogsResponse from(PointLog pointLog) {
