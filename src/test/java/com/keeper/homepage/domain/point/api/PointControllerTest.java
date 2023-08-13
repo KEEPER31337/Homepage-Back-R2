@@ -8,12 +8,14 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.point.dto.request.presentPointRequest;
+import com.keeper.homepage.domain.point.dto.response.FindAllPointLogsResponse;
 import com.keeper.homepage.global.config.security.data.JwtType;
 import com.keeper.homepage.global.restdocs.RestDocsHelper;
 import jakarta.servlet.http.Cookie;
@@ -36,15 +38,20 @@ class PointControllerTest extends IntegrationTest {
   private static final int GIVEPOINT = 1000;
   private static final String GIVEMESSAGE = "TEST MESSAGE";
 
+  @BeforeEach
+  void setUp() {
+    member = memberTestHelper.generate();
+    memberAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+  }
+
   @Nested
   @DisplayName("포인트 선물 API 테스트")
-  class presentPointTest {
+  class PresentPointTest {
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
-      memberAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     }
 
     @Test
@@ -73,4 +80,40 @@ class PointControllerTest extends IntegrationTest {
               )));
     }
   }
+
+  @Nested
+  @DisplayName("포인트 내역 조회 테스트")
+  class FindPointLogs {
+
+    @BeforeEach
+    void setUp() {
+      pointLogTestHelper.generate();
+      pointLogTestHelper.generate();
+      pointLogTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("포인트 내역 조회를 성공해야 한다.")
+    void 포인트_내역_조회를_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(PointController.class, "findAllPointLogs");
+
+      mockMvc.perform(get("/points")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberAccessToken)))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andDo(document("find-pointLogs",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(
+                  pageHelper(
+                      fieldWithPath("point").description("포인트 내역"),
+                      fieldWithPath("description").description("포인트 설명"),
+                      fieldWithPath("date").description("포인트 생성 날짜"))
+              )));
+
+    }
+  }
+
 }
