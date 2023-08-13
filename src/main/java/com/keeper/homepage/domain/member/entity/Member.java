@@ -350,7 +350,7 @@ public class Member {
 
   public long getCountInBorrowing() {
     return this.bookBorrowInfos.stream()
-        .filter(BookBorrowInfo::isInBorrowing)
+        .filter(BookBorrowInfo::isCanBorrow)
         .count();
   }
 
@@ -366,5 +366,13 @@ public class Member {
 
   public boolean isCreator(CtfTeam ctfTeam) {
     return this.equals(ctfTeam.getCreator());
+  }
+
+  public void updateMerit(int meritScore) {
+    this.meritDemerit.updateMerit(meritScore);
+  }
+
+  public void updateDemerit(int demeritScore) {
+    this.meritDemerit.updateDemerit(demeritScore);
   }
 }

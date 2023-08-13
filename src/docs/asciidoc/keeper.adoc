@@ -58,3 +58,5 @@ link:attendance/attendance.html[API 문서 보기]
 == *CTF API*
 
 link:ctf/ctf-team.html[CTF TEAM API 문서 보기]
+
+link:ctf/ctf-contest.html[CTF CONTEST API 문서 보기]

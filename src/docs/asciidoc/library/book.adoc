@@ -84,3 +84,23 @@ include::{snippets}/get-book-borrows/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-book-borrows/response-fields.adoc[]
+
+== *도서 반납 요청*
+
+=== 요청
+
+include::{snippets}/request-book-return/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/request-book-return/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/request-book-return/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/request-book-return/http-response.adoc[]

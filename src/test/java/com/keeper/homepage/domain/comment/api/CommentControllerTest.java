@@ -14,11 +14,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
+import com.keeper.homepage.domain.comment.dto.request.CommentUpdateRequest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -172,9 +172,12 @@ public class CommentControllerTest extends CommentApiTestHelper {
     @DisplayName("댓글 수정은 성공한다.")
     public void 댓글_수정은_성공한다() throws Exception {
       String securedValue = getSecuredValue(CommentController.class, "updateComment");
-      String content = "댓글 수정 내용";
 
-      callUpdateCommentApi(memberToken, commentId, content)
+      CommentUpdateRequest request = CommentUpdateRequest.builder()
+          .content("댓글 수정 내용")
+          .build();
+
+      callUpdateCommentApi(memberToken, commentId, request)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/comments/posts/" + postId))
           .andDo(document("update-comment",
@@ -186,9 +189,9 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   parameterWithName("commentId")
                       .description("수정하고자 하는 댓글의 ID")
               ),
-              queryParameters(
-                  parameterWithName("content")
-                      .description("수정하고자 하는 댓글의 내용")),
+              requestFields(
+                  fieldWithPath("content").description("댓글 내용")
+              ),
               responseHeaders(
                   headerWithName("Location").description("댓글 목록을 불러오는 URI 입니다.")
               )));

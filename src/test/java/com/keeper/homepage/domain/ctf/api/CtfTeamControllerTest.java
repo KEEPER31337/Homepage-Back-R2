@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.ctf.api;
 
-import static com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest.builder;
+import static com.keeper.homepage.domain.ctf.dto.request.team.CreateTeamRequest.builder;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
@@ -21,9 +21,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.ctf.dto.request.CreateTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.request.JoinTeamRequest;
-import com.keeper.homepage.domain.ctf.dto.request.UpdateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.team.CreateTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.team.JoinTeamRequest;
+import com.keeper.homepage.domain.ctf.dto.request.team.UpdateTeamRequest;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.member.entity.Member;

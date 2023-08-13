@@ -1,12 +1,17 @@
 package com.keeper.homepage.domain.library.application;
 
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_RETURN_DENY;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_APPROVAL;
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -16,6 +21,7 @@ import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,7 +38,8 @@ public class BookService {
   private final BookBorrowInfoRepository bookBorrowInfoRepository;
   public static final long MAX_BORROWING_COUNT = 5;
 
-  public Page<BookResponse> getBooks(Member member, String searchType, String search, PageRequest pageable) {
+  public Page<BookResponse> getBooks(Member member, String searchType, String search,
+      PageRequest pageable) {
     boolean isUnderBorrowingLimit = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
     if (searchType == null) {
       return bookRepository.findAll(pageable)
@@ -78,7 +85,8 @@ public class BookService {
   private void checkCurrentQuantity(Book book) {
     Long currentQuantity = book.getCurrentQuantity();
     if (currentQuantity == 0L) {
-      throw new BusinessException(currentQuantity, "currentQuantity", BOOK_CURRENT_QUANTITY_IS_ZERO);
+      throw new BusinessException(currentQuantity, "currentQuantity",
+          BOOK_CURRENT_QUANTITY_IS_ZERO);
     }
   }
 
@@ -86,8 +94,24 @@ public class BookService {
     Optional<BookBorrowInfo> bookBorrowInfo = bookBorrowInfoRepository
         .findByMemberAndBookAndBorrowStatus(member, book, getBookBorrowStatusBy(대출대기중));
     if (bookBorrowInfo.isPresent()) {
-      throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
+      throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId",
+          BORROW_REQUEST_ALREADY);
     }
+  }
+
+  @Transactional
+  public void requestReturn(Member member, long borrowId) {
+    BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
+        .findById(borrowId)
+        .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
+    if (!bookBorrowInfo.isReadyToReturn(대출승인)) {
+      throw new BusinessException(borrowId, "borrowId", BORROW_STATUS_IS_NOT_BORROW_APPROVAL);
+    }
+    if (!bookBorrowInfo.isMine(member)) {
+      throw new BusinessException(borrowId, "borrowId", BORROW_REQUEST_RETURN_DENY);
+    }
+    bookBorrowInfo.changeLastRequestDate(LocalDateTime.now());
+    bookBorrowInfo.changeBorrowStatus(반납대기중);
   }
 
   public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {

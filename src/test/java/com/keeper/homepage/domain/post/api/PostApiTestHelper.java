@@ -154,4 +154,41 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("registerTime").description("게시글 등록 시간")
     };
   }
+
+  FieldDescriptor[] getMainPostsResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("게시글 ID"),
+        fieldWithPath("title").description("게시글 제목"),
+        fieldWithPath("writerName").description("게시글 작성자 닉네임"),
+        fieldWithPath("writerThumbnailPath").description("게시글 작성자 썸네일 주소"),
+        fieldWithPath("categoryId").description("카테고리 ID"),
+        fieldWithPath("categoryName").description("카테고리 이름"),
+        fieldWithPath("visitCount").description("게시글 조회수"),
+        fieldWithPath("isSecret").description("비밀글 여부"),
+        fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
+        fieldWithPath("registerTime").description("게시글 등록 시간")
+    };
+  }
+
+  FieldDescriptor[] getMemberPostsResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("게시글 ID"),
+        fieldWithPath("title").description("게시글 제목"),
+        fieldWithPath("categoryId").description("게시글 카테고리 ID"),
+        fieldWithPath("categoryName").description("게시글 카테고리 이름"),
+        fieldWithPath("visitCount").description("게시글 조회수"),
+        fieldWithPath("isSecret").description("비밀글 여부"),
+        fieldWithPath("registerTime").description("게시글 등록 시간")
+    };
+  }
+
+  FieldDescriptor[] getTempPostsResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("게시글 ID"),
+        fieldWithPath("title").description("게시글 제목"),
+        fieldWithPath("categoryId").description("게시글 카테고리 ID"),
+        fieldWithPath("categoryName").description("게시글 카테고리 이름"),
+        fieldWithPath("registerTime").description("게시글 등록 시간")
+    };
+  }
 }

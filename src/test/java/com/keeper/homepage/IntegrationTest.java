@@ -68,6 +68,12 @@ import com.keeper.homepage.domain.member.dao.rank.MemberRankRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
+import com.keeper.homepage.domain.merit.MeritLogTestHelper;
+import com.keeper.homepage.domain.merit.MeritTypeHelper;
+import com.keeper.homepage.domain.merit.application.MeritLogService;
+import com.keeper.homepage.domain.merit.application.MeritTypeService;
+import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
+import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
@@ -103,10 +109,12 @@ import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import com.ninjasquad.springmockk.SpykBean;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Random;
+
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -255,6 +263,12 @@ public class IntegrationTest {
   protected PointLogRepository pointLogRepository;
 
   @Autowired
+  protected MeritLogRepository meritLogRepository;
+
+  @Autowired
+  protected MeritTypeRepository meritTypeRepository;
+  
+  @Autowired
   protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
 
   @Autowired
@@ -333,6 +347,12 @@ public class IntegrationTest {
   @SpyBean
   protected CtfTeamService ctfTeamService;
 
+  @SpyBean
+  protected MeritTypeService meritTypeService;
+
+  @SpyBean
+  protected MeritLogService meritLogService;
+
   /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
@@ -385,6 +405,12 @@ public class IntegrationTest {
   @Autowired
   protected CtfContestTestHelper ctfContestTestHelper;
 
+  @Autowired
+  protected MeritLogTestHelper meritLogTestHelper;
+
+  @Autowired
+  protected MeritTypeHelper meritTypeHelper;
+  
   @Autowired
   protected CtfChallengeTestHelper ctfChallengeTestHelper;
 
