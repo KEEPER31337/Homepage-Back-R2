@@ -1,0 +1,36 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= ELECTION MANAGE API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *선거 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-election/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-election/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-election/http-response.adoc[]
