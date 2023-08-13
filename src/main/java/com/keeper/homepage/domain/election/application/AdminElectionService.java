@@ -25,9 +25,7 @@ public class AdminElectionService {
         .description(description)
         .isAvailable(isAvailable)
         .build();
-    if (election.getIsAvailable() == false) {
-      throw new BusinessException(election, "election", ELECTION_NOT_AVAILABLE);
-    }
+
     electionRepository.save(election);
   }
 
