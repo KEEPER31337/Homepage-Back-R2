@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.attendance.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_NOT_FOUND;
 
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
@@ -70,7 +71,7 @@ public class AttendanceService {
 
   private void checkAlreadyAttendance(Member member) {
     if (attendanceRepository.existsByMemberAndDate(member, LocalDate.now())) {
-      throw new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND);
+      throw new BusinessException(member.getId(), "memberId", ATTENDANCE_ALREADY);
     }
   }
 
