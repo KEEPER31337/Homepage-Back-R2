@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.election.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.ELECTION_NOT_AVAILABLE;
 
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.election.entity.Election;

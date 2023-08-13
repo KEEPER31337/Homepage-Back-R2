@@ -82,8 +82,6 @@ public enum ErrorCode {
   CTF_TEAM_ALREADY_JOIN("이미 가입한 팀이 있어 팀 가입이 불가합니다.", HttpStatus.BAD_REQUEST),
   CTF_TEAM_NOT_FOUND("해당 팀을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
   CTF_TEAM_INACCESSIBLE("해당 팀에 접근이 불가합니다.", HttpStatus.BAD_REQUEST),
-  // ELECTION
-  ELECTION_NOT_AVAILABLE("진행 가능한 선거가 아닙니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;
