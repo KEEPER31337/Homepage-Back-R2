@@ -14,10 +14,16 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class AdminElectionApiTestHelper extends IntegrationTest {
 
-  ResultActions createElectionApi(String adminToken, ElectionCreateRequest request) throws Exception {
-    return mockMvc.perform(post("/elections")
+  ResultActions callCreateElectionApi(String adminToken, ElectionCreateRequest request) throws Exception {
+    return mockMvc.perform(post("/admin/elections")
         .content(asJsonString(request))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
         .contentType(MediaType.APPLICATION_JSON));
   }
+
+  ResultActions callDeleteElectionApi(String adminToken, long electionId) throws Exception {
+    return mockMvc.perform(delete("/admin/elections/{electionId}", electionId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+  }
+
 }
