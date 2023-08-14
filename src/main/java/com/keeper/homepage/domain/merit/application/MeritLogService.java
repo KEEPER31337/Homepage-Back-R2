@@ -26,15 +26,15 @@ public class MeritLogService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public Long recordMerit(long awarderId, long giverId, long meritTypeId) {
-    Member awarder = memberFindService.findById(awarderId);
-    Member giver = memberFindService.findById(giverId);
+  public Long recordMerit(long memberId, long meritTypeId) {
+    Member member = memberFindService.findById(memberId);
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
 
     return meritLogRepository.save(MeritLog.builder()
-            .awarder(awarder)
-            .giver(giver)
+            .memberId(member.getId())
+            .memberRealName(member.getRealName())
+            .memberGeneration(member.getGeneration())
             .meritType(meritType)
             .build())
         .getId();
@@ -44,8 +44,8 @@ public class MeritLogService {
     return meritLogRepository.findAll(pageable);
   }
 
-  public Page<MeritLog> findAllByGiverId(Pageable pageable, long memberId) {
+  public Page<MeritLog> findAllByMemberId(Pageable pageable, long memberId) {
     long findMemberId = memberFindService.findById(memberId).getId();
-    return meritLogRepository.findAllByGiverId(pageable, findMemberId);
+    return meritLogRepository.findAllByMemberId(pageable, findMemberId);
   }
 }

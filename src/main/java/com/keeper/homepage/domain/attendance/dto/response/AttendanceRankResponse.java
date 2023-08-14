@@ -17,7 +17,7 @@ public class AttendanceRankResponse {
   private Integer rank;
   private String thumbnailPath;
   private String realName;
-  private Float generation;
+  private String generation;
   private Integer continuousDay;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

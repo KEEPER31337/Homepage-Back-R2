@@ -1,6 +1,9 @@
 package com.keeper.homepage.domain.merit.api;
 
-import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.*;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_부회장;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_서기;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
@@ -20,24 +23,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.http.Cookie;
-import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockPart;
-import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.ResultActions;
 
 
 public class MeritControllerTest extends MeritApiTestHelper {
@@ -186,7 +183,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("회원별 상벌점 목록 조회를 성공해야 한다.")
     void 회원별_상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "findMeritLogByMemberId");
-      meritLogTestHelper.builder().giver(member).build();
+      meritLogTestHelper.builder().memberId(member.getId()).build();
 
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())
@@ -209,7 +206,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @Test
     @DisplayName("일반회원은 회원별 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_회원별_상벌점_목록_조회를_할_수_없다() throws Exception {
-      meritLogTestHelper.builder().giver(member).build();
+      meritLogTestHelper.builder().memberId(member.getId()).build();
 
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())

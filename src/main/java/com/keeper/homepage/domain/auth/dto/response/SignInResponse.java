@@ -34,7 +34,7 @@ public class SignInResponse {
         member.getProfile().getBirthday(),
         member.getProfile().getStudentId().get(),
         member.getThumbnailPath(),
-        Float.toString(member.getGeneration()),
+        member.getGeneration(),
         member.getPoint(),
         member.getLevel(),
         member.getTotalAttendance(),

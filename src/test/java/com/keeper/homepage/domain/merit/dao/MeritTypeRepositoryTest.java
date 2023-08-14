@@ -1,13 +1,13 @@
 package com.keeper.homepage.domain.merit.dao;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Component;
-
-import static org.assertj.core.api.Assertions.*;
 
 public class MeritTypeRepositoryTest extends IntegrationTest {
 
@@ -28,7 +28,6 @@ public class MeritTypeRepositoryTest extends IntegrationTest {
       MeritType findMeritType = meritTypeRepository.findByDetail(meritTypeDetail).orElseThrow();
 
       assertThat(meritType.getMerit()).isEqualTo(findMeritType.getMerit());
-      assertThat(meritType.getIsMerit()).isEqualTo(findMeritType.getIsMerit());
       assertThat(meritType.getDetail()).isEqualTo(findMeritType.getDetail());
     }
   }

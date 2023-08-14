@@ -13,7 +13,7 @@ import lombok.Getter;
 public class MemberPointRankResponse {
 
   private String realName;
-  private Float generation;
+  private String generation;
   private Integer point;
 
   public static MemberPointRankResponse from(Member member) {

@@ -304,8 +304,8 @@ public class Member {
     return this.profile.getRealName().get();
   }
 
-  public Float getGeneration() {
-    return this.generation.getGeneration();
+  public String getGeneration() {
+    return Float.toString(this.generation.getGeneration());
   }
 
   public Integer getPoint() {
