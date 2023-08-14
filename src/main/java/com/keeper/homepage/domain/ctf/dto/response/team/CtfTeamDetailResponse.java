@@ -1,7 +1,8 @@
-package com.keeper.homepage.domain.ctf.dto.response;
+package com.keeper.homepage.domain.ctf.dto.response.team;
 
 import static lombok.AccessLevel.PRIVATE;
 
+import com.keeper.homepage.domain.ctf.dto.response.challenge.CtfChallengeResponse;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import java.util.List;
 import lombok.AllArgsConstructor;

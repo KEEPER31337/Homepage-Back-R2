@@ -107,9 +107,8 @@ public class Post extends BaseEntity {
   private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @Builder
-  private Post(String title, String content, Member member, Integer visitCount, String ipAddress,
-      Boolean allowComment, Boolean isNotice, Boolean isSecret, Boolean isTemp, String password,
-      Category category, Thumbnail thumbnail) {
+  private Post(String title, String content, Member member, Integer visitCount, String ipAddress, Boolean allowComment,
+      Boolean isNotice, Boolean isSecret, Boolean isTemp, String password, Category category, Thumbnail thumbnail) {
     this.title = title;
     this.content = content;
     this.member = member;

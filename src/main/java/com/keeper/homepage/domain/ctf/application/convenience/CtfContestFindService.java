@@ -6,6 +6,8 @@ import com.keeper.homepage.domain.ctf.dao.CtfContestRepository;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
 import com.keeper.homepage.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,5 +23,14 @@ public class CtfContestFindService {
   public CtfContest findJoinableById(long contestId) {
     return ctfContestRepository.findByIdAndIdNotAndIsJoinableTrue(contestId, VIRTUAL_CONTEST_ID)
         .orElseThrow(() -> new BusinessException(contestId, "contestId", CTF_CONTEST_NOT_FOUND));
+  }
+
+  public CtfContest findById(long contestId) {
+    return ctfContestRepository.findByIdAndIdNot(contestId, VIRTUAL_CONTEST_ID)
+        .orElseThrow(() -> new BusinessException(contestId, "contestId", CTF_CONTEST_NOT_FOUND));
+  }
+
+  public Page<CtfContest> findAll(Pageable pageable) {
+    return ctfContestRepository.findAllByIdNot(VIRTUAL_CONTEST_ID, pageable);
   }
 }

@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.post.application;
 
-import static com.keeper.homepage.domain.post.application.PostService.EXAM_ACCESSIBLE_POINT;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
@@ -44,6 +43,7 @@ public class PostServiceTest extends IntegrationTest {
   private MockMultipartFile thumbnail;
   private Post post;
   private long postId;
+  private static final int EXAM_ACCESSIBLE_POINT = 30000;
 
   @BeforeEach
   void setUp() {

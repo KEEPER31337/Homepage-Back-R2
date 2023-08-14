@@ -57,4 +57,18 @@ public class CtfContest extends BaseEntity {
     this.creator = creator;
     this.isJoinable = isJoinable;
   }
+
+  public void update(String name, String description, boolean isJoinable) {
+    this.name = name;
+    this.description = description;
+    this.isJoinable = isJoinable;
+  }
+
+  public void open() {
+    this.isJoinable = true;
+  }
+
+  public void close() {
+    this.isJoinable = false;
+  }
 }

@@ -1,15 +1,13 @@
 package com.keeper.homepage.domain.comment.application;
 
-import static com.keeper.homepage.domain.post.application.PostService.ANONYMOUS_NAME;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_ALLOWED;
-import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_PARENT;
+import static com.keeper.homepage.global.error.ErrorCode.COMMENT_IS_NOT_PARENT;
 import static com.keeper.homepage.global.error.ErrorCode.COMMENT_NOT_WRITER;
 
 import com.keeper.homepage.domain.comment.application.convenience.CommentDeleteService;
 import com.keeper.homepage.domain.comment.application.convenience.CommentFindService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
-import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
 import com.keeper.homepage.domain.comment.dto.response.CommentListResponse;
 import com.keeper.homepage.domain.comment.dto.response.CommentResponse;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -18,6 +16,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.util.web.WebUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,16 +34,23 @@ public class CommentService {
   private final MemberFindService memberFindService;
   private final CommentDeleteService commentDeleteService;
 
-  public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  private static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  private static final String ANONYMOUS_NAME = "익명";
 
   @Transactional
-  public long create(Member member, CommentCreateRequest request) {
-    Post post = validPostFindService.findById(request.getPostId());
+  public long create(Member member, long postId, Long parentId, String content) {
+    Post post = validPostFindService.findById(postId);
     if (!post.allowComment()) {
       throw new BusinessException(post.getId(), "postId", COMMENT_NOT_ALLOWED);
     }
-    Comment parent = getParentById(request.getParentId());
-    Comment comment = request.toEntity(member, post, parent);
+    Comment parent = getParentById(parentId);
+    Comment comment = Comment.builder()
+        .member(member)
+        .post(post)
+        .parent(parent)
+        .content(content)
+        .ipAddress(WebUtil.getUserIP())
+        .build();
 
     return commentRepository.save(comment).getId();
   }
@@ -55,21 +61,24 @@ public class CommentService {
     }
     Comment parent = commentFindService.findById(parentId);
     if (parent.hasParent()) {
-      throw new BusinessException(parentId, "parentId", COMMENT_NOT_PARENT);
+      throw new BusinessException(parentId, "parentId", COMMENT_IS_NOT_PARENT);
     }
     return parent;
   }
 
-  public CommentListResponse getComments(Long postId) {
+  public CommentListResponse getComments(Member member, Long postId) {
     Post post = validPostFindService.findById(postId);
     List<Comment> comments = post.getComments();
+
+    boolean isLike = member.isLike(post);
+    boolean isDislike = member.isDislike(post);
 
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
           if (post.isCategory(익명게시판)) {
-            return CommentResponse.of(comment, ANONYMOUS_NAME, null);
+            return CommentResponse.of(comment, ANONYMOUS_NAME, null, isLike, isDislike);
           }
-          return CommentResponse.from(comment);
+          return CommentResponse.from(comment, isLike, isDislike);
         })
         .toList();
     return CommentListResponse.from(commentResponses);

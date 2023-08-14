@@ -25,7 +25,9 @@ link:about/about.html[API 문서 보기]
 
 == *POST API*
 
-link:post/post.html[API 문서 보기]
+link:post/post.html[게시글 API 문서 보기]
+
+link:post/admin-post.html[관리자 API 문서 보기]
 
 == *COMMENT API*
 
@@ -55,4 +57,6 @@ link:attendance/attendance.html[API 문서 보기]
 
 == *CTF API*
 
-link:ctf/ctf-team[CTF TEAM API 문서 보기]
+link:ctf/ctf-team.html[CTF TEAM API 문서 보기]
+
+link:ctf/ctf-contest.html[CTF CONTEST API 문서 보기]

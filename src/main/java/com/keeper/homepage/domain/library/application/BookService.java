@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.library.application;
 
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
@@ -11,6 +10,7 @@ import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FO
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_RETURN_DENY;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_APPROVAL;
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -101,8 +101,11 @@ public class BookService {
   @Transactional
   public void requestReturn(Member member, long borrowId) {
     BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
-        .findByMemberAndBorrowStatus(member, getBookBorrowStatusBy(대출승인))
+        .findById(borrowId)
         .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
+    if (!bookBorrowInfo.isReadyToReturn()) {
+      throw new BusinessException(borrowId, "borrowId", BORROW_STATUS_IS_NOT_BORROW_APPROVAL);
+    }
     if (!bookBorrowInfo.isMine(member)) {
       throw new BusinessException(borrowId, "borrowId", BORROW_REQUEST_RETURN_DENY);
     }

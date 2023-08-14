@@ -4,7 +4,6 @@ import static com.keeper.homepage.domain.comment.dto.request.CommentCreateReques
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -15,11 +14,11 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
+import com.keeper.homepage.domain.comment.dto.request.CommentUpdateRequest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -158,7 +157,9 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   fieldWithPath("comments[].registerTime").description("댓글 등록 시간"),
                   fieldWithPath("comments[].parentId").description("부모 댓글 ID"),
                   fieldWithPath("comments[].likeCount").description("댓글 좋아요 개수"),
-                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수")
+                  fieldWithPath("comments[].dislikeCount").description("댓글 싫어요 개수"),
+                  fieldWithPath("comments[].isLike").description("댓글 좋아요 했는지 여부"),
+                  fieldWithPath("comments[].isDislike").description("댓글 싫어요 했는지 여부")
               )));
     }
   }
@@ -171,9 +172,12 @@ public class CommentControllerTest extends CommentApiTestHelper {
     @DisplayName("댓글 수정은 성공한다.")
     public void 댓글_수정은_성공한다() throws Exception {
       String securedValue = getSecuredValue(CommentController.class, "updateComment");
-      String content = "댓글 수정 내용";
 
-      callUpdateCommentApi(memberToken, commentId, content)
+      CommentUpdateRequest request = CommentUpdateRequest.builder()
+          .content("댓글 수정 내용")
+          .build();
+
+      callUpdateCommentApi(memberToken, commentId, request)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/comments/posts/" + postId))
           .andDo(document("update-comment",
@@ -185,9 +189,9 @@ public class CommentControllerTest extends CommentApiTestHelper {
                   parameterWithName("commentId")
                       .description("수정하고자 하는 댓글의 ID")
               ),
-              queryParameters(
-                  parameterWithName("content")
-                      .description("수정하고자 하는 댓글의 내용")),
+              requestFields(
+                  fieldWithPath("content").description("댓글 내용")
+              ),
               responseHeaders(
                   headerWithName("Location").description("댓글 목록을 불러오는 URI 입니다.")
               )));

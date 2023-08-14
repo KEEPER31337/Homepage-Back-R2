@@ -29,7 +29,8 @@ public enum ErrorCode {
   SEMINAR_NOT_FOUND("해당 세미나를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   SEMINAR_TIME_NOT_AVAILABLE("올바르지 않은 시간 값입니다", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE("올바르지 않은 출석 코드입니다.", HttpStatus.BAD_REQUEST),
-  SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE("출석코드 입력 가능 횟수를 초과하여 출석이 불가능합니다.", HttpStatus.BAD_REQUEST),
+  SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE("출석코드 입력 가능 횟수를 초과하여 출석이 불가능합니다.",
+      HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_DUPLICATE("이미 출석을 완료한 계정입니다.", HttpStatus.CONFLICT),
   SEMINAR_ATTENDANCE_UNABLE("활동회원이 아닌 회원은 출석이 불가합니다.", HttpStatus.BAD_REQUEST),
   // POST
@@ -44,7 +45,7 @@ public enum ErrorCode {
   // COMMENT
   COMMENT_NOT_FOUND("존재하지 않는 댓글입니다.", HttpStatus.NOT_FOUND),
   COMMENT_NOT_WRITER("댓글 작성자가 아닙니다.", HttpStatus.BAD_REQUEST),
-  COMMENT_NOT_PARENT("대댓글에는 대댓글을 달 수 없습니다.", HttpStatus.BAD_REQUEST),
+  COMMENT_IS_NOT_PARENT("대댓글에는 대댓글을 달 수 없습니다.", HttpStatus.BAD_REQUEST),
   COMMENT_NOT_ALLOWED("댓글 작성이 허용되지 않습니다.", HttpStatus.BAD_REQUEST),
   // BOOK
   BOOK_NOT_FOUND("존재하지 않는 도서입니다.", HttpStatus.NOT_FOUND),
@@ -52,7 +53,8 @@ public enum ErrorCode {
   BOOK_DELETE_FAILED_IN_BORROWING("누군가가 책을 빌리고 있어 책을 삭제할 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_BORROW("책을 빌릴 수 없습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CANNOT_RETURN_EXCEED_TOTAL_QUANTITY("전체 수량을 초과하여 책을 반납할 수 없습니다.", HttpStatus.BAD_REQUEST),
-  BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY("현재 대여중인 수량보다 적은 수량으로 변경할 수 없습니다.", HttpStatus.BAD_REQUEST),
+  BOOK_CANNOT_UPDATE_EXCEED_CURRENT_QUANTITY("현재 대여중인 수량보다 적은 수량으로 변경할 수 없습니다.",
+      HttpStatus.BAD_REQUEST),
   BOOK_SEARCH_TYPE_NOT_FOUND("올바르지 않은 검색 타입입니다.", HttpStatus.BAD_REQUEST),
   BOOK_BORROWING_COUNT_OVER("대출 신청 가능 수량을 초과했습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CURRENT_QUANTITY_IS_ZERO("현재 수량이 없는 책은 대출 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
@@ -60,6 +62,7 @@ public enum ErrorCode {
   BORROW_NOT_FOUND("존재하지 않는 대출 기록입니다.", HttpStatus.NOT_FOUND),
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
+  BORROW_STATUS_IS_NOT_BORROW_APPROVAL("대출 승인된 도서가 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_REQUEST_RETURN_DENY("대출자가 본인이 아니므로 반납 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
   // SURVEY
   SURVEY_REPLY_TYPE_NOT_FOUND("존재하지 않는 응답 종류입니다.", HttpStatus.NOT_FOUND),
@@ -82,6 +85,9 @@ public enum ErrorCode {
   CTF_TEAM_ALREADY_JOIN("이미 가입한 팀이 있어 팀 가입이 불가합니다.", HttpStatus.BAD_REQUEST),
   CTF_TEAM_NOT_FOUND("해당 팀을 찾을 수 없습니다.", HttpStatus.BAD_REQUEST),
   CTF_TEAM_INACCESSIBLE("해당 팀에 접근이 불가합니다.", HttpStatus.BAD_REQUEST),
+  // MERIT
+  MERIT_TYPE_NOT_FOUND("해당 상벌점 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  MERIT_TYPE_DETAIL_DUPLICATE("해당 상벌점 타입의 사유가 존재합니다.", HttpStatus.CONFLICT),
   ;
 
   private final String message;
