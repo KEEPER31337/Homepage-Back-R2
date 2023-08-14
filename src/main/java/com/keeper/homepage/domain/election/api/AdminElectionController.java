@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/elections")
+@RequestMapping("/admin/elections")
 @Secured("ROLE_회장")
 public class AdminElectionController {
 
