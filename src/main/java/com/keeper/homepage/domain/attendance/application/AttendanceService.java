@@ -29,6 +29,7 @@ public class AttendanceService {
   private static final long RANK_DATA_EXPIRE_DURATION = 60 * 60 * 24; // 60s * 60m * 24h로 하루를 의미함.
 
   private static final String ATTENDANCE_MESSAGE = "자동 출석입니다.";
+  private static final String ATTENDANCE_POINT_MESSAGE = "출석 포인트";
   private static final int RANDOM_MIN_POINT = 100;
   private static final int RANDOM_MAX_POINT = 1000;
   public static final int DAILY_POINT = 1000;
@@ -58,7 +59,7 @@ public class AttendanceService {
         .member(member)
         .build();
     attendanceRepository.save(attendance);
-    member.addPoint(attendance.getTotalPoint());
+    member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
   }
 
   private void checkAlreadyAttendance(Member member) {

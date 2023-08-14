@@ -330,15 +330,19 @@ public class Member {
 
   public void addPoint(int point) {
     this.point += point;
+  }
+
+  public void addPoint(int point, String message) {
+    this.point += point;
     this.pointLogs.add(PointLog.builder()
         .time(LocalDateTime.now())
         .member(this)
         .point(point)
-        .isSpent(false)
+        .detail(message)
         .build());
   }
 
-  public void minusPoint(int point) {
+  public void minusPoint(int point, String message) {
     if (this.point < point && point < 0) {
       throw new IllegalArgumentException();
     }
@@ -347,7 +351,7 @@ public class Member {
         .time(LocalDateTime.now())
         .member(this)
         .point(-point)
-        .isSpent(false)
+        .detail(message)
         .build());
   }
 
