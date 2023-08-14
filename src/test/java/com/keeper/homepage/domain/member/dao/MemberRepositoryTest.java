@@ -10,7 +10,6 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
-import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -45,7 +44,6 @@ class MemberRepositoryTest extends IntegrationTest {
               .emailAddress(EmailAddress.from("ABC@keeper.com"))
               .password(Password.from("password123"))
               .realName(RealName.from("realName"))
-              .nickname(Nickname.from("nickname"))
               .build())
           .build();
 

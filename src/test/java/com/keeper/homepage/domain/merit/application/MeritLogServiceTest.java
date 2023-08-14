@@ -53,26 +53,6 @@ class MeritLogServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("상벌점 부여 시 회원의 상벌점 점수가 변경되어야 한다.")
-    void 상벌점_부여_시_회원의_상벌점_점수가_변경되어야_한다() {
-      demeritType = meritTypeHelper.builder().isMerit(false).merit(-3).build();
-      awarderId = awarder.getId();
-
-      Integer expectedMeritScore = awarder.getMeritDemerit().getMerit() + meritType.getMerit();
-      Integer expectedDemeritScore = awarder.getMeritDemerit().getDemerit() + demeritType.getMerit();
-
-      meritLogService.recordMerit(awarder.getId(), giver.getId(), meritType.getId());
-      meritLogService.recordMerit(awarder.getId(), giver.getId(), demeritType.getId());
-
-      em.flush();
-      em.clear();
-
-      Member findMember = memberFindService.findById(awarderId);
-      assertThat(findMember.getMeritDemerit().getMerit()).isEqualTo(expectedMeritScore);
-      assertThat(findMember.getMeritDemerit().getDemerit()).isEqualTo(expectedDemeritScore);
-    }
-
-    @Test
     @DisplayName("상벌점 페이지를 조회할 수 있어야 한다.")
     void 상벌점_페이지를_조회할_수_있어야_한다() {
       meritLogId = meritLogTestHelper.generate().getId();

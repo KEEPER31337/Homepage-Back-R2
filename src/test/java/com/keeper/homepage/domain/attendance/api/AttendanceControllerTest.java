@@ -125,7 +125,7 @@ public class AttendanceControllerTest extends IntegrationTest {
       return new FieldDescriptor[]{
           fieldWithPath("rank").description("회원 당일 출석 순위"),
           fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),
-          fieldWithPath("nickName").description("회원 닉네임"),
+          fieldWithPath("realName").description("회원 실명"),
           fieldWithPath("generation").description("회원 기수"),
           fieldWithPath("continuousDay").description("회원 연속 출석 일수"),
           fieldWithPath("time").description("회원 출석 시간")

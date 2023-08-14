@@ -15,15 +15,12 @@ public class SignInResponse {
   private long id;
   private String emailAddress;
   private String realName;
-  private String nickname;
   private LocalDate birthday;
   private String studentId;
   private String thumbnailPath;
   private String generation;
   private int point;
   private int level;
-  private int merit;
-  private int demerit;
   private int totalAttendance;
   private String memberType;
   private String memberRank;
@@ -34,15 +31,12 @@ public class SignInResponse {
         member.getId(),
         member.getProfile().getEmailAddress().get(),
         member.getRealName(),
-        member.getNickname(),
         member.getProfile().getBirthday(),
         member.getProfile().getStudentId().get(),
         member.getThumbnailPath(),
         Float.toString(member.getGeneration()),
         member.getPoint(),
         member.getLevel(),
-        member.getMeritDemerit().getMerit(),
-        member.getMeritDemerit().getDemerit(),
         member.getTotalAttendance(),
         member.getMemberType().getType().name(),
         member.getMemberRank().getType().name(),

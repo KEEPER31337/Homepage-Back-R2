@@ -38,7 +38,7 @@ class GameControllerTest : GameApiTestHelper() {
                         ),
                         responseFields(
                             fieldWithPath("[].rank").description("순위 (1~${MAX_RANK_COUNT})"),
-                            fieldWithPath("[].nickname").description("닉네임"),
+                            fieldWithPath("[].realName").description("실명"),
                             fieldWithPath("[].generation").description("기수"),
                             fieldWithPath("[].todayEarnedPoint").description("오늘 얻은 포인트"),
                             fieldWithPath("[].profileImageUrl").description("프로필 이미지 url (상대경로)"),

@@ -16,7 +16,7 @@ public class AttendanceRankResponse {
 
   private Integer rank;
   private String thumbnailPath;
-  private String nickName;
+  private String realName;
   private Float generation;
   private Integer continuousDay;
 
@@ -27,7 +27,7 @@ public class AttendanceRankResponse {
     return AttendanceRankResponse.builder()
         .rank(attendance.getRank())
         .thumbnailPath(attendance.getMember().getThumbnailPath())
-        .nickName(attendance.getMember().getNickname())
+        .realName(attendance.getMember().getRealName())
         .generation(attendance.getMember().getGeneration())
         .continuousDay(attendance.getContinuousDay())
         .time(attendance.getTime())

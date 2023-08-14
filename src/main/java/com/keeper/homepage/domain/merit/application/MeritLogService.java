@@ -1,6 +1,8 @@
 package com.keeper.homepage.domain.merit.application;
 
 
+import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
+
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
@@ -13,8 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,6 @@ public class MeritLogService {
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
 
-    updateMemberMeritDemerit(awarder, meritType);
     return meritLogRepository.save(MeritLog.builder()
             .awarder(awarder)
             .giver(giver)
@@ -48,13 +47,5 @@ public class MeritLogService {
   public Page<MeritLog> findAllByGiverId(Pageable pageable, long memberId) {
     long findMemberId = memberFindService.findById(memberId).getId();
     return meritLogRepository.findAllByGiverId(pageable, findMemberId);
-  }
-
-  private void updateMemberMeritDemerit(Member member, MeritType meritType) {
-    if (meritType.getIsMerit()) {
-      member.updateMerit(meritType.getMerit());
-    } else {
-      member.updateDemerit(meritType.getMerit());
-    }
   }
 }

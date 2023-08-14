@@ -353,8 +353,8 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(jsonPath("$.borrowInfos[0].author").value(borrowList[0].book.author))
                 .andExpect(jsonPath("$.borrowInfos[0].borrowerId").value(borrowList[0].member.id))
                 .andExpect(
-                    jsonPath("$.borrowInfos[0].borrowerNickname")
-                        .value(borrowList[0].member.nickname)
+                    jsonPath("$.borrowInfos[0].borrowerRealName")
+                        .value(borrowList[0].member.realName)
                 )
                 .andDo(
                     document(
