@@ -338,11 +338,6 @@ public class Member {
     this.point -= point;
   }
 
-  public void plusPoint(int point) {
-    // TODO 오버플로우 검사 해야하나..?
-    this.point += point;
-  }
-
   public String getThumbnailPath() {
     return Optional.ofNullable(this.profile.getThumbnail())
         .map(Thumbnail::getPath)

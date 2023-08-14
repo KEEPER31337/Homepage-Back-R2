@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.point.application;
 import static java.time.LocalDateTime.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.point.entity.PointLog;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointLogService {
 
   private final PointLogRepository pointLogRepository;
+  private final MemberFindService memberFindService;
 
   private static final String ATTENDANCE_POINT_MESSAGE = "출석 포인트";
 
@@ -46,7 +48,8 @@ public class PointLogService {
         .build()).getId();
   }
 
-  public Page<PointLog> findAllPointLogs(Pageable pageable) {
-    return pointLogRepository.findAll(pageable);
+  public Page<PointLog> findAllPointLogs(Pageable pageable, long memberId) {
+    long findMemberId = memberFindService.findById(memberId).getId();
+    return pointLogRepository.findAllByMemberId(pageable, findMemberId);
   }
 }

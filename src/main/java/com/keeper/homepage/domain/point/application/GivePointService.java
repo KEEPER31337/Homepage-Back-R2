@@ -23,7 +23,7 @@ public class GivePointService {
     Member receiver = memberFindService.findById(receiverId);
 
     giver.minusPoint(point);
-    receiver.plusPoint(point);
+    receiver.addPoint(point);
 
     pointLogService.create(giver, receiver, -point, message);
     pointLogService.create(receiver, null, point, message);

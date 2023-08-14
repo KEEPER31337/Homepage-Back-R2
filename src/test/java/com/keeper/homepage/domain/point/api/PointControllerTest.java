@@ -8,6 +8,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,6 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.cookies.CookieDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 
 class PointControllerTest extends IntegrationTest {
@@ -87,9 +89,9 @@ class PointControllerTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-      pointLogTestHelper.generate();
-      pointLogTestHelper.generate();
-      pointLogTestHelper.generate();
+      pointLogTestHelper.builder().member(member).build();
+      pointLogTestHelper.builder().member(member).build();
+      pointLogTestHelper.builder().member(member).build();
     }
 
     @Test

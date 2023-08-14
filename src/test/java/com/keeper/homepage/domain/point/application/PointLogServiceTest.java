@@ -72,8 +72,9 @@ class PointLogServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-      pointLogId = pointLogTestHelper.generate().getId();
-      otherPointLogId = pointLogTestHelper.generate().getId();
+      giver = memberTestHelper.generate();
+      pointLogId = pointLogTestHelper.builder().member(giver).build().getId();
+      otherPointLogId = pointLogTestHelper.builder().member(giver).build().getId();
     }
 
     @Test
@@ -82,7 +83,7 @@ class PointLogServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<PointLog> findPointLogPages = pointLogService.findAllPointLogs(PageRequest.of(0, 10));
+      Page<PointLog> findPointLogPages = pointLogService.findAllPointLogs(PageRequest.of(0, 10), giver.getId());
 
       assertThat(findPointLogPages
           .map(PointLog::getId)

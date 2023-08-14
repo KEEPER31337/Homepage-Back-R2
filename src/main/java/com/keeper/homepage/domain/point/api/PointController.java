@@ -44,10 +44,11 @@ public class PointController {
   @GetMapping
   public ResponseEntity<Page<FindAllPointLogsResponse>> findAllPointLogs(
       @RequestParam(defaultValue = "0") @PositiveOrZero int size,
-      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int page
+      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int page,
+      @LoginMember Member member
   ) {
     return ResponseEntity.ok(
-        pointLogService.findAllPointLogs(PageRequest.of(size, page))
+        pointLogService.findAllPointLogs(PageRequest.of(size, page), member.getId())
             .map(FindAllPointLogsResponse::from)
     );
   }
