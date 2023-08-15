@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.election.api;
 
 import com.keeper.homepage.domain.election.application.AdminElectionService;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
@@ -12,6 +13,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,10 +36,18 @@ public class AdminElectionController {
 
   @DeleteMapping("/{electionId}")
   public ResponseEntity<Void> deleteElection(
-      @PathVariable long electionId
-  ) {
+      @PathVariable long electionId) {
     adminElectionService.deleteElection(electionId);
     return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{electionId}")
+  public ResponseEntity<Void> updateElection(
+      @PathVariable long electionId,
+      @RequestBody @Valid ElectionUpdateRequest request) {
+    adminElectionService.updateElection(electionId, request.getName(), request.getDescription(),
+        request.getIsAvailable());
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
 }
