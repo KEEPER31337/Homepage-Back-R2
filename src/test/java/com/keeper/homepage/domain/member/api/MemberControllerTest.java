@@ -163,10 +163,12 @@ class MemberControllerTest extends MemberApiTestHelper {
 
     private String memberToken;
     private long memberId;
+    private long otherId;
 
     @BeforeEach
     void setUp() throws IOException {
       memberId = memberTestHelper.generate().getId();
+      otherId = memberTestHelper.generate().getId();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
     }
 
@@ -175,7 +177,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     public void 유효한_요청일_경우_회원_팔로우는_성공한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "follow");
 
-      mockMvc.perform(post("/members/{memberId}/follow", memberId)
+      mockMvc.perform(post("/members/{memberId}/follow", otherId)
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isCreated())
           .andDo(document("follow-member",
@@ -193,7 +195,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     public void 유효한_요청일_경우_회원_언팔로우는_성공한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "unfollow");
 
-      mockMvc.perform(delete("/members/{memberId}/unfollow", memberId)
+      mockMvc.perform(delete("/members/{memberId}/unfollow", otherId)
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isNoContent())
           .andDo(document("unfollow-member",
