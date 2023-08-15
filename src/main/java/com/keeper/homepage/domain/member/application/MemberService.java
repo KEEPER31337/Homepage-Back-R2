@@ -43,4 +43,6 @@ public class MemberService {
     return memberRepository.findAllByIdIsNotOrderByPointDesc(VIRTUAL_MEMBER_ID, pageable)
         .map(MemberPointRankResponse::from);
   }
+
+
 }
