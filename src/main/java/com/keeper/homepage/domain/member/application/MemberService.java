@@ -47,8 +47,8 @@ public class MemberService {
 
   public MemberProfileResponse getMemberProfile(long memberId) {
     Member findMember = memberFindService.findById(memberId);
-
     return memberRepository.findById(findMember.getId())
-        .map(MemberProfileResponse::from(findMember, findMember.getProfile())
+        .map(MemberProfileResponse::from)
+        .orElseThrow();
   }
 }

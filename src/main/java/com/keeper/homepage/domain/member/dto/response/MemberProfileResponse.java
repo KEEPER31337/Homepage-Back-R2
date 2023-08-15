@@ -37,7 +37,7 @@ public class MemberProfileResponse {
   private MemberType memberType;
   private Set<MemberHasMemberJob> memberJob;
 
-  public static MemberProfileResponse from(Profile profile, Member member) {
+  public static MemberProfileResponse from(Member member) {
     return MemberProfileResponse.builder()
         .id(member.getId())
         .emailAddress(member.getEmailAddress())

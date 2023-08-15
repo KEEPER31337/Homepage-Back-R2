@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.api;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
+import com.keeper.homepage.domain.member.dto.response.MemberProfileResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,5 +59,14 @@ public class MemberController {
   ) {
     Page<MemberPointRankResponse> response = memberService.getPointRanking(PageRequest.of(page, size));
     return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/{memberId}/profile")
+  public ResponseEntity<MemberProfileResponse> getMemberProfile(
+      @PathVariable @PositiveOrZero long memberId
+  ) {
+    return ResponseEntity.ok(
+        memberService.getMemberProfile(memberId)
+    );
   }
 }
