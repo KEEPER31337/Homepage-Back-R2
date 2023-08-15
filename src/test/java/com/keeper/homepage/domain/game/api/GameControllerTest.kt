@@ -111,7 +111,7 @@ class GameControllerTest : GameApiTestHelper() {
             em.clear()
 
             val result = callBaseballStart(1000)
-                .andExpect(status().isNoContent)
+                .andExpect(status().isOk)
 
             val baseball = gameFindService.findByMemberOrInit(player).baseball
             assertThat(baseball.baseballPerDay).isEqualTo(1) // 게임을 시작하면 play count가 증가한다.
@@ -136,6 +136,10 @@ class GameControllerTest : GameApiTestHelper() {
                     requestFields(
                         fieldWithPath("bettingPoint").description("베팅을 할 포인트 (${MIN_BETTING_POINT}이상 ${MAX_BETTING_POINT}이하)"),
                     ),
+                    responseFields(
+                        fieldWithPath("results").description("start API에선 빈 배열로 내려갑니다."),
+                        fieldWithPath("earnablePoints").description("처음 할당된 획득할 포인트"),
+                    )
                 )
             )
         }

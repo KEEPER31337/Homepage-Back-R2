@@ -42,7 +42,7 @@ class BaseballService(
     }
 
     @Transactional
-    fun start(requestMember: Member, bettingPoint: Int) {
+    fun start(requestMember: Member, bettingPoint: Int): Int  {
         if (isAlreadyPlayedAllOfThem(requestMember)) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.IS_ALREADY_PLAYED)
         }
@@ -63,6 +63,7 @@ class BaseballService(
             earnablePoints = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
         )
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, game.baseball.baseballPerDay)
+        return baseballResultEntity.earnablePoints
     }
 
     private fun generateDistinctRandomNumber(length: Int): String {

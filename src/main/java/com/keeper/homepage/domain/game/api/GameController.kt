@@ -38,9 +38,9 @@ class GameController(
     fun baseballStart(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballStartRequest
-    ): ResponseEntity<Void> {
-        baseballService.start(requestMember, request.bettingPoint)
-        return ResponseEntity.noContent().build()
+    ): ResponseEntity<BaseballResponse> {
+        val earnablePoints = baseballService.start(requestMember, request.bettingPoint)
+        return ResponseEntity.ok(BaseballResponse(emptyList(), earnablePoints))
     }
 
     @PostMapping("/baseball/guess")
