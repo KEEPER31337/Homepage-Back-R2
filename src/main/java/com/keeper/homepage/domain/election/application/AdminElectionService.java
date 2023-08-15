@@ -39,7 +39,7 @@ public class AdminElectionService {
   public void deleteElection(long electionId) {
     Election election = validElectionFindService.findById(electionId);
 
-    if (election.getIsAvailable() == true) {
+    if (election.isAvailable()) {
       throw new BusinessException(electionId, "electionId", ErrorCode.ELECTION_CANNOT_DELETE);
     }
     electionDeleteService.delete(election);
