@@ -46,7 +46,7 @@ public class PostDetailResponse {
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
         .title(post.getTitle())
-        .writerName(post.getMember().getNickname())
+        .writerName(post.getMember().getRealName())
         .writerThumbnailPath(post.getMember().getThumbnailPath())
         .registerTime(post.getRegisterTime())
         .updateTime(post.getUpdateTime())

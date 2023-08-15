@@ -71,4 +71,8 @@ public class Election {
     this.isAvailable = isAvailable;
   }
 
+  public Boolean isAvailable() {
+    return isAvailable;
+  }
+
 }

@@ -23,7 +23,7 @@ public class AuthCookieService {
     setTokenInCookie(response, newRefreshToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
         REFRESH_TOKEN.getTokenName());
     String newAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, authId, roles);
-    setTokenInCookie(response, newAccessToken, (int) ACCESS_TOKEN.getExpiredMillis() / 1000,
+    setTokenInCookie(response, newAccessToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
         ACCESS_TOKEN.getTokenName());
     redisUtil.setDataExpire(authId, newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
   }

@@ -21,23 +21,17 @@ public class MeritType {
   @Column(name = "merit", nullable = false)
   private Integer merit;
 
-  @Column(name = "is_merit", nullable = false)
-  private Boolean isMerit;
-
   @Column(name = "detail", nullable = false)
   private String detail;
 
   @Builder
-  public MeritType(Integer merit, Boolean isMerit, String detail) {
+  public MeritType(Integer merit, String detail) {
     this.merit = merit;
-    this.isMerit = isMerit;
     this.detail = detail;
   }
 
   public void update(Integer score, String reason) {
     this.merit = score;
-    this.isMerit = score > 0;
     this.detail = reason;
   }
-
 }

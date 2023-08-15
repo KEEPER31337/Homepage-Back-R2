@@ -38,7 +38,7 @@ class GameControllerTest : GameApiTestHelper() {
                         ),
                         responseFields(
                             fieldWithPath("[].rank").description("순위 (1~${MAX_RANK_COUNT})"),
-                            fieldWithPath("[].nickname").description("닉네임"),
+                            fieldWithPath("[].realName").description("실명"),
                             fieldWithPath("[].generation").description("기수"),
                             fieldWithPath("[].todayEarnedPoint").description("오늘 얻은 포인트"),
                             fieldWithPath("[].profileImageUrl").description("프로필 이미지 url (상대경로)"),
@@ -107,7 +107,8 @@ class GameControllerTest : GameApiTestHelper() {
         @Test
         fun `베팅 포인트가 10포인트 이상, 1000포인트 이하면 게임이 시작된다`() {
             player.addPoint(1000)
-            memberRepository.save(player)
+            em.flush()
+            em.clear()
 
             val result = callBaseballStart(1000)
                 .andExpect(status().isNoContent)

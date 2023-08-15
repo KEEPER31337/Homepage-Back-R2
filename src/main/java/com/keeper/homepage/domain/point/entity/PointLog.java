@@ -57,6 +57,6 @@ public class PointLog {
     this.point = point;
     this.detail = detail;
     this.presented = presented;
-    this.isSpent = isSpent;
+    this.isSpent = isSpent != null ? isSpent : false;
   }
 }

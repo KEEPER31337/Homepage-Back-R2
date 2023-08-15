@@ -92,7 +92,6 @@ class SignUpControllerTest extends IntegrationTest {
         .email("keeper@keeper.or.kr")
         .rawPassword("password123!@#$")
         .realName("정현모minion")
-        .nickname("0v0zㅣ존")
         .authCode("0123456789")
         .birthday(LocalDate.of(1970, 1, 1))
         .studentId("197012345")
@@ -112,7 +111,6 @@ class SignUpControllerTest extends IntegrationTest {
                   fieldWithPath("email").description("이메일은 이메일 형식을 따라야 합니다."),
                   fieldWithPath("password").description("비밀번호는 8~20자여야 하고 영어, 숫자가 포함되어야 합니다."),
                   fieldWithPath("realName").description("실명은 1~20자 한글, 영어만 가능합니다."),
-                  fieldWithPath("nickname").description("닉네임은 1~16자 한글, 영어, 숫자만 가능합니다."),
                   fieldWithPath("authCode")
                       .description("길이가 " + AUTH_CODE_LENGTH + "인 인증 코드를 입력해야 합니다."),
                   fieldWithPath("birthday").description("생일 형식은 yyyy.MM.dd 입니다.")
@@ -156,10 +154,6 @@ class SignUpControllerTest extends IntegrationTest {
           Arguments.arguments("realName", ""),
           Arguments.arguments("realName", "  "),
           Arguments.arguments("realName", "noNumber00"),
-          Arguments.arguments("nickname", "0_0"),
-          Arguments.arguments("nickname", "0-0"),
-          Arguments.arguments("nickname", "noSpecial!@#$"),
-          Arguments.arguments("nickname", "공백은 안됩니다."),
           Arguments.arguments("authCode", "a".repeat(AUTH_CODE_LENGTH - 1)),
           Arguments.arguments("authCode", "a".repeat(AUTH_CODE_LENGTH + 1)),
           Arguments.arguments("studentId", "noNumber!"),

@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.member;
 
 import static com.keeper.homepage.IntegrationTest.generateRandomString;
-import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 
@@ -9,7 +8,6 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
-import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -17,7 +15,6 @@ import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
-import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
@@ -71,7 +68,6 @@ public class MemberTestHelper {
     private EmailAddress email;
     private Password password;
     private RealName realName;
-    private Nickname nickname;
     private LocalDate birthday;
     private StudentId studentId;
     private Integer point;
@@ -102,11 +98,6 @@ public class MemberTestHelper {
 
     public MemberBuilder realName(RealName realName) {
       this.realName = realName;
-      return this;
-    }
-
-    public MemberBuilder nickname(Nickname nickname) {
-      this.nickname = nickname;
       return this;
     }
 
@@ -166,8 +157,6 @@ public class MemberTestHelper {
                   Password.from(generateRandomString(10) + "1a", MOCK_PASSWORD_ENCODER))
               .realName(realName != null ? realName :
                   RealName.from(generateRandomAlphabeticString(10)))
-              .nickname(nickname != null ? nickname :
-                  Nickname.from(generateRandomAlphabeticString(10)))
               .birthday(birthday != null ? birthday : LocalDate.of(1970, 1, 1))
               .studentId(studentId != null ? studentId
                   : StudentId.from(generateRandomDigitString(9)))
@@ -175,8 +164,6 @@ public class MemberTestHelper {
               .build())
           .point(point != null ? point : 0)
           .level(level != null ? level : 0)
-          .merit(merit != null ? merit : 0)
-          .demerit(demerit != null ? demerit : 0)
           .totalAttendance(totalAttendance != null ? totalAttendance : 0)
           .build());
     }

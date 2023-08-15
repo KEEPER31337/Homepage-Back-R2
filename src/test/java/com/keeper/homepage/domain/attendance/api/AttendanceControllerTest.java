@@ -13,17 +13,22 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.servlet.http.Cookie;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -120,11 +125,106 @@ public class AttendanceControllerTest extends IntegrationTest {
       return new FieldDescriptor[]{
           fieldWithPath("rank").description("회원 당일 출석 순위"),
           fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),
-          fieldWithPath("nickName").description("회원 닉네임"),
+          fieldWithPath("realName").description("회원 실명"),
           fieldWithPath("generation").description("회원 기수"),
           fieldWithPath("continuousDay").description("회원 연속 출석 일수"),
           fieldWithPath("time").description("회원 출석 시간")
       };
+    }
+  }
+
+  @Nested
+  @DisplayName("출석 조회 테스트")
+  class GetAttendanceTest {
+
+    private Attendance attendance;
+
+    @BeforeEach
+    void setUp() {
+      attendance = attendanceTestHelper.builder().member(member).build();
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 오늘 출석 포인트 조회는 성공한다.")
+    public void 유효한_요청일_경우_오늘_출석_포인트_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AttendanceController.class, "getTodayAttendancePoint");
+
+      mockMvc.perform(get("/attendances/point")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.point").value(attendance.getPoint()))
+          .andExpect(jsonPath("$.continuousPoint").value(attendance.getContinuousPoint()))
+          .andExpect(jsonPath("$.rankPoint").value(attendance.getRankPoint()))
+          .andExpect(jsonPath("$.randomPoint").value(attendance.getRandomPoint()))
+          .andDo(document("get-today-attendance-point",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(
+                  fieldWithPath("point").description("기본 포인트"),
+                  fieldWithPath("continuousPoint").description("연속 출석 포인트"),
+                  fieldWithPath("rankPoint").description("순위 포인트"),
+                  fieldWithPath("randomPoint").description("랜덤 포인트")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 출석 정보 조회는 성공한다.")
+    public void 유효한_요청일_경우_출석_정보_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AttendanceController.class, "getAttendanceInfo");
+
+      mockMvc.perform(get("/attendances/members/{memberId}/info", member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.continuousDay").value(attendance.getContinuousDay()))
+          .andExpect(jsonPath("$.todayRank").value(attendance.getRank()))
+          .andExpect(jsonPath("$.todayPoint").value(attendance.getTotalPoint()))
+          .andDo(document("get-attendance-info",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId").description("회원 ID")
+              ),
+              responseFields(
+                  fieldWithPath("continuousDay").description("연속 출석일"),
+                  fieldWithPath("todayRank").description("춣석 순위"),
+                  fieldWithPath("todayPoint").description("오늘 출석 포인트")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 출석 정보 목록 조회는 성공한다.")
+    public void 유효한_요청일_경우_출석_정보_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AttendanceController.class, "getTotalAttendance");
+
+      LocalDate now = LocalDate.now();
+
+      mockMvc.perform(get("/attendances/members/{memberId}/total", member.getId())
+              .param("localDate", String.valueOf(now.minusYears(1)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$[0].id").value(attendance.getId()))
+          .andExpect(jsonPath("$[0].date").value(String.valueOf(attendance.getDate())))
+          .andDo(document("get-total-attendance",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId").description("회원 ID")
+              ),
+              queryParameters(
+                  parameterWithName("localDate")
+                      .attributes(new Attribute("format", "yyyy-MM-dd"))
+                      .description("오늘 날짜")
+              ),
+              responseFields(
+                  fieldWithPath("[].id").description("출석 ID"),
+                  fieldWithPath("[].date").description("출석 날짜")
+              )));
     }
   }
 }

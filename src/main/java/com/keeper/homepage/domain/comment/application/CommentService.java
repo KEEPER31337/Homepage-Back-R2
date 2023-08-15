@@ -95,8 +95,8 @@ public class CommentService {
 
   private void checkCommentIsMine(Comment comment, Member member) {
     if (!comment.isMine(member)) {
-      String nickname = member.getNickname();
-      throw new BusinessException(nickname, "nickname", COMMENT_NOT_WRITER);
+      String realName = member.getRealName();
+      throw new BusinessException(realName, "realName", COMMENT_NOT_WRITER);
     }
   }
 

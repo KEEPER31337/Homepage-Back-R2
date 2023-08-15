@@ -12,13 +12,13 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class MemberPointRankResponse {
 
-  private String nickName;
-  private Float generation;
+  private String realName;
+  private String generation;
   private Integer point;
 
   public static MemberPointRankResponse from(Member member) {
     return MemberPointRankResponse.builder()
-        .nickName(member.getNickname())
+        .realName(member.getRealName())
         .generation(member.getGeneration())
         .point(member.getPoint())
         .build();
