@@ -19,7 +19,7 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
       + "where borrow.borrowStatus.id = :statusId "
       + "and (book.title like %:keyword% " // 도서명
       + "or book.author like %:keyword% " // 저자
-      + "or member.profile.nickname.nickName like %:keyword%) " // 닉네임
+      + "or member.profile.realName.realName like %:keyword%) " // 이름
   )
   Page<BookBorrowInfo> findAllByBorrowStatus(@Param("statusId") long statusIdId,
       @Param("keyword") String keyword, Pageable pageable);
@@ -30,7 +30,7 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
       + "or borrow.borrowStatus.id = :statusId2) "
       + "and (book.title like %:keyword% " // 도서명
       + "or book.author like %:keyword% " // 저자
-      + "or member.profile.nickname.nickName like %:keyword%) " // 닉네임
+      + "or member.profile.realName.realName like %:keyword%) " // 이름
   )
   Page<BookBorrowInfo> findAllByTwoBorrowStatus(@Param("statusId1") long borrowStatusId,
       @Param("statusId2") long borrowStatus2Id, @Param("keyword") String keyword, Pageable pageable);

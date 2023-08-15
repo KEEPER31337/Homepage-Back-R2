@@ -18,7 +18,7 @@ public class SearchMeritLogListResponse {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime giveTime;
   private String awarderName;
-  private float awarderGeneration;
+  private String awarderGeneration;
   private int score;
   private long meritTypeId;
   private String reason;
@@ -27,8 +27,8 @@ public class SearchMeritLogListResponse {
     return SearchMeritLogListResponse.builder()
         .id(meritLog.getId())
         .giveTime(meritLog.getTime())
-        .awarderName(meritLog.getAwarder().getRealName())
-        .awarderGeneration(meritLog.getGiver().getGeneration())
+        .awarderName(meritLog.getMemberRealName())
+        .awarderGeneration(meritLog.getMemberGeneration())
         .score(meritLog.getMeritType().getMerit())
         .meritTypeId(meritLog.getMeritType().getId())
         .reason(meritLog.getMeritType().getDetail())

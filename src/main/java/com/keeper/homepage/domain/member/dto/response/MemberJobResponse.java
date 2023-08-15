@@ -16,7 +16,7 @@ public class MemberJobResponse {
   private String jobName;
   private String jobThumbnailPath;
   private Long memberId;
-  private Float generation;
+  private String generation;
   private String realName;
 
   public static MemberJobResponse from(MemberHasMemberJob memberHasMemberJob) {

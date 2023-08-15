@@ -16,53 +16,9 @@ import org.springframework.data.domain.PageRequest;
 
 class PointLogServiceTest extends IntegrationTest {
 
-  private Member giver, receiver;
-  private long giverId, receiverId;
+  private Member giver;
   private long pointLogId, otherPointLogId;
 
-  private static final int GIVEPOINT = 1000;
-  private static final String GIVEMESSAGE = "TEST MESSAGE";
-
-  @Nested
-  @DisplayName("선물 포인트 로그 기능 테스트")
-  class PresentPointLogTest {
-
-    @BeforeEach
-    void setUp() {
-      giver = memberTestHelper.builder().point(10000).build();
-      receiver = memberTestHelper.builder().point(10000).build();
-      giverId = giver.getId();
-      receiverId = receiver.getId();
-    }
-
-    @Test
-    @DisplayName("선물 포인트 로그가 만들어져야 한다.")
-    void 선물_포인트_로그가_만들어져야_한다() {
-      Long giverPointLogId = pointLogService.create(giver, receiver, -GIVEPOINT, GIVEMESSAGE);
-      Long receiverPointLogId = pointLogService.create(receiver, null, GIVEPOINT, GIVEMESSAGE);
-
-      em.flush();
-      em.clear();
-
-      PointLog findGiverPointLog = pointLogRepository.findById(giverPointLogId).orElseThrow();
-      PointLog findReceiverPointLog = pointLogRepository.findById(receiverPointLogId).orElseThrow();
-
-      assertThat(findGiverPointLog.getPoint()).isEqualTo(-GIVEPOINT);
-      assertThat(findReceiverPointLog.getPoint()).isEqualTo(GIVEPOINT);
-
-      assertThat(findGiverPointLog.getMember().getId()).isEqualTo(giverId);
-      assertThat(findReceiverPointLog.getMember().getId()).isEqualTo(receiverId);
-
-      assertThat(findGiverPointLog.getPresented().getId()).isEqualTo(receiverId);
-      assertThat(findReceiverPointLog.getPresented()).isNull();
-
-      assertThat(findGiverPointLog.getDetail()).isEqualTo(GIVEMESSAGE);
-      assertThat(findReceiverPointLog.getDetail()).isEqualTo(GIVEMESSAGE);
-
-      assertThat(findGiverPointLog.getIsSpent()).isEqualTo(true);
-      assertThat(findReceiverPointLog.getIsSpent()).isEqualTo(false);
-    }
-  }
 
   @Nested
   @DisplayName("포인트 내역 조회 테스트")

@@ -30,7 +30,7 @@ public class PostResponse {
     return PostResponse.builder()
         .id(post.getId())
         .title(post.getTitle())
-        .writerName(post.getWriterNickname())
+        .writerName(post.getWriterRealName())
         .writerThumbnailPath(post.getMember().getThumbnailPath())
         .visitCount(post.getVisitCount())
         .commentCount(post.getComments().size())

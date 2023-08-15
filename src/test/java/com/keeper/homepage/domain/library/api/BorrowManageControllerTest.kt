@@ -4,7 +4,7 @@ import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
-import com.keeper.homepage.domain.member.entity.embedded.Nickname
+import com.keeper.homepage.domain.member.entity.embedded.RealName
 import com.keeper.homepage.global.config.security.data.JwtType
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import io.kotest.matchers.shouldBe
@@ -18,7 +18,6 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Attributes.key
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 
@@ -49,7 +48,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookTitle").value(borrowInfoList[0].book.title))
                 .andExpect(jsonPath("$.content[0].author").value(borrowInfoList[0].book.author))
                 .andExpect(jsonPath("$.content[0].borrowerId").value(borrowInfoList[0].member.id))
-                .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
+                .andExpect(jsonPath("$.content[0].borrowerRealName").value(borrowInfoList[0].member.realName))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
                 .andExpect(jsonPath("$.totalPages").value("7"))
@@ -65,7 +64,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional(),
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
-                            parameterWithName("keyword").description("검색 키워드. 도서명, 저자, 닉네임에서 검색해옵니다.")
+                            parameterWithName("keyword").description("검색 키워드. 도서명, 저자, 실명에서 검색해옵니다.")
                                 .optional(),
                             parameterWithName("status")
                                 .attributes(
@@ -94,7 +93,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookTitle").value(borrowInfoList[5].book.title))
                 .andExpect(jsonPath("$.content[0].author").value(borrowInfoList[5].book.author))
                 .andExpect(jsonPath("$.content[0].borrowerId").value(borrowInfoList[5].member.id))
-                .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[5].member.nickname))
+                .andExpect(jsonPath("$.content[0].borrowerRealName").value(borrowInfoList[5].member.realName))
                 .andExpect(jsonPath("$.number").value("1"))
                 .andExpect(jsonPath("$.size").value("5"))
                 .andExpect(jsonPath("$.totalPages").value("4"))
@@ -109,7 +108,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookTitle").value(borrowInfoList[0].book.title))
                 .andExpect(jsonPath("$.content[0].author").value(borrowInfoList[0].book.author))
                 .andExpect(jsonPath("$.content[0].borrowerId").value(borrowInfoList[0].member.id))
-                .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
+                .andExpect(jsonPath("$.content[0].borrowerRealName").value(borrowInfoList[0].member.realName))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
@@ -150,7 +149,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookTitle").value(borrowInfoList[0].book.title))
                 .andExpect(jsonPath("$.content[0].author").value(borrowInfoList[0].book.author))
                 .andExpect(jsonPath("$.content[0].borrowerId").value(borrowInfoList[0].member.id))
-                .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
+                .andExpect(jsonPath("$.content[0].borrowerRealName").value(borrowInfoList[0].member.realName))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
@@ -168,7 +167,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookTitle").value(borrowInfoList[0].book.title))
                 .andExpect(jsonPath("$.content[0].author").value(borrowInfoList[0].book.author))
                 .andExpect(jsonPath("$.content[0].borrowerId").value(borrowInfoList[0].member.id))
-                .andExpect(jsonPath("$.content[0].borrowerNickname").value(borrowInfoList[0].member.nickname))
+                .andExpect(jsonPath("$.content[0].borrowerRealName").value(borrowInfoList[0].member.realName))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
                 .andExpect(jsonPath("$.totalPages").value("3"))
@@ -228,21 +227,21 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         }
 
         @Test
-        fun `대출 대기중이거나 반납 대기중인 목록만 가져와야 하고 대여자 닉네임 검색이 가능해야 한다`() {
+        fun `대출 대기중이거나 반납 대기중인 목록만 가져와야 하고 대여자 실명 검색이 가능해야 한다`() {
             val searchKeyword = "나다"
-            generateBorrowInfoByMemberNickname(대출대기중, "가나다라") // O
-            generateBorrowInfoByMemberNickname(대출대기중, "가나다") // O
-            generateBorrowInfoByMemberNickname(대출대기중, "나다라") // O
-            generateBorrowInfoByMemberNickname(대출대기중, "나다") // O
-            generateBorrowInfoByMemberNickname(대출대기중, "마바사") // X
-            generateBorrowInfoByMemberNickname(대출대기중, "나마사") // X
-            generateBorrowInfoByMemberNickname(반납대기중, "가나다라") // O
-            generateBorrowInfoByMemberNickname(반납대기중, "가나다") // O
-            generateBorrowInfoByMemberNickname(반납대기중, "나다라") // O
-            generateBorrowInfoByMemberNickname(반납대기중, "나다") // O
-            generateBorrowInfoByMemberNickname(대출거부, "나다") // X
-            generateBorrowInfoByMemberNickname(대출승인, "나다") // X
-            generateBorrowInfoByMemberNickname(반납, "나다") // X
+            generateBorrowInfoByMemberRealName(대출대기중, "가나다라") // O
+            generateBorrowInfoByMemberRealName(대출대기중, "가나다") // O
+            generateBorrowInfoByMemberRealName(대출대기중, "나다라") // O
+            generateBorrowInfoByMemberRealName(대출대기중, "나다") // O
+            generateBorrowInfoByMemberRealName(대출대기중, "마바사") // X
+            generateBorrowInfoByMemberRealName(대출대기중, "나마사") // X
+            generateBorrowInfoByMemberRealName(반납대기중, "가나다라") // O
+            generateBorrowInfoByMemberRealName(반납대기중, "가나다") // O
+            generateBorrowInfoByMemberRealName(반납대기중, "나다라") // O
+            generateBorrowInfoByMemberRealName(반납대기중, "나다") // O
+            generateBorrowInfoByMemberRealName(대출거부, "나다") // X
+            generateBorrowInfoByMemberRealName(대출승인, "나다") // X
+            generateBorrowInfoByMemberRealName(반납, "나다") // X
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "5", "keyword" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
@@ -338,15 +337,15 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .build()
         }
 
-        private fun generateBorrowInfoByMemberNickname(
+        private fun generateBorrowInfoByMemberRealName(
             type: BookBorrowStatus.BookBorrowStatusType,
-            nickname: String
+            name: String
         ): BookBorrowInfo {
             return bookBorrowInfoTestHelper.builder()
                 .borrowStatus(BookBorrowStatus.getBookBorrowStatusBy(type))
                 .member(
                     memberTestHelper.builder()
-                        .nickname(Nickname.from(nickname))
+                        .realName(RealName.from(name))
                         .build()
                 )
                 .build()
