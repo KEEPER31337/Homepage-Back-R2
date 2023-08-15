@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class GivePointService {
 
   private final MemberFindService memberFindService;
+  private static final String GIVERDEFAULTMESSAGE = "포인트 선물 보내기";
+  private static final String RECEIVERDEFAULTMESSAGE = "포인트 선물 흭득";
 
   @Transactional
   public void presentPoint(long giverId, long receiverId, int point, String message) {
@@ -21,7 +23,10 @@ public class GivePointService {
     Member giver = memberFindService.findById(giverId);
     Member receiver = memberFindService.findById(receiverId);
 
-    giver.minusPoint(point, message);
-    receiver.addPoint(point, message);
+    String giverMessage = GIVERDEFAULTMESSAGE + (message != null ? " - " + message : "");
+    String receiverMessage = RECEIVERDEFAULTMESSAGE + (message != null ? " - " + message : "");
+
+    giver.minusPoint(point, giverMessage);
+    receiver.addPoint(point, receiverMessage);
   }
 }

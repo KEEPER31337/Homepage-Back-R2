@@ -21,6 +21,8 @@ class GivePointServiceTest extends IntegrationTest {
 
   private static final int GIVEPOINT = 1000;
   private static final String GIVEMESSAGE = "TEST MESSAGE";
+  private static final String GIVERDEFAULTMESSAGE = "포인트 선물 보내기 - ";
+  private static final String RECEIVERDEFAULTMESSAGE = "포인트 선물 흭득 - ";
 
   @Nested
   @DisplayName("포인트 선물 기능 테스트")
@@ -85,11 +87,11 @@ class GivePointServiceTest extends IntegrationTest {
 
       assertThat(giverPointLogs.stream()
           .map(PointLog::getDetail)
-          .collect(Collectors.toList())).contains(GIVEMESSAGE);
+          .collect(Collectors.toList())).contains(GIVERDEFAULTMESSAGE + GIVEMESSAGE);
 
       assertThat(receiverPointLogs.stream()
           .map(PointLog::getDetail)
-          .collect(Collectors.toList())).contains(GIVEMESSAGE);
+          .collect(Collectors.toList())).contains(RECEIVERDEFAULTMESSAGE + GIVEMESSAGE);
     }
   }
 
