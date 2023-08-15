@@ -5,6 +5,7 @@ import static com.keeper.homepage.domain.member.application.convenience.MemberFi
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
+import com.keeper.homepage.domain.member.dto.response.MemberProfileResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -44,5 +45,10 @@ public class MemberService {
         .map(MemberPointRankResponse::from);
   }
 
+  public MemberProfileResponse getMemberProfile(long memberId) {
+    Member findMember = memberFindService.findById(memberId);
 
+    return memberRepository.findById(findMember.getId())
+        .map(MemberProfileResponse::from(findMember, findMember.getProfile())
+  }
 }

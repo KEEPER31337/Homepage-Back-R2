@@ -27,10 +27,10 @@ import lombok.Getter;
 public class MemberProfileResponse {
 
   private long id;
-  private EmailAddress emailAddress;
-  private RealName realName;
+  private String emailAddress;
+  private String realName;
   private LocalDate birthday;
-  private StudentId studentId;
+  private String studentId;
   private String thumbnailPath;
   private Float generation;
   private int point;
@@ -40,11 +40,11 @@ public class MemberProfileResponse {
   public static MemberProfileResponse from(Profile profile, Member member) {
     return MemberProfileResponse.builder()
         .id(member.getId())
-        .emailAddress(profile.getEmailAddress())
-        .realName(profile.getRealName())
-        .birthday(profile.getBirthday())
-        .studentId(profile.getStudentId())
-        .thumbnailPath(profile.getThumbnail().getPath())
+        .emailAddress(member.getEmailAddress())
+        .realName(member.getRealName())
+        .birthday(member.getBirthday())
+        .studentId(member.getStudentId())
+        .thumbnailPath(member.getThumbnailPath())
         .generation(member.getGeneration())
         .point(member.getPoint())
         .memberType(member.getMemberType())

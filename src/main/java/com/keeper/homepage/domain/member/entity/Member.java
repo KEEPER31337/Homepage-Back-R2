@@ -320,6 +320,19 @@ public class Member {
     return this.profile.getRealName().get();
   }
 
+  public String getEmailAddress() {
+    return this.profile.getEmailAddress().get();
+  }
+
+  public LocalDate getBirthday() {
+    return this.profile.getBirthday();
+  }
+
+  public String getStudentId() {
+    return this.profile.getStudentId().get();
+  }
+
+
   public Float getGeneration() {
     return this.generation.getGeneration();
   }
