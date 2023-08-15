@@ -20,4 +20,12 @@ public class MeritDemerit {
 
   @Column(name = "demerit", nullable = false)
   private Integer demerit;
+
+  public void updateMerit(int score) {
+    this.merit += score;
+  }
+
+  public void updateDemerit(int score) {
+    this.demerit += score;
+  }
 }

@@ -1,10 +1,15 @@
 package com.keeper.homepage.domain.attendance.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_ALREADY;
+import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_NOT_FOUND;
 
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.attendance.dto.response.AttendanceInfoResponse;
+import com.keeper.homepage.domain.attendance.dto.response.AttendancePointResponse;
+import com.keeper.homepage.domain.attendance.dto.response.AttendanceRankResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendanceResponse;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.redis.RedisUtil;
@@ -25,6 +30,7 @@ public class AttendanceService {
 
   private final AttendanceRepository attendanceRepository;
   private final RedisUtil redisUtil;
+  private final MemberFindService memberFindService;
 
   private static final long RANK_DATA_EXPIRE_DURATION = 60 * 60 * 24; // 60s * 60m * 24h로 하루를 의미함.
 
@@ -96,17 +102,42 @@ public class AttendanceService {
         .orElse(0);
   }
 
-  public Page<AttendanceResponse> getTodayRanks(Pageable pageable) {
+  public Page<AttendanceRankResponse> getTodayRanks(Pageable pageable) {
     LocalDate now = LocalDate.now();
     Page<Attendance> attendances = attendanceRepository.findAllByDateOrderByRankAsc(now, pageable);
-    return attendances.map(AttendanceResponse::from);
+    return attendances.map(AttendanceRankResponse::from);
   }
 
-  public List<AttendanceResponse> getContinuousRanks() {
+  public List<AttendanceRankResponse> getContinuousRanks() {
     LocalDate now = LocalDate.now();
     List<Attendance> attendances = attendanceRepository.findAllByDateOrderByContinuousDayDesc(now);
     return attendances.stream()
         .limit(4)
+        .map(AttendanceRankResponse::from)
+        .toList();
+  }
+
+  public AttendancePointResponse getTodayAttendancePoint(Member member) {
+    LocalDate now = LocalDate.now();
+    return attendanceRepository.findByMemberAndDate(member, now)
+        .map(AttendancePointResponse::from)
+        .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
+  }
+
+  public AttendanceInfoResponse getAttendanceInfo(long memberId) {
+    Member member = memberFindService.findById(memberId);
+    LocalDate now = LocalDate.now();
+    return attendanceRepository.findByMemberAndDate(member, now)
+        .map(AttendanceInfoResponse::from)
+        .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
+  }
+
+  // TODO: 추후 프론트 라이브러리 요구사항에 맞게 수정이 필요
+  public List<AttendanceResponse> getTotalAttendance(long memberId, LocalDate localDate) {
+    Member member = memberFindService.findById(memberId);
+    LocalDate lastDate = localDate.minusYears(1);
+    return attendanceRepository.findAllRecent(member, lastDate)
+        .stream()
         .map(AttendanceResponse::from)
         .toList();
   }
