@@ -20,20 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PointLogService {
 
   private final PointLogRepository pointLogRepository;
-  private final MemberFindService memberFindService;
-
-  private static final String ATTENDANCE_POINT_MESSAGE = "출석 포인트";
-
-  @Transactional
-  public void create(Attendance attendance) {
-    pointLogRepository.save(PointLog.builder()
-        .time(attendance.getTime())
-        .member(attendance.getMember())
-        .point(attendance.getTotalPoint())
-        .detail(ATTENDANCE_POINT_MESSAGE)
-        .isSpent(true)
-        .build());
-  }
 
   public Page<PointLog> findAllPointLogs(Pageable pageable, long memberId) {
     return pointLogRepository.findAllByMemberId(pageable, memberId);
