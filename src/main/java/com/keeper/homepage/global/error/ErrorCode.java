@@ -89,6 +89,9 @@ public enum ErrorCode {
   // MERIT
   MERIT_TYPE_NOT_FOUND("해당 상벌점 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   MERIT_TYPE_DETAIL_DUPLICATE("해당 상벌점 타입의 사유가 존재합니다.", HttpStatus.CONFLICT),
+  // ELECTION
+  ELECTION_NOT_FOUND("존재하지 않는 선거입니다.", HttpStatus.NOT_FOUND),
+  ELECTION_CANNOT_DELETE("비공개 상태 선거만 삭제 가능합니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;

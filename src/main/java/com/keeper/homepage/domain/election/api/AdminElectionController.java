@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,14 @@ public class AdminElectionController {
       @RequestBody @Valid ElectionCreateRequest request) {
     adminElectionService.createElection(member, request.getName(), request.getDescription(), request.getIsAvailable());
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @DeleteMapping("/{electionId}")
+  public ResponseEntity<Void> deleteElection(
+      @PathVariable long electionId
+  ) {
+    adminElectionService.deleteElection(electionId);
+    return ResponseEntity.noContent().build();
   }
 
 }

@@ -34,3 +34,25 @@ include::{snippets}/create-election/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/create-election/http-response.adoc[]
+
+== *선거 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-election/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-election/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-election/http-response.adoc[]
