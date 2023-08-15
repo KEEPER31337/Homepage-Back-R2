@@ -29,8 +29,6 @@ public class MeritLogRepositoryTest extends IntegrationTest {
       MeritLog findMeritLog = meritLogRepository.findById(meritLog.getId()).orElseThrow();
 
       assertThat(meritLog.getId()).isEqualTo(findMeritLog.getId());
-      //assertThat(meritLog.getGiver()).isEqualTo(findMeritLog.getGiver());
-      //assertThat(meritLog.getAwarder()).isEqualTo(findMeritLog.getAwarder());
       assertThat(findMeritLog.getTime()).isNotNull();
       assertThat(meritLog.getMeritType().getId()).isEqualTo(findMeritLog.getMeritType().getId());
     }

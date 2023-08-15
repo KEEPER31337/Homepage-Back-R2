@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.merit;
 
 import com.keeper.homepage.domain.member.MemberTestHelper;
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
@@ -63,10 +64,11 @@ public class MeritLogTestHelper {
     }
 
     public MeritLog build() {
+      Member member = memberTestHelper.generate();
       return meritLogRepository.save(MeritLog.builder()
-          .memberId(memberId != null ? memberId : memberTestHelper.generate().getId())
-          .memberRealName(memberRealName != null ? memberRealName : memberTestHelper.generate().getRealName())
-          .memberGeneration(memberGeneration != null ? memberGeneration : memberTestHelper.generate().getGeneration())
+          .memberId(memberId != null ? memberId : member.getId())
+          .memberRealName(memberRealName != null ? memberRealName : member.getRealName())
+          .memberGeneration(memberGeneration != null ? memberGeneration : member.getGeneration())
           .meritType(meritType != null ? meritType : meritTypeHelper.generate())
           .build());
     }
