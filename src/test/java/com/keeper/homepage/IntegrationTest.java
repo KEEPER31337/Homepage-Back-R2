@@ -28,6 +28,7 @@ import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
 import com.keeper.homepage.domain.election.ElectionTestHelper;
 import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
+import com.keeper.homepage.domain.election.application.AdminElectionService;
 import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
 import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
@@ -349,7 +350,7 @@ public class IntegrationTest {
 
   @SpyBean
   protected CtfTeamService ctfTeamService;
-
+  
   @SpyBean
   protected MeritTypeService meritTypeService;
 
@@ -361,6 +362,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected PointLogService pointLogService;
+
+  @SpyBean
+  protected AdminElectionService adminElectionService;
 
   /******* Helper *******/
   @SpyBean

@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.library.application;
 
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
@@ -104,7 +103,7 @@ public class BookService {
     BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository
         .findById(borrowId)
         .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
-    if (!bookBorrowInfo.isReadyToReturn(대출승인)) {
+    if (!bookBorrowInfo.isReadyToReturn()) {
       throw new BusinessException(borrowId, "borrowId", BORROW_STATUS_IS_NOT_BORROW_APPROVAL);
     }
     if (!bookBorrowInfo.isMine(member)) {

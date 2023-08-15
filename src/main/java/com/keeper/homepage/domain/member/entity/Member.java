@@ -53,6 +53,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -147,7 +148,7 @@ public class Member {
   @OneToMany(mappedBy = "member")
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member")
+  @OneToMany(mappedBy = "member", cascade = PERSIST)
   private final List<PointLog> pointLogs = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -331,11 +332,27 @@ public class Member {
     this.point += point;
   }
 
-  public void minusPoint(int point) {
+  public void addPoint(int point, String message) {
+    this.point += point;
+    this.pointLogs.add(PointLog.builder()
+        .time(LocalDateTime.now())
+        .member(this)
+        .point(point)
+        .detail(message)
+        .build());
+  }
+
+  public void minusPoint(int point, String message) {
     if (this.point < point && point < 0) {
       throw new IllegalArgumentException();
     }
     this.point -= point;
+    this.pointLogs.add(PointLog.builder()
+        .time(LocalDateTime.now())
+        .member(this)
+        .point(-point)
+        .detail(message)
+        .build());
   }
 
   public String getThumbnailPath() {

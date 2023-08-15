@@ -17,6 +17,8 @@ const val GUESS_NUMBER_LENGTH = 4
 const val TRY_COUNT = 9
 const val MAX_BETTING_POINT = 1000L
 const val MIN_BETTING_POINT = 10L
+const val BETTING_POINT_MESSAGE = "야구 게임 베팅"
+const val EARN_POINT_MESSAGE = "야구 게임 획득"
 
 @Service
 @Transactional(readOnly = true)
@@ -52,7 +54,7 @@ class BaseballService(
         }
 
         val game = gameFindService.findByMemberOrInit(requestMember)
-        requestMember.minusPoint(bettingPoint)
+        requestMember.minusPoint(bettingPoint, BETTING_POINT_MESSAGE)
         game.baseball.increaseBaseballTimes()
 
         val baseballResultEntity = BaseballResultEntity(
@@ -103,7 +105,7 @@ class BaseballService(
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
         val earnablePoints = baseballResultEntity.earnablePoints
-        requestMember.addPoint(earnablePoints)
+        requestMember.addPoint(earnablePoints, EARN_POINT_MESSAGE)
         gameEntity.baseball.baseballDayPoint = earnablePoints
 
         return Pair(baseballResultEntity.results, earnablePoints)
