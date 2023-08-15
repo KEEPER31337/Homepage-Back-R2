@@ -49,7 +49,6 @@ public class PointLogService {
   }
 
   public Page<PointLog> findAllPointLogs(Pageable pageable, long memberId) {
-    long findMemberId = memberFindService.findById(memberId).getId();
-    return pointLogRepository.findAllByMemberId(pageable, findMemberId);
+    return pointLogRepository.findAllByMemberId(pageable, memberId);
   }
 }

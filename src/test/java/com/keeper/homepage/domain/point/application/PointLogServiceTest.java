@@ -61,8 +61,6 @@ class PointLogServiceTest extends IntegrationTest {
 
       assertThat(findGiverPointLog.getIsSpent()).isEqualTo(true);
       assertThat(findReceiverPointLog.getIsSpent()).isEqualTo(false);
-
-
     }
   }
 
@@ -91,6 +89,4 @@ class PointLogServiceTest extends IntegrationTest {
           .contains(pointLogId, otherPointLogId);
     }
   }
-
-
 }

@@ -12,19 +12,18 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class FindAllPointLogsResponse {
+public class FindAllPointLogResponse {
 
   private int point;
   private String description;
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime date;
 
-  public static FindAllPointLogsResponse from(PointLog pointLog) {
-    return FindAllPointLogsResponse.builder()
+  public static FindAllPointLogResponse from(PointLog pointLog) {
+    return FindAllPointLogResponse.builder()
         .point(pointLog.getPoint())
         .description(pointLog.getDetail())
         .date(pointLog.getTime())
         .build();
-
   }
 }

@@ -71,7 +71,6 @@ public class PointLogTestHelper {
       return this;
     }
 
-
     public PointLog build() {
       return pointLogRepository.save(PointLog.builder()
           .time(time != null ? time : now())

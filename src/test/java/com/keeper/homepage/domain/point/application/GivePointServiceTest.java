@@ -36,7 +36,7 @@ class GivePointServiceTest extends IntegrationTest {
     void 포인트_기부자와_수취인은_점수가_변경되야_한다() {
       int expectedGiverPoint = giver.getPoint() - GIVEPOINT;
       int expectedReceiverPoint = receiver.getPoint() + GIVEPOINT;
-      givePointService.givePoint(giverId, receiverId, GIVEPOINT, "테스트");
+      givePointService.presentPoint(giverId, receiverId, GIVEPOINT, "테스트");
 
       em.flush();
       em.clear();

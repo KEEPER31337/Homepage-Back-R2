@@ -16,7 +16,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.point.dto.request.presentPointRequest;
-import com.keeper.homepage.domain.point.dto.response.FindAllPointLogsResponse;
+import com.keeper.homepage.domain.point.dto.response.FindAllPointLogResponse;
 import com.keeper.homepage.global.config.security.data.JwtType;
 import com.keeper.homepage.global.restdocs.RestDocsHelper;
 import jakarta.servlet.http.Cookie;

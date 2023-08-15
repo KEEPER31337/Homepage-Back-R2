@@ -17,7 +17,7 @@ public class GivePointService {
   private final PointLogService pointLogService;
 
   @Transactional
-  public void givePoint(long giverId, long receiverId, int point, String message) {
+  public void presentPoint(long giverId, long receiverId, int point, String message) {
 
     Member giver = memberFindService.findById(giverId);
     Member receiver = memberFindService.findById(receiverId);
@@ -27,8 +27,5 @@ public class GivePointService {
 
     pointLogService.create(giver, receiver, -point, message);
     pointLogService.create(receiver, null, point, message);
-
-
   }
-
 }

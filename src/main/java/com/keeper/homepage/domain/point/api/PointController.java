@@ -4,7 +4,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.point.application.GivePointService;
 import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.domain.point.dto.request.presentPointRequest;
-import com.keeper.homepage.domain.point.dto.response.FindAllPointLogsResponse;
+import com.keeper.homepage.domain.point.dto.response.FindAllPointLogResponse;
 import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
@@ -33,7 +33,7 @@ public class PointController {
   @PostMapping("/present")
   public ResponseEntity<Void> presentPoint(@LoginMember Member member,
       @RequestBody @Valid presentPointRequest request) {
-    givePointService.givePoint(member.getId(),
+    givePointService.presentPoint(member.getId(),
         request.getMemberId(),
         request.getPoint(),
         request.getMessage());
@@ -42,14 +42,14 @@ public class PointController {
   }
 
   @GetMapping
-  public ResponseEntity<Page<FindAllPointLogsResponse>> findAllPointLogs(
+  public ResponseEntity<Page<FindAllPointLogResponse>> findAllPointLogs(
       @RequestParam(defaultValue = "0") @PositiveOrZero int size,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int page,
       @LoginMember Member member
   ) {
     return ResponseEntity.ok(
         pointLogService.findAllPointLogs(PageRequest.of(size, page), member.getId())
-            .map(FindAllPointLogsResponse::from)
+            .map(FindAllPointLogResponse::from)
     );
   }
 }
