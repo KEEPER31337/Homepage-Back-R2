@@ -119,7 +119,10 @@ public class Member {
   private final Set<MemberHasMemberJob> memberJob = new HashSet<>();
 
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
-  private final Set<Friend> friends = new HashSet<>();
+  private final Set<Friend> follower = new HashSet<>();
+
+  @OneToMany(mappedBy = "followee")
+  private final Set<Friend> followee = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasPostLike> postLikes = new HashSet<>();
@@ -180,14 +183,14 @@ public class Member {
   }
 
   public void follow(Member other) {
-    friends.add(Friend.builder()
+    follower.add(Friend.builder()
         .follower(this)
         .followee(other)
         .build());
   }
 
   public void unfollow(Member other) {
-    friends.removeIf(follow -> follow.getFollowee().equals(other));
+    follower.removeIf(follow -> follow.getFollowee().equals(other));
   }
 
   public void borrow(Book book, BookBorrowStatus borrowStatus) {

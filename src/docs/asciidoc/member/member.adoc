@@ -92,3 +92,47 @@ include::{snippets}/get-point-ranks/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-point-ranks/response-fields.adoc[]
+
+== *회원 팔로우*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/follow-member/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/follow-member/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/follow-member/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/follow-member/http-response.adoc[]
+
+== *회원 언팔로우*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/unfollow-member/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/unfollow-member/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/unfollow-member/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/unfollow-member/http-response.adoc[]
