@@ -28,7 +28,7 @@ public class SeminarAttendanceController {
       @PathVariable Long seminarId,
       @LoginMember Member member,
       @RequestBody @Valid SeminarAttendanceCodeRequest request) {
-    SeminarAttendanceResponse response = seminarAttendanceService.attendance(seminarId, member, request);
+    SeminarAttendanceResponse response = seminarAttendanceService.attendance(seminarId, member, request.attendanceCode());
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

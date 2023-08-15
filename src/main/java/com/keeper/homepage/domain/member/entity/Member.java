@@ -34,6 +34,7 @@ import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
@@ -150,6 +151,9 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<CtfTeamHasMember> ctfTeamHasMembers = new HashSet<>();
+
+  @OneToMany(mappedBy = "member", cascade = REMOVE)
+  private final List<SeminarAttendance> seminarAttendances = new ArrayList<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer totalAttendance) {
@@ -371,5 +375,12 @@ public class Member {
 
   public boolean isCreator(CtfTeam ctfTeam) {
     return this.equals(ctfTeam.getCreator());
+  }
+
+  public boolean isDualLateness() {
+    long countLateness = this.seminarAttendances.stream()
+        .filter(SeminarAttendance::isLateness)
+        .count();
+    return countLateness != 0 && countLateness % 2 == 0;
   }
 }

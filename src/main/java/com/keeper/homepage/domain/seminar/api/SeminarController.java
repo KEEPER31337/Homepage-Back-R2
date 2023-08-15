@@ -43,7 +43,8 @@ public class SeminarController {
   @PostMapping("/{seminarId}")
   public ResponseEntity<SeminarAttendanceCodeResponse> startSeminar(
       @PathVariable long seminarId, @Valid @RequestBody SeminarStartRequest request) {
-    SeminarAttendanceCodeResponse response = seminarService.start(seminarId, request);
+    SeminarAttendanceCodeResponse response = seminarService.start(seminarId, request.attendanceCloseTime(),
+        request.latenessCloseTime());
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }
 

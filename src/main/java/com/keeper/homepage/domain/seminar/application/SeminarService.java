@@ -10,7 +10,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceCodeResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarDetailResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
@@ -42,12 +41,12 @@ public class SeminarService {
 
   @Transactional
   public SeminarIdResponse save() {
-    Seminar seminar = Seminar.builder()
+    Seminar seminar = seminarRepository.save(Seminar.builder()
         .attendanceCode(randomAttendanceCode())
-        .build();
+        .build());
 
-    List<Member> activeMembers = memberFindService.findAllRegular();
-    activeMembers.forEach(member -> {
+    List<Member> regularMembers = memberFindService.findAllRegular();
+    regularMembers.forEach(member -> {
       seminarAttendanceRepository.save(
           SeminarAttendance.builder()
               .seminar(seminar)
@@ -55,7 +54,7 @@ public class SeminarService {
               .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
               .build());
     });
-    return new SeminarIdResponse(seminarRepository.save(seminar).getId());
+    return new SeminarIdResponse(seminar.getId());
   }
 
   private String randomAttendanceCode() {
@@ -67,18 +66,16 @@ public class SeminarService {
   }
 
   @Transactional
-  public SeminarAttendanceCodeResponse start(Long seminarId, SeminarStartRequest request) {
-    validCloseTime(request);
+  public SeminarAttendanceCodeResponse start(Long seminarId, LocalDateTime attendanceCloseTime,
+      LocalDateTime latenessCloseTime) {
+    validCloseTime(attendanceCloseTime, latenessCloseTime);
 
     Seminar seminar = validSeminarFindService.findById(seminarId);
-    seminar.changeCloseTime(request.attendanceCloseTime(), request.latenessCloseTime());
+    seminar.changeCloseTime(attendanceCloseTime, latenessCloseTime);
     return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }
 
-  private void validCloseTime(SeminarStartRequest request) {
-    LocalDateTime attendanceCloseTime = request.attendanceCloseTime();
-    LocalDateTime latenessCloseTime = request.latenessCloseTime();
-
+  private void validCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
     if (attendanceCloseTime == null && latenessCloseTime == null) {
       return;
     }
