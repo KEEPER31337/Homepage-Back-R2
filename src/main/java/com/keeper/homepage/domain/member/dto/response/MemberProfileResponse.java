@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.dto.response;
 
 
+import static java.util.stream.Collectors.*;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
@@ -12,11 +13,14 @@ import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,8 +38,8 @@ public class MemberProfileResponse {
   private String thumbnailPath;
   private String generation;
   private int point;
-  private MemberType memberType;
-  private Set<MemberHasMemberJob> memberJob;
+  private String memberType;
+  private List<String> memberJobs;
 
   public static MemberProfileResponse from(Member member) {
     return MemberProfileResponse.builder()
@@ -47,8 +51,17 @@ public class MemberProfileResponse {
         .thumbnailPath(member.getThumbnailPath())
         .generation(member.getGeneration())
         .point(member.getPoint())
-        .memberType(member.getMemberType())
-        .memberJob(member.getMemberJob())
+        .memberType(member.getMemberType().getType().name())
+        .memberJobs(getJob(member))
         .build();
+  }
+
+  private static List<String> getJob(Member member) {
+    return member.getMemberJob().stream()
+        .map(MemberHasMemberJob::getMemberJob)
+        .map(MemberJob::getType)
+        .map(MemberJobType::name)
+        .collect(toList());
+
   }
 }

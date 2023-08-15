@@ -177,11 +177,10 @@ class MemberControllerTest extends MemberApiTestHelper {
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
-      mockMvc.perform(get("/{memberId}/profile", member.getId())
+      mockMvc.perform(get("/members/{memberId}/profile", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andDo(print())
           .andDo(document("get-memberProfile",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
