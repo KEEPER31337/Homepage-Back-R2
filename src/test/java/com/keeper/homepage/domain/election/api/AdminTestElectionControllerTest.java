@@ -95,7 +95,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
   }
 
   @Nested
-  @DisplayName("선거 생성 테스트")
+  @DisplayName("선거 수정 테스트")
   class ElectionUpdateTest {
 
     @Test

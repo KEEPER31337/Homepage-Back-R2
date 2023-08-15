@@ -19,7 +19,7 @@ public class ElectionCreateRequest {
   public static final int ELECTION_NAME_LENGTH = 20;
   public static final int ELECTION_DESCRIPTION_LENGTH = 50;
 
-  @NotBlank(message = "선거 생성 정보를 입력해주세요.")
+  @NotBlank(message = "선거 이름을 입력해주세요.")
   @Size(max = ELECTION_NAME_LENGTH, message = "선거 이름은 {max}자 이내로 작성해주세요.")
   private String name;
 
