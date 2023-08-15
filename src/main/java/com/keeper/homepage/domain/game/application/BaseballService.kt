@@ -60,10 +60,10 @@ class BaseballService(
         val baseballResultEntity = BaseballResultEntity(
             correctNumber = generateDistinctRandomNumber(GUESS_NUMBER_LENGTH),
             bettingPoint = bettingPoint,
-            earnablePoints = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
+            earnablePoint = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
         )
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, game.baseball.baseballPerDay)
-        return baseballResultEntity.earnablePoints
+        return baseballResultEntity.earnablePoint
     }
 
     private fun generateDistinctRandomNumber(length: Int): String {
@@ -105,11 +105,11 @@ class BaseballService(
         baseballResultEntity.update(guessNumber)
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
-        val earnablePoints = baseballResultEntity.earnablePoints
-        requestMember.addPoint(earnablePoints, EARN_POINT_MESSAGE)
-        gameEntity.baseball.baseballDayPoint = earnablePoints
+        val earnablePoint = baseballResultEntity.earnablePoint
+        requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
+        gameEntity.baseball.baseballDayPoint = earnablePoint
 
-        return Pair(baseballResultEntity.results, earnablePoints)
+        return Pair(baseballResultEntity.results, earnablePoint)
     }
 
     fun getResult(requestMember: Member): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
