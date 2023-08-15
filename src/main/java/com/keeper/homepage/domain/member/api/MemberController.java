@@ -3,7 +3,7 @@ package com.keeper.homepage.domain.member.api;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
-import com.keeper.homepage.domain.member.dto.response.MemberProfileResponse;
+import com.keeper.homepage.domain.member.dto.response.memberProfile.MemberProfileResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;

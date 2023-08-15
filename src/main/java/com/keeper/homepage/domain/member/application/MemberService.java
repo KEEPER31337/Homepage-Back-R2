@@ -5,7 +5,7 @@ import static com.keeper.homepage.domain.member.application.convenience.MemberFi
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
-import com.keeper.homepage.domain.member.dto.response.MemberProfileResponse;
+import com.keeper.homepage.domain.member.dto.response.memberProfile.MemberProfileResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;

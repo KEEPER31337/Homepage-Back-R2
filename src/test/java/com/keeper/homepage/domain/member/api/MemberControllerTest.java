@@ -163,25 +163,31 @@ class MemberControllerTest extends MemberApiTestHelper {
   @DisplayName("회원 프로필 조회")
   class getMemberProfile {
 
-    private Member member;
+    private Member member, otherMember;
     private String memberToken;
 
     @BeforeEach
     void setUp() throws IOException {
-      member = memberTestHelper.builder().build();
+      member = memberTestHelper.generate();
+      otherMember = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     }
 
     @Test
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
+      otherMember.follow(member);
+      otherMember.follow(memberTestHelper.generate());
+      member.follow(otherMember);
+      member.follow(memberTestHelper.generate());
+
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
       mockMvc.perform(get("/members/{memberId}/profile", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andDo(document("get-memberProfile",
+          .andDo(document("get-member-profile",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
                       .description("ACCESS TOKEN %s".formatted(securedValue))

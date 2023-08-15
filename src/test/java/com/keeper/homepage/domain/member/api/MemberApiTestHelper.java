@@ -38,7 +38,13 @@ public class MemberApiTestHelper extends IntegrationTest {
         fieldWithPath("generation").description("회원의 기수"),
         fieldWithPath("point").description("회원의 포인트 점수"),
         fieldWithPath("memberType").description("회원의 타입"),
-        fieldWithPath("memberJobs").description("회원의 역할")
+        fieldWithPath("memberJobs").description("회원의 역할"),
+        fieldWithPath("follower[].id").description("팔로워의 ID"),
+        fieldWithPath("follower[].name").description("팔로워의 이름"),
+        fieldWithPath("follower[].thumbnailPath").description("팔로워의 썸네일 경로"),
+        fieldWithPath("followee[].id").description("팔로우 하는 사람의 ID"),
+        fieldWithPath("followee[].name").description("팔로우 하는 사람의 이름"),
+        fieldWithPath("followee[].thumbnailPath").description("팔로우 하는 사람의 썸네일 경로"),
     };
   }
 
