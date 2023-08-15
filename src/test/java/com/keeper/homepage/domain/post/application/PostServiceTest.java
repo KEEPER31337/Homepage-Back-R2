@@ -120,7 +120,7 @@ public class PostServiceTest extends IntegrationTest {
       PostDetailResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
 
       assertThat(response.getTitle()).isEqualTo(post.getTitle());
-      assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getNickname().get());
+      assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getRealName().get());
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
       assertThat(response.getContent()).isEqualTo(post.getContent());

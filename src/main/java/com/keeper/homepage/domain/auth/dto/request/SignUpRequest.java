@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.auth.dto.request;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.AUTH_CODE_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.LoginId.LOGIN_ID_REGEX;
-import static com.keeper.homepage.domain.member.entity.embedded.Nickname.NICKNAME_REGEX;
 import static com.keeper.homepage.domain.member.entity.embedded.Password.PASSWORD_REGEX;
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_REGEX;
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_INVALID;
@@ -14,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
-import com.keeper.homepage.domain.member.entity.embedded.Nickname;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -43,8 +41,6 @@ public class SignUpRequest {
   private String rawPassword;
   @Pattern(regexp = REAL_NAME_REGEX, message = RealName.REAL_NAME_INVALID)
   private String realName;
-  @Pattern(regexp = NICKNAME_REGEX, message = Nickname.NICKNAME_INVALID)
-  private String nickname;
   @Length(min = AUTH_CODE_LENGTH, max = AUTH_CODE_LENGTH)
   private String authCode;
   @JsonFormat(pattern = "yyyy.MM.dd")
@@ -58,7 +54,6 @@ public class SignUpRequest {
         .emailAddress(EmailAddress.from(this.email))
         .password(Password.from(this.rawPassword))
         .realName(RealName.from(this.realName))
-        .nickname(Nickname.from(this.nickname))
         .birthday(this.birthday)
         .studentId(StudentId.from(this.studentId))
         .build();

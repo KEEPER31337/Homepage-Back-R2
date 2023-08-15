@@ -26,7 +26,7 @@ public class CommentResponse {
   public static CommentResponse from(Comment comment, boolean isLike, boolean isDislike) {
     return CommentResponse.builder()
         .commentId(comment.getId())
-        .writerName(comment.getMember().getNickname())
+        .writerName(comment.getMember().getRealName())
         .writerThumbnailPath(comment.getWriterThumbnailPath())
         .content(comment.getContent())
         .registerTime(comment.getRegisterTime())

@@ -170,8 +170,8 @@ public class Post extends BaseEntity {
     return allowComment;
   }
 
-  public String getWriterNickname() {
-    return this.member.getNickname();
+  public String getWriterRealName() {
+    return this.member.getRealName();
   }
 
   public FileEntity getThumbnailFile() {

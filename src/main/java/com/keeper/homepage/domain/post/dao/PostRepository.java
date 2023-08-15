@@ -100,7 +100,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       @Param("search") String search, Pageable pageable);
 
   /**
-   * 카테고리 + 공지글 제외 + 임시글 제외 + 작성자 닉네임 검색 + 등록시간 최신순 정렬
+   * 카테고리 + 공지글 제외 + 임시글 제외 + 작성자 실명 검색 + 등록시간 최신순 정렬
    *
    * @param category 게시글 카테고리
    * @param search   검색어
@@ -110,7 +110,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.isNotice = false "
       + "AND p.isTemp = false "
-      + "AND LOWER(p.member.profile.nickname) LIKE LOWER(concat('%', :search, '%')) "
+      + "AND LOWER(p.member.profile.realName) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndWriter(@Param("category") Category category, @Param("search") String search,
       Pageable pageable);

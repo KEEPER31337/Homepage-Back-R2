@@ -16,8 +16,8 @@ public class AttendanceRankResponse {
 
   private Integer rank;
   private String thumbnailPath;
-  private String nickName;
-  private Float generation;
+  private String realName;
+  private String generation;
   private Integer continuousDay;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -27,7 +27,7 @@ public class AttendanceRankResponse {
     return AttendanceRankResponse.builder()
         .rank(attendance.getRank())
         .thumbnailPath(attendance.getMember().getThumbnailPath())
-        .nickName(attendance.getMember().getNickname())
+        .realName(attendance.getMember().getRealName())
         .generation(attendance.getMember().getGeneration())
         .continuousDay(attendance.getContinuousDay())
         .time(attendance.getTime())

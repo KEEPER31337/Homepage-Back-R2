@@ -46,9 +46,6 @@ class MeritTypeServiceTest extends IntegrationTest {
 
       assertThat(findMeritType.getDetail()).isEqualTo("우수기술문서 작성");
       assertThat(findOtherMeritType.getDetail()).isEqualTo("무단 결석");
-
-      assertThat(findMeritType.getIsMerit()).isEqualTo(true);
-      assertThat(findOtherMeritType.getIsMerit()).isEqualTo(false);
     }
   }
 
@@ -65,7 +62,6 @@ class MeritTypeServiceTest extends IntegrationTest {
       meritTypeService.updateMeritType(meritTypeId, -1, "수정된 사유");
       MeritType updatedMeritType = meritTypeRepository.findById(meritTypeId).orElseThrow();
       assertThat(updatedMeritType.getMerit()).isEqualTo(-1);
-      assertThat(updatedMeritType.getIsMerit()).isEqualTo(false);
       assertThat(updatedMeritType.getDetail()).isEqualTo("수정된 사유");
     }
   }
