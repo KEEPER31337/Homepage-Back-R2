@@ -11,7 +11,6 @@ import com.keeper.homepage.domain.attendance.dto.response.AttendanceResponse;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.web.WebUtil;
@@ -30,13 +29,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AttendanceService {
 
   private final AttendanceRepository attendanceRepository;
-  private final PointLogService pointLogService;
   private final RedisUtil redisUtil;
   private final MemberFindService memberFindService;
 
   private static final long RANK_DATA_EXPIRE_DURATION = 60 * 60 * 24; // 60s * 60m * 24h로 하루를 의미함.
 
   private static final String ATTENDANCE_MESSAGE = "자동 출석입니다.";
+  private static final String ATTENDANCE_POINT_MESSAGE = "출석 포인트";
   private static final int RANDOM_MIN_POINT = 100;
   private static final int RANDOM_MAX_POINT = 1000;
   public static final int DAILY_POINT = 1000;
@@ -66,7 +65,7 @@ public class AttendanceService {
         .member(member)
         .build();
     attendanceRepository.save(attendance);
-    pointLogService.create(attendance);
+    member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
   }
 
   private void checkAlreadyAttendance(Member member) {
