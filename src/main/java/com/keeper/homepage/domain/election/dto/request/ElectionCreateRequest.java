@@ -26,7 +26,7 @@ public class ElectionCreateRequest {
   @Size(max = ELECTION_DESCRIPTION_LENGTH, message = "선거 설명은 {max}자 이내로 작성해주세요.")
   private String description;
 
-  @NotNull
+  @NotNull(message = "공개 또는 비공개 여부를 입력해주세요.")
   private Boolean isAvailable;
 
 }
