@@ -45,14 +45,14 @@ public class MemberService {
   }
 
   @Transactional
-  public void follow(Member member, long memberId) {
-    Member other = memberFindService.findById(memberId);
+  public void follow(Member member, long otherId) {
+    Member other = memberFindService.findById(otherId);
     member.follow(other);
   }
 
   @Transactional
-  public void unfollow(Member member, long memberId) {
-    Member other = memberFindService.findById(memberId);
+  public void unfollow(Member member, long otherId) {
+    Member other = memberFindService.findById(otherId);
     member.unfollow(other);
   }
 }

@@ -65,22 +65,22 @@ public class MemberController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/{memberId}/follow")
+  @PostMapping("/{otherId}/follow")
   public ResponseEntity<Void> follow(
       @LoginMember Member member,
-      @PathVariable long memberId
+      @PathVariable long otherId
   ) {
-    memberService.follow(member, memberId);
+    memberService.follow(member, otherId);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }
 
-  @DeleteMapping("{memberId}/unfollow")
+  @DeleteMapping("{otherId}/unfollow")
   public ResponseEntity<Void> unfollow(
       @LoginMember Member member,
-      @PathVariable long memberId
+      @PathVariable long otherId
   ) {
-    memberService.unfollow(member, memberId);
+    memberService.unfollow(member, otherId);
     return ResponseEntity.noContent().build();
   }
 }
