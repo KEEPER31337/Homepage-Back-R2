@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GivePointService {
 
   private final MemberFindService memberFindService;
-  private final PointLogService pointLogService;
 
   @Transactional
   public void presentPoint(long giverId, long receiverId, int point, String message) {
@@ -24,8 +23,5 @@ public class GivePointService {
 
     giver.minusPoint(point, message);
     receiver.addPoint(point, message);
-
-    pointLogService.create(giver, receiver, -point, message);
-    pointLogService.create(receiver, null, point, message);
   }
 }

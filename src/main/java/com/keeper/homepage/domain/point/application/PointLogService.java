@@ -35,19 +35,6 @@ public class PointLogService {
         .build());
   }
 
-  @Transactional
-  public Long create(Member giver, Member receiver, int point, String message) {
-    boolean isSpent = point < 0;
-    return pointLogRepository.save(PointLog.builder()
-        .time(now())
-        .member(giver)
-        .point(point)
-        .detail(message)
-        .presented(receiver)
-        .isSpent(isSpent)
-        .build()).getId();
-  }
-
   public Page<PointLog> findAllPointLogs(Pageable pageable, long memberId) {
     return pointLogRepository.findAllByMemberId(pageable, memberId);
   }
