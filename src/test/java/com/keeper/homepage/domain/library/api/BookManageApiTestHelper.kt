@@ -36,12 +36,12 @@ fun field(
     description: String,
     optional: Boolean = false
 ) = if (optional) {
-    PayloadDocumentation.fieldWithPath(path)
-        .description(description)
-        .optional()
+  PayloadDocumentation.fieldWithPath(path)
+      .description(description)
+      .optional()
 } else {
-    PayloadDocumentation.fieldWithPath(path)
-        .description(description)
+  PayloadDocumentation.fieldWithPath(path)
+      .description(description)
 }
 
 fun pageHelper(vararg fieldDescriptors: FieldDescriptor): Array<FieldDescriptor> =
@@ -68,7 +68,7 @@ fun listHelper(objectName: String, vararg fieldDescriptors: FieldDescriptor): Ar
 fun <K, V> multiValueMapOf(
     vararg pairs: Pair<K, V>
 ): MultiValueMap<K, V> = LinkedMultiValueMap<K, V>().apply {
-    setAll(mapOf(*pairs))
+  setAll(mapOf(*pairs))
 }
 
 fun BookBorrowInfoTestHelper.generate(
@@ -76,165 +76,165 @@ fun BookBorrowInfoTestHelper.generate(
     book: Book,
     expiredDate: LocalDateTime = LocalDateTime.now().plusWeeks(2),
 ): BookBorrowInfo {
-    return this.builder()
-        .book(book)
-        .borrowStatus(BookBorrowStatus.getBookBorrowStatusBy(borrowStatus))
-        .expireDate(expiredDate)
-        .build()
+  return this.builder()
+      .book(book)
+      .borrowStatus(BookBorrowStatus.getBookBorrowStatusBy(borrowStatus))
+      .expireDate(expiredDate)
+      .build()
 }
 
 class BookManageApiTestHelper : IntegrationTest() {
 
-    lateinit var bookManager: Member
-    lateinit var bookManagerCookies: Array<Cookie>
+  lateinit var bookManager: Member
+  lateinit var bookManagerCookies: Array<Cookie>
 
-    @BeforeEach
-    fun setUp() {
-        bookManager = memberTestHelper.generate()
-        bookManager.assignJob(ROLE_회원)
-        bookManager.assignJob(ROLE_사서)
-        bookManagerCookies = memberTestHelper.getTokenCookies(bookManager)
-    }
+  @BeforeEach
+  fun setUp() {
+    bookManager = memberTestHelper.generate()
+    bookManager.assignJob(ROLE_회원)
+    bookManager.assignJob(ROLE_사서)
+    bookManagerCookies = memberTestHelper.getTokenCookies(bookManager)
+  }
 
-    fun callGetBooksApi(
-        params: MultiValueMap<String, String> = multiValueMapOf(
-            "bookKeyword" to "",
-            "page" to "0",
-            "size" to "10",
-        ),
-        accessCookies: Array<Cookie> = bookManagerCookies,
-    ): ResultActions {
-        return mockMvc.perform(
-            get(BOOK_URL)
-                .queryParams(params)
-                .cookie(*accessCookies)
-        )
-    }
-
-    fun callAddBookApi(
-        request: BookRequest = BookRequest(
-            title = "삶의 목적을 찾는 45가지 방법",
-            author = "ChatGPT",
-            totalQuantity = 10,
-            bookDepartment = BookDepartmentType.DOCUMENT
-        ),
-        accessCookies: Array<Cookie> = bookManagerCookies,
-        hasThumbnail: Boolean = false,
-        isMocking: Boolean = false,
-    ): ResultActions {
-        if (isMocking) {
-            every { bookManageService.addBook(any(), any(), any(), any(), any()) } returns 1L
-        }
-        val mockPart = MockPart(
-            "bookMetaData",
-            asJsonString(request).toByteArray(StandardCharsets.UTF_8)
-        )
-        mockPart.headers.contentType = MediaType.APPLICATION_JSON
-        return if (hasThumbnail) {
-            mockMvc.perform(
-                multipart(BOOK_URL)
-                    .file(thumbnailTestHelper.smallThumbnailFile)
-                    .part(mockPart)
-                    .cookie(*accessCookies)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-            ).andDo(MockMvcResultHandlers.print())
-        } else {
-            mockMvc.perform(
-                multipart(BOOK_URL)
-                    .part(mockPart)
-                    .cookie(*accessCookies)
-                    .contentType(MediaType.MULTIPART_FORM_DATA)
-            ).andDo(MockMvcResultHandlers.print())
-        }
-    }
-
-    fun callDeleteBookApi(
-        accessCookies: Array<Cookie> = bookManagerCookies,
-        isMocking: Boolean = false,
-    ): ResultActions {
-        var bookId = 0L
-        if (isMocking) {
-            every { bookManageService.deleteBook(any()) } just Runs
-        } else {
-            bookId = bookManageService.addBook(
-                "삶의 목적을 찾는 45가지 방법",
-                "ChatGPT",
-                10,
-                BookDepartmentType.DOCUMENT,
-                null
-            )
-        }
-
-        return mockMvc.perform(
-            delete("${BOOK_URL}/{bookId}", bookId)
-                .cookie(*accessCookies)
-        )
-    }
-
-    fun callModifyBookApi(
-        content: ModifyBookRequest = ModifyBookRequest(
-            title = "삶의 목적을 찾는 45가지 방법",
-            author = "ChatGPT",
-            totalQuantity = 10,
-            bookDepartment = BookDepartmentType.DOCUMENT
-        ),
-        bookId: Long,
-        accessCookies: Array<Cookie> = bookManagerCookies,
-    ): ResultActions =
-        mockMvc.perform(
-            put("${BOOK_URL}/{bookId}", bookId)
-                .content(asJsonString(content))
-                .cookie(*accessCookies)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-        )
-
-    fun callModifyBookThumbnailApi(bookId: Long): ResultActions =
-        mockMvc.perform(
-            multipart("${BOOK_URL}/{bookId}/thumbnail", bookId)
-                .file(thumbnailTestHelper.smallThumbnailFile)
-                .with { request ->
-                    request.method = "PATCH"
-                    request
-                }
-                .cookie(*bookManagerCookies)
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-        )
-
-    fun callGetBookDetailApi(
-        bookId: Long,
-        accessCookies: Array<Cookie> = bookManagerCookies,
-    ): ResultActions = mockMvc.perform(
-        get("${BOOK_URL}/{bookId}", bookId)
+  fun callGetBooksApi(
+      params: MultiValueMap<String, String> = multiValueMapOf(
+          "bookKeyword" to "",
+          "page" to "0",
+          "size" to "10",
+      ),
+      accessCookies: Array<Cookie> = bookManagerCookies,
+  ): ResultActions {
+    return mockMvc.perform(
+        get(BOOK_URL)
+            .queryParams(params)
             .cookie(*accessCookies)
     )
+  }
 
-    fun getBorrowDetailResponseDocs(): Array<FieldDescriptor> {
-        return arrayOf(
-            field("borrowInfoId", "대출 정보 ID"),
-            field("bookId", "대출할 책의 ID"),
-            field("bookTitle", "대출할 책의 제목"),
-            field("author", "대출할 책의 저자"),
-            field("borrowerId", "대출자의 ID"),
-            field("borrowerRealName", "대출자의 실명"),
-            field("requestDatetime", "대출 요청을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
-            field("borrowDateTime", "대출 승인을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
-            field("expiredDateTime", "반납 예정 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
-            field(
-                "status", "대출의 현재 상태\r\n\r\n${BookBorrowStatus.BookBorrowStatusType.getAllList()}"
-            ),
-        )
+  fun callAddBookApi(
+      request: BookRequest = BookRequest(
+          title = "삶의 목적을 찾는 45가지 방법",
+          author = "ChatGPT",
+          totalQuantity = 10,
+          bookDepartment = BookDepartmentType.DOCUMENT
+      ),
+      accessCookies: Array<Cookie> = bookManagerCookies,
+      hasThumbnail: Boolean = false,
+      isMocking: Boolean = false,
+  ): ResultActions {
+    if (isMocking) {
+      every { bookManageService.addBook(any(), any(), any(), any(), any()) } returns 1L
+    }
+    val mockPart = MockPart(
+        "bookMetaData",
+        asJsonString(request).toByteArray(StandardCharsets.UTF_8)
+    )
+    mockPart.headers.contentType = MediaType.APPLICATION_JSON
+    return if (hasThumbnail) {
+      mockMvc.perform(
+          multipart(BOOK_URL)
+              .file(thumbnailTestHelper.smallThumbnailFile)
+              .part(mockPart)
+              .cookie(*accessCookies)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+      ).andDo(MockMvcResultHandlers.print())
+    } else {
+      mockMvc.perform(
+          multipart(BOOK_URL)
+              .part(mockPart)
+              .cookie(*accessCookies)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+      ).andDo(MockMvcResultHandlers.print())
+    }
+  }
+
+  fun callDeleteBookApi(
+      accessCookies: Array<Cookie> = bookManagerCookies,
+      isMocking: Boolean = false,
+  ): ResultActions {
+    var bookId = 0L
+    if (isMocking) {
+      every { bookManageService.deleteBook(any()) } just Runs
+    } else {
+      bookId = bookManageService.addBook(
+          "삶의 목적을 찾는 45가지 방법",
+          "ChatGPT",
+          10,
+          BookDepartmentType.DOCUMENT,
+          null
+      )
     }
 
-    fun getBookDetailResponseDocs(): Array<FieldDescriptor> {
-        return arrayOf(
-            field("id", "책의 ID"),
-            field("title", "책의 제목"),
-            field("author", "책의 저자"),
-            field("bookDepartment", "책 카테고리"),
-            field("totalCount", "책의 총 권 수"),
-            field("borrowingCount", "현재 대출중인 책 수"),
-            field("thumbnailPath", "썸네일 URL"),
-            *listHelper("borrowInfos", *getBorrowDetailResponseDocs()),
-        )
-    }
+    return mockMvc.perform(
+        delete("${BOOK_URL}/{bookId}", bookId)
+            .cookie(*accessCookies)
+    )
+  }
+
+  fun callModifyBookApi(
+      content: ModifyBookRequest = ModifyBookRequest(
+          title = "삶의 목적을 찾는 45가지 방법",
+          author = "ChatGPT",
+          totalQuantity = 10,
+          bookDepartment = BookDepartmentType.DOCUMENT
+      ),
+      bookId: Long,
+      accessCookies: Array<Cookie> = bookManagerCookies,
+  ): ResultActions =
+      mockMvc.perform(
+          put("${BOOK_URL}/{bookId}", bookId)
+              .content(asJsonString(content))
+              .cookie(*accessCookies)
+              .contentType(MediaType.APPLICATION_JSON_VALUE)
+      )
+
+  fun callModifyBookThumbnailApi(bookId: Long): ResultActions =
+      mockMvc.perform(
+          multipart("${BOOK_URL}/{bookId}/thumbnail", bookId)
+              .file(thumbnailTestHelper.smallThumbnailFile)
+              .with { request ->
+                request.method = "PATCH"
+                request
+              }
+              .cookie(*bookManagerCookies)
+              .contentType(MediaType.MULTIPART_FORM_DATA)
+      )
+
+  fun callGetBookDetailApi(
+      bookId: Long,
+      accessCookies: Array<Cookie> = bookManagerCookies,
+  ): ResultActions = mockMvc.perform(
+      get("${BOOK_URL}/{bookId}", bookId)
+          .cookie(*accessCookies)
+  )
+
+  fun getBorrowDetailResponseDocs(): Array<FieldDescriptor> {
+    return arrayOf(
+        field("borrowInfoId", "대출 정보 ID"),
+        field("bookId", "대출할 책의 ID"),
+        field("bookTitle", "대출할 책의 제목"),
+        field("author", "대출할 책의 저자"),
+        field("borrowerId", "대출자의 ID"),
+        field("borrowerRealName", "대출자의 실명"),
+        field("requestDatetime", "대출 요청을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+        field("borrowDateTime", "대출 승인을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+        field("expiredDateTime", "반납 예정 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+        field(
+            "status", "대출의 현재 상태\r\n\r\n${BookBorrowStatus.BookBorrowStatusType.getAllList()}"
+        ),
+    )
+  }
+
+  fun getBookDetailResponseDocs(): Array<FieldDescriptor> {
+    return arrayOf(
+        field("id", "책의 ID"),
+        field("title", "책의 제목"),
+        field("author", "책의 저자"),
+        field("bookDepartment", "책 카테고리"),
+        field("totalCount", "책의 총 권 수"),
+        field("borrowingCount", "현재 대출중인 책 수"),
+        field("thumbnailPath", "썸네일 URL"),
+        *listHelper("borrowInfos", *getBorrowDetailResponseDocs()),
+    )
+  }
 }

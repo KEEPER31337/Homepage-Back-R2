@@ -12,46 +12,46 @@ const val BORROW_URL = "/manage/borrow-infos"
 
 class BorrowManageApiTestHelper : BookManageApiTestHelper() {
 
-    fun callGetBorrowApi(
-        params: MultiValueMap<String, String> = LinkedMultiValueMap(),
-        borrowStatus: BorrowStatusDto?,
-        accessCookies: Array<Cookie> = bookManagerCookies,
-    ): ResultActions = mockMvc.perform(
-        get(BORROW_URL)
-            .params(params)
-            .param("status", borrowStatus?.status)
-            .cookie(*accessCookies)
-    )
+  fun callGetBorrowApi(
+      params: MultiValueMap<String, String> = LinkedMultiValueMap(),
+      borrowStatus: BorrowStatusDto?,
+      accessCookies: Array<Cookie> = bookManagerCookies,
+  ): ResultActions = mockMvc.perform(
+      get(BORROW_URL)
+          .params(params)
+          .param("status", borrowStatus?.status)
+          .cookie(*accessCookies)
+  )
 
-    fun callApproveBorrowApi(
-        borrowId: Long,
-        accessCookies: Array<Cookie> = bookManagerCookies
-    ): ResultActions = mockMvc.perform(
-        post("${BORROW_URL}/{borrowId}/requests-approve", borrowId)
-            .cookie(*accessCookies)
-    )
+  fun callApproveBorrowApi(
+      borrowId: Long,
+      accessCookies: Array<Cookie> = bookManagerCookies
+  ): ResultActions = mockMvc.perform(
+      post("${BORROW_URL}/{borrowId}/requests-approve", borrowId)
+          .cookie(*accessCookies)
+  )
 
-    fun callDenyBorrowApi(
-        borrowId: Long,
-        accessCookies: Array<Cookie> = bookManagerCookies
-    ): ResultActions = mockMvc.perform(
-        post("${BORROW_URL}/{borrowId}/requests-deny", borrowId)
-            .cookie(*accessCookies)
-    )
+  fun callDenyBorrowApi(
+      borrowId: Long,
+      accessCookies: Array<Cookie> = bookManagerCookies
+  ): ResultActions = mockMvc.perform(
+      post("${BORROW_URL}/{borrowId}/requests-deny", borrowId)
+          .cookie(*accessCookies)
+  )
 
-    fun callApproveReturnApi(
-        borrowId: Long,
-        accessCookies: Array<Cookie> = bookManagerCookies
-    ): ResultActions = mockMvc.perform(
-        post("${BORROW_URL}/{borrowId}/return-approve", borrowId)
-            .cookie(*accessCookies)
-    )
+  fun callApproveReturnApi(
+      borrowId: Long,
+      accessCookies: Array<Cookie> = bookManagerCookies
+  ): ResultActions = mockMvc.perform(
+      post("${BORROW_URL}/{borrowId}/return-approve", borrowId)
+          .cookie(*accessCookies)
+  )
 
-    fun callDenyReturnApi(
-        borrowId: Long,
-        accessCookies: Array<Cookie> = bookManagerCookies
-    ): ResultActions = mockMvc.perform(
-        post("${BORROW_URL}/{borrowId}/return-deny", borrowId)
-            .cookie(*accessCookies)
-    )
+  fun callDenyReturnApi(
+      borrowId: Long,
+      accessCookies: Array<Cookie> = bookManagerCookies
+  ): ResultActions = mockMvc.perform(
+      post("${BORROW_URL}/{borrowId}/return-deny", borrowId)
+          .cookie(*accessCookies)
+  )
 }
