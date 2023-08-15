@@ -332,7 +332,6 @@ public class Member {
     return this.profile.getStudentId().get();
   }
 
-
   public Float getGeneration() {
     return this.generation.getGeneration();
   }

@@ -17,7 +17,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,6 +155,44 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               responseFields(
                   pageHelper(getPointRankResponse())
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 프로필 조회")
+  class getMemberProfile {
+
+    private Member member;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.builder().build();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("회원 프로필 조회를 성공해야 한다")
+    void 회원_프로필_조회를_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
+
+      mockMvc.perform(get("/{memberId}/profile", member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andDo(print())
+          .andDo(document("get-memberProfile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId")
+                      .description("조회하고자 하는 회원의 ID값")
+              ),
+              responseFields(
+                  getMemberProfileResponse()
               )));
     }
   }

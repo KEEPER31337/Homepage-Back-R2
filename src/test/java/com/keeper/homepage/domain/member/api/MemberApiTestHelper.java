@@ -27,4 +27,18 @@ public class MemberApiTestHelper extends IntegrationTest {
     };
   }
 
+  FieldDescriptor[] getMemberProfileResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("id").description("Member PK ID"),
+        fieldWithPath("emailAddress").description("회원의 이메일 주소"),
+        fieldWithPath("realName").description("회원의 실명"),
+        fieldWithPath("studentId").description("회원의 학번"),
+        fieldWithPath("thumbnailPath").description("썸네일 경로"),
+        fieldWithPath("generation").description("회원의 기수"),
+        fieldWithPath("point").description("회원의 포인트 점수"),
+        fieldWithPath("memberType").description("회원의 타입"),
+        fieldWithPath("memberJobs").description("회원의 역할")
+    };
+  }
+
 }
