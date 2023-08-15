@@ -14,6 +14,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.member.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,6 +90,40 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
               pathParameters(
                   parameterWithName("electionId")
                       .description("삭제하고자 하는 선거 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("선거 생성 테스트")
+  class ElectionUpdateTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 선거 수정은 성공한다.")
+    public void 유효한_요청일_경우_선거_수정은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AdminElectionController.class, "updateElection");
+      Election election = electionTestHelper.generate();
+
+      ElectionUpdateRequest request = ElectionUpdateRequest.builder()
+          .name("제 1회 임원진 선거 수정")
+          .description("임원진 선거 수정입니다.")
+          .isAvailable(true)
+          .build();
+
+      callUpdateElectionApi(adminToken, election.getId(), request)
+          .andExpect(status().isCreated())
+          .andDo(document("update-election",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("electionId").description("수정하고자 하는 선거 ID")
+              ),
+              requestFields(
+                  fieldWithPath("name").description("선거 이름"),
+                  fieldWithPath("description").description("선거 설명"),
+                  fieldWithPath("isAvailable").description("선거 가능 상태")
               )));
     }
   }
