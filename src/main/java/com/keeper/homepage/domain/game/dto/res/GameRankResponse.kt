@@ -4,7 +4,7 @@ import com.keeper.homepage.domain.member.entity.Member
 
 data class GameRankResponse(
     val rank: Int,
-    val nickname: String,
+    val realName: String,
     val generation: String,
     val todayEarnedPoint: Int,
     val profileImageUrl: String?,
@@ -12,7 +12,7 @@ data class GameRankResponse(
 ) {
     constructor(rank: Int, member: Member, todayEarnedPoint: Int) : this(
         rank = rank,
-        nickname = member.nickname,
+        realName = member.realName,
         generation = member.generation.toString(),
         todayEarnedPoint = todayEarnedPoint,
         profileImageUrl = member.thumbnailPath,

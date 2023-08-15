@@ -23,7 +23,6 @@ public class MeritTypeHelper {
   public final class MeritTypeBuilder {
 
     private Integer merit;
-    private Boolean isMerit;
     private String detail;
 
     private MeritTypeBuilder() {
@@ -31,11 +30,6 @@ public class MeritTypeHelper {
 
     public MeritTypeBuilder merit(Integer merit) {
       this.merit = merit;
-      return this;
-    }
-
-    public MeritTypeBuilder isMerit(Boolean isMerit) {
-      this.isMerit = isMerit;
       return this;
     }
 
@@ -47,11 +41,8 @@ public class MeritTypeHelper {
     public MeritType build() {
       return meritTypeRepository.save(MeritType.builder()
           .merit(merit != null ? merit : 3)
-          .isMerit(isMerit != null ? isMerit : true)
           .detail(detail != null ? detail : UUID.randomUUID().toString())
           .build());
     }
   }
-
-
 }

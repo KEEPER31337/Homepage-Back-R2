@@ -32,7 +32,7 @@ public class MemberProfileResponse {
   private LocalDate birthday;
   private String studentId;
   private String thumbnailPath;
-  private Float generation;
+  private String generation;
   private int point;
   private MemberType memberType;
   private Set<MemberHasMemberJob> memberJob;

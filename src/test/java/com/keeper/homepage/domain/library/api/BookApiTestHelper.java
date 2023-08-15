@@ -47,7 +47,7 @@ public class BookApiTestHelper extends IntegrationTest {
   }
 
   ResultActions callRequestReturnBookApi(String accessToken, long borrowId)
-    throws Exception {
+      throws Exception {
     return mockMvc.perform(patch("/books/borrows/{borrowId}/request-return", borrowId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }

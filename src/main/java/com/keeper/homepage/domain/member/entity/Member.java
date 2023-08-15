@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.member.entity;
 
 import static com.keeper.homepage.domain.member.entity.embedded.EmailAddress.MAX_EMAIL_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.LoginId.MAX_LOGIN_ID_LENGTH;
-import static com.keeper.homepage.domain.member.entity.embedded.Nickname.MAX_NICKNAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.Password.HASHED_PASSWORD_MAX_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REAL_NAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
@@ -23,7 +22,6 @@ import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.member.entity.embedded.Generation;
-import com.keeper.homepage.domain.member.entity.embedded.MeritDemerit;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
@@ -87,7 +85,6 @@ public class Member {
       @AttributeOverride(name = "password", column = @Column(name = "password", nullable = false, length = HASHED_PASSWORD_MAX_LENGTH)),
       @AttributeOverride(name = "emailAddress", column = @Column(name = "email_address", nullable = false, unique = true, length = MAX_EMAIL_LENGTH)),
       @AttributeOverride(name = "realName", column = @Column(name = "real_name", nullable = false, length = MAX_REAL_NAME_LENGTH)),
-      @AttributeOverride(name = "nickName", column = @Column(name = "nick_name", nullable = false, length = MAX_NICKNAME_LENGTH)),
       @AttributeOverride(name = "studentId", column = @Column(name = "student_id", unique = true, length = MAX_STUDENT_ID_LENGTH))
   })
   private Profile profile;
@@ -100,9 +97,6 @@ public class Member {
 
   @Column(name = "level", nullable = false)
   private Integer level;
-
-  @Embedded
-  private MeritDemerit meritDemerit;
 
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
@@ -155,16 +149,11 @@ public class Member {
   private final Set<CtfTeamHasMember> ctfTeamHasMembers = new HashSet<>();
 
   @Builder
-  private Member(Profile profile, Integer point, Integer level, Integer merit, Integer demerit,
-      Integer totalAttendance) {
+  private Member(Profile profile, Integer point, Integer level, Integer totalAttendance) {
     this.profile = profile;
     this.generation = Generation.generateGeneration(LocalDate.now());
     this.point = point;
     this.level = level;
-    this.meritDemerit = MeritDemerit.builder()
-        .merit(merit == null ? 0 : merit)
-        .demerit(demerit == null ? 0 : demerit)
-        .build();
     this.totalAttendance = totalAttendance;
     this.memberType = MemberType.getMemberTypeBy(정회원);
     this.memberRank = MemberRank.getMemberRankBy(일반회원);
@@ -312,10 +301,6 @@ public class Member {
     return this.id;
   }
 
-  public String getNickname() {
-    return this.profile.getNickname().get();
-  }
-
   public String getRealName() {
     return this.profile.getRealName().get();
   }
@@ -332,8 +317,8 @@ public class Member {
     return this.profile.getStudentId().get();
   }
 
-  public Float getGeneration() {
-    return this.generation.getGeneration();
+  public String getGeneration() {
+    return Float.toString(this.generation.getGeneration());
   }
 
   public Integer getPoint() {
@@ -395,13 +380,5 @@ public class Member {
 
   public boolean isCreator(CtfTeam ctfTeam) {
     return this.equals(ctfTeam.getCreator());
-  }
-
-  public void updateMerit(int meritScore) {
-    this.meritDemerit.updateMerit(meritScore);
-  }
-
-  public void updateDemerit(int demeritScore) {
-    this.meritDemerit.updateDemerit(demeritScore);
   }
 }

@@ -14,7 +14,7 @@ public class MemberResponse {
 
   private Long memberId;
   private String memberName;
-  private Float generation;
+  private String generation;
 
   public static MemberResponse from(Member member) {
     return MemberResponse.builder()

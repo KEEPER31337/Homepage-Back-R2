@@ -82,7 +82,7 @@ public class SeminarAttendanceService {
     Seminar seminar = validSeminarFindService.findById(seminarId);
 
     SeminarAttendance seminarAttendance = attendanceRepository.findBySeminarAndMember(seminar, member)
-        .orElseThrow(() -> new BusinessException(member.getNickname(), "nickname", MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(member.getRealName(), "realName", MEMBER_NOT_FOUND));
 
     seminarAttendance.changeStatus(request.excuse(), request.statusType());
   }

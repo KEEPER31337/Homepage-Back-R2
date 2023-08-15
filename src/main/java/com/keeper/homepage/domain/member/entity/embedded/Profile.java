@@ -31,9 +31,6 @@ public class Profile {
   @Embedded
   private RealName realName;
 
-  @Embedded
-  private Nickname nickname;
-
   @Column(name = "birthday")
   private LocalDate birthday;
 
@@ -45,13 +42,12 @@ public class Profile {
   private Thumbnail thumbnail;
 
   @Builder
-  private Profile(LoginId loginId, EmailAddress emailAddress, Password password, RealName realName,
-      Nickname nickname, LocalDate birthday, StudentId studentId, Thumbnail thumbnail) {
+  private Profile(LoginId loginId, EmailAddress emailAddress, Password password, RealName realName, LocalDate birthday,
+      StudentId studentId, Thumbnail thumbnail) {
     this.loginId = loginId;
     this.emailAddress = emailAddress;
     this.password = password;
     this.realName = realName;
-    this.nickname = nickname;
     this.birthday = birthday;
     this.studentId = studentId;
     this.thumbnail = thumbnail;
