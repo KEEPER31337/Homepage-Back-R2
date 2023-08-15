@@ -18,7 +18,6 @@ import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.redis.RedisUtil;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +41,7 @@ public class SeminarAttendanceService {
     SeminarAttendance seminarAttendance = attendanceRepository.findBySeminarAndMember(seminar, member)
         .orElseThrow(() -> new BusinessException(member.getRealName(), "member", SEMINAR_ATTENDANCE_UNABLE));
 
-    String key = "seminar:" + LocalDate.now() + ":memberId:" + member.getId();
+    String key = "seminar:" + seminar.getId() + ":memberId:" + member.getId();
     checkAttemptNumberLimit(key);
 
     validAttendanceCode(seminar, request, key);
