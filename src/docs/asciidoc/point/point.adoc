@@ -1,0 +1,58 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= 포인트 API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *포인트 선물*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-presentPointLog/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-presentPointLog/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-presentPointLog/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-presentPointLog/http-response.adoc[]
+
+== *포인트 내역 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-pointLogs/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-pointLogs/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-pointLogs/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-pointLogs/response-fields.adoc[]
