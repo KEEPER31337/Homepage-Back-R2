@@ -111,7 +111,7 @@ class GameControllerTest : GameApiTestHelper() {
             em.clear()
 
             val result = callBaseballStart(1000)
-                .andExpect(status().isNoContent)
+                .andExpect(status().isOk)
 
             val baseball = gameFindService.findByMemberOrInit(player).baseball
             assertThat(baseball.baseballPerDay).isEqualTo(1) // 게임을 시작하면 play count가 증가한다.
@@ -136,6 +136,10 @@ class GameControllerTest : GameApiTestHelper() {
                     requestFields(
                         fieldWithPath("bettingPoint").description("베팅을 할 포인트 (${MIN_BETTING_POINT}이상 ${MAX_BETTING_POINT}이하)"),
                     ),
+                    responseFields(
+                        fieldWithPath("results").description("start API에선 빈 배열로 내려갑니다."),
+                        fieldWithPath("earnablePoint").description("처음 할당된 획득할 포인트"),
+                    )
                 )
             )
         }
@@ -185,7 +189,7 @@ class GameControllerTest : GameApiTestHelper() {
             ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.results").isArray)
                 .andExpect(jsonPath("$.results[0]").exists())
-                .andExpect(jsonPath("$.earnablePoints").isNumber)
+                .andExpect(jsonPath("$.earnablePoint").isNumber)
 
             result.andDo(
                 document(
@@ -202,7 +206,7 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("results[].guessNumber").description("해당 라운드에 사용자가 입력한 추측 숫자"),
                         fieldWithPath("results[].strike").description("strike"),
                         fieldWithPath("results[].ball").description("ball"),
-                        fieldWithPath("earnablePoints").description("획득한 포인트 (마지막 게임이 아니면 0)"),
+                        fieldWithPath("earnablePoint").description("획득한 포인트 (마지막 게임이 아니면 0)"),
                     ),
                 )
             )
@@ -217,16 +221,16 @@ class GameControllerTest : GameApiTestHelper() {
         }
 
         @Test
-        fun `맞췄으면 guess는 earnablePoints만큼 포인트를 부여해야 한다`() {
+        fun `맞췄으면 guess는 earnablePoint만큼 포인트를 부여해야 한다`() {
             val beforePlayerPoint = player.point
-            val earnablePoints = 3000
+            val earnablePoint = 3000
 
             callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000, earnablePoints = earnablePoints,
+                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000, earnablePoint = earnablePoint,
                 results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 3, 0))
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint + earnablePoints).isEqualTo(player.point)
+            assertThat(beforePlayerPoint + earnablePoint).isEqualTo(player.point)
         }
 
         @Test
@@ -298,7 +302,7 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.earnablePoints").value(0))
+                .andExpect(jsonPath("$.earnablePoint").value(0))
                 .andDo(
                     document(
                         "get-baseball-results",
@@ -308,7 +312,7 @@ class GameControllerTest : GameApiTestHelper() {
                         ),
                         responseFields(
                             subsectionWithPath("results").description("타임아웃난 round는 null"),
-                            fieldWithPath("earnablePoints").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
+                            fieldWithPath("earnablePoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
                         ),
                     )
                 )
