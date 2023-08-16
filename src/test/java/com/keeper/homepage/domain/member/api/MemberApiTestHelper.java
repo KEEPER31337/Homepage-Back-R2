@@ -33,7 +33,6 @@ public class MemberApiTestHelper extends IntegrationTest {
         fieldWithPath("emailAddress").description("회원의 이메일 주소"),
         fieldWithPath("realName").description("회원의 실명"),
         fieldWithPath("birthday").description("회원의 생일"),
-        fieldWithPath("studentId").description("회원의 학번"),
         fieldWithPath("thumbnailPath").description("썸네일 경로"),
         fieldWithPath("generation").description("회원의 기수"),
         fieldWithPath("point").description("회원의 포인트 점수"),

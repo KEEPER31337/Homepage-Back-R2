@@ -25,7 +25,6 @@ public class MemberProfileResponse {
   private String emailAddress;
   private String realName;
   private LocalDate birthday;
-  private String studentId;
   private String thumbnailPath;
   private String generation;
   private int point;
@@ -40,7 +39,6 @@ public class MemberProfileResponse {
         .emailAddress(member.getProfile().getEmailAddress().get())
         .realName(member.getRealName())
         .birthday(member.getProfile().getBirthday())
-        .studentId(member.getProfile().getStudentId().get())
         .thumbnailPath(member.getThumbnailPath())
         .generation(member.getGeneration())
         .point(member.getPoint())
