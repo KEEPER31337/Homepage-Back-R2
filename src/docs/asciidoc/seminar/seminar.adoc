@@ -230,7 +230,3 @@ include::{snippets}/get-recently-upcoming-seminars/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-recently-upcoming-seminars/response-fields.adoc[]
-
-== *세미나 출석*
-
-link:seminar-attendance.html[API 문서 보기]
