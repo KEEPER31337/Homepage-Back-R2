@@ -1,12 +1,9 @@
 package com.keeper.homepage.domain.about.entity;
 
-import static com.keeper.homepage.global.error.ErrorCode.TITLE_TYPE_NOT_FOUND;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.GenerationType.IDENTITY;
-import static java.lang.String.format;
 
 import com.keeper.homepage.domain.about.converter.StaticWriteTitleTypeConverter;
-import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -75,7 +72,7 @@ public class StaticWriteTitle {
       return Arrays.stream(StaticWriteTitleType.values())
           .filter(staticWriteTitleType -> staticWriteTitleType.getType().equals(type))
           .findAny()
-          .orElseThrow(() -> new BusinessException(type, "type", TITLE_TYPE_NOT_FOUND));
+          .orElseThrow(() -> new IllegalArgumentException("해당 타입의 타이틀을 찾을 수 없습니다."));
     }
   }
 
