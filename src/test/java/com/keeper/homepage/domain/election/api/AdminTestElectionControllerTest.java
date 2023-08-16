@@ -4,13 +4,16 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
@@ -124,6 +127,37 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
                   fieldWithPath("name").description("선거 이름"),
                   fieldWithPath("description").description("선거 설명"),
                   fieldWithPath("isAvailable").description("선거 가능 상태")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("선거 목록 조회 테스트")
+  class ElectionGetTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 선거 목록 조회는 성공한다.")
+    public void 유효한_요청일_경우_선거_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AdminElectionController.class, "getElections");
+      electionTestHelper.generate();
+      electionTestHelper.generate();
+      electionTestHelper.generate();
+      electionTestHelper.generate();
+      electionTestHelper.generate();
+
+      callGetElectionsApi(adminToken)
+          .andExpect(status().isOk())
+          .andDo(document("get-elections",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default : 0)").optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default : 10)").optional()
+              ),
+              responseFields(
+                  pageHelper(getElectionResponse())
               )));
     }
   }

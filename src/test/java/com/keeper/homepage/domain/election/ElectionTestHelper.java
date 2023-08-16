@@ -60,7 +60,7 @@ public class ElectionTestHelper {
     public Election build() {
       return electionRepository.save(Election.builder()
           .name(name != null ? name : "이름")
-          .description(description)
+          .description(description != null ? description : "설명설명")
           .member(member != null ? member : memberTestHelper.generate())
           .isAvailable(isAvailable != null ? isAvailable : true)
           .build());
