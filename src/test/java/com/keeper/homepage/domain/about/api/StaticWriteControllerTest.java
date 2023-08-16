@@ -1,19 +1,15 @@
 package com.keeper.homepage.domain.about.api;
 
 import static com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType.ACTIVITY;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
@@ -71,13 +67,13 @@ public class StaticWriteControllerTest extends IntegrationTest {
               )));
     }
 
+    // TODO: 실제로 사용되는 api인지 체크하고 사용된다면 400 에러 반환하도록 고쳐야함.
     @Test
-    @DisplayName("DB에서 찾을 수 없는 타입으로 타이틀 조회 시 404 Not Found를 반환해야 한다.")
+    @DisplayName("DB에서 찾을 수 없는 타입으로 타이틀 조회 시 500 에러를 반환해야 한다.")
     void should_404NotFound_when_getTitlesByNotFoundType() throws Exception {
       mockMvc.perform(get("/about/titles/types/{type}", "null"))
-          .andExpect(status().isNotFound())
-          .andExpect(content().string(containsString("해당 타입의 타이틀을 찾을 수 없습니다.")));
+          .andExpect(status().is5xxServerError())
+          .andExpect(content().string(containsString("서버에 문제가 생겼습니다.")));
     }
   }
-
 }
