@@ -93,10 +93,7 @@ class BaseballService(
     @Transactional
     fun guess(requestMember: Member, guessNumber: String): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        val baseballResultEntity = redisUtil.getData(
-            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
-            BaseballResultEntity::class.java
-        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
+        val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
         if (baseballResultEntity.results.size >= TRY_COUNT || baseballResultEntity.isAlreadyCorrect()) {
             return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
@@ -117,10 +114,7 @@ class BaseballService(
             return Pair(listOf(), 0)
         }
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        val baseballResultEntity = redisUtil.getData(
-            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
-            BaseballResultEntity::class.java
-        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
+        val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
         baseballResultEntity.updateTimeoutGames()
 
@@ -129,5 +123,12 @@ class BaseballService(
 
     private fun isNotPlayedYet(requestMember: Member): Boolean {
         return gameFindService.findByMemberOrInit(requestMember).baseball.baseballPerDay == 0
+    }
+
+    private fun getBaseballResultInRedis(requestMember: Member, gameEntity: Game): BaseballResultEntity {
+        return redisUtil.getData(
+            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
+            BaseballResultEntity::class.java
+        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
     }
 }
