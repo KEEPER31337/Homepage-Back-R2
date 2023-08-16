@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.seminar.application;
 
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ABSENCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -146,6 +148,36 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //then
       MeritLog meritLog = meritLogRepository.findByMemberId(member.getId()).orElseThrow();
       assertThat(meritLog.getMeritType().getId()).isEqualTo(SEMINAR_DUAL_LATENESS_MERIT_TYPE_ID);
+    }
+
+    @Test
+    @DisplayName("출석을 하지 않은 회원은 결석으로 간주되어 벌점이 부여되어야 한다.")
+    public void 출석을_하지_않은_회원은_결석으로_간주되어_벌점이_부여되어야_한다() throws Exception {
+      //given
+      LocalDateTime now = LocalDateTime.now();
+
+      long seminarId = seminarService.save().id();
+      seminarService.start(seminarId, now.minusMinutes(10), now.minusMinutes(5));
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      assertThat(member.getSeminarAttendances()).hasSize(1);
+      assertThat(member.getSeminarAttendances().get(0).getSeminarAttendanceStatus().getType())
+          .isEqualTo(BEFORE_ATTENDANCE);
+
+      //when
+      seminarAttendanceService.changeAllBeforeAttendanceToAbsence();
+      em.flush();
+      em.clear();
+
+      //then
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      assertThat(member.getSeminarAttendances()).hasSize(1);
+      assertThat(member.getSeminarAttendances().get(0).getSeminarAttendanceStatus().getType()).isEqualTo(ABSENCE);
+
+      MeritLog meritLog = meritLogRepository.findByMemberId(member.getId()).orElseThrow();
+      assertThat(meritLog.getMeritType().getId()).isEqualTo(SEMINAR_ABSENCE_MERIT_TYPE_ID);
     }
   }
 }
