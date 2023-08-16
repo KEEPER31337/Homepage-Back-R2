@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE;
@@ -22,11 +23,15 @@ import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.redis.RedisUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@EnableScheduling
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SeminarAttendanceService {
@@ -105,5 +110,16 @@ public class SeminarAttendanceService {
         .orElseThrow(() -> new BusinessException(member.getRealName(), "realName", MEMBER_NOT_FOUND));
 
     seminarAttendance.changeStatus(request.excuse(), request.statusType());
+  }
+
+  @Scheduled(cron = "0 0 0 ? * 5", zone = "Asia/Seoul") // 매주 금요일 자정에 실행
+  public void changeAllBeforeAttendanceToAbsence() {
+    List<SeminarAttendance> beforeAttendances = attendanceRepository
+        .findAllBySeminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE));
+
+    beforeAttendances.forEach(seminarAttendance -> {
+      seminarAttendance.changeStatus((ABSENCE));
+      meritLogService.giveSeminarAbsenceDemerit(seminarAttendance.getMember());
+    });
   }
 }
