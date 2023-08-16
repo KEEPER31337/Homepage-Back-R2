@@ -5,10 +5,13 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
+import com.keeper.homepage.domain.member.dto.response.memberProfile.MemberProfileResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final MemberFindService memberFindService;
+  private final FriendRepository friendRepository;
 
   @Transactional
   public void changePassword(Member me, String newPassword) {
@@ -59,5 +63,12 @@ public class MemberService {
   public void unfollow(Member member, long otherId) {
     Member other = memberFindService.findById(otherId);
     member.unfollow(other);
+  }
+
+  public MemberProfileResponse getMemberProfile(long memberId) {
+    Member findMember = memberFindService.findById(memberId);
+    List<Friend> findAllFollowers = friendRepository.findAllByFollowee(findMember);
+
+    return MemberProfileResponse.from(findMember, findAllFollowers);
   }
 }
