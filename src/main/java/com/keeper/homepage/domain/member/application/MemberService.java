@@ -69,6 +69,6 @@ public class MemberService {
     Member findMember = memberFindService.findById(memberId);
     List<Friend> findAllFollowers = friendRepository.findAllByFollowee(findMember);
 
-    return MemberProfileResponse.from(findMember, findAllFollowers);
+    return MemberProfileResponse.of(findMember, findAllFollowers);
   }
 }

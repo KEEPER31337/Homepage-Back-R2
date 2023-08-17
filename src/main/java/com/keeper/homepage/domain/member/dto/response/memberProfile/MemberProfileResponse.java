@@ -33,7 +33,7 @@ public class MemberProfileResponse {
   private List<MemberFriendResponse> follower;
   private List<MemberFriendResponse> followee;
 
-  public static MemberProfileResponse from(Member member, List<Friend> friends) {
+  public static MemberProfileResponse of(Member member, List<Friend> friends) {
     return MemberProfileResponse.builder()
         .id(member.getId())
         .emailAddress(member.getProfile().getEmailAddress().get())
@@ -43,18 +43,10 @@ public class MemberProfileResponse {
         .generation(member.getGeneration())
         .point(member.getPoint())
         .memberType(member.getMemberType().getType().name())
-        .memberJobs(getJobs(member))
+        .memberJobs(member.getJobs())
         .follower(getFollower(friends))
         .followee(getFollowee(member))
         .build();
-  }
-
-  private static List<String> getJobs(Member member) {
-    return member.getMemberJob().stream()
-        .map(MemberHasMemberJob::getMemberJob)
-        .map(MemberJob::getType)
-        .map(MemberJobType::name)
-        .collect(toList());
   }
 
   private static List<MemberFriendResponse> getFollower(List<Friend> friends) {

@@ -10,6 +10,7 @@ import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTyp
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
+import static java.util.stream.Collectors.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -57,6 +58,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -371,6 +373,14 @@ public class Member {
 
   public boolean isCreator(CtfTeam ctfTeam) {
     return this.equals(ctfTeam.getCreator());
+  }
+
+  public List<String> getJobs() {
+    return this.getMemberJob().stream()
+        .map(MemberHasMemberJob::getMemberJob)
+        .map(MemberJob::getType)
+        .map(MemberJobType::name)
+        .collect(toList());
   }
 
 }
