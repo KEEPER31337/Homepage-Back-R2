@@ -12,6 +12,7 @@ import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -31,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
@@ -906,6 +908,69 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("[].ipAddress").description("ipAddress"),
                   fieldWithPath("[].uploadTime").description("파일 업로드 시간")
               )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 파일 다운로드 테스트")
+  class DownloadFile {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 게시글 파일 다운로드는 성공한다.")
+    public void 유효한_요청일_경우_게시글_파일_다운로드는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "downloadFile");
+
+      postService.create(post, 자유게시판.getId(), thumbnail, List.of(file));
+      commentTestHelper.builder().post(post).member(other).build();
+
+      em.flush();
+      em.clear();
+      FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
+
+      mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+          .andExpect(status().isOk())
+          .andExpect(header().string(CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\""))
+          .andDo(document("download-post-file",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("postId").description("게시글 ID"),
+                  parameterWithName("fileId").description("파일 ID")
+              ),
+              responseHeaders(
+                  headerWithName(CONTENT_DISPOSITION).description("파일 이름을 포함한 응답 헤더입니다.")
+              )));
+    }
+
+    @Test
+    @DisplayName("게시글에 댓글을 달지 않았을 경우 파일 다운로드는 실패한다.")
+    public void 게시글에_댓글을_달지_않았을_경우_파일_다운로드는_실패한다() throws Exception {
+      postService.create(post, 자유게시판.getId(), thumbnail, List.of(file));
+
+      em.flush();
+      em.clear();
+      FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
+
+      mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("내가 작성한 게시글일 경우 댓글을 달지 않아도 파일 다운로드는 성공한다.")
+    public void 내가_작성한_게시글일_경우_댓글을_달지_않아도_파일_다운로드는_성공한다() throws Exception {
+      postService.create(post, 자유게시판.getId(), thumbnail, List.of(file));
+
+      em.flush();
+      em.clear();
+      FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
+
+      mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+          .andExpect(status().isOk());
     }
   }
 }
