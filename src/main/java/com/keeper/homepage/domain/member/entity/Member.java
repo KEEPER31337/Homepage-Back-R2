@@ -372,4 +372,5 @@ public class Member {
   public boolean isCreator(CtfTeam ctfTeam) {
     return this.equals(ctfTeam.getCreator());
   }
+
 }

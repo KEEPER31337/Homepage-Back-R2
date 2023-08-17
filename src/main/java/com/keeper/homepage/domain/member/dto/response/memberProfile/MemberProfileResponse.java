@@ -30,8 +30,8 @@ public class MemberProfileResponse {
   private int point;
   private String memberType;
   private List<String> memberJobs;
-  private List<MemberFollowerResponse> follower;
-  private List<MemberFolloweeResponse> followee;
+  private List<MemberFriendResponse> follower;
+  private List<MemberFriendResponse> followee;
 
   public static MemberProfileResponse from(Member member, List<Friend> friends) {
     return MemberProfileResponse.builder()
@@ -57,16 +57,17 @@ public class MemberProfileResponse {
         .collect(toList());
   }
 
-  private static List<MemberFollowerResponse> getFollower(List<Friend> friends) {
+  private static List<MemberFriendResponse> getFollower(List<Friend> friends) {
     return friends.stream()
         .map(Friend::getFollower)
-        .map(MemberFollowerResponse::from)
+        .map(MemberFriendResponse::from)
         .collect(toList());
   }
 
-  private static List<MemberFolloweeResponse> getFollowee(Member member) {
+  private static List<MemberFriendResponse> getFollowee(Member member) {
     return member.getFollower().stream()
-        .map(MemberFolloweeResponse::from)
+        .map(Friend::getFollowee)
+        .map(MemberFriendResponse::from)
         .collect(toList());
   }
 }
