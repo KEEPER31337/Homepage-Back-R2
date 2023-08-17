@@ -372,4 +372,9 @@ public class Member {
   public boolean isCreator(CtfTeam ctfTeam) {
     return this.equals(ctfTeam.getCreator());
   }
+
+  public boolean hasComment(Post post) {
+    return comments.stream()
+        .anyMatch(comment -> comment.getPost().equals(post));
+  }
 }

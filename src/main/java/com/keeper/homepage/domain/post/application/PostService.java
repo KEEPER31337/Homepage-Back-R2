@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.post.entity.category.Category.CategoryT
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
@@ -367,5 +368,14 @@ public class PostService {
   public Page<TempPostResponse> getTempPosts(Member member, Pageable pageable) {
     return postRepository.findAllByMemberAndIsTempTrue(member, pageable)
         .map(TempPostResponse::from);
+  }
+
+  public FileEntity getFile(Member member, long postId, long fileId) {
+    Post post = validPostFindService.findById(postId);
+    if (!member.hasComment(post) && !post.isMine(member)) {
+      throw new BusinessException(postId, "postId", POST_COMMENT_NEED);
+    }
+    return fileRepository.findById(fileId)
+        .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
   }
 }

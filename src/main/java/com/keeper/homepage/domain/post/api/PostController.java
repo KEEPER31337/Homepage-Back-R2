@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.post.api;
 
+import com.keeper.homepage.domain.file.application.FileService;
+import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
@@ -15,11 +17,14 @@ import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +50,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostController {
 
   private final PostService postService;
+  private final FileService fileService;
 
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
   public ResponseEntity<Void> createPost(
@@ -210,5 +216,20 @@ public class PostController {
   ) {
     Page<TempPostResponse> responses = postService.getTempPosts(member, PageRequest.of(page, size));
     return ResponseEntity.ok(responses);
+  }
+
+  @GetMapping("/{postId}/files/{fileId}")
+  public ResponseEntity<Resource> downloadFile(
+      @LoginMember Member member,
+      @PathVariable long postId,
+      @PathVariable long fileId
+  ) throws IOException {
+    FileEntity file = postService.getFile(member, postId, fileId);
+    Resource resource = fileService.getFileResource(file);
+    String fileName = fileService.getFileName(file);
+    return ResponseEntity.ok()
+        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+        .body(resource);
   }
 }
