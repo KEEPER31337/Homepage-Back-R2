@@ -1,0 +1,40 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= FILE API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *파일 다운로드*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/download-file/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/download-file/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/download-file/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/download-file/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/download-file/response-headers.adoc[]
