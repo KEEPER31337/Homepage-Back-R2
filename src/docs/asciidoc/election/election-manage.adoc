@@ -56,3 +56,29 @@ include::{snippets}/delete-election/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/delete-election/http-response.adoc[]
+
+== *선거 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-election/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-election/request-fields.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-election/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-election/http-response.adoc[]

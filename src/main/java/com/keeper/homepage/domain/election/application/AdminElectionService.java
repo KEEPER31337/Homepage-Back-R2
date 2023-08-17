@@ -45,4 +45,11 @@ public class AdminElectionService {
     electionDeleteService.delete(election);
   }
 
+  @Transactional
+  public void updateElection(long electionId, String name, String description, Boolean isAvailable) {
+    Election election = validElectionFindService.findById(electionId);
+
+    election.update(name, description, isAvailable);
+  }
+
 }

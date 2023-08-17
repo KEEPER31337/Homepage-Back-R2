@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = PRIVATE)
 @AllArgsConstructor(access = PRIVATE)
-public class ElectionCreateRequest {
+public class ElectionUpdateRequest {
 
   public static final int ELECTION_NAME_LENGTH = 20;
   public static final int ELECTION_DESCRIPTION_LENGTH = 50;
