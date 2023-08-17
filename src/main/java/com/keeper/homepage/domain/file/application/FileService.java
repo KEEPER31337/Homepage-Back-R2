@@ -29,7 +29,7 @@ public class FileService {
         .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
   }
 
-  public Resource downloadFile(FileEntity file) throws IOException {
+  public Resource getFileResource(FileEntity file) throws IOException {
     Path path = Paths.get(file.getFilePath());
     return new InputStreamResource(Files.newInputStream(path));
   }

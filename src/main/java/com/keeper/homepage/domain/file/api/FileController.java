@@ -27,7 +27,7 @@ public class FileController {
       @PathVariable long fileId
   ) throws IOException {
     FileEntity file = fileService.getFile(fileId);
-    Resource resource = fileService.downloadFile(file);
+    Resource resource = fileService.getFileResource(file);
     String fileName = fileService.getFileName(file);
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_OCTET_STREAM)
