@@ -82,3 +82,29 @@ include::{snippets}/update-election/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/update-election/http-response.adoc[]
+
+== *선거 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-elections/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-elections/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-elections/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-elections/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-elections/response-fields.adoc[]

@@ -3,21 +3,29 @@ package com.keeper.homepage.domain.election.api;
 import com.keeper.homepage.domain.election.application.AdminElectionService;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
+import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/elections")
@@ -48,6 +56,14 @@ public class AdminElectionController {
     adminElectionService.updateElection(electionId, request.getName(), request.getDescription(),
         request.getIsAvailable());
     return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @GetMapping
+  public ResponseEntity<Page<ElectionResponse>> getElections(
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
+    Page<ElectionResponse> response = adminElectionService.getElections(PageRequest.of(page, size));
+    return ResponseEntity.ok(response);
   }
 
 }

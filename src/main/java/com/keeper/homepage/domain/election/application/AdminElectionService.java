@@ -4,11 +4,14 @@ package com.keeper.homepage.domain.election.application;
 import com.keeper.homepage.domain.election.application.convenience.ElectionDeleteService;
 import com.keeper.homepage.domain.election.application.convenience.ValidElectionFindService;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
+import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +53,12 @@ public class AdminElectionService {
     Election election = validElectionFindService.findById(electionId);
 
     election.update(name, description, isAvailable);
+  }
+
+  @Transactional
+  public Page<ElectionResponse> getElections(Pageable pageable) {
+    return validElectionFindService.findAll(pageable)
+        .map(ElectionResponse::from);
   }
 
 }
