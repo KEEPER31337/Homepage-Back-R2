@@ -74,6 +74,7 @@ public enum ErrorCode {
   NOT_PLAYED_YET("아직 게임을 시작하지 않았습니다.", HttpStatus.BAD_REQUEST),
   // FILE
   FILE_NOT_FOUND("해당 파일은 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
+  FILE_IS_POST_FILE("해당 파일은 게시글의 파일입니다.", HttpStatus.BAD_REQUEST),
   // ATTENDANCE
   ATTENDANCE_ALREADY("이미 출석을 완료했습니다.", HttpStatus.BAD_REQUEST),
   ATTENDANCE_NOT_FOUND("출석 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

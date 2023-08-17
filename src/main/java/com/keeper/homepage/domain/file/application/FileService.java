@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.file.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.FILE_IS_POST_FILE;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 
 import com.keeper.homepage.domain.file.dao.FileRepository;
@@ -25,8 +26,13 @@ public class FileService {
   private final FileRepository fileRepository;
 
   public FileEntity getFile(long fileId) {
-    return fileRepository.findById(fileId)
+    FileEntity file = fileRepository.findById(fileId)
         .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
+
+    if (file.getPostHasFile() != null) {
+      throw new BusinessException(fileId, "fileId", FILE_IS_POST_FILE);
+    }
+    return file;
   }
 
   public Resource getFileResource(FileEntity file) throws IOException {
