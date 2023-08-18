@@ -380,7 +380,7 @@ public class Member {
         .map(MemberHasMemberJob::getMemberJob)
         .map(MemberJob::getType)
         .map(MemberJobType::name)
-        .collect(toList());
+        .toList();
   }
 
 }
