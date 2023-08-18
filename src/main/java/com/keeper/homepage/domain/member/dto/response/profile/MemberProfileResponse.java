@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.dto.response.memberProfile;
+package com.keeper.homepage.domain.member.dto.response.profile;
 
 
 import static java.util.stream.Collectors.*;
@@ -6,12 +6,8 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
-import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
-import com.keeper.homepage.domain.member.entity.job.MemberJob;
-import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

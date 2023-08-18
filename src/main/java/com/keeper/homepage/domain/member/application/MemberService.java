@@ -8,7 +8,7 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
-import com.keeper.homepage.domain.member.dto.response.memberProfile.MemberProfileResponse;
+import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.friend.Friend;

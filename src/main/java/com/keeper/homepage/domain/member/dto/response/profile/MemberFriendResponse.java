@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.member.dto.response.memberProfile;
+package com.keeper.homepage.domain.member.dto.response.profile;
 
 import static lombok.AccessLevel.PRIVATE;
 
