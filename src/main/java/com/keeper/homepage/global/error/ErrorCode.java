@@ -42,6 +42,7 @@ public enum ErrorCode {
   POST_CONTENT_NEED("게시글의 내용을 입력해주세요.", HttpStatus.BAD_REQUEST),
   POST_SEARCH_TYPE_NOT_FOUND("존재하지 않는 검색 타입입니다.", HttpStatus.BAD_REQUEST),
   POST_COMMENT_NEED("게시글에 댓글 작성이 필요합니다.", HttpStatus.BAD_REQUEST),
+  POST_HAS_NOT_THAT_FILE("해당 파일은 해당 게시글의 파일이 아닙니다.", HttpStatus.BAD_REQUEST),
   // COMMENT
   COMMENT_NOT_FOUND("존재하지 않는 댓글입니다.", HttpStatus.NOT_FOUND),
   COMMENT_NOT_WRITER("댓글 작성자가 아닙니다.", HttpStatus.BAD_REQUEST),
@@ -74,7 +75,6 @@ public enum ErrorCode {
   NOT_PLAYED_YET("아직 게임을 시작하지 않았습니다.", HttpStatus.BAD_REQUEST),
   // FILE
   FILE_NOT_FOUND("해당 파일은 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
-  FILE_IS_POST_FILE("해당 파일은 게시글의 파일입니다.", HttpStatus.BAD_REQUEST),
   // ATTENDANCE
   ATTENDANCE_ALREADY("이미 출석을 완료했습니다.", HttpStatus.BAD_REQUEST),
   ATTENDANCE_NOT_FOUND("출석 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),

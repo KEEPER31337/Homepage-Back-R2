@@ -2,16 +2,16 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
-import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_HAS_NOT_THAT_FILE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_SEARCH_TYPE_NOT_FOUND;
 
-import com.keeper.homepage.domain.file.dao.FileRepository;
+import com.keeper.homepage.domain.file.application.FileService;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -51,7 +51,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostService {
 
   private final PostRepository postRepository;
-  private final FileRepository fileRepository;
   private final PostHasFileRepository postHasFileRepository;
 
   private final ThumbnailUtil thumbnailUtil;
@@ -60,6 +59,7 @@ public class PostService {
   private final PostDeleteService postDeleteService;
   private final CategoryFindService categoryFindService;
   private final MemberFindService memberFindService;
+  private final FileService fileService;
 
   private static final String ANONYMOUS_NAME = "익명";
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
@@ -286,10 +286,9 @@ public class PostService {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", FILE_NOT_FOUND);
+      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-    FileEntity file = fileRepository.findById(fileId)
-        .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
+    FileEntity file = fileService.findById(fileId);
     postHasFileRepository.deleteByPostAndFile(post, file);
     fileUtil.deleteFileAndEntity(file);
   }
@@ -375,7 +374,10 @@ public class PostService {
     if (!member.hasComment(post) && !post.isMine(member)) {
       throw new BusinessException(postId, "postId", POST_COMMENT_NEED);
     }
-    return fileRepository.findById(fileId)
-        .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
+    FileEntity file = fileService.findById(fileId);
+    if (!file.isPost(post)) {
+      throw new BusinessException(postId, "postId", POST_HAS_NOT_THAT_FILE);
+    }
+    return file;
   }
 }
