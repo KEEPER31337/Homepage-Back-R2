@@ -111,7 +111,7 @@ public class SeminarAttendanceService {
     seminarAttendance.changeStatus(request.excuse(), request.statusType());
   }
 
-  @Scheduled(cron = "0 0 0 ? * 5", zone = "Asia/Seoul") // 매주 금요일 자정에 실행
+  @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 매일 자정에 실행
   public void changeAllBeforeAttendanceToAbsence() {
     List<SeminarAttendance> beforeAttendances = attendanceRepository
         .findAllBySeminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE));
