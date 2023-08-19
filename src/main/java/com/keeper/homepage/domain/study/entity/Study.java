@@ -108,6 +108,10 @@ public class Study extends BaseEntity {
     return this.link.getNotionLink().get();
   }
 
+  public String getEtcTitle() {
+    return this.link.getEtcTitle();
+  }
+
   public String getEtcLink() {
     return this.link.getEtcLink();
   }

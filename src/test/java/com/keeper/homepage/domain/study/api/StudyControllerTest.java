@@ -188,9 +188,9 @@ public class StudyControllerTest extends StudyApiTestHelper {
               responseFields(
                   fieldWithPath("information").description("스터디 정보"),
                   fieldWithPath("members[]").description("스터디원 실명 리스트"),
-                  fieldWithPath("gitLink").description("스터디 깃허브 링크 주소"),
-                  fieldWithPath("notionLink").description("스터디 노트(노션) 링크 주소"),
-                  fieldWithPath("etcLink").description("스터디 기타 링크 주소")
+                  fieldWithPath("links[]").description("스터디 링크 리스트"),
+                  fieldWithPath("links[].title").description("스터디 링크 제목").optional(),
+                  fieldWithPath("links[].content").description("스터디 링크").optional()
               )));
     }
 
