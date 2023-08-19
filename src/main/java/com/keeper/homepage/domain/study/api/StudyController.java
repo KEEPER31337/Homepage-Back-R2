@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.study.api;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.application.StudyService;
 import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
+import com.keeper.homepage.domain.study.dto.request.StudyJoinRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyListResponse;
@@ -101,6 +102,15 @@ public class StudyController {
       @PathVariable long memberId
   ) {
     studyService.joinStudy(studyId, memberId);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @PostMapping("/{studyId}/members")
+  public ResponseEntity<Void> joinStudy(
+      @PathVariable long studyId,
+      @RequestBody @Valid StudyJoinRequest request
+  ) {
+    studyService.joinStudy(studyId, request.getMemberIds());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

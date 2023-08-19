@@ -99,6 +99,15 @@ public class StudyService {
   }
 
   @Transactional
+  public void joinStudy(long studyId, List<Long> memberIds) {
+    Study study = studyFindService.findById(studyId);
+    memberIds.forEach(memberId -> {
+      Member member = memberFindService.findById(memberId);
+      member.join(study);
+    });
+  }
+
+  @Transactional
   public void leaveStudy(long studyId, long memberId) {
     Study study = studyFindService.findById(studyId);
     Member member = memberFindService.findById(memberId);
