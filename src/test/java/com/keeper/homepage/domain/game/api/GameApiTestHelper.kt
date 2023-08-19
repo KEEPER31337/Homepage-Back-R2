@@ -55,7 +55,7 @@ class GameApiTestHelper : IntegrationTest() {
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            get("$GAME_URL/baseball//status")
+            get("$GAME_URL/baseball/status")
                 .cookie(*accessCookies)
         )
     }
