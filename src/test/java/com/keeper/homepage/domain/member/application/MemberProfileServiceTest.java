@@ -31,8 +31,8 @@ class MemberProfileServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("")
-    void 멤버_프로필_썸네일_수정에_성공해야_한다() {
+    @DisplayName("멤버 프로필 썸네일 수정에 성공해야 한다.")
+    void 멤버_프로필_썸네일_수정에_성공해야_한다() throws Exception {
       MockMultipartFile oldThumbnail = thumbnailTestHelper.getThumbnailFile();
       memberProfileService.updateProfileThumbnail(member, oldThumbnail);
       oldThumbnailId = member.getProfile().getThumbnail().getId();
