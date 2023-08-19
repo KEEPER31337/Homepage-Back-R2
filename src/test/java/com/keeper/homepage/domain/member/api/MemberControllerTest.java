@@ -253,5 +253,4 @@ class MemberControllerTest extends MemberApiTestHelper {
               )));
     }
   }
-
 }
