@@ -113,4 +113,28 @@ public class StudyServiceTest extends IntegrationTest {
       assertThat(studyHasMemberRepository.findByStudyAndMember(study, other)).isEmpty();
     }
   }
+
+  @Nested
+  @DisplayName("스터디 삭제")
+  class DeleteStudy {
+
+    @Test
+    @DisplayName("스터디를 삭제하면 스터디원도 모두 삭제되어야 한다.")
+    public void 스터디를_삭제하면_스터디원도_모두_삭제되어야_한다() throws Exception {
+      //given
+      long studyId = study.getId();
+
+      //when
+      studyService.delete(member, studyId);
+      em.flush();
+      em.clear();
+
+      //then
+      member = memberRepository.findById(member.getId()).orElseThrow();
+
+      assertThat(studyRepository.findById(studyId)).isEmpty();
+      assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isEmpty();
+    }
+
+  }
 }

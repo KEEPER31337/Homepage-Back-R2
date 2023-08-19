@@ -1,11 +1,12 @@
 package com.keeper.homepage.domain.study.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_HEAD_MEMBER_CANNOT_LEAVE;
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_LINK_NEED;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.study.application.convenience.StudyDeleteService;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
@@ -29,6 +30,7 @@ public class StudyService {
   private final StudyRepository studyRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final StudyFindService studyFindService;
+  private final StudyDeleteService studyDeleteService;
   private final MemberFindService memberFindService;
 
   @Transactional
@@ -57,7 +59,7 @@ public class StudyService {
     if (!member.isHeadMember(study)) {
       throw new BusinessException(study.getId(), "study", STUDY_INACCESSIBLE);
     }
-    studyRepository.delete(study);
+    studyDeleteService.delete(study);
   }
 
   public StudyDetailResponse getStudy(long studyId) {

@@ -11,4 +11,6 @@ public interface StudyHasMemberRepository extends JpaRepository<StudyHasMember, 
 
   Optional<StudyHasMember> findByStudyAndMember(Study study, Member member);
 
+  void deleteAllByStudy(Study study);
+
 }
