@@ -349,6 +349,10 @@ public class Member {
         .orElse(null);
   }
 
+  public void updateThumbnail(Thumbnail thumbnail) {
+    this.profile.updateProfileThumbnail(thumbnail);
+  }
+
   public boolean isHeadMember(Study study) {
     return study.getHeadMember().equals(this);
   }
