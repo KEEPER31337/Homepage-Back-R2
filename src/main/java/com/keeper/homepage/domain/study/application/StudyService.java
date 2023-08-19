@@ -31,6 +31,7 @@ public class StudyService {
   private final StudyFindService studyFindService;
   private final MemberFindService memberFindService;
 
+  @Transactional
   public void create(Study study, MultipartFile thumbnail) {
     checkLink(study);
     saveStudyThumbnail(study, thumbnail);
@@ -49,6 +50,7 @@ public class StudyService {
     study.changeThumbnail(savedThumbnail);
   }
 
+  @Transactional
   public void delete(Member member, long studyId) {
     Study study = studyFindService.findById(studyId);
 
