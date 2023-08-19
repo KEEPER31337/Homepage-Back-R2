@@ -51,8 +51,5 @@ class MemberProfileServiceTest extends IntegrationTest {
       assertThat(thumbnailRepository.findById(newThumbnailId)).isNotEmpty();
       assertThat(findThumbnail).isEqualTo(findMember.getProfile().getThumbnail());
     }
-
   }
-
-
 }

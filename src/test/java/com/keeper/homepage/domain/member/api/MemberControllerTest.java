@@ -233,7 +233,6 @@ class MemberControllerTest extends MemberApiTestHelper {
     @DisplayName("유효한 요청일 경우 회원의 프로필이 수정되어야 한다.")
     void 유효한_요청일_경우_회원의_프로필이_수정되어야_한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "updateProfileThumbnail");
-
       mockMvc.perform(multipart("/members/thumbnail")
               .file(thumbnail)
               .with(request -> {
