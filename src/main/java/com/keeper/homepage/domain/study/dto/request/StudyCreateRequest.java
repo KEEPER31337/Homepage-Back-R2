@@ -53,7 +53,11 @@ public class StudyCreateRequest {
   private String notionLink;
 
   @Nullable
+  private String etcTitle;
+
+  @Nullable
   private String etcLink;
+
 
   public Study toEntity(Member member) {
     return Study.builder()
@@ -65,6 +69,7 @@ public class StudyCreateRequest {
         .link(Link.builder()
             .gitLink(gitLink == null ? null : GitLink.from(gitLink))
             .notionLink(notionLink == null ? null : NotionLink.from(notionLink))
+            .etcTitle(etcTitle)
             .etcLink(etcLink)
             .build())
         .build();

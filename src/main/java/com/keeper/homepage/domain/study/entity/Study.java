@@ -62,7 +62,8 @@ public class Study extends BaseEntity {
   @AttributeOverrides({
       @AttributeOverride(name = "gitLink", column = @Column(name = "git_link", length = MAX_LINK_LENGTH)),
       @AttributeOverride(name = "notionLink", column = @Column(name = "notion_link", length = MAX_LINK_LENGTH)),
-      @AttributeOverride(name = "etcLink", column = @Column(name = "etc_link", length = MAX_LINK_LENGTH))
+      @AttributeOverride(name = "etcLink", column = @Column(name = "etc_link", length = MAX_LINK_LENGTH)),
+      @AttributeOverride(name = "etcTitle", column = @Column(name = "etc_title", length = MAX_TITLE_LENGTH))
   })
   private Link link;
 

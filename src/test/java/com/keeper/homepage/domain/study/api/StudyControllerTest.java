@@ -98,6 +98,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
                   fieldWithPath("notionLink").attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
                       .description("스터디 노트 링크를 입력해주세요.").optional(),
+                  fieldWithPath("etcTitle")
+                      .description("스터디 기타 자료 제목을 입력해주세요.").optional(),
                   fieldWithPath("etcLink")
                       .description("스터디 기타 링크를 입력해주세요.").optional()
               ),
@@ -277,8 +279,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   field("notionLink", "노션 링크")
                       .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
                       .optional(),
-                  field("etcLink", "기타 링크")
-                      .optional()
+                  field("etcTitle", "기타 링크 이름").optional(),
+                  field("etcLink", "기타 링크").optional()
               ),
               responseHeaders(
                   headerWithName("Location").description("수정한 스터디를 불러오는 URI 입니다.")
