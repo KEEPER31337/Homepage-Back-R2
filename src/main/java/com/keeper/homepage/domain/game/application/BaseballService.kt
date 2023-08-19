@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.game.dto.res.BaseballStatus
 import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.entity.Game
+import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
@@ -35,6 +36,7 @@ class BaseballService(
             tryCount = TRY_COUNT,
             maxBettingPoint = MAX_BETTING_POINT,
             minBettingPoint = MIN_BETTING_POINT,
+            maxPlayTime = BASEBALL_MAX_PLAYTIME,
         )
 
     @Transactional

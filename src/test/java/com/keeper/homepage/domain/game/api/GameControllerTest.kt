@@ -72,6 +72,7 @@ class GameControllerTest : GameApiTestHelper() {
                             fieldWithPath("tryCount").description("라운드 수"),
                             fieldWithPath("maxBettingPoint").description("최대 베팅 포인트"),
                             fieldWithPath("minBettingPoint").description("최소 베팅 포인트"),
+                            fieldWithPath("maxPlayTime").description("최대 플레이 가능 횟수"),
                         )
                     )
                 )
