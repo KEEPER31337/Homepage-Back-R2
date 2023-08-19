@@ -131,6 +131,10 @@ class BaseballService(
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
+        if (baseballResultEntity.isEnd()) {
+            return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+        }
+
         baseballResultEntity.updateTimeoutGames()
 
         return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
