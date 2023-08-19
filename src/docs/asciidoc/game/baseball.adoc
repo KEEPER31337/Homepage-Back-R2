@@ -35,7 +35,7 @@ include::{snippets}/baseball-game-info/http-response.adoc[]
 
 include::{snippets}/baseball-game-info/response-fields.adoc[]
 
-== *플레이 했는지 확인하기*
+== *야구 게임 상태 가져오기*
 
 === 요청
 
