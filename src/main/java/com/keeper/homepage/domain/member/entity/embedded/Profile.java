@@ -56,4 +56,10 @@ public class Profile {
   public void changePassword(String newPassword) {
     this.password = Password.from(newPassword);
   }
+
+  public void update(Profile newProfile) {
+    this.realName = newProfile.realName;
+    this.studentId = newProfile.studentId;
+    this.birthday = newProfile.birthday;
+  }
 }
