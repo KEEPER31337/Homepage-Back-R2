@@ -53,8 +53,7 @@ public class SeminarAttendanceService {
 
     String key = "seminar:" + seminar.getId() + ":memberId:" + member.getId();
     checkAttemptNumberLimit(key);
-
-    validAttendanceCode(seminar, attendanceCode, key);
+    checkAttendanceCode(seminar, attendanceCode, key);
     checkDuplicateAttendance(seminarAttendance);
 
     SeminarAttendanceStatusType type = seminar.getStatus().getType();
@@ -70,7 +69,7 @@ public class SeminarAttendanceService {
     }
   }
 
-  private void validAttendanceCode(Seminar seminar, String attendanceCode, String key) {
+  private void checkAttendanceCode(Seminar seminar, String attendanceCode, String key) {
     String seminarAttendanceCode = seminar.getAttendanceCode();
 
     if (!seminarAttendanceCode.equals(attendanceCode)) {
