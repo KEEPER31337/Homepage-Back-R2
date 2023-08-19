@@ -43,6 +43,10 @@ class BaseballResultEntity(
         results.add(result)
     }
 
+    fun isEnd(): Boolean {
+        return this.results.size >= TRY_COUNT || this.isAlreadyCorrect()
+    }
+
     fun isAlreadyCorrect(): Boolean {
         return results.isNotEmpty() && results.last() != null && results.last()!!.isCorrect()
     }

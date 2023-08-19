@@ -1,6 +1,9 @@
 package com.keeper.homepage.domain.game.application
 
+import com.keeper.homepage.domain.game.dto.res.BaseballStatus
+import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
+import com.keeper.homepage.domain.game.entity.Game
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
@@ -35,10 +38,16 @@ class BaseballService(
         )
 
     @Transactional
-    fun isAlreadyPlayedAllOfThem(requestMember: Member): Boolean {
-        return gameFindService.findByMemberOrInit(requestMember)
-            .baseball
-            .isAlreadyPlayedAllOfThem
+    fun getStatus(requestMember: Member): Pair<BaseballStatus, Int> {
+        val gameEntity = gameFindService.findByMemberOrInit(requestMember)
+        if (gameEntity.baseball.isNeverStartedToday) {
+            return Pair(BaseballStatus.NOT_START, gameEntity.baseball.baseballPerDay)
+        }
+        val baseballResult = getBaseballResultInRedis(requestMember, gameEntity)
+        if (baseballResult.isEnd()) {
+            return Pair(BaseballStatus.END, gameEntity.baseball.baseballPerDay)
+        }
+        return Pair(BaseballStatus.PLAYING, gameEntity.baseball.baseballPerDay)
     }
 
     @Transactional
@@ -64,6 +73,12 @@ class BaseballService(
         )
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, game.baseball.baseballPerDay)
         return baseballResultEntity.earnablePoint
+    }
+
+    private fun isAlreadyPlayedAllOfThem(member: Member): Boolean {
+        return gameFindService.findByMemberOrInit(member)
+            .baseball
+            .isAlreadyPlayedAllOfThem
     }
 
     private fun generateDistinctRandomNumber(length: Int): String {
@@ -95,7 +110,7 @@ class BaseballService(
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
-        if (baseballResultEntity.results.size >= TRY_COUNT || baseballResultEntity.isAlreadyCorrect()) {
+        if (baseballResultEntity.isEnd()) {
             return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
         }
 

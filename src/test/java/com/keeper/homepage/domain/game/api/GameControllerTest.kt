@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.domain.game.application.*
-import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
+import com.keeper.homepage.domain.game.dto.res.BaseballStatus
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.global.config.security.data.JwtType
@@ -72,36 +72,89 @@ class GameControllerTest : GameApiTestHelper() {
                             fieldWithPath("tryCount").description("라운드 수"),
                             fieldWithPath("maxBettingPoint").description("최대 베팅 포인트"),
                             fieldWithPath("minBettingPoint").description("최소 베팅 포인트"),
-
-                            )
+                        )
                     )
                 )
         }
 
         @Test
-        fun `야구게임을 오늘 안했으면 false가 나와야 한다`() {
-            callBaseballIsAlreadyPlayed()
+        fun `야구게임을 오늘 안했으면 NOT_START가 나와야 한다`() {
+            callBaseballGetStatus()
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$").value(false))
+                .andExpect(jsonPath("$.status").value("NOT_START"))
                 .andDo(
                     document(
-                        "baseball-is-already-played",
+                        "baseball-get-status",
                         requestCookies(
                             cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                         ),
+                        responseFields(
+                            fieldWithPath("status").description(
+                                BaseballStatus.values().map { it.name } + " 중 하나로 내려갑니다."
+                            ),
+                            fieldWithPath("baseballPerDay").description("현재 야구게임 플레이 횟수 (시작을 안했으면 0, 했으면 1 이상)"),
+                        )
                     )
                 )
         }
 
         @Test
-        fun `야구게임을 오늘 했으면 true가 나와야 한다`() {
-            (1..BASEBALL_MAX_PLAYTIME).forEach { _ -> gameStart() }
+        fun `야구게임을 시작했으면 PLAYING이 나와야 한다`() {
+            gameStart()
+            baseballService.saveBaseballResultInRedis(
+                player.id,
+                BaseballResultEntity(
+                    "1234",
+                    1000,
+                    mutableListOf(),
+                    2000
+                ),
+                1,
+            )
 
-            callBaseballIsAlreadyPlayed()
+            callBaseballGetStatus()
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$").value(true))
+                .andExpect(jsonPath("$.status").value("PLAYING"))
+        }
+
+        @Test
+        fun `야구게임을 시작했고, 9판 모두 했으면 END가 나와야 한다`() {
+            gameStart()
+            baseballService.saveBaseballResultInRedis(
+                player.id,
+                BaseballResultEntity(
+                    "1234",
+                    1000,
+                    mutableListOf(null, null, null, null, null, null, null, null, null),
+                    2000
+                ),
+                1,
+            )
+
+            callBaseballGetStatus()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.status").value("END"))
+        }
+
+        @Test
+        fun `야구게임을 시작했고, 4strike를 했으면 END가 나와야 한다`() {
+            gameStart()
+            baseballService.saveBaseballResultInRedis(
+                player.id,
+                BaseballResultEntity(
+                    "1234",
+                    1000,
+                    mutableListOf(null, null, GuessResultEntity("1234", 4, 0)),
+                    2000
+                ),
+                1,
+            )
+
+            callBaseballGetStatus()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.status").value("END"))
         }
 
         @Test

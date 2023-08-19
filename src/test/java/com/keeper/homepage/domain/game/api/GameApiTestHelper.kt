@@ -51,11 +51,11 @@ class GameApiTestHelper : IntegrationTest() {
         )
     }
 
-    fun callBaseballIsAlreadyPlayed(
+    fun callBaseballGetStatus(
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            get("$GAME_URL/baseball/is-already-played")
+            get("$GAME_URL/baseball//status")
                 .cookie(*accessCookies)
         )
     }
