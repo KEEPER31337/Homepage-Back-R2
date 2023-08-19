@@ -6,9 +6,12 @@ import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_HAS_NOT_THAT_FILE;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -38,6 +41,7 @@ import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -51,6 +55,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -954,9 +959,13 @@ public class PostControllerTest extends PostApiTestHelper {
       em.clear();
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
-      mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+      MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
-          .andExpect(status().isBadRequest());
+          .andExpect(status().isBadRequest())
+          .andReturn();
+
+      String content = mvcResult.getResponse().getContentAsString();
+      assertThat(content).contains(POST_COMMENT_NEED.getMessage());
     }
 
     @Test
@@ -971,6 +980,37 @@ public class PostControllerTest extends PostApiTestHelper {
       mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("해당 게시글의 파일이 아닐 경우 파일 다운로드는 실패한다.")
+    public void 해당_게시글의_파일이_아닐_경우_파일_다운로드는_실패한다() throws Exception {
+      postService.create(post, 자유게시판.getId(), thumbnail, List.of(file));
+      Post otherPost = Post.builder()
+          .title("title")
+          .content("content")
+          .member(member)
+          .ipAddress(WebUtil.getUserIP())
+          .allowComment(false)
+          .isNotice(false)
+          .isSecret(false)
+          .isTemp(false)
+          .password("password")
+          .build();
+      postService.create(otherPost, 자유게시판.getId(), thumbnail, List.of(file));
+      commentTestHelper.builder().post(post).member(other).build();
+
+      em.flush();
+      em.clear();
+      FileEntity file = postHasFileRepository.findByPost(otherPost).get().getFile();
+
+      MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+          .andExpect(status().isBadRequest())
+          .andReturn();
+
+      String content = mvcResult.getResponse().getContentAsString();
+      assertThat(content).contains(POST_HAS_NOT_THAT_FILE.getMessage());
     }
   }
 }
