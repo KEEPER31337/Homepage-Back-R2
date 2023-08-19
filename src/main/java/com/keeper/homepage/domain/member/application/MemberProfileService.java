@@ -20,6 +20,6 @@ public class MemberProfileService {
         member.getProfile().getThumbnail()
     );
     Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
-    member.updateThumbnail(savedThumbnail);
+    member.getProfile().updateThumbnail(savedThumbnail);
   }
 }
