@@ -350,7 +350,7 @@ public class Member {
   }
 
   public void updateThumbnail(Thumbnail thumbnail) {
-    this.profile.updateProfileThumbnail(thumbnail);
+    this.profile.updateThumbnail(thumbnail);
   }
 
   public boolean isHeadMember(Study study) {

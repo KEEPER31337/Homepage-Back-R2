@@ -57,7 +57,7 @@ public class Profile {
     this.password = Password.from(newPassword);
   }
 
-  public void updateProfileThumbnail(Thumbnail thumbnail) {
+  public void updateThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
   }
 }
