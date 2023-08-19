@@ -96,8 +96,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
                       .description("스터디 학기를 입력해주세요."),
                   fieldWithPath("gitLink").attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
-                  fieldWithPath("notionLink").attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
-                      .description("스터디 노트 링크를 입력해주세요.").optional(),
+                  fieldWithPath("notionLink")
+                      .description("스터디 노션 링크를 입력해주세요.").optional(),
                   fieldWithPath("etcTitle")
                       .description("스터디 기타 자료 제목을 입력해주세요.").optional(),
                   fieldWithPath("etcLink")
@@ -120,26 +120,6 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .season(1)
           .gitLink("https://www.youtube.com/")
           .notionLink("https://www.notion.so/Java-Spring")
-          .etcLink("etc.com")
-          .build();
-
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
-      mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
-          .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("노션 링크가 아닌 링크를 입력할 경우 스터디 생성은 실패한다.")
-    public void 노션_링크가_아닌_링크를_입력할_경우_스터디_생성은_실패한다() throws Exception {
-      StudyCreateRequest request = StudyCreateRequest.builder()
-          .title("자바 스터디")
-          .information("자바 스터디 입니다")
-          .year(2023)
-          .season(1)
-          .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
-          .notionLink("https://www.youtube.com/")
           .etcLink("etc.com")
           .build();
 
@@ -276,9 +256,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   field("gitLink", "깃허브 링크")
                       .attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .optional(),
-                  field("notionLink", "노션 링크")
-                      .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
-                      .optional(),
+                  field("notionLink", "노션 링크").optional(),
                   field("etcTitle", "기타 링크 이름").optional(),
                   field("etcLink", "기타 링크").optional()
               ),
