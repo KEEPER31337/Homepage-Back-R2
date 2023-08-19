@@ -11,6 +11,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
@@ -24,9 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
+import com.keeper.homepage.domain.study.dto.request.StudyJoinRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
+import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -320,6 +324,61 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   )
               )
           );
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 스터디원 다중 추가는 성공한다.")
+    public void 유효한_요청일_경우_스터디원_다중_추가는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "joinStudy");
+
+      StudyJoinRequest request = StudyJoinRequest.builder()
+          .memberIds(List.of(member.getId(), other.getId()))
+          .build();
+
+      mockMvc.perform(post("/studies/{studyId}/members", studyId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isCreated())
+          .andDo(document("members-join-study",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("studyId").description("스터디 ID")
+              ),
+              requestFields(
+                  field("memberIds[]", "회원 ID 리스트")
+              )));
+    }
+
+    @Test
+    @DisplayName("회원 ID 리스트가 null이면 스터디원 다중 추가는 실패한다.")
+    public void 회원_ID_리스트가_null이면_스터디원_다중_추가는_실패한다() throws Exception {
+      StudyJoinRequest request = StudyJoinRequest.builder()
+          .memberIds(null)
+          .build();
+
+      mockMvc.perform(post("/studies/{studyId}/members", studyId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("회원 ID 리스트가 비어있으면 스터디원 다중 추가는 실패한다.")
+    public void 회원_ID_리스트가_비어있으면_스터디원_다중_추가는_실패한다() throws Exception {
+      StudyJoinRequest request = StudyJoinRequest.builder()
+          .memberIds(List.of())
+          .build();
+
+      mockMvc.perform(post("/studies/{studyId}/members", studyId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
     }
   }
 

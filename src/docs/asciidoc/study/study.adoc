@@ -197,6 +197,33 @@ include::{snippets}/join-study/path-parameters.adoc[]
 
 include::{snippets}/join-study/http-response.adoc[]
 
+== *스터디원 다중 추가*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/members-join-study/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/members-join-study/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/members-join-study/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/members-join-study/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/members-join-study/http-response.adoc[]
+
+
 == *스터디원 삭제*
 
 NOTE: 스터디장은 삭제할 수 없습니다.
