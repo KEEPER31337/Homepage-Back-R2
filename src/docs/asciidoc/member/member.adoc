@@ -136,3 +136,25 @@ include::{snippets}/unfollow-member/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/unfollow-member/http-response.adoc[]
+
+== *회원 썸네일 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-member-thumbnail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-member-thumbnail/request-cookies.adoc[]
+
+==== Request Parts
+
+include::{snippets}/update-member-thumbnail/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-member-thumbnail/http-response.adoc[]
