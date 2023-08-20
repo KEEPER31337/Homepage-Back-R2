@@ -15,6 +15,7 @@ public class MemberProfileService {
 
   private final ThumbnailUtil thumbnailUtil;
 
+  @Transactional
   public void updateProfileThumbnail(Member member, MultipartFile thumbnail) {
     thumbnailUtil.deleteFileAndEntityIfExist(
         member.getProfile().getThumbnail()
