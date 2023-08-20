@@ -16,12 +16,14 @@ public class PostResponse {
 
   private Long id;
   private String title;
+  private Long writerId;
   private String writerName;
   private String writerThumbnailPath;
   private Integer visitCount;
   private Integer commentCount;
   private Boolean isSecret;
   private String thumbnailPath;
+  private Integer likeCount;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
@@ -30,12 +32,14 @@ public class PostResponse {
     return PostResponse.builder()
         .id(post.getId())
         .title(post.getTitle())
+        .writerId(post.getMember().getId())
         .writerName(post.getWriterRealName())
         .writerThumbnailPath(post.getMember().getThumbnailPath())
         .visitCount(post.getVisitCount())
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())
         .thumbnailPath(post.getThumbnailPath())
+        .likeCount(post.getPostLikes().size())
         .registerTime(post.getRegisterTime())
         .build();
   }
@@ -50,6 +54,7 @@ public class PostResponse {
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())
         .thumbnailPath(post.getThumbnailPath())
+        .likeCount(post.getPostLikes().size())
         .registerTime(post.getRegisterTime())
         .build();
   }

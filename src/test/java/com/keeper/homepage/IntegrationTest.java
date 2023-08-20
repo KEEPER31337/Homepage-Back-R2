@@ -57,6 +57,7 @@ import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.application.MemberJobService;
+import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -75,6 +76,9 @@ import com.keeper.homepage.domain.merit.application.MeritLogService;
 import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
+import com.keeper.homepage.domain.point.PointLogTestHelper;
+import com.keeper.homepage.domain.point.application.GivePointService;
+import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostService;
@@ -268,7 +272,7 @@ public class IntegrationTest {
 
   @Autowired
   protected MeritTypeRepository meritTypeRepository;
-  
+
   @Autowired
   protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
 
@@ -355,7 +359,16 @@ public class IntegrationTest {
   protected MeritLogService meritLogService;
 
   @SpyBean
+  protected GivePointService givePointService;
+
+  @SpyBean
+  protected PointLogService pointLogService;
+
+  @SpyBean
   protected AdminElectionService adminElectionService;
+
+  @SpyBean
+  protected MemberProfileService memberProfileService;
 
   /******* Helper *******/
   @SpyBean
@@ -414,12 +427,15 @@ public class IntegrationTest {
 
   @Autowired
   protected MeritTypeHelper meritTypeHelper;
-  
+
   @Autowired
   protected CtfChallengeTestHelper ctfChallengeTestHelper;
 
   @Autowired
   protected CtfFlagTestHelper ctfFlagTestHelper;
+
+  @Autowired
+  protected PointLogTestHelper pointLogTestHelper;
 
   /******* Util *******/
   @SpyBean

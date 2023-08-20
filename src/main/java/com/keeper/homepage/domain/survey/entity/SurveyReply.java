@@ -1,11 +1,9 @@
 package com.keeper.homepage.domain.survey.entity;
 
-import static com.keeper.homepage.global.error.ErrorCode.SURVEY_REPLY_TYPE_NOT_FOUND;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.survey.converter.SurveyReplyTypeConverter;
-import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -65,7 +63,7 @@ public class SurveyReply {
       return Arrays.stream(SurveyReplyType.values())
           .filter(EnumType -> EnumType.getType().equals(type))
           .findAny()
-          .orElseThrow(() -> new BusinessException(type, "type", SURVEY_REPLY_TYPE_NOT_FOUND));
+          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 응답 종류입니다."));
     }
   }
 }

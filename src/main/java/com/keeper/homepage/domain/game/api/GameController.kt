@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.game.application.GameService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.game.dto.res.BaseballResponse
+import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.dto.res.GameRankResponse
 import com.keeper.homepage.domain.member.entity.Member
@@ -29,18 +30,19 @@ class GameController(
         return ResponseEntity.ok(baseballService.getBaseballGameInfoByMember())
     }
 
-    @GetMapping("/baseball/is-already-played")
-    fun baseballIsAlreadyPlayed(@LoginMember requestMember: Member): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(baseballService.isAlreadyPlayedAllOfThem(requestMember))
+    @GetMapping("/baseball/status")
+    fun baseballGetStatus(@LoginMember requestMember: Member): ResponseEntity<BaseballStatusResponse> {
+        val (baseballStatus, baseballPerDay) = baseballService.getStatus(requestMember)
+        return ResponseEntity.ok(BaseballStatusResponse(baseballStatus, baseballPerDay))
     }
 
     @PostMapping("/baseball/start")
     fun baseballStart(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballStartRequest
-    ): ResponseEntity<Void> {
-        baseballService.start(requestMember, request.bettingPoint)
-        return ResponseEntity.noContent().build()
+    ): ResponseEntity<BaseballResponse> {
+        val earnablePoint = baseballService.start(requestMember, request.bettingPoint)
+        return ResponseEntity.ok(BaseballResponse(emptyList(), earnablePoint))
     }
 
     @PostMapping("/baseball/guess")
@@ -48,19 +50,19 @@ class GameController(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballGuessRequest
     ): ResponseEntity<BaseballResponse> {
-        val (results, earnablePoints) = baseballService.guess(requestMember, request.guessNumber)
+        val (results, earnablePoint) = baseballService.guess(requestMember, request.guessNumber)
         return ResponseEntity.ok(BaseballResponse(results.map { i ->
             if (i == null) null else BaseballResponse.GuessResultResponse(i)
-        }, earnablePoints))
+        }, earnablePoint))
     }
 
     @GetMapping("/baseball/result")
     fun getBaseballResult(
         @LoginMember requestMember: Member
     ): ResponseEntity<BaseballResponse> {
-        val (results, earnablePoints) = baseballService.getResult(requestMember)
+        val (results, earnablePoint) = baseballService.getResult(requestMember)
         return ResponseEntity.ok(BaseballResponse(results.map { i ->
             if (i == null) null else BaseballResponse.GuessResultResponse(i)
-        }, earnablePoints))
+        }, earnablePoint))
     }
 }

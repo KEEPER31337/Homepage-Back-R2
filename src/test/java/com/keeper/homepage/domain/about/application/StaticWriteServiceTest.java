@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.about.dto.response.StaticWriteTitleResponse;
 import com.keeper.homepage.domain.about.entity.StaticWriteTitle.StaticWriteTitleType;
-import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ public class StaticWriteServiceTest extends IntegrationTest {
   @DisplayName("DB에서 찾을 수 없는 타입으로 타이틀 조회 시 Exception을 발생시킨다.")
   void should_throwException_when_getTitlesByNotFoundType() {
     assertThatThrownBy(() -> staticWriteService.getTitleByType("null"))
-        .isInstanceOf(BusinessException.class)
+        .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("해당 타입의 타이틀을 찾을 수 없습니다.");
   }
 }

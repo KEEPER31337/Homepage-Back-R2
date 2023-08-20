@@ -23,7 +23,7 @@ public class StaticWriteTitleTypeConverter implements
     }
     try {
       return StaticWriteTitleType.fromCode(dbData);
-    } catch (BusinessException e) {
+    } catch (IllegalArgumentException e) {
       log.error("failure to convert cause unexpected code [{}]", dbData, e);
       throw e;
     }
