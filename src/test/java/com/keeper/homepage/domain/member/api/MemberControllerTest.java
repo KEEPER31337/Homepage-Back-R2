@@ -23,6 +23,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
@@ -229,9 +230,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
       memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("이이")).build().getId());
       memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-      memberService.follow(memberTestHelper.builder().realName(RealName.from("사사")).build(), member.getId());
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
       em.flush();
@@ -242,6 +241,8 @@ class MemberControllerTest extends MemberApiTestHelper {
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(print())
+          .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
+          .andExpect(jsonPath("$.followee[0].name").value("일일"))
           .andDo(document("get-member-profile",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
