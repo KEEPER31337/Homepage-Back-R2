@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.game.application.GameService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.game.dto.res.BaseballResponse
+import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.dto.res.GameRankResponse
 import com.keeper.homepage.domain.member.entity.Member
@@ -29,9 +30,10 @@ class GameController(
         return ResponseEntity.ok(baseballService.getBaseballGameInfoByMember())
     }
 
-    @GetMapping("/baseball/is-already-played")
-    fun baseballIsAlreadyPlayed(@LoginMember requestMember: Member): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(baseballService.isAlreadyPlayedAllOfThem(requestMember))
+    @GetMapping("/baseball/status")
+    fun baseballGetStatus(@LoginMember requestMember: Member): ResponseEntity<BaseballStatusResponse> {
+        val (baseballStatus, baseballPerDay) = baseballService.getStatus(requestMember)
+        return ResponseEntity.ok(BaseballStatusResponse(baseballStatus, baseballPerDay))
     }
 
     @PostMapping("/baseball/start")

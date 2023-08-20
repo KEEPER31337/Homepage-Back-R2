@@ -35,25 +35,33 @@ include::{snippets}/baseball-game-info/http-response.adoc[]
 
 include::{snippets}/baseball-game-info/response-fields.adoc[]
 
-== *플레이 했는지 확인하기*
+== *야구 게임 상태 가져오기*
 
 === 요청
 
 ==== Request
 
-include::{snippets}/baseball-is-already-played/http-request.adoc[]
+include::{snippets}/baseball-get-status/http-request.adoc[]
 
 ==== Request Cookies
 
-include::{snippets}/baseball-is-already-played/request-cookies.adoc[]
+include::{snippets}/baseball-get-status/request-cookies.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/baseball-is-already-played/http-response.adoc[]
+include::{snippets}/baseball-get-status/http-response.adoc[]
 
-NOTE: body에 boolean값으로 true, false가 반환됩니다.
+==== Response Fields
+
+include::{snippets}/baseball-get-status/response-fields.adoc[]
+
+NOTE: NOT START: 오늘 한 번도 시작하지 않았으면 NOT_START가 반환됩니다.
+
+NOTE: PLAYING: start를 누른 뒤 게임이 끝나지 않았으면 PLAYING이 반환됩니다.
+
+NOTE: END: TRY COUNT를 모두 사용했거나 4strike로 맞춘적이 있는 경우 END가 반환됩니다.
 
 == *야구 게임 START*
 

@@ -1,6 +1,10 @@
 package com.keeper.homepage.domain.game.application
 
+import com.keeper.homepage.domain.game.dto.res.BaseballStatus
+import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
+import com.keeper.homepage.domain.game.entity.Game
+import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.error.BusinessException
@@ -32,13 +36,20 @@ class BaseballService(
             tryCount = TRY_COUNT,
             maxBettingPoint = MAX_BETTING_POINT,
             minBettingPoint = MIN_BETTING_POINT,
+            maxPlayTime = BASEBALL_MAX_PLAYTIME,
         )
 
     @Transactional
-    fun isAlreadyPlayedAllOfThem(requestMember: Member): Boolean {
-        return gameFindService.findByMemberOrInit(requestMember)
-            .baseball
-            .isAlreadyPlayedAllOfThem
+    fun getStatus(requestMember: Member): Pair<BaseballStatus, Int> {
+        val gameEntity = gameFindService.findByMemberOrInit(requestMember)
+        if (gameEntity.baseball.isNeverStartedToday) {
+            return Pair(BaseballStatus.NOT_START, gameEntity.baseball.baseballPerDay)
+        }
+        val baseballResult = getBaseballResultInRedis(requestMember, gameEntity)
+        if (baseballResult.isEnd()) {
+            return Pair(BaseballStatus.END, gameEntity.baseball.baseballPerDay)
+        }
+        return Pair(BaseballStatus.PLAYING, gameEntity.baseball.baseballPerDay)
     }
 
     @Transactional
@@ -64,6 +75,12 @@ class BaseballService(
         )
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, game.baseball.baseballPerDay)
         return baseballResultEntity.earnablePoint
+    }
+
+    private fun isAlreadyPlayedAllOfThem(member: Member): Boolean {
+        return gameFindService.findByMemberOrInit(member)
+            .baseball
+            .isAlreadyPlayedAllOfThem
     }
 
     private fun generateDistinctRandomNumber(length: Int): String {
@@ -93,12 +110,9 @@ class BaseballService(
     @Transactional
     fun guess(requestMember: Member, guessNumber: String): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        val baseballResultEntity = redisUtil.getData(
-            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
-            BaseballResultEntity::class.java
-        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
+        val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
-        if (baseballResultEntity.results.size >= TRY_COUNT || baseballResultEntity.isAlreadyCorrect()) {
+        if (baseballResultEntity.isEnd()) {
             return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
         }
 
@@ -117,10 +131,11 @@ class BaseballService(
             return Pair(listOf(), 0)
         }
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
-        val baseballResultEntity = redisUtil.getData(
-            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
-            BaseballResultEntity::class.java
-        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
+        val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
+
+        if (baseballResultEntity.isEnd()) {
+            return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+        }
 
         baseballResultEntity.updateTimeoutGames()
 
@@ -129,5 +144,12 @@ class BaseballService(
 
     private fun isNotPlayedYet(requestMember: Member): Boolean {
         return gameFindService.findByMemberOrInit(requestMember).baseball.baseballPerDay == 0
+    }
+
+    private fun getBaseballResultInRedis(requestMember: Member, gameEntity: Game): BaseballResultEntity {
+        return redisUtil.getData(
+            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
+            BaseballResultEntity::class.java
+        ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
     }
 }
