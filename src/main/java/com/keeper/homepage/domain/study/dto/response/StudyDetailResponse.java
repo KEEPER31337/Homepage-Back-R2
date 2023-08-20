@@ -17,9 +17,7 @@ public class StudyDetailResponse {
 
   private String information;
   private List<String> members;
-  private String gitLink;
-  private String notionLink;
-  private String etcLink;
+  private List<LinkResponse> links;
 
   public static StudyDetailResponse from(Study study) {
     return StudyDetailResponse.builder()
@@ -29,9 +27,9 @@ public class StudyDetailResponse {
             .map(StudyHasMember::getMember)
             .map(Member::getRealName)
             .toList())
-        .gitLink(study.getGitLink())
-        .notionLink(study.getNotionLink())
-        .etcLink(study.getEtcLink())
+        .links(List.of(LinkResponse.of("Github", study.getGitLink()),
+            LinkResponse.of("Notion", study.getNotionLink()),
+            LinkResponse.of(study.getEtcTitle(), study.getEtcLink())))
         .build();
   }
 }
