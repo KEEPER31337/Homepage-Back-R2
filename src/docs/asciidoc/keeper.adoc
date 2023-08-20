@@ -35,7 +35,9 @@ link:comment/comment.html[API 문서 보기]
 
 == *SEMINAR API*
 
-link:seminar/seminar.html[API 문서 보기]
+link:seminar/seminar.html[세미나 API 문서 보기]
+
+link:seminar/seminar-attendance.html[세미나 출석 API 문서 보기]
 
 == *LIBRARY API*
 

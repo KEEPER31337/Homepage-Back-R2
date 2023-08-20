@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/seminars/{seminarId}/attendances")
+@RequestMapping("/seminars")
 public class SeminarAttendanceController {
 
   private final SeminarAttendanceService seminarAttendanceService;
 
-  @PatchMapping
+  @PatchMapping("/{seminarId}/attendances")
   public ResponseEntity<SeminarAttendanceResponse> attendanceSeminar(
       @PathVariable Long seminarId,
       @LoginMember Member member,
       @RequestBody @Valid SeminarAttendanceCodeRequest request) {
-    SeminarAttendanceResponse response = seminarAttendanceService.attendance(seminarId, member, request);
+    SeminarAttendanceResponse response = seminarAttendanceService.attendance(seminarId, member, request.attendanceCode());
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @PatchMapping("/{memberId}") // TODO: 관리자 권한으로 접근 가능하게 설정
+  @PatchMapping("/{seminarId}/attendances/{memberId}") // TODO: 관리자 권한으로 접근 가능하게 설정
   public ResponseEntity<Void> changeAttendanceStatus(
       @PathVariable long seminarId,
       @PathVariable long memberId,

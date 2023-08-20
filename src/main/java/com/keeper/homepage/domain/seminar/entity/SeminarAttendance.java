@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.seminar.entity;
 
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 
 import com.keeper.homepage.domain.member.entity.Member;
@@ -87,5 +88,10 @@ public class SeminarAttendance {
     this.member = member;
     this.seminarAttendanceStatus = seminarAttendanceStatus;
     this.attendTime = attendTime;
+  }
+
+  public boolean isLateness() {
+    SeminarAttendanceStatusType type = getSeminarAttendanceStatus().getType();
+    return type.equals(LATENESS);
   }
 }
