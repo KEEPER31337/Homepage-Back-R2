@@ -23,38 +23,46 @@ class BaseballSupportTest {
         }
 
         @Test
-        fun `34초가 지난 후면 1게임은 pass한 게임이어야 한다`() {
+        fun `34초가 지난 후면 1게임은 pass한 게임이고 남은 시간은 26초여야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(34)
-            val (passedGameCount, _) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
             assertThat(passedGameCount).isEqualTo(1)
+            assertThat(remainedSeconds).isLessThan(26)
+            assertThat(remainedSeconds).isGreaterThan(24) // 테스트 실행시간 2초 여유 줌
         }
 
         @Test
-        fun `90초가 지난 후면 3게임은 pass한 게임이어야 한다`() {
+        fun `90초가 지난 후면 3게임은 pass한 게임이고 남은 시간은 30초여야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(90)
-            val (passedGameCount, _) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
             assertThat(passedGameCount).isEqualTo(3)
+            assertThat(remainedSeconds).isLessThan(30)
+            assertThat(remainedSeconds).isGreaterThan(28) // 테스트 실행시간 2초 여유 줌
         }
 
         @Test
-        fun `92초가 지난 후면 3게임은 pass한 게임이어야 한다`() {
+        fun `92초가 지난 후면 3게임은 pass한 게임이고 남은 시간은 28초여야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(92)
-            val (passedGameCount, _) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
             assertThat(passedGameCount).isEqualTo(3)
+            assertThat(remainedSeconds).isLessThan(28)
+            assertThat(remainedSeconds).isGreaterThan(26) // 테스트 실행시간 2초 여유 줌
         }
 
         @Test
         fun `300초가 지난 후면 9게임은 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(300)
-            val (passedGameCount, _) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
             assertThat(passedGameCount).isEqualTo(9)
+            assertThat(remainedSeconds).isEqualTo(0)
         }
 
         @Test
         fun `1000초가 지났더라도 9게임만 pass한 게임이어야 한다`() {
             val lastGuessTime = LocalDateTime.now().minusSeconds(1000)
-            val (passedGameCount, _) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
+            val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(0, lastGuessTime)
             assertThat(passedGameCount).isEqualTo(9)
+            assertThat(remainedSeconds).isEqualTo(0)
         }
 
         @Test
