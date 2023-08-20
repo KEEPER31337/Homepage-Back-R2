@@ -89,8 +89,6 @@ public class MemberController {
   public ResponseEntity<MemberProfileResponse> getMemberProfile(
       @PathVariable @PositiveOrZero long memberId
   ) {
-    return ResponseEntity.ok(
-        memberService.getMemberProfile(memberId)
-    );
+    return ResponseEntity.ok(memberService.getMemberProfile(memberId));
   }
 }
