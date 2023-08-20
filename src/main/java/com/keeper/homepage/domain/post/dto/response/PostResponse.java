@@ -22,6 +22,7 @@ public class PostResponse {
   private Integer commentCount;
   private Boolean isSecret;
   private String thumbnailPath;
+  private Integer likeCount;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
@@ -36,6 +37,7 @@ public class PostResponse {
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())
         .thumbnailPath(post.getThumbnailPath())
+        .likeCount(post.getPostLikes().size())
         .registerTime(post.getRegisterTime())
         .build();
   }
@@ -50,6 +52,7 @@ public class PostResponse {
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())
         .thumbnailPath(post.getThumbnailPath())
+        .likeCount(post.getPostLikes().size())
         .registerTime(post.getRegisterTime())
         .build();
   }

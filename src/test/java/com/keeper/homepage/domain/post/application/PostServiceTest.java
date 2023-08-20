@@ -255,6 +255,7 @@ public class PostServiceTest extends IntegrationTest {
     public void id_기준으로_카테고리에_해당하는_이전과_다음_게시글_하나는_성공적으로_조회된다() throws Exception {
       Post first = postTestHelper.builder().category(category).build();
       Post middle = postTestHelper.builder().member(member).category(category).build();
+      Post next = postTestHelper.builder().category(category).build();
       Post last = postTestHelper.builder().category(category).build();
 
       em.flush();
@@ -262,7 +263,7 @@ public class PostServiceTest extends IntegrationTest {
       PostDetailResponse response = postService.find(member, middle.getId(), null);
 
       assertThat(response.getPreviousPost().getPostId()).isEqualTo(first.getId());
-      assertThat(response.getNextPost().getPostId()).isEqualTo(last.getId());
+      assertThat(response.getNextPost().getPostId()).isEqualTo(next.getId());
     }
 
     @Test
