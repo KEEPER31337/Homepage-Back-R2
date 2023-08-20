@@ -23,12 +23,15 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
@@ -249,6 +252,52 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               requestParts(
                   partWithName("thumbnail").description("변경할 썸네일")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 프로필 조회")
+  class getMemberProfile {
+
+    private Member member, otherMember;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.generate();
+      otherMember = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("회원 프로필 조회를 성공해야 한다")
+    void 회원_프로필_조회를_성공해야_한다() throws Exception {
+      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
+
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/{memberId}/profile", member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andDo(print())
+          .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
+          .andExpect(jsonPath("$.followee[0].name").value("일일"))
+          .andDo(document("get-member-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId")
+                      .description("조회하고자 하는 회원의 ID값")
+              ),
+              responseFields(
+                  getMemberProfileResponse()
               )));
     }
   }
