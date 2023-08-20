@@ -94,8 +94,8 @@ public class MemberController {
       @ModelAttribute MultipartFile thumbnail
   ) {
     memberProfileService.updateProfileThumbnail(member, thumbnail);
+
     return ResponseEntity.noContent()
-        .location(URI.create("/members/me"))
         .build();
   }
 }
