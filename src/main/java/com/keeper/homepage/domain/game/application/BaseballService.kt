@@ -44,7 +44,11 @@ class BaseballService(
         if (gameEntity.baseball.isNeverStartedToday) {
             return Pair(BaseballStatus.NOT_START, gameEntity.baseball.baseballPerDay)
         }
+
         val baseballResult = getBaseballResultInRedis(requestMember, gameEntity)
+        baseballResult.updateTimeoutGames()
+        saveBaseballResultInRedis(requestMember.id, baseballResult, gameEntity.baseball.baseballPerDay)
+
         if (baseballResult.isEnd()) {
             return Pair(BaseballStatus.END, gameEntity.baseball.baseballPerDay)
         }
