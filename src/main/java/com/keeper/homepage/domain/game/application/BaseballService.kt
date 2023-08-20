@@ -140,6 +140,7 @@ class BaseballService(
         }
 
         val remainedSeconds = baseballResultEntity.updateTimeoutGames()
+        saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
         return Triple(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint, remainedSeconds)
     }
