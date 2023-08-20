@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +30,7 @@ public class MemberProfileResponse {
   private List<MemberFriendResponse> follower;
   private List<MemberFriendResponse> followee;
 
-  public static MemberProfileResponse of(Member member, List<Friend> friends) {
+  public static MemberProfileResponse of(Member member) {
     return MemberProfileResponse.builder()
         .id(member.getId())
         .emailAddress(member.getProfile().getEmailAddress().get())
@@ -40,22 +41,22 @@ public class MemberProfileResponse {
         .point(member.getPoint())
         .memberType(member.getMemberType().getType().name())
         .memberJobs(member.getJobs())
-        .follower(getFollower(friends))
+        .follower(getFollower(member))
         .followee(getFollowee(member))
         .build();
   }
 
-  private static List<MemberFriendResponse> getFollower(List<Friend> friends) {
-    return friends.stream()
+  private static List<MemberFriendResponse> getFollower(Member member) {
+    return member.getFollowee().stream()
         .map(Friend::getFollower)
         .map(MemberFriendResponse::from)
-        .collect(toList());
+        .toList();
   }
 
   private static List<MemberFriendResponse> getFollowee(Member member) {
     return member.getFollower().stream()
         .map(Friend::getFollowee)
         .map(MemberFriendResponse::from)
-        .collect(toList());
+        .toList();
   }
 }

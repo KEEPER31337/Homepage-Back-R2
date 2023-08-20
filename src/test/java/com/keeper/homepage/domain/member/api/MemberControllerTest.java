@@ -230,10 +230,12 @@ class MemberControllerTest extends MemberApiTestHelper {
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
       memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
       memberService.follow(member, memberTestHelper.builder().realName(RealName.from("이이")).build().getId());
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("삼삼")).build().getId());
       memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
       memberService.follow(memberTestHelper.builder().realName(RealName.from("사사")).build(), member.getId());
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
+
+      em.flush();
+      em.clear();
 
       mockMvc.perform(get("/members/{memberId}/profile", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))

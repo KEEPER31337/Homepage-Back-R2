@@ -14,6 +14,7 @@ import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -66,9 +67,8 @@ public class MemberService {
   }
 
   public MemberProfileResponse getMemberProfile(long memberId) {
-    Member findMember = memberFindService.findById(memberId);
-    List<Friend> findAllFollowers = friendRepository.findAllByFollowee(findMember);
-
-    return MemberProfileResponse.of(findMember, findAllFollowers);
+    return MemberProfileResponse.of(
+        memberFindService.findById(memberId)
+    );
   }
 }
