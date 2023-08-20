@@ -376,6 +376,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("categoryId").description("게시글 카테고리의 ID"),
                   fieldWithPath("categoryName").description("게시글 카테고리의 이름"),
                   fieldWithPath("title").description("게시글의 타이틀"),
+                  fieldWithPath("writerId").description("게시글 작성자의 ID(익명 게시판일 경우 \"1\")"),
                   fieldWithPath("writerName").description("게시글 작성자의 이름(익명 게시판일 경우 \"익명\")"),
                   fieldWithPath("writerThumbnailPath").description("게시글 작성자의 썸네일 경로(익명 게시판일 경우 null)"),
                   fieldWithPath("registerTime").description("게시글 등록 시간"),
@@ -637,6 +638,7 @@ public class PostControllerTest extends PostApiTestHelper {
               responseFields(
                   fieldWithPath("posts[].id").description("게시글 ID"),
                   fieldWithPath("posts[].title").description("게시글 제목"),
+                  fieldWithPath("posts[].writerId").description("게시글 작성자 ID"),
                   fieldWithPath("posts[].writerName").description("게시글 작성자 실명"),
                   fieldWithPath("posts[].writerThumbnailPath").description("게시글 작성자 썸네일 주소").optional(),
                   fieldWithPath("posts[].visitCount").description("게시글 조회수"),

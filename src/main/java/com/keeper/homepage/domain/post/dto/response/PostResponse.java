@@ -16,6 +16,7 @@ public class PostResponse {
 
   private Long id;
   private String title;
+  private Long writerId;
   private String writerName;
   private String writerThumbnailPath;
   private Integer visitCount;
@@ -31,6 +32,7 @@ public class PostResponse {
     return PostResponse.builder()
         .id(post.getId())
         .title(post.getTitle())
+        .writerId(post.getMember().getId())
         .writerName(post.getWriterRealName())
         .writerThumbnailPath(post.getMember().getThumbnailPath())
         .visitCount(post.getVisitCount())
