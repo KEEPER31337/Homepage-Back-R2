@@ -375,6 +375,11 @@ public class Member {
     return this.equals(ctfTeam.getCreator());
   }
 
+  public boolean hasComment(Post post) {
+    return comments.stream()
+        .anyMatch(comment -> comment.getPost().equals(post));
+  }
+
   public List<String> getJobs() {
     return this.getMemberJob().stream()
         .map(MemberHasMemberJob::getMemberJob)

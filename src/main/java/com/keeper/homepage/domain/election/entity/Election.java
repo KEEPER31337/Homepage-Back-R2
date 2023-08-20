@@ -75,4 +75,10 @@ public class Election {
     return isAvailable;
   }
 
+  public void update(String name, String description, Boolean isAvailable) {
+    this.name = name;
+    this.description = description;
+    this.isAvailable = isAvailable;
+  }
+
 }

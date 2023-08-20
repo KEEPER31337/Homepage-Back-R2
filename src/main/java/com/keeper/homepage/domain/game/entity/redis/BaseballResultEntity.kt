@@ -12,20 +12,20 @@ class BaseballResultEntity(
     val correctNumber: String,
     val bettingPoint: Int,
     val results: MutableList<GuessResultEntity?> = mutableListOf(),
-    var earnablePoints: Int,
+    var earnablePoint: Int,
 ) {
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
 
     fun updateTimeoutGames() {
         val passedGameCount = BaseballSupport.getPassedGameCount(results.size, lastGuessTime)
         (1..passedGameCount).forEach { _ -> if (results.size < TRY_COUNT) results.add(null) }
-        updateEarnablePointsByTimeoutGames(passedGameCount)
+        updateearnablePointByTimeoutGames(passedGameCount)
     }
 
-    private fun updateEarnablePointsByTimeoutGames(passedGameCount: Int) {
+    private fun updateearnablePointByTimeoutGames(passedGameCount: Int) {
         (1..passedGameCount).forEach { _ ->
             // TODO: 포인트 획득 전략 정해지면 다시 구현
-            this.earnablePoints -= this.earnablePoints / 10
+            this.earnablePoint -= this.earnablePoint / 10
         }
     }
 
@@ -43,6 +43,10 @@ class BaseballResultEntity(
         results.add(result)
     }
 
+    fun isEnd(): Boolean {
+        return this.results.size >= TRY_COUNT || this.isAlreadyCorrect()
+    }
+
     fun isAlreadyCorrect(): Boolean {
         return results.isNotEmpty() && results.last() != null && results.last()!!.isCorrect()
     }
@@ -51,7 +55,7 @@ class BaseballResultEntity(
         if (result.isCorrect()) {
             return
         }
-        this.earnablePoints -= this.earnablePoints / 10
+        this.earnablePoint -= this.earnablePoint / 10
     }
 
     data class GuessResultEntity(val guessNumber: String, val strike: Int, val ball: Int) {

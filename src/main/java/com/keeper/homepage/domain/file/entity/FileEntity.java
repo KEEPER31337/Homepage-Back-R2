@@ -10,14 +10,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -65,5 +60,9 @@ public class FileEntity {
     this.fileSize = fileSize;
     this.uploadTime = uploadTime;
     this.ipAddress = ipAddress;
+  }
+
+  public boolean isPost(Post post) {
+    return postHasFile.getPost().equals(post);
   }
 }

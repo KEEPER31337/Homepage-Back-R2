@@ -41,6 +41,10 @@ public class Baseball {
     return baseballPerDay >= BASEBALL_MAX_PLAYTIME;
   }
 
+  public boolean isNeverStartedToday() {
+    return baseballPerDay == 0;
+  }
+
   public void increaseBaseballTimes() {
     this.baseballPerDay += 1;
   }

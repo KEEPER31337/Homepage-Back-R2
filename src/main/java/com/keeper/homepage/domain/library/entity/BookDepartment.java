@@ -1,11 +1,9 @@
 package com.keeper.homepage.domain.library.entity;
 
-import static com.keeper.homepage.global.error.ErrorCode.BOOK_TYPE_NOT_FOUND;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.keeper.homepage.domain.library.converter.BookDepartmentTypeConverter;
-import com.keeper.homepage.global.error.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -65,7 +63,7 @@ public class BookDepartment {
       return Arrays.stream(BookDepartmentType.values())
           .filter(bookDepartmentType -> bookDepartmentType.getName().equals(type))
           .findAny()
-          .orElseThrow(() -> new BusinessException(type, "type", BOOK_TYPE_NOT_FOUND));
+          .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 도서 타입입니다."));
     }
   }
 
