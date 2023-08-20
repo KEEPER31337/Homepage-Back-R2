@@ -21,7 +21,7 @@ class MemberProfileServiceTest extends IntegrationTest {
   long oldThumbnailId, newThumbnailId;
 
   @Nested
-  @DisplayName("멤버 프로필 쌈네일 수정")
+  @DisplayName("멤버 프로필 썸네일 수정")
   class MemberProfileThumbnailUpdate {
 
     @BeforeEach
