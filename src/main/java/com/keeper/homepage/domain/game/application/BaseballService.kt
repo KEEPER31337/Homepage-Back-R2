@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.game.application
 
 import com.keeper.homepage.domain.game.dto.res.BaseballStatus
-import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.entity.Game
 import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
@@ -45,7 +44,11 @@ class BaseballService(
         if (gameEntity.baseball.isNeverStartedToday) {
             return Pair(BaseballStatus.NOT_START, gameEntity.baseball.baseballPerDay)
         }
+
         val baseballResult = getBaseballResultInRedis(requestMember, gameEntity)
+        baseballResult.updateTimeoutGames()
+        saveBaseballResultInRedis(requestMember.id, baseballResult, gameEntity.baseball.baseballPerDay)
+
         if (baseballResult.isEnd()) {
             return Pair(BaseballStatus.END, gameEntity.baseball.baseballPerDay)
         }
@@ -53,7 +56,7 @@ class BaseballService(
     }
 
     @Transactional
-    fun start(requestMember: Member, bettingPoint: Int): Int  {
+    fun start(requestMember: Member, bettingPoint: Int): Int {
         if (isAlreadyPlayedAllOfThem(requestMember)) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.IS_ALREADY_PLAYED)
         }
@@ -108,12 +111,15 @@ class BaseballService(
     }
 
     @Transactional
-    fun guess(requestMember: Member, guessNumber: String): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
+    fun guess(
+        requestMember: Member,
+        guessNumber: String
+    ): Triple<List<BaseballResultEntity.GuessResultEntity?>, Int, Int> {
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
         if (baseballResultEntity.isEnd()) {
-            return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+            return Triple(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint, 0)
         }
 
         baseballResultEntity.update(guessNumber)
@@ -123,23 +129,24 @@ class BaseballService(
         requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
         gameEntity.baseball.baseballDayPoint = earnablePoint
 
-        return Pair(baseballResultEntity.results, earnablePoint)
+        return Triple(baseballResultEntity.results, earnablePoint, 0)
     }
 
-    fun getResult(requestMember: Member): Pair<List<BaseballResultEntity.GuessResultEntity?>, Int> {
+    fun getResult(requestMember: Member): Triple<List<BaseballResultEntity.GuessResultEntity?>, Int, Int> {
         if (isNotPlayedYet(requestMember)) {
-            return Pair(listOf(), 0)
+            return Triple(listOf(), 0, 0)
         }
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
         if (baseballResultEntity.isEnd()) {
-            return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+            return Triple(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint, 0)
         }
 
-        baseballResultEntity.updateTimeoutGames()
+        val remainedSeconds = baseballResultEntity.updateTimeoutGames()
+        saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
-        return Pair(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint)
+        return Triple(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint, remainedSeconds)
     }
 
     private fun isNotPlayedYet(requestMember: Member): Boolean {

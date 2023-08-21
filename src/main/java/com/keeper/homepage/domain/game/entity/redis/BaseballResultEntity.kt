@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.game.entity.redis
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.keeper.homepage.domain.game.application.GUESS_NUMBER_LENGTH
 import com.keeper.homepage.domain.game.application.TRY_COUNT
 import com.keeper.homepage.domain.game.support.BaseballSupport
@@ -16,13 +15,14 @@ class BaseballResultEntity(
 ) {
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
 
-    fun updateTimeoutGames() {
-        val passedGameCount = BaseballSupport.getPassedGameCount(results.size, lastGuessTime)
+    fun updateTimeoutGames(): Int {
+        val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(results.size, lastGuessTime)
         (1..passedGameCount).forEach { _ -> if (results.size < TRY_COUNT) results.add(null) }
-        updateearnablePointByTimeoutGames(passedGameCount)
+        updateEarnablePointByTimeoutGames(passedGameCount)
+        return remainedSeconds
     }
 
-    private fun updateearnablePointByTimeoutGames(passedGameCount: Int) {
+    private fun updateEarnablePointByTimeoutGames(passedGameCount: Int) {
         (1..passedGameCount).forEach { _ ->
             // TODO: 포인트 획득 전략 정해지면 다시 구현
             this.earnablePoint -= this.earnablePoint / 10

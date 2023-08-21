@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.game.dto.res.BaseballResponse
 import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
 import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.dto.res.GameRankResponse
+import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.config.security.annotation.LoginMember
 import jakarta.validation.Valid
@@ -42,7 +43,7 @@ class GameController(
         @RequestBody @Valid request: BaseballStartRequest
     ): ResponseEntity<BaseballResponse> {
         val earnablePoint = baseballService.start(requestMember, request.bettingPoint)
-        return ResponseEntity.ok(BaseballResponse(emptyList(), earnablePoint))
+        return ResponseEntity.ok(BaseballResponse(emptyList(), earnablePoint, SECOND_PER_GAME))
     }
 
     @PostMapping("/baseball/guess")
@@ -50,19 +51,19 @@ class GameController(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballGuessRequest
     ): ResponseEntity<BaseballResponse> {
-        val (results, earnablePoint) = baseballService.guess(requestMember, request.guessNumber)
+        val (results, earnablePoint, remainedSeconds) = baseballService.guess(requestMember, request.guessNumber)
         return ResponseEntity.ok(BaseballResponse(results.map { i ->
             if (i == null) null else BaseballResponse.GuessResultResponse(i)
-        }, earnablePoint))
+        }, earnablePoint, remainedSeconds))
     }
 
     @GetMapping("/baseball/result")
     fun getBaseballResult(
         @LoginMember requestMember: Member
     ): ResponseEntity<BaseballResponse> {
-        val (results, earnablePoint) = baseballService.getResult(requestMember)
+        val (results, earnablePoint, remainedSeconds) = baseballService.getResult(requestMember)
         return ResponseEntity.ok(BaseballResponse(results.map { i ->
             if (i == null) null else BaseballResponse.GuessResultResponse(i)
-        }, earnablePoint))
+        }, earnablePoint, remainedSeconds))
     }
 }

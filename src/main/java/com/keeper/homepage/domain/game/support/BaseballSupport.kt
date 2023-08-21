@@ -12,15 +12,16 @@ class BaseballSupport {
         fun getPassedGameCount(
             playedRoundCount: Int,
             lastGuessTime: LocalDateTime,
-        ): Int {
+        ): Pair<Int, Int> {
             val now = LocalDateTime.now()
             val passedSecond = now.toEpochSecond(UTC) - lastGuessTime.toEpochSecond(UTC)
             // 마지막으로 플레이 한 시간이 너무 오래 지나 list에 너무 많은 값이 들어가는걸 방지
             val passedGameCount = passedSecond / SECOND_PER_GAME
+            val remainedRoundSeconds = SECOND_PER_GAME - passedSecond % SECOND_PER_GAME - 1 // 버림값 1초
             return if (passedGameCount < TRY_COUNT - playedRoundCount) {
-                passedGameCount.toInt()
+                Pair(passedGameCount.toInt(), remainedRoundSeconds.toInt())
             } else {
-                TRY_COUNT - playedRoundCount
+                Pair(TRY_COUNT - playedRoundCount, 0)
             }
         }
 
