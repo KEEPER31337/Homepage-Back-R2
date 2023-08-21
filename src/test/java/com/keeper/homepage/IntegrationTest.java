@@ -26,6 +26,7 @@ import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
+import com.keeper.homepage.domain.election.ElectionCandidateTestHelper;
 import com.keeper.homepage.domain.election.ElectionTestHelper;
 import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
 import com.keeper.homepage.domain.election.application.AdminElectionService;
@@ -411,6 +412,9 @@ public class IntegrationTest {
 
   @Autowired
   protected ElectionVoterTestHelper electionVoterTestHelper;
+
+  @Autowired
+  protected ElectionCandidateTestHelper electionCandidateTestHelper;
 
   @Autowired
   protected CtfTeamTestHelper ctfTeamTestHelper;
