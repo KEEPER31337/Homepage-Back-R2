@@ -19,12 +19,15 @@ public class Link {
   @Embedded
   private NotionLink notionLink;
 
+  private String etcTitle;
+
   private String etcLink;
 
   @Builder
-  private Link(GitLink gitLink, NotionLink notionLink, String etcLink) {
+  private Link(GitLink gitLink, NotionLink notionLink, String etcTitle, String etcLink) {
     this.gitLink = gitLink;
     this.notionLink = notionLink;
+    this.etcTitle = etcTitle;
     this.etcLink = etcLink;
   }
 

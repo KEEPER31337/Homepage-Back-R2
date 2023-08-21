@@ -4,8 +4,6 @@ import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.ST
 import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_TITLE_LENGTH;
 import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_INVALID;
 import static com.keeper.homepage.domain.study.entity.embedded.GitLink.GIT_LINK_REGEX;
-import static com.keeper.homepage.domain.study.entity.embedded.NotionLink.NOTION_LINK_INVALID;
-import static com.keeper.homepage.domain.study.entity.embedded.NotionLink.NOTION_LINK_REGEX;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.study.entity.Study;
@@ -47,8 +45,10 @@ public class StudyUpdateRequest {
   private String gitLink;
 
   @Nullable
-  @Pattern(regexp = NOTION_LINK_REGEX, message = NOTION_LINK_INVALID)
   private String notionLink;
+
+  @Nullable
+  private String etcTitle;
 
   @Nullable
   private String etcLink;
@@ -62,6 +62,7 @@ public class StudyUpdateRequest {
         .link(Link.builder()
             .gitLink(gitLink == null ? null : GitLink.from(gitLink))
             .notionLink(notionLink == null ? null : NotionLink.from(notionLink))
+            .etcTitle(etcTitle)
             .etcLink(etcLink)
             .build())
         .build();

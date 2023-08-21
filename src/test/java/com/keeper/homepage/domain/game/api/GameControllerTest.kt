@@ -1,9 +1,10 @@
 package com.keeper.homepage.domain.game.api
 
 import com.keeper.homepage.domain.game.application.*
-import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
+import com.keeper.homepage.domain.game.dto.res.BaseballStatus
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
+import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
 import com.keeper.homepage.global.config.security.data.JwtType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -72,36 +73,90 @@ class GameControllerTest : GameApiTestHelper() {
                             fieldWithPath("tryCount").description("라운드 수"),
                             fieldWithPath("maxBettingPoint").description("최대 베팅 포인트"),
                             fieldWithPath("minBettingPoint").description("최소 베팅 포인트"),
-
-                            )
+                            fieldWithPath("maxPlayTime").description("최대 플레이 가능 횟수"),
+                        )
                     )
                 )
         }
 
         @Test
-        fun `야구게임을 오늘 안했으면 false가 나와야 한다`() {
-            callBaseballIsAlreadyPlayed()
+        fun `야구게임을 오늘 안했으면 NOT_START가 나와야 한다`() {
+            callBaseballGetStatus()
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$").value(false))
+                .andExpect(jsonPath("$.status").value("NOT_START"))
                 .andDo(
                     document(
-                        "baseball-is-already-played",
+                        "baseball-get-status",
                         requestCookies(
                             cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
                             cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
                         ),
+                        responseFields(
+                            fieldWithPath("status").description(
+                                BaseballStatus.values().map { it.name } + " 중 하나로 내려갑니다."
+                            ),
+                            fieldWithPath("baseballPerDay").description("현재 야구게임 플레이 횟수 (시작을 안했으면 0, 했으면 1 이상)"),
+                        )
                     )
                 )
         }
 
         @Test
-        fun `야구게임을 오늘 했으면 true가 나와야 한다`() {
-            (1..BASEBALL_MAX_PLAYTIME).forEach { _ -> gameStart() }
+        fun `야구게임을 시작했으면 PLAYING이 나와야 한다`() {
+            gameStart()
+            baseballService.saveBaseballResultInRedis(
+                player.id,
+                BaseballResultEntity(
+                    "1234",
+                    1000,
+                    mutableListOf(),
+                    2000
+                ),
+                1,
+            )
 
-            callBaseballIsAlreadyPlayed()
+            callBaseballGetStatus()
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$").value(true))
+                .andExpect(jsonPath("$.status").value("PLAYING"))
+        }
+
+        @Test
+        fun `야구게임을 시작했고, 9판 모두 했으면 END가 나와야 한다`() {
+            gameStart()
+            baseballService.saveBaseballResultInRedis(
+                player.id,
+                BaseballResultEntity(
+                    "1234",
+                    1000,
+                    mutableListOf(null, null, null, null, null, null, null, null, null),
+                    2000
+                ),
+                1,
+            )
+
+            callBaseballGetStatus()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.status").value("END"))
+        }
+
+        @Test
+        fun `야구게임을 시작했고, 4strike를 했으면 END가 나와야 한다`() {
+            gameStart()
+            baseballService.saveBaseballResultInRedis(
+                player.id,
+                BaseballResultEntity(
+                    "1234",
+                    1000,
+                    mutableListOf(null, null, GuessResultEntity("1234", 4, 0)),
+                    2000
+                ),
+                1,
+            )
+
+            callBaseballGetStatus()
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.status").value("END"))
         }
 
         @Test
@@ -139,6 +194,7 @@ class GameControllerTest : GameApiTestHelper() {
                     responseFields(
                         fieldWithPath("results").description("start API에선 빈 배열로 내려갑니다."),
                         fieldWithPath("earnablePoint").description("처음 할당된 획득할 포인트"),
+                        fieldWithPath("remainedSecond").description("이번 라운드 남은 초. 이 API에선 항상 ${SECOND_PER_GAME}으로 반환됩니다."),
                     )
                 )
             )
@@ -207,6 +263,7 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("results[].strike").description("strike"),
                         fieldWithPath("results[].ball").description("ball"),
                         fieldWithPath("earnablePoint").description("획득한 포인트 (마지막 게임이 아니면 0)"),
+                        fieldWithPath("remainedSecond").description("이번 라운드 남은 초. 이 API에선 항상 0으로 반환됩니다."),
                     ),
                 )
             )
@@ -313,6 +370,7 @@ class GameControllerTest : GameApiTestHelper() {
                         responseFields(
                             subsectionWithPath("results").description("타임아웃난 round는 null"),
                             fieldWithPath("earnablePoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
+                            fieldWithPath("remainedSecond").description("이번 라운드 남은 초. ms 단위는 버림해서 내려갑니다."),
                         ),
                     )
                 )

@@ -57,6 +57,7 @@ import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.member.MemberTestHelper;
 import com.keeper.homepage.domain.member.application.MemberJobService;
+import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -365,6 +366,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected AdminElectionService adminElectionService;
+
+  @SpyBean
+  protected MemberProfileService memberProfileService;
 
   /******* Helper *******/
   @SpyBean

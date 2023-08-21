@@ -13,6 +13,7 @@ import lombok.Getter;
 public class CommentResponse {
 
   private Long commentId;
+  private Long writerId;
   private String writerName;
   private String writerThumbnailPath;
   private String content;
@@ -26,6 +27,7 @@ public class CommentResponse {
   public static CommentResponse from(Comment comment, boolean isLike, boolean isDislike) {
     return CommentResponse.builder()
         .commentId(comment.getId())
+        .writerId(comment.getMember().getId())
         .writerName(comment.getMember().getRealName())
         .writerThumbnailPath(comment.getWriterThumbnailPath())
         .content(comment.getContent())

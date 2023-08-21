@@ -5,7 +5,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 

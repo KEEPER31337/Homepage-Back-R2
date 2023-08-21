@@ -1,11 +1,12 @@
 package com.keeper.homepage.domain.study.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_HEAD_MEMBER_CANNOT_LEAVE;
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_LINK_NEED;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.study.application.convenience.StudyDeleteService;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
@@ -29,8 +30,10 @@ public class StudyService {
   private final StudyRepository studyRepository;
   private final ThumbnailUtil thumbnailUtil;
   private final StudyFindService studyFindService;
+  private final StudyDeleteService studyDeleteService;
   private final MemberFindService memberFindService;
 
+  @Transactional
   public void create(Study study, MultipartFile thumbnail) {
     checkLink(study);
     saveStudyThumbnail(study, thumbnail);
@@ -49,13 +52,14 @@ public class StudyService {
     study.changeThumbnail(savedThumbnail);
   }
 
+  @Transactional
   public void delete(Member member, long studyId) {
     Study study = studyFindService.findById(studyId);
 
     if (!member.isHeadMember(study)) {
       throw new BusinessException(study.getId(), "study", STUDY_INACCESSIBLE);
     }
-    studyRepository.delete(study);
+    studyDeleteService.delete(study);
   }
 
   public StudyDetailResponse getStudy(long studyId) {
@@ -96,6 +100,15 @@ public class StudyService {
     Study study = studyFindService.findById(studyId);
     Member member = memberFindService.findById(memberId);
     member.join(study);
+  }
+
+  @Transactional
+  public void joinStudy(long studyId, List<Long> memberIds) {
+    Study study = studyFindService.findById(studyId);
+    memberIds.forEach(memberId -> {
+      Member member = memberFindService.findById(memberId);
+      member.join(study);
+    });
   }
 
   @Transactional

@@ -145,12 +145,14 @@ public class PostApiTestHelper extends IntegrationTest {
     return new FieldDescriptor[]{
         fieldWithPath("id").description("게시글 ID"),
         fieldWithPath("title").description("게시글 제목"),
+        fieldWithPath("writerId").description("게시글 작성자 ID"),
         fieldWithPath("writerName").description("게시글 작성자 실명"),
-        fieldWithPath("writerThumbnailPath").description("게시글 작성자 썸네일 주소"),
+        fieldWithPath("writerThumbnailPath").description("게시글 작성자 썸네일 주소").optional(),
         fieldWithPath("visitCount").description("게시글 조회수"),
         fieldWithPath("commentCount").description("게시글 댓글수"),
         fieldWithPath("isSecret").description("비밀글 여부"),
-        fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
+        fieldWithPath("thumbnailPath").description("게시글 썸네일 주소").optional(),
+        fieldWithPath("likeCount").description("게시글 좋아요 수"),
         fieldWithPath("registerTime").description("게시글 등록 시간")
     };
   }
@@ -160,12 +162,12 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("id").description("게시글 ID"),
         fieldWithPath("title").description("게시글 제목"),
         fieldWithPath("writerName").description("게시글 작성자 실명"),
-        fieldWithPath("writerThumbnailPath").description("게시글 작성자 썸네일 주소"),
+        fieldWithPath("writerThumbnailPath").description("게시글 작성자 썸네일 주소").optional(),
         fieldWithPath("categoryId").description("카테고리 ID"),
         fieldWithPath("categoryName").description("카테고리 이름"),
         fieldWithPath("visitCount").description("게시글 조회수"),
         fieldWithPath("isSecret").description("비밀글 여부"),
-        fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
+        fieldWithPath("thumbnailPath").description("게시글 썸네일 주소").optional(),
         fieldWithPath("registerTime").description("게시글 등록 시간")
     };
   }

@@ -11,6 +11,7 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
@@ -24,9 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
+import com.keeper.homepage.domain.study.dto.request.StudyJoinRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
+import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -96,8 +100,10 @@ public class StudyControllerTest extends StudyApiTestHelper {
                       .description("스터디 학기를 입력해주세요."),
                   fieldWithPath("gitLink").attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
-                  fieldWithPath("notionLink").attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
-                      .description("스터디 노트 링크를 입력해주세요.").optional(),
+                  fieldWithPath("notionLink")
+                      .description("스터디 노션 링크를 입력해주세요.").optional(),
+                  fieldWithPath("etcTitle")
+                      .description("스터디 기타 자료 제목을 입력해주세요.").optional(),
                   fieldWithPath("etcLink")
                       .description("스터디 기타 링크를 입력해주세요.").optional()
               ),
@@ -118,26 +124,6 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .season(1)
           .gitLink("https://www.youtube.com/")
           .notionLink("https://www.notion.so/Java-Spring")
-          .etcLink("etc.com")
-          .build();
-
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
-      mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
-          .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("노션 링크가 아닌 링크를 입력할 경우 스터디 생성은 실패한다.")
-    public void 노션_링크가_아닌_링크를_입력할_경우_스터디_생성은_실패한다() throws Exception {
-      StudyCreateRequest request = StudyCreateRequest.builder()
-          .title("자바 스터디")
-          .information("자바 스터디 입니다")
-          .year(2023)
-          .season(1)
-          .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
-          .notionLink("https://www.youtube.com/")
           .etcLink("etc.com")
           .build();
 
@@ -206,9 +192,9 @@ public class StudyControllerTest extends StudyApiTestHelper {
               responseFields(
                   fieldWithPath("information").description("스터디 정보"),
                   fieldWithPath("members[]").description("스터디원 실명 리스트"),
-                  fieldWithPath("gitLink").description("스터디 깃허브 링크 주소"),
-                  fieldWithPath("notionLink").description("스터디 노트(노션) 링크 주소"),
-                  fieldWithPath("etcLink").description("스터디 기타 링크 주소")
+                  fieldWithPath("links[]").description("스터디 링크 리스트"),
+                  fieldWithPath("links[].title").description("스터디 링크 제목").optional(),
+                  fieldWithPath("links[].content").description("스터디 링크").optional()
               )));
     }
 
@@ -274,11 +260,9 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   field("gitLink", "깃허브 링크")
                       .attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
                       .optional(),
-                  field("notionLink", "노션 링크")
-                      .attributes(new Attribute("format", "\"https://www.notion.so\"으로 시작"))
-                      .optional(),
-                  field("etcLink", "기타 링크")
-                      .optional()
+                  field("notionLink", "노션 링크").optional(),
+                  field("etcTitle", "기타 링크 이름").optional(),
+                  field("etcLink", "기타 링크").optional()
               ),
               responseHeaders(
                   headerWithName("Location").description("수정한 스터디를 불러오는 URI 입니다.")
@@ -340,6 +324,61 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   )
               )
           );
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 스터디원 다중 추가는 성공한다.")
+    public void 유효한_요청일_경우_스터디원_다중_추가는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(StudyController.class, "joinStudy");
+
+      StudyJoinRequest request = StudyJoinRequest.builder()
+          .memberIds(List.of(member.getId(), other.getId()))
+          .build();
+
+      mockMvc.perform(post("/studies/{studyId}/members", studyId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isCreated())
+          .andDo(document("members-join-study",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("studyId").description("스터디 ID")
+              ),
+              requestFields(
+                  field("memberIds[]", "회원 ID 리스트")
+              )));
+    }
+
+    @Test
+    @DisplayName("회원 ID 리스트가 null이면 스터디원 다중 추가는 실패한다.")
+    public void 회원_ID_리스트가_null이면_스터디원_다중_추가는_실패한다() throws Exception {
+      StudyJoinRequest request = StudyJoinRequest.builder()
+          .memberIds(null)
+          .build();
+
+      mockMvc.perform(post("/studies/{studyId}/members", studyId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("회원 ID 리스트가 비어있으면 스터디원 다중 추가는 실패한다.")
+    public void 회원_ID_리스트가_비어있으면_스터디원_다중_추가는_실패한다() throws Exception {
+      StudyJoinRequest request = StudyJoinRequest.builder()
+          .memberIds(List.of())
+          .build();
+
+      mockMvc.perform(post("/studies/{studyId}/members", studyId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
     }
   }
 

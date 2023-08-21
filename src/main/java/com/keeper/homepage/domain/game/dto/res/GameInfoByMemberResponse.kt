@@ -5,4 +5,5 @@ data class GameInfoByMemberResponse(
     val tryCount: Int,
     val maxBettingPoint: Long,
     val minBettingPoint: Long,
+    val maxPlayTime: Int,
 )

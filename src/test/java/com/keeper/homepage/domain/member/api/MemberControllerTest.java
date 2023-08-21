@@ -15,16 +15,21 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.responseH
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
@@ -41,9 +46,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 class MemberControllerTest extends MemberApiTestHelper {
 
@@ -221,34 +228,118 @@ class MemberControllerTest extends MemberApiTestHelper {
   class UpdateProfile {
     private Member member;
     private String memberToken;
-
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
       member = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     }
+  @Test
+  @DisplayName("자신의 프로필을 수정 성공한다.")
+  public void should_success_myProfile() throws Exception {
+    String securedValue = getSecuredValue(MemberController.class, "updateProfile");
+
+    ProfileUpdateRequest request = ProfileUpdateRequest.builder()
+        .realName(RealName.from("바뀐이름"))
+        .studentId(StudentId.from("202055589"))
+        .birthday(LocalDate.parse("2021-01-30"))
+        .build();
+
+    callUpdateProfileApi(memberToken, request)
+        .andExpect(status().isCreated())
+        .andDo(document("update-profile",
+            requestCookies(
+                cookieWithName(ACCESS_TOKEN.getTokenName())
+                    .description("ACCESS TOKEN %s".formatted(securedValue))
+            ),
+            requestFields(
+                fieldWithPath("realName").description("실명을 입력해주세요. (" + REAL_NAME_INVALID + ")"),
+                fieldWithPath("studentId").description("학번을 입력해주세요. (" + STUDENT_ID_INVALID + ")"),
+                fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
+            )));
+  }
+
+  @Nested
+  @DisplayName("회원 프로필 썸네일 변경 테스트")
+  class MemberThumbnailTest {
+
+    private Member member;
+    private MockMultipartFile thumbnail;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+      thumbnail = thumbnailTestHelper.getThumbnailFile();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
     @Test
-    @DisplayName("자신의 프로필을 수정 성공한다.")
-    public void should_success_myProfile() throws Exception {
-      String securedValue = getSecuredValue(MemberController.class, "updateProfile");
-
-      ProfileUpdateRequest request = ProfileUpdateRequest.builder()
-          .realName(RealName.from("바뀐이름"))
-          .studentId(StudentId.from("202055589"))
-          .birthday(LocalDate.parse("2021-01-30"))
-          .build();
-
-      callUpdateProfileApi(memberToken,request)
-          .andExpect(status().isCreated())
-          .andDo(document("update-profile",
+    @DisplayName("유효한 요청일 경우 회원의 프로필이 수정되어야 한다.")
+    void 유효한_요청일_경우_회원의_프로필이_수정되어야_한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateProfileThumbnail");
+      mockMvc.perform(multipart("/members/thumbnail")
+              .file(thumbnail)
+              .with(request -> {
+                request.setMethod("PATCH");
+                return request;
+              })
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.MULTIPART_FORM_DATA))
+          .andExpect(status().isNoContent())
+          .andDo(document("update-member-thumbnail",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
                       .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
-              requestFields(
-                  fieldWithPath("realName").description("실명을 입력해주세요. ("+ REAL_NAME_INVALID + ")"),
-                  fieldWithPath("studentId").description("학번을 입력해주세요. ("+ STUDENT_ID_INVALID + ")"),
-                  fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
+              requestParts(
+                  partWithName("thumbnail").description("변경할 썸네일")
+              )));
+      }
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 프로필 조회")
+  class getMemberProfile {
+
+    private Member member, otherMember;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.generate();
+      otherMember = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("회원 프로필 조회를 성공해야 한다")
+    void 회원_프로필_조회를_성공해야_한다() throws Exception {
+      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
+
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/{memberId}/profile", member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andDo(print())
+          .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
+          .andExpect(jsonPath("$.followee[0].name").value("일일"))
+          .andDo(document("get-member-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("memberId")
+                      .description("조회하고자 하는 회원의 ID값")
+              ),
+              responseFields(
+                  getMemberProfileResponse()
               )));
     }
   }

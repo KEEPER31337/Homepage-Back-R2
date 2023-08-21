@@ -131,7 +131,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.id > :postId "
       + "AND p.category = :category "
       + "AND p.isTemp = false "
-      + "ORDER BY p.id DESC "
+      + "ORDER BY p.id ASC "
       + "LIMIT 1")
   Optional<Post> findNextPost(@Param("postId") Long postId, @Param("category") Category category);
 

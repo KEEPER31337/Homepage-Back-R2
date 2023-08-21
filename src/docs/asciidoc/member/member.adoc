@@ -136,3 +136,51 @@ include::{snippets}/unfollow-member/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/unfollow-member/http-response.adoc[]
+
+== *회원 썸네일 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-member-thumbnail/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-member-thumbnail/request-cookies.adoc[]
+
+==== Request Parts
+
+include::{snippets}/update-member-thumbnail/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-member-thumbnail/http-response.adoc[]
+
+== *회원 프로필 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-member-profile/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-member-profile/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-member-profile/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-member-profile/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-member-profile/response-fields.adoc[]

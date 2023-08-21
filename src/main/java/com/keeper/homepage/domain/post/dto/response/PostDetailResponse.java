@@ -17,6 +17,7 @@ public class PostDetailResponse {
   private Long categoryId;
   private String categoryName;
   private String title;
+  private Long writerId;
   private String writerName;
   private String writerThumbnailPath;
   private Integer visitCount;
@@ -46,6 +47,7 @@ public class PostDetailResponse {
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
         .title(post.getTitle())
+        .writerId(post.getMember().getId())
         .writerName(post.getMember().getRealName())
         .writerThumbnailPath(post.getMember().getThumbnailPath())
         .registerTime(post.getRegisterTime())
@@ -72,6 +74,7 @@ public class PostDetailResponse {
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
         .title(post.getTitle())
+        .writerId(1L)
         .writerName(writerName)
         .writerThumbnailPath(writerThumbnailPath)
         .registerTime(post.getRegisterTime())

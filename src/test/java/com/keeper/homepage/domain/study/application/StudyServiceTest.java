@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.study.application;
 
+import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -8,6 +9,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -72,6 +74,24 @@ public class StudyServiceTest extends IntegrationTest {
 
       assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isNotEmpty();
     }
+
+    @Test
+    @DisplayName("스터디원 다중 추가는 성공해야 한다.")
+    public void 스터디원_다중_추가는_성공해야_한다() throws Exception {
+      //given
+      Member other = memberTestHelper.generate();
+
+      //when
+      List<Long> memberIds = of(member.getId(), other.getId());
+      studyService.joinStudy(study.getId(), memberIds);
+
+      em.flush();
+      em.clear();
+
+      //then
+      assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isNotEmpty();
+      assertThat(studyHasMemberRepository.findByStudyAndMember(study, other)).isNotEmpty();
+    }
   }
 
   @Nested
@@ -92,5 +112,29 @@ public class StudyServiceTest extends IntegrationTest {
 
       assertThat(studyHasMemberRepository.findByStudyAndMember(study, other)).isEmpty();
     }
+  }
+
+  @Nested
+  @DisplayName("스터디 삭제")
+  class DeleteStudy {
+
+    @Test
+    @DisplayName("스터디를 삭제하면 스터디원도 모두 삭제되어야 한다.")
+    public void 스터디를_삭제하면_스터디원도_모두_삭제되어야_한다() throws Exception {
+      //given
+      long studyId = study.getId();
+
+      //when
+      studyService.delete(member, studyId);
+      em.flush();
+      em.clear();
+
+      //then
+      member = memberRepository.findById(member.getId()).orElseThrow();
+
+      assertThat(studyRepository.findById(studyId)).isEmpty();
+      assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isEmpty();
+    }
+
   }
 }
