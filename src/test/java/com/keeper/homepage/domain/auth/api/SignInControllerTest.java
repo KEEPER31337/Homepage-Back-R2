@@ -77,7 +77,8 @@ class SignInControllerTest extends IntegrationTest {
                   fieldWithPath("password").description("비밀번호")
               ),
               responseFields(
-                  fieldWithPath("id").description("회원 아이디"),
+                  fieldWithPath("memberId").description("회원 아이디"),
+                  fieldWithPath("loginId").description("로그인 아이디"),
                   fieldWithPath("emailAddress").description("이메일"),
                   fieldWithPath("realName").description("실명"),
                   fieldWithPath("birthday").description("생일"),
