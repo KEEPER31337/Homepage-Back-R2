@@ -351,5 +351,22 @@ class MemberControllerTest extends MemberApiTestHelper {
                   fieldWithPath("memberIds").description("하나 이상의 회원 ID")
               )));
     }
+
+    @Test
+    @DisplayName("회원 ID가 없을 때 타입 변경은 실패해야 한다.")
+    public void 회원_ID가_없을_때_타입_변경은_실패해야_한다() throws Exception {
+      Set<Long> memberSet = new HashSet<>();
+
+      UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
+          .memberIds(memberSet)
+          .build();
+
+      mockMvc.perform(patch("/members/types/{typeId}", typeId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andDo(print())
+          .andExpect(status().isBadRequest());
+    }
   }
 }
