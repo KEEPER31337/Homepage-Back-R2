@@ -234,7 +234,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     }
   @Test
-  @DisplayName("자신의 프로필을 수정 성공한다.")
+  @DisplayName("유효한 요청일 경우 회원의 프로필 내용을 수정 한다.")
   public void should_success_myProfile() throws Exception {
     String securedValue = getSecuredValue(MemberController.class, "updateProfile");
 
