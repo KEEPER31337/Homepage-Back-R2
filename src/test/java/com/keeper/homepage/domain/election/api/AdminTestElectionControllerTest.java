@@ -14,6 +14,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
@@ -200,6 +201,18 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
                   fieldWithPath("description").description("후보자 설명"),
                   fieldWithPath("memberJobId").description("회원 역할의 ID")
               )));
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 요청일 경우 선거 후보자 등록에 실패한다.")
+    public void 유효하지_않은_요청일_경우_선거_후보자_등록에_실패한다() throws Exception {
+      ElectionRegisterRequest request = ElectionRegisterRequest.builder()
+          .description("후보")
+          .memberJobId("4")
+          .build();
+
+      callRegisterCandidateApi(adminToken, electionId, candidateId, request)
+          .andExpect(status().isBadRequest());
     }
   }
 
