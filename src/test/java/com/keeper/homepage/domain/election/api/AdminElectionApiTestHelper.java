@@ -9,6 +9,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
@@ -40,6 +41,15 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
   ResultActions callGetElectionsApi(String adminToken) throws Exception {
     return mockMvc.perform(get("/admin/elections")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+  }
+
+  ResultActions callRegisterCandidateApi(String adminToken, long electionId, long candidateId,
+      ElectionRegisterRequest request) throws Exception {
+    return mockMvc.perform(post("/admin/elections/{electionId}/candidates/{candidateId}",
+        electionId, candidateId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .content(asJsonString(request))
+        .contentType(MediaType.APPLICATION_JSON));
   }
 
   FieldDescriptor[] getElectionResponse() {

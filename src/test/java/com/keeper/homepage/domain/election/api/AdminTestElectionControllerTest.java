@@ -17,6 +17,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -161,5 +162,46 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
               )));
     }
   }
+
+  @Nested
+  @DisplayName("선거 후보자 등록 테스트")
+  class ElectionRegisterCandidateTest {
+
+    private long electionId;
+    private long candidateId;
+
+    @BeforeEach
+    void setUp() {
+      electionId = electionTestHelper.generate().getId();
+      candidateId = memberTestHelper.generate().getId();
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 선거 후보자 등록에 성공한다.")
+    public void 유효한_요청일_경우_선거_후보자_등록에_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AdminElectionController.class, "registerCandidate");
+      ElectionRegisterRequest request = ElectionRegisterRequest.builder()
+          .description("후보")
+          .memberJobId("1")
+          .build();
+
+      callRegisterCandidateApi(adminToken, electionId, candidateId, request)
+          .andExpect(status().isCreated())
+          .andDo(document("register-candidate",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("electionId").description("등록된 선거의 ID"),
+                  parameterWithName("candidateId").description("등록할 후보자의 ID")
+              ),
+              requestFields(
+                  fieldWithPath("description").description("후보자 설명"),
+                  fieldWithPath("memberJobId").description("회원 역할의 ID")
+              )));
+    }
+  }
+
 }
 
