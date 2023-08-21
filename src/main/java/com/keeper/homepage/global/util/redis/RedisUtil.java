@@ -1,9 +1,13 @@
 package com.keeper.homepage.global.util.redis;
 
 
+import static java.time.ZoneOffset.UTC;
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -47,9 +51,11 @@ public class RedisUtil {
     return valueOperations.increment(key);
   }
 
-  public Long increment(String key) {
-    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-    return valueOperations.increment(key);
+  public long toMidNight() {
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime midnight = now.plusDays(1).truncatedTo(DAYS);
+    long secondsUntilMidnight = midnight.toEpochSecond(UTC) - now.toEpochSecond(UTC);
+    return secondsUntilMidnight * 1000;
   }
 
   public void deleteData(String key) {
