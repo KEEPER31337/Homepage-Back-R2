@@ -365,7 +365,6 @@ class MemberControllerTest extends MemberApiTestHelper {
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
               .contentType(MediaType.APPLICATION_JSON))
-          .andDo(print())
           .andExpect(status().isBadRequest());
     }
   }

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = PRIVATE)
 public class UpdateMemberTypeRequest {
 
-  @Size(min = 1)
+  @Size(min = 1, message = "하나 이상의 회원 ID를 입력해주세요.")
   @NotNull
   private Set<Long> memberIds;
 
