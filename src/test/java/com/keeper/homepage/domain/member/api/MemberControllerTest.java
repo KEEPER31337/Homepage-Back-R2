@@ -226,36 +226,41 @@ class MemberControllerTest extends MemberApiTestHelper {
   @Nested
   @DisplayName("프로필 수정")
   class UpdateProfile {
+
     private Member member;
     private String memberToken;
+
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     }
-  @Test
-  @DisplayName("유효한 요청일 경우 회원의 프로필 내용을 수정 한다.")
-  public void should_success_myProfile() throws Exception {
-    String securedValue = getSecuredValue(MemberController.class, "updateProfile");
 
-    ProfileUpdateRequest request = ProfileUpdateRequest.builder()
-        .realName(RealName.from("바뀐이름"))
-        .studentId(StudentId.from("202055589"))
-        .birthday(LocalDate.parse("2021-01-30"))
-        .build();
+    @Test
+    @DisplayName("유효한 요청일 경우 회원의 프로필 내용을 수정 한다.")
+    public void should_success_myProfile() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateProfile");
 
-    callUpdateProfileApi(memberToken, request)
-        .andExpect(status().isCreated())
-        .andDo(document("update-profile",
-            requestCookies(
-                cookieWithName(ACCESS_TOKEN.getTokenName())
-                    .description("ACCESS TOKEN %s".formatted(securedValue))
-            ),
-            requestFields(
-                fieldWithPath("realName").description("실명을 입력해주세요. (" + REAL_NAME_INVALID + ")"),
-                fieldWithPath("studentId").description("학번을 입력해주세요. (" + STUDENT_ID_INVALID + ")"),
-                fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
-            )));
+      ProfileUpdateRequest request = ProfileUpdateRequest.builder()
+          .realName(RealName.from("바뀐이름"))
+          .studentId(StudentId.from("202055589"))
+          .birthday(LocalDate.parse("2021-01-30"))
+          .build();
+
+      callUpdateProfileApi(memberToken, request)
+          .andExpect(status().isCreated())
+          .andDo(document("update-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("realName").description("실명을 입력해주세요. (" + REAL_NAME_INVALID + ")"),
+                  fieldWithPath("studentId").description(
+                      "학번을 입력해주세요. (" + STUDENT_ID_INVALID + ")"),
+                  fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
+              )));
+    }
   }
 
   @Nested
@@ -294,7 +299,6 @@ class MemberControllerTest extends MemberApiTestHelper {
               requestParts(
                   partWithName("thumbnail").description("변경할 썸네일")
               )));
-      }
     }
   }
 
@@ -315,8 +319,10 @@ class MemberControllerTest extends MemberApiTestHelper {
     @Test
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      memberService.follow(member,
+          memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(),
+          member.getId());
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
       em.flush();
