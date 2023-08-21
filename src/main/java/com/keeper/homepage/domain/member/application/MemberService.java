@@ -83,7 +83,11 @@ public class MemberService {
 
     memberIds.stream()
         .map(memberFindService::findById)
-        .map(Member::getMemberType)
         .forEach(m -> m.updateType(findMemberType));
+
+//    memberIds.stream()
+//        .map(memberFindService::findById)
+//        .map(Member::getMemberType)
+//        .forEach(m -> m.updateType(findMemberType));
   }
 }

@@ -7,7 +7,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
+import com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -51,4 +54,37 @@ public class MemberServiceTest extends IntegrationTest {
           .hasMessageContaining(MEMBER_CANNOT_FOLLOW_ME.getMessage());
     }
   }
+
+  @Nested
+  @DisplayName("회원 타입 변경 테스트")
+  class UpdateMemberTypeTest {
+
+    private Member member, other;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+      other = memberTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("회원 타입 변경에 성공해야 한다.")
+    public void 회원_타입_변경에_성공해야_한다() {
+      Set<Long> memberSet = new HashSet<>();
+      memberSet.add(member.getId());
+      memberSet.add(other.getId());
+
+      memberService.updateMemberType(memberSet, 3);
+
+      em.flush();
+      em.clear();
+
+      Member findMember = memberRepository.findById(member.getId()).orElseThrow();
+      Member findOtherMember = memberRepository.findById(other.getId()).orElseThrow();
+
+      assertThat(findMember.getMemberType().getType()).isEqualTo(MemberTypeEnum.휴면회원);
+      assertThat(findOtherMember.getMemberType().getType()).isEqualTo(MemberTypeEnum.휴면회원);
+    }
+  }
+
 }

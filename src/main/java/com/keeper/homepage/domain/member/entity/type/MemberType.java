@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.Arrays;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,9 +72,12 @@ public class MemberType {
   }
 
   public void updateType(MemberType memberType) {
+
     this.type = Arrays.stream(MemberTypeEnum.values())
         .filter(type -> type.getId() == memberType.getId())
         .findFirst()
         .orElseThrow();
+
+    System.out.println("this.type = " + this.type);
   }
 }

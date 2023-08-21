@@ -398,4 +398,8 @@ public class Member {
         .map(MemberJobType::name)
         .toList();
   }
+
+  public void updateType(MemberType memberType) {
+    this.memberType = memberType;
+  }
 }
