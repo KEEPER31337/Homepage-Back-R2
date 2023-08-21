@@ -108,3 +108,30 @@ include::{snippets}/get-elections/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-elections/response-fields.adoc[]
+
+== *선거 후보자 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/register-candidate/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/register-candidate/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/register-candidate/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/register-candidate/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/register-candidate/http-response.adoc[]
+
