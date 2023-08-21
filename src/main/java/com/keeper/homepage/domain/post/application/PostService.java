@@ -231,13 +231,15 @@ public class PostService {
   }
 
   @Transactional
-  public void delete(Member member, long postId) {
+  public String delete(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
+    String categoryName = post.getCategoryName();
 
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     postDeleteService.delete(post);
+    return categoryName;
   }
 
   @Transactional

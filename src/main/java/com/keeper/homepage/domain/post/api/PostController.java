@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
+import com.keeper.homepage.domain.post.dto.response.CategoryResponse;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
 import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
@@ -140,13 +141,13 @@ public class PostController {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping("/{postId}")
-  public ResponseEntity<Void> deletePost(
+  @GetMapping("/{postId}/delete")
+  public ResponseEntity<CategoryResponse> deletePost(
       @LoginMember Member member,
       @PathVariable long postId
   ) {
-    postService.delete(member, postId);
-    return ResponseEntity.noContent().build();
+    String categoryName = postService.delete(member, postId);
+    return ResponseEntity.ok(new CategoryResponse(categoryName));
   }
 
   @PatchMapping("/{postId}/likes")
