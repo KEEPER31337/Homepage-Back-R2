@@ -2,13 +2,19 @@ package com.keeper.homepage.domain.election.application;
 
 
 import com.keeper.homepage.domain.election.application.convenience.ElectionDeleteService;
+import com.keeper.homepage.domain.election.application.convenience.ValidCandidateService;
 import com.keeper.homepage.domain.election.application.convenience.ValidElectionFindService;
+import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.election.entity.Election;
+import com.keeper.homepage.domain.election.entity.ElectionCandidate;
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,9 +28,15 @@ public class AdminElectionService {
 
   private final ElectionRepository electionRepository;
 
+  private final ElectionCandidateRepository electionCandidateRepository;
+
   private final ValidElectionFindService validElectionFindService;
 
+  private final ValidCandidateService validCandidateService;
+
   private final ElectionDeleteService electionDeleteService;
+
+  private final MemberFindService memberFindService;
 
   @Transactional
   public void createElection(Member member, String name, String description, Boolean isAvailable) {
@@ -59,6 +71,49 @@ public class AdminElectionService {
   public Page<ElectionResponse> getElections(Pageable pageable) {
     return validElectionFindService.findAll(pageable)
         .map(ElectionResponse::from);
+  }
+
+  @Transactional
+  public void registerCandidate(String description, Long memberJobId, long electionId, long candidateId) {
+    Election election = validElectionFindService.findById(electionId);
+    Member member = memberFindService.findById(candidateId);
+    MemberJob memberJob = validCandidateService.findJobById(memberJobId);
+
+    ElectionCandidate electionCandidate = ElectionCandidate.builder()
+        .election(election)
+        .member(member)
+        .memberJob(memberJob)
+        .description(description)
+        .build();
+
+    electionCandidateRepository.save(electionCandidate);
+  }
+
+  @Transactional
+  public void registerCandidates(List<Long> candidateIds, String description, Long memberJobId, long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+
+    for (Long candidateId : candidateIds) {
+      Member member = memberFindService.findById(candidateId);
+      MemberJob memberJob = validCandidateService.findJobById(memberJobId);
+
+      ElectionCandidate electionCandidate = ElectionCandidate.builder()
+          .election(election)
+          .member(member)
+          .memberJob(memberJob)
+          .description(description)
+          .build();
+
+      electionCandidateRepository.save(electionCandidate);
+    }
+  }
+
+  @Transactional
+  public void deleteCandidate(long electionId, long candidateId) {
+    ElectionCandidate electionCandidate = validCandidateService.findById(candidateId);
+    validElectionFindService.findById(electionId);
+
+    electionCandidateRepository.delete(electionCandidate);
   }
 
 }

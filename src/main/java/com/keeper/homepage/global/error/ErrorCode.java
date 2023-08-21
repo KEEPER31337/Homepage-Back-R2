@@ -89,6 +89,8 @@ public enum ErrorCode {
   // ELECTION
   ELECTION_NOT_FOUND("존재하지 않는 선거입니다.", HttpStatus.NOT_FOUND),
   ELECTION_CANNOT_DELETE("비공개 상태 선거만 삭제 가능합니다.", HttpStatus.BAD_REQUEST),
+  ELECTION_CANDIDATE_NOT_FOUND("해당 후보자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  ELECTION_CANDIDATE_CANNOT_REGISTER("해당 멤버 ID는 후보자 등록 불가합니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;
