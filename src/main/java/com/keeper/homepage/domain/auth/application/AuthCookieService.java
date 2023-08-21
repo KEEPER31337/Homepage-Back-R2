@@ -30,6 +30,7 @@ public class AuthCookieService {
 
   private void setTokenInCookie(HttpServletResponse httpResponse, String token, int expiredSeconds, String cookieName) {
     ResponseCookie cookie = ResponseCookie.from(cookieName, token)
+        .path("/")
         .sameSite("None")
         .httpOnly(true)
         .maxAge(expiredSeconds)

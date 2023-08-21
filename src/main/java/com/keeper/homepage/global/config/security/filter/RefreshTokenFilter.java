@@ -46,17 +46,15 @@ public class RefreshTokenFilter extends GenericFilterBean {
     if (isAccessExpiredAndRefreshValid) {
       Authentication auth = jwtTokenProvider.getAuthentication(refreshTokenDto.getToken());
       SecurityContextHolder.getContext().setAuthentication(auth);
-    }
 
-    filterChain.doFilter(request, response);
-
-    if (isAccessExpiredAndRefreshValid) {
       String authId = String.valueOf(jwtTokenProvider.getAuthId(refreshTokenDto.getToken()));
       String[] roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());
       HttpServletResponse httpResponse = (HttpServletResponse) response;
 
       authCookieService.setNewCookieInResponse(authId, roles, httpResponse);
     }
+
+    filterChain.doFilter(request, response);
   }
 
   private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto) {
