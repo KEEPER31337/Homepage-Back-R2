@@ -96,7 +96,7 @@ public class MemberController {
       @LoginMember Member member,
       @RequestBody ProfileUpdateRequest request
   ) {
-    memberService.updateProfile(member, request.toEntity());
+    memberProfileService.updateProfile(member, request.toEntity());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

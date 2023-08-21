@@ -75,18 +75,4 @@ public class MemberService {
         memberFindService.findById(memberId)
     );
   }
-
-  private void checkIsDuplicateStudentId(StudentId studentId) {
-    if (memberRepository.existsByProfileStudentId(studentId)) {
-      throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
-    }
-  }
-
-  public void updateProfile(Member member, Profile newProfile) {
-    if (!member.getProfile().getStudentId().equals(newProfile.getStudentId())) {
-      checkIsDuplicateStudentId(newProfile.getStudentId());
-    }
-    Profile profile = member.getProfile();
-    profile.update(newProfile);
-  }
 }
