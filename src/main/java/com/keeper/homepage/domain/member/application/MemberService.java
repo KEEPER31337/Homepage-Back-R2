@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.member.application;
 
 import static com.keeper.homepage.domain.member.application.convenience.MemberFindService.VIRTUAL_MEMBER_ID;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
+import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -13,6 +14,7 @@ import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileRespo
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
@@ -74,7 +76,14 @@ public class MemberService {
     );
   }
 
+  private void checkIsDuplicateStudentId(StudentId studentId) {
+    if (memberRepository.existsByProfileStudentId(studentId)) {
+      throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
+    }
+  }
+
   public void updateProfile(Member member, Profile newProfile) {
+    checkIsDuplicateStudentId(newProfile.getStudentId());
     Profile profile = member.getProfile();
     profile.update(newProfile);
   }
