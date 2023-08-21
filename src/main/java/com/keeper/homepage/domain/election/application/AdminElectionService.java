@@ -73,19 +73,19 @@ public class AdminElectionService {
   }
 
   @Transactional
-  public void registerCandidate(long electionId, long candidateId, String description, long memberJobId) {
+  public Long registerCandidate(long electionId, long candidateId, String description, long memberJobId) {
     Election election = validElectionFindService.findById(electionId);
     Member candidate = memberFindService.findById(candidateId);
     MemberJob memberJob = memberJobRepository.findById(memberJobId)
         .orElseThrow(() -> new BusinessException(memberJobId, "memberJobId", MEMBER_JOB_NOT_FOUND));
 
-    electionCandidateRepository.save(ElectionCandidate.builder()
+    return electionCandidateRepository.save(ElectionCandidate.builder()
         .election(election)
         .member(candidate)
         .memberJob(memberJob)
         .description(description)
         .voteCount(0L)
-        .build());
+        .build()).getId();
   }
 
 }

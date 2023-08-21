@@ -6,7 +6,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.election.entity.Election;
+import com.keeper.homepage.domain.election.entity.ElectionCandidate;
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.job.MemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -50,6 +56,42 @@ public class AdminElectionServiceTest extends IntegrationTest {
       assertThrows(BusinessException.class, () -> adminElectionService.deleteElection(electionId));
     }
 
+  }
+
+  @Nested
+  @DisplayName("선거 후보자 등록 테스트")
+  class RegisterCandidateTest {
+
+    private Election election;
+    private Member candidate;
+    private String description;
+
+    @BeforeEach
+    void setUp() {
+      election = electionTestHelper.generate();
+      candidate = memberTestHelper.generate();
+      description = "후보";
+    }
+
+    @Test
+    @DisplayName("선거 후보자 등록에 성공해야 한다.")
+    public void 선거_후보자_등록에_성공해야_한다() {
+      Long electionCandidateId = adminElectionService
+          .registerCandidate(election.getId(), candidate.getId(), description, 1);
+
+      em.flush();
+      em.clear();
+
+      ElectionCandidate findElectionCandidate = electionCandidateRepository.findById(electionCandidateId)
+          .orElseThrow();
+      MemberJob findMemberJob = memberJobRepository.findById(1L).orElseThrow();
+
+      assertThat(findElectionCandidate.getElection().getId()).isEqualTo(election.getId());
+      assertThat(findElectionCandidate.getMember().getId()).isEqualTo(candidate.getId());
+      assertThat(findElectionCandidate.getMemberJob()).isEqualTo(findMemberJob);
+      assertThat(findElectionCandidate.getDescription()).isEqualTo(description);
+      assertThat(findElectionCandidate.getVoteCount()).isEqualTo(0L);
+    }
   }
 
 }
