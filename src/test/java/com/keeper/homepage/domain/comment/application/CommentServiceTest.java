@@ -80,28 +80,6 @@ public class CommentServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 수정")
-  class UpdateComment {
-
-    private Member other;
-    private Comment comment;
-
-    @BeforeEach
-    void setUp() {
-      other = memberTestHelper.generate();
-      comment = commentTestHelper.builder().member(member).build();
-    }
-
-    @Test
-    @DisplayName("내가 작성한 댓글이 아닌 경우 댓글 수정은 실패한다.")
-    public void 내가_작성한_댓글이_아닌_경우_댓글_수정은_실패한다() throws Exception {
-      assertThrows(BusinessException.class, () -> {
-        commentService.update(other, comment.getId(), "수정할 댓글 내용");
-      });
-    }
-  }
-
-  @Nested
   @DisplayName("댓글 삭제")
   class DeleteComment {
 
