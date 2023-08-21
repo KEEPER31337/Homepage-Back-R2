@@ -34,7 +34,6 @@ public class CommentService {
   private final MemberFindService memberFindService;
   private final CommentDeleteService commentDeleteService;
 
-  private static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
   private static final String ANONYMOUS_NAME = "익명";
 
   @Transactional
@@ -95,7 +94,7 @@ public class CommentService {
 
     Member virtualMember = memberFindService.getVirtualMember();
     comment.changeWriter(virtualMember);
-    comment.updateContent(DELETED_COMMENT_CONTENT);
+    comment.delete();
     commentDeleteService.deleteAllLikeAndDislike(comment);
   }
 

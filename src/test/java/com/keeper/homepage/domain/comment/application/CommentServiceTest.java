@@ -93,8 +93,8 @@ public class CommentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("모든 좋아요와 싫어요는 삭제된다.")
-    public void 모든_좋아요와_싫어요는_삭제된다() throws Exception {
+    @DisplayName("댓글 삭제 시 댓글의 좋아요와 싫어요는 삭제된다.")
+    public void 댓글_삭제_시_댓글의_좋아요와_싫어요는_삭제된다() throws Exception {
       long commentId = comment.getId();
       em.flush();
       em.clear();
@@ -109,13 +109,12 @@ public class CommentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("댓글 작성자와 댓글의 내용이 변경된다.")
-    public void 댓글_작성자와_댓글의_내용이_변경된다() throws Exception {
+    @DisplayName("댓글 삭제 시 댓글 작성자가 Virtual Member로 변경된다.")
+    public void 댓글_삭제_시_댓글_작성자와_Virtual_Member로_변경된다() throws Exception {
       commentService.delete(member, comment.getId());
 
       Member virtualMember = memberFindService.getVirtualMember();
       assertThat(comment.getMember().getRealName()).isEqualTo(virtualMember.getRealName());
-      assertThat(comment.getContent()).isEqualTo(DELETED_COMMENT_CONTENT);
     }
   }
 }

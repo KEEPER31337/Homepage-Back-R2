@@ -8,9 +8,15 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentLike;
 import com.keeper.homepage.domain.post.entity.Post;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Builder;
@@ -54,6 +60,9 @@ public class Comment extends BaseEntity {
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
 
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted;
+
   @OneToMany(mappedBy = "comment")
   private final Set<MemberHasCommentLike> commentLikes = new HashSet<>();
 
@@ -85,7 +94,15 @@ public class Comment extends BaseEntity {
     return this.member.getThumbnailPath();
   }
 
-  public boolean hasParent(){
+  public boolean hasParent() {
     return this.parent != null;
+  }
+
+  public void delete() {
+    this.isDeleted = true;
+  }
+
+  public boolean isDeleted() {
+    return this.isDeleted;
   }
 }
