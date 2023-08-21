@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.member.api;
 
+import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_INVALID;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_INVALID;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
@@ -21,13 +23,18 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
+import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -205,6 +212,43 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("프로필 수정")
+  class UpdateProfile {
+    private Member member;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+    @Test
+    @DisplayName("자신의 프로필을 수정 성공한다.")
+    public void should_success_myProfile() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateProfile");
+
+      ProfileUpdateRequest request = ProfileUpdateRequest.builder()
+          .realName(RealName.from("바뀐이름"))
+          .studentId(StudentId.from("202055589"))
+          .birthday(LocalDate.parse("2021-01-30"))
+          .build();
+
+      callUpdateProfileApi(memberToken,request)
+          .andExpect(status().isCreated())
+          .andDo(document("update-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("realName").description("실명을 입력해주세요. ("+ REAL_NAME_INVALID + ")"),
+                  fieldWithPath("studentId").description("학번을 입력해주세요. ("+ STUDENT_ID_INVALID + ")"),
+                  fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
               )));
     }
   }
