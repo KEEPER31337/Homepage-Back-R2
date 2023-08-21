@@ -114,7 +114,6 @@ public class MemberController {
       @RequestBody @Valid UpdateMemberTypeRequest request
   ) {
     memberService.updateMemberType(request.getMemberIds(), typeId);
-
     return ResponseEntity.noContent().build();
   }
 }

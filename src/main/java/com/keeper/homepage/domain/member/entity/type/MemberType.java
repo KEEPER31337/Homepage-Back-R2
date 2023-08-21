@@ -70,14 +70,4 @@ public class MemberType {
       this.id = id;
     }
   }
-
-  public void updateType(MemberType memberType) {
-
-    this.type = Arrays.stream(MemberTypeEnum.values())
-        .filter(type -> type.getId() == memberType.getId())
-        .findFirst()
-        .orElseThrow();
-
-    System.out.println("this.type = " + this.type);
-  }
 }
