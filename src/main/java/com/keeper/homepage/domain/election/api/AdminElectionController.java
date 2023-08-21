@@ -1,7 +1,10 @@
 package com.keeper.homepage.domain.election.api;
 
+import static java.lang.Long.parseLong;
+
 import com.keeper.homepage.domain.election.application.AdminElectionService;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -64,6 +67,18 @@ public class AdminElectionController {
       @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
     Page<ElectionResponse> response = adminElectionService.getElections(PageRequest.of(page, size));
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/{electionId}/candidates/{candidateId}")
+  public ResponseEntity<Void> registerCandidate(
+      @PathVariable long electionId,
+      @PathVariable long candidateId,
+      @RequestBody @Valid ElectionRegisterRequest request
+  ) {
+    adminElectionService.registerCandidate(electionId, candidateId,
+        request.getDescription(), parseLong(request.getMemberJobId()));
+
+    return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
 }
