@@ -83,7 +83,9 @@ public class MemberService {
   }
 
   public void updateProfile(Member member, Profile newProfile) {
-    checkIsDuplicateStudentId(newProfile.getStudentId());
+    if (!member.getProfile().getStudentId().equals(newProfile.getStudentId())) {
+      checkIsDuplicateStudentId(newProfile.getStudentId());
+    }
     Profile profile = member.getProfile();
     profile.update(newProfile);
   }
