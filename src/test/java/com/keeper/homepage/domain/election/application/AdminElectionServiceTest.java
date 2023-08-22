@@ -8,10 +8,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.global.error.BusinessException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -112,12 +113,15 @@ public class AdminElectionServiceTest extends IntegrationTest {
     @DisplayName("후보자 다중 등록에 성공한다.")
     public void 후보자_다중_등록에_성공한다() throws Exception {
       Election election = electionTestHelper.generate();
-      List<Long> candidateIds = new ArrayList<>();
       long electionId = election.getId();
 
-      for (int i = 0; i < 5; i++) {
-        candidateIds.add(electionCandidate.getMember().getId());
-      }
+      List<Member> members = IntStream.range(0, 5)
+          .mapToObj(member -> memberTestHelper.generate())
+          .toList();
+
+      List<Long> candidateIds = members.stream()
+          .map(Member::getId)
+          .toList();
 
       electionCandidateRepository.deleteAll();
       adminElectionService.registerCandidates(candidateIds, electionCandidate.getDescription(), memberJob.getId(),
