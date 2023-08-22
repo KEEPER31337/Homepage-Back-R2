@@ -141,7 +141,7 @@ public class PostController {
     return ResponseEntity.noContent().build();
   }
 
-  @GetMapping("/{postId}/delete")
+  @DeleteMapping("/{postId}")
   public ResponseEntity<CategoryResponse> deletePost(
       @LoginMember Member member,
       @PathVariable long postId

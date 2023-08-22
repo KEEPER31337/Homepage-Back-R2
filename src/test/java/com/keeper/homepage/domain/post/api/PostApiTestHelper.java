@@ -83,7 +83,7 @@ public class PostApiTestHelper extends IntegrationTest {
 
   ResultActions callDeletePostApi(String accessToken, long postId)
       throws Exception {
-    return mockMvc.perform(get("/posts/{postId}/delete", postId)
+    return mockMvc.perform(delete("/posts/{postId}", postId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
