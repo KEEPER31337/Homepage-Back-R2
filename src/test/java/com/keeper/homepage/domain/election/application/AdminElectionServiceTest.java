@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
+import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -99,10 +100,10 @@ public class AdminElectionServiceTest extends IntegrationTest {
     @Test
     @DisplayName("후보자에 적절하지 않는 memberJobId 라면 등록 실패한다.")
     public void 후보자에_적절하지_않는_memberJobId_라면_등록_실패한다() throws Exception {
-      long improperMemberJobId = 3;
+      MemberJobType improperMemberJobType = MemberJobType.ROLE_대외부장;
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getMember().getId();
-      memberJob = memberJobRepository.findById(improperMemberJobId).orElseThrow();
+      memberJob = memberJobRepository.findById(improperMemberJobType.getId()).orElseThrow();
 
       BusinessException exception = assertThrows(BusinessException.class,
           () -> adminElectionService.registerCandidate(electionCandidate.getDescription(), memberJob.getId(),
