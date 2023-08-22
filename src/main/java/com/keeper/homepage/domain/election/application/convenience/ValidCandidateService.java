@@ -28,6 +28,14 @@ public class ValidCandidateService {
         .orElseThrow(() -> new BusinessException(candidateId, "candidateId", ELECTION_CANDIDATE_NOT_FOUND));
   }
 
+  public MemberJob findJobById(long memberJobId) {
+    if (!MemberJobId.isValid(memberJobId)) {
+      throw new BusinessException(memberJobId, "memJobId", ELECTION_CANDIDATE_CANNOT_REGISTER);
+    }
+    return memberJobRepository.findById(memberJobId)
+        .orElseThrow(() -> new BusinessException(memberJobId, "memberJobId", MEMBER_JOB_NOT_FOUND));
+  }
+
   public enum MemberJobId{
     ROLE_회장(1),
     ROLE_부회장(2),
@@ -46,14 +54,6 @@ public class ValidCandidateService {
       }
       return false;
     }
-  }
-
-  public MemberJob findJobById(long memberJobId) {
-    if (!MemberJobId.isValid(memberJobId)) {
-      throw new BusinessException(memberJobId, "memJobId", ELECTION_CANDIDATE_CANNOT_REGISTER);
-    }
-    return memberJobRepository.findById(memberJobId)
-        .orElseThrow(() -> new BusinessException(memberJobId, "memberJobId", MEMBER_JOB_NOT_FOUND));
   }
 
 }
