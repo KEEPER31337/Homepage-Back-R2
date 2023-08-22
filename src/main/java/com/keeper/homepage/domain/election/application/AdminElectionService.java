@@ -91,20 +91,8 @@ public class AdminElectionService {
 
   @Transactional
   public void registerCandidates(List<Long> candidateIds, String description, Long memberJobId, long electionId) {
-    Election election = validElectionFindService.findById(electionId);
-
     for (Long candidateId : candidateIds) {
-      Member member = memberFindService.findById(candidateId);
-      MemberJob memberJob = validCandidateService.findJobById(memberJobId);
-
-      ElectionCandidate electionCandidate = ElectionCandidate.builder()
-          .election(election)
-          .member(member)
-          .memberJob(memberJob)
-          .description(description)
-          .build();
-
-      electionCandidateRepository.save(electionCandidate);
+      registerCandidate(description, memberJobId, electionId, candidateId);
     }
   }
 
