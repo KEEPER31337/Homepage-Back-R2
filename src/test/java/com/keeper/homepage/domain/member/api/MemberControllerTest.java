@@ -326,9 +326,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     @DisplayName("유효한 요청일 때 회원 타입 변경은 성공한다.")
     public void 유효한_요청일_때_회원_타입_변경은_성공한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "updateMemberType");
-      Set<Long> memberSet = new HashSet<>();
-      memberSet.add(member.getId());
-      memberSet.add(otherMember.getId());
+      Set<Long> memberSet = Set.of(member.getId(), otherMember.getId());
 
       UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
           .memberIds(memberSet)

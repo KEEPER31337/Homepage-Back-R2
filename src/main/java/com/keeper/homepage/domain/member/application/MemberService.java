@@ -76,7 +76,7 @@ public class MemberService {
     );
   }
 
-  @Transactional
+  @Transactional(rollbackFor = {Exception.class})
   public void updateMemberType(Set<Long> memberIds, long typeId) {
     MemberType findMemberType = memberTypeRepository.findById(typeId)
         .orElseThrow(() -> new BusinessException(typeId, "memberType", MEMBER_TYPE_NOT_FOUND));
