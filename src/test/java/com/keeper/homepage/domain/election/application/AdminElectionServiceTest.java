@@ -116,12 +116,6 @@ public class AdminElectionServiceTest extends IntegrationTest {
       long electionId = election.getId();
 
       for (int i = 0; i < 5; i++) {
-        ElectionCandidate electionCandidate = electionCandidateTestHelper.builder()
-            .election(election)
-            .member(memberTestHelper.generate())
-            .memberJob(memberJob)
-            .description("후보")
-            .build();
         candidateIds.add(electionCandidate.getMember().getId());
       }
 
