@@ -174,7 +174,7 @@ public class PostService {
     String key = "post:" + post.getId() + ":memberId:" + member.getId();
     Optional<String> isView = redisUtil.getData(key, String.class);
     if (isView.isEmpty()) {
-      redisUtil.setDataExpire(key, "true", redisUtil.toMidNight());
+      redisUtil.setDataExpire(key, "true", RedisUtil.toMidNight());
       post.addVisitCount();
     }
   }

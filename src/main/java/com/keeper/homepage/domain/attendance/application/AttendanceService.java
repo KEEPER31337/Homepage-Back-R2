@@ -78,7 +78,7 @@ public class AttendanceService {
 
   private int getTodayRank(LocalDate now) {
     String key = "attendance:" + now.toString();
-    return redisUtil.increaseAndGetWithExpire(key, redisUtil.toMidNight()).intValue();
+    return redisUtil.increaseAndGetWithExpire(key, RedisUtil.toMidNight()).intValue();
   }
 
   private int getRankPoint(int rank) {

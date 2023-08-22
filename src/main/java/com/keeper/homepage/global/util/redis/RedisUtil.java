@@ -51,7 +51,7 @@ public class RedisUtil {
     return valueOperations.increment(key);
   }
 
-  public long toMidNight() {
+  public static long toMidNight() {
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime midnight = now.plusDays(1).truncatedTo(DAYS);
     long secondsUntilMidnight = midnight.toEpochSecond(UTC) - now.toEpochSecond(UTC);
