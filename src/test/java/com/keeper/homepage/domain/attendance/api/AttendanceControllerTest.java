@@ -206,8 +206,8 @@ public class AttendanceControllerTest extends IntegrationTest {
               .param("localDate", String.valueOf(now.minusYears(1)))
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$[0].id").value(attendance.getId()))
-          .andExpect(jsonPath("$[0].date").value(String.valueOf(attendance.getDate())))
+          .andExpect(jsonPath("$[0].value").value(1))
+          .andExpect(jsonPath("$[0].day").value(String.valueOf(attendance.getDate())))
           .andDo(document("get-total-attendance",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -219,11 +219,11 @@ public class AttendanceControllerTest extends IntegrationTest {
               queryParameters(
                   parameterWithName("localDate")
                       .attributes(new Attribute("format", "yyyy-MM-dd"))
-                      .description("오늘 날짜")
+                      .description("년도")
               ),
               responseFields(
-                  fieldWithPath("[].id").description("출석 ID"),
-                  fieldWithPath("[].date").description("출석 날짜")
+                  fieldWithPath("[].value").description("고정 값 1"),
+                  fieldWithPath("[].day").description("출석 한 날짜")
               )));
     }
   }

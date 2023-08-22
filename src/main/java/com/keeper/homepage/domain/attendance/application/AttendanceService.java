@@ -132,11 +132,9 @@ public class AttendanceService {
         .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
   }
 
-  // TODO: 추후 프론트 라이브러리 요구사항에 맞게 수정이 필요
   public List<AttendanceResponse> getTotalAttendance(long memberId, LocalDate localDate) {
     Member member = memberFindService.findById(memberId);
-    LocalDate lastDate = localDate.minusYears(1);
-    return attendanceRepository.findAllRecent(member, lastDate)
+    return attendanceRepository.findAllRecent(member, localDate)
         .stream()
         .map(AttendanceResponse::from)
         .toList();

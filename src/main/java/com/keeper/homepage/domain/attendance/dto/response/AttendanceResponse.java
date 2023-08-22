@@ -14,15 +14,15 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class AttendanceResponse {
 
-  private Long id;
+  private int value;
 
   @JsonFormat(pattern = "yyyy-MM-dd")
-  private LocalDate date;
+  private LocalDate day;
 
   public static AttendanceResponse from(Attendance attendance) {
     return AttendanceResponse.builder()
-        .id(attendance.getId())
-        .date(attendance.getDate())
+        .value(1)
+        .day(attendance.getDate())
         .build();
   }
 }
