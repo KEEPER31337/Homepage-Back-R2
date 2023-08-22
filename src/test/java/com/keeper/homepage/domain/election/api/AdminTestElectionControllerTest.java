@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.election.api;
 
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_사서;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -180,8 +181,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       String securedValue = getSecuredValue(AdminElectionController.class, "registerCandidate");
 
       long memberJobId = 1;
-      memberJobRepository.findById(memberJobId).orElseThrow();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.generate(MemberJob.getMemberJobBy(ROLE_회장));
+      MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.generate(memberJob);
       ElectionCandidateRegisterRequest request = ElectionCandidateRegisterRequest.builder()
           .description("후보")
           .memberJobId(memberJobId)
@@ -251,8 +252,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       String securedValue = getSecuredValue(AdminElectionController.class, "deleteCandidate");
 
       long memberJobId = 1;
-      memberJobRepository.findById(memberJobId).orElseThrow();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(MemberJob.getMemberJobBy(ROLE_회장))
+      MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob)
           .election(electionTestHelper.generate())
           .member(memberTestHelper.generate())
           .description("후보")
