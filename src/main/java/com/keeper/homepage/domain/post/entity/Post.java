@@ -198,4 +198,8 @@ public class Post extends BaseEntity {
   public String getCategoryName() {
     return this.category.getType().getName();
   }
+
+  public CategoryType getCategoryType() {
+    return this.category.getType();
+  }
 }

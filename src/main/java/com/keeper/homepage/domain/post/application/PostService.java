@@ -30,6 +30,7 @@ import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
@@ -242,15 +243,15 @@ public class PostService {
   }
 
   @Transactional
-  public String delete(Member member, long postId) {
+  public CategoryType delete(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
-    String categoryName = post.getCategoryName();
+    CategoryType categoryType = post.getCategoryType();
 
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     postDeleteService.delete(post);
-    return categoryName;
+    return categoryType;
   }
 
   @Transactional

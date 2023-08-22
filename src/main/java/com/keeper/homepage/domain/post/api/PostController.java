@@ -14,6 +14,7 @@ import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
+import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
@@ -146,8 +147,8 @@ public class PostController {
       @LoginMember Member member,
       @PathVariable long postId
   ) {
-    String categoryName = postService.delete(member, postId);
-    return ResponseEntity.ok(new CategoryResponse(categoryName));
+    CategoryType categoryType = postService.delete(member, postId);
+    return ResponseEntity.ok(CategoryResponse.from(categoryType));
   }
 
   @PatchMapping("/{postId}/likes")
