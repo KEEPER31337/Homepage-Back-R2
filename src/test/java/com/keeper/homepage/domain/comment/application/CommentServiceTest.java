@@ -115,6 +115,7 @@ public class CommentServiceTest extends IntegrationTest {
 
       Member virtualMember = memberFindService.getVirtualMember();
       assertThat(comment.getMember().getRealName()).isEqualTo(virtualMember.getRealName());
+      assertThat(comment.getContent()).isEqualTo(DELETED_COMMENT_CONTENT);
     }
   }
 }
