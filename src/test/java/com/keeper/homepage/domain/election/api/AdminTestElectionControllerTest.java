@@ -279,6 +279,6 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     }
 
   }
-  
+
 }
 
