@@ -181,7 +181,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
 
       long memberJobId = 1;
       memberJobRepository.findById(memberJobId).orElseThrow();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.generate();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.generate(MemberJob.getMemberJobBy(ROLE_회장));
       ElectionCandidateRegisterRequest request = ElectionCandidateRegisterRequest.builder()
           .description("후보")
           .memberJobId(memberJobId)
@@ -251,11 +251,10 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       String securedValue = getSecuredValue(AdminElectionController.class, "deleteCandidate");
 
       long memberJobId = 1;
-      MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder()
+      memberJobRepository.findById(memberJobId).orElseThrow();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(MemberJob.getMemberJobBy(ROLE_회장))
           .election(electionTestHelper.generate())
           .member(memberTestHelper.generate())
-          .memberJob(memberJob)
           .description("후보")
           .build();
 

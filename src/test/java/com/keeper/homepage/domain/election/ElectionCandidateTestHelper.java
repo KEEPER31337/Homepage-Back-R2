@@ -19,12 +19,12 @@ public class ElectionCandidateTestHelper {
   @Autowired
   MemberTestHelper memberTestHelper;
 
-  public ElectionCandidate generate() {
-    return this.builder().build();
+  public ElectionCandidate generate(MemberJob memberJob) {
+    return this.builder(memberJob).build();
   }
 
-  public ElectionCandidateBuilder builder() {
-    return new ElectionCandidateBuilder();
+  public ElectionCandidateBuilder builder(MemberJob memberJob) {
+    return new ElectionCandidateBuilder(memberJob);
   }
 
   public final class ElectionCandidateBuilder {
@@ -35,6 +35,10 @@ public class ElectionCandidateTestHelper {
     private String description;
     private Long voteCount;
 
+    public ElectionCandidateBuilder(MemberJob memberJob) {
+      this.memberJob = memberJob;
+    }
+
     public ElectionCandidateBuilder election(Election election) {
       this.election = election;
       return this;
@@ -42,11 +46,6 @@ public class ElectionCandidateTestHelper {
 
     public ElectionCandidateBuilder member(Member member) {
       this.member = member;
-      return this;
-    }
-
-    public ElectionCandidateBuilder memberJob(MemberJob memberJob) {
-      this.memberJob = memberJob;
       return this;
     }
 
