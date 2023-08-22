@@ -104,9 +104,10 @@ public class AdminElectionServiceTest extends IntegrationTest {
       long candidateId = electionCandidate.getMember().getId();
       memberJob = memberJobRepository.findById(improperMemberJobId).orElseThrow();
 
-      assertThrows(BusinessException.class,
+      BusinessException exception = assertThrows(BusinessException.class,
           () -> adminElectionService.registerCandidate(electionCandidate.getDescription(), memberJob.getId(),
               electionId, candidateId));
+      assertEquals("해당 직위는 후보자 등록 불가합니다.", exception.getMessage());
     }
 
     @Test
@@ -155,8 +156,9 @@ public class AdminElectionServiceTest extends IntegrationTest {
       long electionId = electionCandidate.getElection().getId();
       long notExistCandidateId = 10;
 
-      assertThrows(BusinessException.class,
+      BusinessException exception = assertThrows(BusinessException.class,
           () -> adminElectionService.deleteCandidate(electionId, notExistCandidateId));
+      assertEquals("해당 후보자를 찾을 수 없습니다.", exception.getMessage());
     }
 
   }
