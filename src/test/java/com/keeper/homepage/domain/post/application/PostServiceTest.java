@@ -166,10 +166,24 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("게시글 조회수는 하루에 한번만 증가해야 한다.")
+    @DisplayName("게시글 조회수는 한 회원 당 하루에 한번만 증가해야 한다.")
     public void should_VisitCountIncreaseOncePerDay_when_getPost() throws Exception {
-      // TODO: 기능 구현 후 테스트 작성
-      assertThat(true);
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      postService.find(member, postId, null);
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      post = postRepository.findById(postId).orElseThrow();
+      assertThat(post.getVisitCount()).isEqualTo(1);
+
+      postService.find(member, postId, null);
+      em.flush();
+      em.clear();
+      post = postRepository.findById(postId).orElseThrow();
+      assertThat(post.getVisitCount()).isEqualTo(1);
     }
 
     @Test

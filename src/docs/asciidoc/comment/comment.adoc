@@ -67,36 +67,6 @@ include::{snippets}/get-comments/http-response.adoc[]
 
 include::{snippets}/get-comments/response-fields.adoc[]
 
-== *댓글 수정*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/update-comment/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/update-comment/request-cookies.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/update-comment/path-parameters.adoc[]
-
-==== Request Fields
-
-include::{snippets}/update-comment/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/update-comment/http-response.adoc[]
-
-==== Response Headers
-
-include::{snippets}/update-comment/response-headers.adoc[]
-
 == *댓글 삭제*
 
 === 요청

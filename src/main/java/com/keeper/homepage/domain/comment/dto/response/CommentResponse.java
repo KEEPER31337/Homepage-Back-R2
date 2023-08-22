@@ -23,6 +23,7 @@ public class CommentResponse {
   private Integer dislikeCount;
   private Boolean isLike;
   private Boolean isDislike;
+  private Boolean isDeleted;
 
   public static CommentResponse from(Comment comment, boolean isLike, boolean isDislike) {
     return CommentResponse.builder()
@@ -37,6 +38,7 @@ public class CommentResponse {
         .dislikeCount(comment.getCommentDislikes().size())
         .isLike(isLike)
         .isDislike(isDislike)
+        .isDeleted(comment.isDeleted())
         .build();
   }
 
@@ -53,6 +55,7 @@ public class CommentResponse {
         .dislikeCount(comment.getCommentDislikes().size())
         .isLike(isLike)
         .isDislike(isDislike)
+        .isDeleted(comment.isDeleted())
         .build();
   }
 }

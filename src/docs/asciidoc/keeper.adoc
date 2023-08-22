@@ -74,7 +74,3 @@ link:point/point.html[POINT API 문서 보기]
 == *ELECTION API*
 
 link:election/election-manage.html[선거 관리 API 문서 보기]
-
-== *FILE API*
-
-link:file/file.html[API 문서 보기]

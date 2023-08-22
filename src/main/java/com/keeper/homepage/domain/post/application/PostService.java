@@ -30,12 +30,15 @@ import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
+import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -60,6 +63,7 @@ public class PostService {
   private final CategoryFindService categoryFindService;
   private final MemberFindService memberFindService;
   private final FileService fileService;
+  private final RedisUtil redisUtil;
 
   private static final String ANONYMOUS_NAME = "익명";
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
@@ -119,8 +123,7 @@ public class PostService {
     checkTempPost(member, post);
     checkSecretPost(member, post, password);
 
-    //visitCountValidation(post, request, response); TODO: 게시글 조회수 중복 방지 기능 구현
-    post.addVisitCount();
+    addVisitCount(post, member);
 
     Post previousPost = postRepository.findPreviousPost(postId, post.getCategory()).orElse(null);
     Post nextPost = postRepository.findNextPost(postId, post.getCategory()).orElse(null);
@@ -165,6 +168,15 @@ public class PostService {
   private void checkSecretPost(Member member, Post post, String password) {
     if (post.isSecret()) {
       checkAccessibleSecretPost(member, post, password);
+    }
+  }
+
+  private void addVisitCount(Post post, Member member) {
+    String key = "post:" + post.getId() + ":memberId:" + member.getId();
+    Optional<String> isView = redisUtil.getData(key, String.class);
+    if (isView.isEmpty()) {
+      redisUtil.setDataExpire(key, "true", RedisUtil.toMidNight());
+      post.addVisitCount();
     }
   }
 
@@ -231,13 +243,15 @@ public class PostService {
   }
 
   @Transactional
-  public void delete(Member member, long postId) {
+  public CategoryType delete(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
+    CategoryType categoryType = post.getCategoryType();
 
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     postDeleteService.delete(post);
+    return categoryType;
   }
 
   @Transactional

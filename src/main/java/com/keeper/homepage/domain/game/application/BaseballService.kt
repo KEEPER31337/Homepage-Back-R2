@@ -102,14 +102,8 @@ class BaseballService(
         redisUtil.setDataExpire(
             REDIS_KEY_PREFIX + requestMemberId.toString() + "_" + baseballPerDay,
             baseballResultEntity,
-            toMidNight()
+            RedisUtil.toMidNight()
         ) // 다음날 자정에 redis data expired
-    }
-
-    private fun toMidNight(): Long {
-        return (LocalDateTime.now().plusDays(1)
-            .truncatedTo(ChronoUnit.DAYS)
-            .toEpochSecond(UTC) - LocalDateTime.now().toEpochSecond(UTC)) * 1000
     }
 
     @Transactional

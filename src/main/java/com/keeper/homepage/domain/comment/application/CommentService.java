@@ -81,15 +81,6 @@ public class CommentService {
     return CommentListResponse.from(commentResponses);
   }
 
-  @Transactional
-  public long update(Member member, Long commentId, String content) {
-    Comment comment = commentFindService.findById(commentId);
-    checkCommentIsMine(comment, member);
-
-    comment.updateContent(content);
-    return comment.getPost().getId();
-  }
-
   private void checkCommentIsMine(Comment comment, Member member) {
     if (!comment.isMine(member)) {
       String realName = member.getRealName();
