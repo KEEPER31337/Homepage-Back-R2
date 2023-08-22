@@ -27,6 +27,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -211,19 +212,15 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       String securedValue = getSecuredValue(AdminElectionController.class, "registerCandidates");
 
       Election election = electionTestHelper.generate();
-      long memberJobId = 1;
       long electionId = election.getId();
-      MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
-      List<Long> candidateIds = new ArrayList<>();
-      for (int i = 0; i < 5; i++) {
-        ElectionCandidate electionCandidate = electionCandidateTestHelper.builder()
-            .election(election)
-            .member(memberTestHelper.generate())
-            .memberJob(memberJob)
-            .description("후보")
-            .build();
-        candidateIds.add(electionCandidate.getMember().getId());
-      }
+      long memberJobId = 1;
+      List<Member> members = IntStream.range(0, 5)
+          .mapToObj(member -> memberTestHelper.generate())
+          .toList();
+
+      List<Long> candidateIds = members.stream()
+          .map(Member::getId)
+          .toList();
 
       ElectionCandidatesRegisterRequest request = ElectionCandidatesRegisterRequest.builder()
           .candidateIds(candidateIds)
