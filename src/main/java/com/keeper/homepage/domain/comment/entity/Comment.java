@@ -76,6 +76,7 @@ public class Comment extends BaseEntity {
     this.parent = parent;
     this.content = content;
     this.ipAddress = ipAddress;
+    this.isDeleted = false;
   }
 
   public void updateContent(String content) {
