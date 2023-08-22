@@ -46,12 +46,14 @@ class BaseballService(
         }
 
         val baseballResult = getBaseballResultInRedis(requestMember, gameEntity)
-        baseballResult.updateTimeoutGames()
-        saveBaseballResultInRedis(requestMember.id, baseballResult, gameEntity.baseball.baseballPerDay)
 
         if (baseballResult.isEnd()) {
             return Pair(BaseballStatus.END, gameEntity.baseball.baseballPerDay)
         }
+
+        baseballResult.updateTimeoutGames()
+        saveBaseballResultInRedis(requestMember.id, baseballResult, gameEntity.baseball.baseballPerDay)
+
         return Pair(BaseballStatus.PLAYING, gameEntity.baseball.baseballPerDay)
     }
 
