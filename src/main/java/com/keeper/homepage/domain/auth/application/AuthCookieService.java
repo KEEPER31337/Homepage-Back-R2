@@ -18,14 +18,14 @@ public class AuthCookieService {
   private final JwtTokenProvider jwtTokenProvider;
   private final RedisUtil redisUtil;
 
-  public void setNewCookieInResponse(String authId, String[] roles, HttpServletResponse response) {
+  public void setNewCookieInResponse(String authId, String[] roles, String userAgent, HttpServletResponse response) {
     String newRefreshToken = jwtTokenProvider.createAccessToken(REFRESH_TOKEN, authId, roles);
     setTokenInCookie(response, newRefreshToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
         REFRESH_TOKEN.getTokenName());
     String newAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, authId, roles);
     setTokenInCookie(response, newAccessToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
         ACCESS_TOKEN.getTokenName());
-    redisUtil.setDataExpire(authId, newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
+    redisUtil.setDataExpire(JwtTokenProvider.getRefreshTokenKeyForRedis(authId, userAgent), newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
   }
 
   private void setTokenInCookie(HttpServletResponse httpResponse, String token, int expiredSeconds, String cookieName) {

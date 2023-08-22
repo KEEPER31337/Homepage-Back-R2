@@ -36,6 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 
@@ -65,7 +66,9 @@ class SignInControllerTest extends IntegrationTest {
     @Test
     @DisplayName("유효한 요청이면 로그인에 성공해야 한다.")
     void should_successSignIn_when_validRequest() throws Exception {
+      String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36";
       mockMvc.perform(post("/sign-in")
+              .header(HttpHeaders.USER_AGENT, userAgent)
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(validRequest)))
           .andExpect(status().isOk())

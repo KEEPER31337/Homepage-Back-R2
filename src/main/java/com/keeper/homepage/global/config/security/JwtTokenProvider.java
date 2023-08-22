@@ -25,6 +25,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +42,11 @@ public class JwtTokenProvider {
   private static final String SEPARATOR = ",";
 
   final Key secretKey;
+
+  public static String getRefreshTokenKeyForRedis(String authId, String userAgent) {
+    String encodedUserAgent = Base64.getEncoder().encodeToString((userAgent == null ? "" : userAgent).getBytes());
+    return "refreshToken:" + authId + ":" + encodedUserAgent;
+  }
 
   public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey) {
     this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());
