@@ -71,11 +71,7 @@ public class AdminElectionServiceTest extends IntegrationTest {
     @BeforeEach
     void setUp() {
       memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
-      electionCandidate = electionCandidateTestHelper.builder(memberJob)
-          .election(electionTestHelper.generate())
-          .member(memberTestHelper.generate())
-          .description("후보")
-          .build();
+      electionCandidate = electionCandidateTestHelper.generate(memberJob);
     }
 
     @Test

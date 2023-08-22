@@ -253,11 +253,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
 
       long memberJobId = 1;
       MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob)
-          .election(electionTestHelper.generate())
-          .member(memberTestHelper.generate())
-          .description("후보")
-          .build();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.generate(memberJob);
 
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getId();
