@@ -17,8 +17,10 @@ public class ElectionCandidatesRegisterRequest {
 
   @NotNull(message = "후보자 아이디를 입력해주세요.")
   private List<Long> candidateIds;
+
   @NotNull(message = "설명을 입력해주세요.")
   private String description;
+
   @NotNull(message = "선거 직위 ID는 필수 입력입니다.")
   private Long memberJobId;
 

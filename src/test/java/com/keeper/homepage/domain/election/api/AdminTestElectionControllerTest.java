@@ -87,7 +87,6 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .description("임원진 선거입니다.")
           .isAvailable(false)
           .build();
-
       long electionId = election.getId();
 
       callDeleteElectionApi(adminToken, electionId)
@@ -112,8 +111,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     @DisplayName("유효한 요청일 경우 선거 수정은 성공한다.")
     public void 유효한_요청일_경우_선거_수정은_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "updateElection");
-      Election election = electionTestHelper.generate();
 
+      Election election = electionTestHelper.generate();
       ElectionUpdateRequest request = ElectionUpdateRequest.builder()
           .name("제 1회 임원진 선거 수정")
           .description("임원진 선거 수정입니다.")
@@ -146,6 +145,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     @DisplayName("유효한 요청일 경우 선거 목록 조회는 성공한다.")
     public void 유효한_요청일_경우_선거_목록_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "getElections");
+
       electionTestHelper.generate();
       electionTestHelper.generate();
       electionTestHelper.generate();
@@ -177,6 +177,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     @DisplayName("유효한 요청일 경우 후보자 등록은 성공한다.")
     public void 유효한_요청일_경우_후보자_등록은_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "registerCandidate");
+
       long memberJobId = 1;
       memberJobRepository.findById(memberJobId).orElseThrow();
       ElectionCandidate electionCandidate = electionCandidateTestHelper.generate();
@@ -184,7 +185,6 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .description("후보")
           .memberJobId(memberJobId)
           .build();
-
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getMember().getId();
 
@@ -209,11 +209,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     @DisplayName("유효한 요청일 경우 후보자 다중 등록은 성공한다.")
     public void 유효한_요청일_경우_후보자_다중_등록은_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "registerCandidates");
+
+      Election election = electionTestHelper.generate();
       long memberJobId = 1;
+      long electionId = election.getId();
       MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
       List<Long> candidateIds = new ArrayList<>();
-      Election election = electionTestHelper.generate();
-
       for (int i = 0; i < 5; i++) {
         ElectionCandidate electionCandidate = electionCandidateTestHelper.builder()
             .election(election)
@@ -229,8 +230,6 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .description("후보")
           .memberJobId(memberJobId)
           .build();
-
-      long electionId = election.getId();
 
       callRegisterCandidatesApi(adminToken, request, electionId)
           .andExpect(status().isCreated())
@@ -253,6 +252,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     @DisplayName("유효한 요청일 경우 후보자 삭제는 성공한다.")
     public void 유효한_요청일_경우_후보자_삭제는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "deleteCandidate");
+
       long memberJobId = 1;
       MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
       ElectionCandidate electionCandidate = electionCandidateTestHelper.builder()
@@ -277,6 +277,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
                   parameterWithName("candidateId").description("삭제하고자 하는 후보자 ID")
               )));
     }
+
   }
+  
 }
 

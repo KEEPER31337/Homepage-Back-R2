@@ -147,7 +147,6 @@ public class AdminElectionServiceTest extends IntegrationTest {
       em.clear();
 
       assertThat(electionCandidateRepository.findById(candidateId)).isEmpty();
-
     }
 
     @Test

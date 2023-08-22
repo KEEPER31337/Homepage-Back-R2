@@ -27,15 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminElectionService {
 
   private final ElectionRepository electionRepository;
-
   private final ElectionCandidateRepository electionCandidateRepository;
 
   private final ValidElectionFindService validElectionFindService;
-
   private final ValidCandidateService validCandidateService;
-
   private final ElectionDeleteService electionDeleteService;
-
   private final MemberFindService memberFindService;
 
   @Transactional
@@ -53,10 +49,10 @@ public class AdminElectionService {
   @Transactional
   public void deleteElection(long electionId) {
     Election election = validElectionFindService.findById(electionId);
-
     if (election.isAvailable()) {
       throw new BusinessException(electionId, "electionId", ErrorCode.ELECTION_CANNOT_DELETE);
     }
+
     electionDeleteService.delete(election);
   }
 
@@ -78,7 +74,6 @@ public class AdminElectionService {
     Election election = validElectionFindService.findById(electionId);
     Member member = memberFindService.findById(candidateId);
     MemberJob memberJob = validCandidateService.findJobById(memberJobId);
-
     ElectionCandidate electionCandidate = ElectionCandidate.builder()
         .election(election)
         .member(member)

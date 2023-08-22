@@ -21,7 +21,6 @@ public class ValidCandidateService {
   private static final long VIRTUAL_ELECTION_CANDIDATE_ID = 1;
 
   private final ElectionCandidateRepository electionCandidateRepository;
-
   private final MemberJobRepository memberJobRepository;
 
   public ElectionCandidate findById(long candidateId) {

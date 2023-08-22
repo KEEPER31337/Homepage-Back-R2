@@ -69,6 +69,7 @@ public class ElectionCandidateTestHelper {
           .voteCount(voteCount != null ? voteCount : 0)
           .build());
     }
+
   }
 
 }
