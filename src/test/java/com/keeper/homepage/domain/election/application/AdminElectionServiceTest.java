@@ -1,18 +1,24 @@
 package com.keeper.homepage.domain.election.application;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.global.error.BusinessException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 
 public class AdminElectionServiceTest extends IntegrationTest {
+
+  private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @Nested
   @DisplayName("선거 삭제 테스트")
@@ -128,6 +136,36 @@ public class AdminElectionServiceTest extends IntegrationTest {
       List<ElectionCandidate> savedCandidate = electionCandidateRepository.findAll();
 
       assertEquals(5, savedCandidate.size());
+    }
+
+    @Test
+    @DisplayName("후보자 다중 등록 null check")
+    public void 후보자_다중_등록_null_check() throws Exception {
+      long memberJobId = 1;
+
+      List<Long> candidateIds = IntStream.range(0, 5)
+          .mapToObj(member -> (member == 2) ? null : memberTestHelper.generate().getId())
+          .collect(toList());
+
+      ElectionCandidatesRegisterRequest request = ElectionCandidatesRegisterRequest.builder()
+          .candidateIds(candidateIds)
+          .description("후보")
+          .memberJobId(memberJobId)
+          .build();
+
+      Set<ConstraintViolation<ElectionCandidatesRegisterRequest>> violations = validator.validate(request);
+      assertEquals(1, violations.size());
+
+      /*
+          결과 설명 추가
+          1. @NotEmpty(message = "후보자 아이디를 입력해주세요.")
+             private List<@NotNull Long> candidateIds;     => 성공
+          2. @NotEmpty(message = "후보자 아이디를 입력해주세요.")
+             private List<Long> candidateIds;              => 실패
+          3. private List<@NotNull Long> candidateIds;     => 성공
+          4. @NotNull(message = "후보자 아이디를 입력해주세요.")
+             private List<Long> candidateIds;              => 실패
+      */
     }
 
     @Test
