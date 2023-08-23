@@ -91,13 +91,13 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/profile")
+  @PatchMapping("/profile")
   public ResponseEntity<Void> updateProfile(
       @LoginMember Member member,
       @RequestBody ProfileUpdateRequest request
   ) {
     memberProfileService.updateProfile(member, request.toEntity());
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+    return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @PatchMapping("/thumbnail")
