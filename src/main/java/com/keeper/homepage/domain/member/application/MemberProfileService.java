@@ -37,6 +37,7 @@ public class MemberProfileService {
     }
   }
 
+  @Transactional
   public void updateProfile(Member member, Profile newProfile) {
     if (!member.getProfile().getStudentId().equals(newProfile.getStudentId())) {
       checkIsDuplicateStudentId(newProfile.getStudentId());
