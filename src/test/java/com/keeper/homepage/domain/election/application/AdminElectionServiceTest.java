@@ -169,6 +169,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
     @Test
     @DisplayName("후보자 삭제에 성공한다.")
     public void 후보자_삭제에_성공한다() throws Exception {
+      Election election = electionTestHelper.builder().isAvailable(false).build();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob).election(election).build();
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getId();
       adminElectionService.deleteCandidate(electionId, candidateId);
