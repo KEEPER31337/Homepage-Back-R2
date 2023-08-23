@@ -1,6 +1,9 @@
 package com.keeper.homepage.domain.election.application;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
+import static com.keeper.homepage.global.error.ErrorCode.ELECTION_CANDIDATE_CANNOT_DELETE;
+import static com.keeper.homepage.global.error.ErrorCode.ELECTION_CANDIDATE_CANNOT_REGISTER;
+import static com.keeper.homepage.global.error.ErrorCode.ELECTION_CANDIDATE_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -109,7 +112,7 @@ public class AdminElectionServiceTest extends IntegrationTest {
 
       assertThrows(BusinessException.class,
           () -> adminElectionService.registerCandidate(electionCandidate.getDescription(), memberJob.getId(),
-              electionId, candidateId), "해당 직위는 후보자 등록 불가합니다.");
+              electionId, candidateId), ELECTION_CANDIDATE_CANNOT_REGISTER.getMessage());
     }
 
     @Test
@@ -183,7 +186,7 @@ public class AdminElectionServiceTest extends IntegrationTest {
       long notExistCandidateId = 10;
 
       assertThrows(BusinessException.class, () -> adminElectionService.deleteCandidate(electionId, notExistCandidateId),
-          "해당 후보자를 찾을 수 없습니다.");
+          ELECTION_CANDIDATE_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -196,7 +199,7 @@ public class AdminElectionServiceTest extends IntegrationTest {
           .build();
 
       assertThrows(BusinessException.class, () -> adminElectionService.deleteCandidate(election.getId(),
-          electionCandidate.getId()), "비공개 상태 선거에서만 후보자 삭제가 가능합니다.");
+          electionCandidate.getId()), ELECTION_CANDIDATE_CANNOT_DELETE.getMessage());
     }
 
   }
