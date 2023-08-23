@@ -150,6 +150,7 @@ public class AdminElectionServiceTest extends IntegrationTest {
           .build();
 
       Set<ConstraintViolation<ElectionCandidatesRegisterRequest>> violations = validator.validate(request);
+
       assertEquals(1, violations.size());
 
       /*
