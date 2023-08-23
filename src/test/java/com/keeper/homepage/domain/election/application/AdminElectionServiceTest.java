@@ -187,6 +187,19 @@ public class AdminElectionServiceTest extends IntegrationTest {
           "해당 후보자를 찾을 수 없습니다.");
     }
 
+    @Test
+    @DisplayName("선거가 공개 상태라면 후보자 삭제는 실패한다.")
+    public void 선거가_공개_상태라면_후보자_삭제는_실패한다() throws Exception {
+      Election election = electionTestHelper.builder()
+          .name("제 1회 임원진 선거")
+          .description("임원진 선거입니다.")
+          .isAvailable(true)
+          .build();
+
+      assertThrows(BusinessException.class, () -> adminElectionService.deleteCandidate(election.getId(),
+          electionCandidate.getId()), "비공개 상태 선거에서만 후보자 삭제가 가능합니다.");
+    }
+
   }
 
 }

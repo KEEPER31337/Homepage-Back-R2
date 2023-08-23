@@ -94,7 +94,10 @@ public class AdminElectionService {
   @Transactional
   public void deleteCandidate(long electionId, long candidateId) {
     ElectionCandidate electionCandidate = validCandidateService.findById(candidateId);
-    validElectionFindService.findById(electionId);
+    Election election = validElectionFindService.findById(electionId);
+    if (election.isAvailable()) {
+      throw new BusinessException(electionId, "electionId", ErrorCode.ELECTION_CANDIDATE_CANNOT_DELETE);
+    }
 
     electionCandidateRepository.delete(electionCandidate);
   }
