@@ -6,6 +6,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -215,13 +216,9 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       Election election = electionTestHelper.generate();
       long electionId = election.getId();
       long memberJobId = 1;
-      List<Member> members = IntStream.range(0, 5)
-          .mapToObj(member -> memberTestHelper.generate())
-          .toList();
-
-      List<Long> candidateIds = members.stream()
-          .map(Member::getId)
-          .toList();
+      List<Long> candidateIds = IntStream.range(0, 5)
+          .mapToObj(member -> memberTestHelper.generate().getId())
+          .collect(toList());
 
       ElectionCandidatesRegisterRequest request = ElectionCandidatesRegisterRequest.builder()
           .candidateIds(candidateIds)

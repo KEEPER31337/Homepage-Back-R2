@@ -118,13 +118,9 @@ public class AdminElectionServiceTest extends IntegrationTest {
       Election election = electionTestHelper.generate();
       long electionId = election.getId();
 
-      List<Member> members = IntStream.range(0, 5)
-          .mapToObj(member -> memberTestHelper.generate())
-          .toList();
-
-      List<Long> candidateIds = members.stream()
-          .map(Member::getId)
-          .toList();
+      List<Long> candidateIds = IntStream.range(0, 5)
+          .mapToObj(member -> memberTestHelper.generate().getId())
+          .collect(toList());
 
       electionCandidateRepository.deleteAll();
       adminElectionService.registerCandidates(candidateIds, electionCandidate.getDescription(), memberJob.getId(),
