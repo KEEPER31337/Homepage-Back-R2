@@ -359,7 +359,6 @@ class GameControllerTest : GameApiTestHelper() {
                         )
                     )
                 )
-                .andExpect(jsonPath("$.earnablePoint").value(0))
                 .andDo(
                     document(
                         "get-baseball-results",

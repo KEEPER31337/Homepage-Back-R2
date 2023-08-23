@@ -128,6 +128,7 @@ class BaseballService(
         return Triple(baseballResultEntity.results, earnablePoint, 0)
     }
 
+    @Transactional
     fun getResult(requestMember: Member): Triple<List<BaseballResultEntity.GuessResultEntity?>, Int, Int> {
         if (isNotPlayedYet(requestMember)) {
             return Triple(listOf(), 0, 0)
@@ -136,13 +137,13 @@ class BaseballService(
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
         if (baseballResultEntity.isEnd()) {
-            return Triple(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint, 0)
+            return Triple(baseballResultEntity.results, baseballResultEntity.earnablePoint, 0)
         }
 
         val remainedSeconds = baseballResultEntity.updateTimeoutGames()
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
-        return Triple(baseballResultEntity.results, gameEntity.baseball.baseballDayPoint, remainedSeconds)
+        return Triple(baseballResultEntity.results, baseballResultEntity.earnablePoint, remainedSeconds)
     }
 
     private fun isNotPlayedYet(requestMember: Member): Boolean {

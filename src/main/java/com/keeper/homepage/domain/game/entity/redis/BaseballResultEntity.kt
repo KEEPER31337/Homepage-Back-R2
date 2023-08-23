@@ -16,9 +16,11 @@ class BaseballResultEntity(
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
 
     fun updateTimeoutGames(): Int {
+        if (this.isEnd()) return 0
         val (passedGameCount, remainedSeconds) = BaseballSupport.getPassedGameCount(results.size, lastGuessTime)
         (1..passedGameCount).forEach { _ -> if (results.size < TRY_COUNT) results.add(null) }
         updateEarnablePointByTimeoutGames(passedGameCount)
+        lastGuessTime = lastGuessTime.plusSeconds((passedGameCount * SECOND_PER_GAME).toLong())
         return remainedSeconds
     }
 
