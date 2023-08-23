@@ -137,8 +137,6 @@ public class AdminElectionServiceTest extends IntegrationTest {
     @Test
     @DisplayName("후보자 다중 등록 null check")
     public void 후보자_다중_등록_null_check() throws Exception {
-      long memberJobId = 1;
-
       List<Long> candidateIds = IntStream.range(0, 5)
           .mapToObj(member -> (member == 2) ? null : memberTestHelper.generate().getId())
           .collect(toList());
