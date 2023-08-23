@@ -9,8 +9,7 @@ import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.global.error.BusinessException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.EnumSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ValidCandidateService {
 
   private static final long VIRTUAL_ELECTION_CANDIDATE_ID = 1;
-  private static final List<Long> VALID_MEMBER_JOB_IDS = Arrays.asList(1L, 2L, 8L);
 
   private final ElectionCandidateRepository electionCandidateRepository;
   private final MemberJobRepository memberJobRepository;
@@ -40,7 +38,21 @@ public class ValidCandidateService {
   }
 
   private boolean isValidMemberJobId(long memberJobId) {
-    return VALID_MEMBER_JOB_IDS.contains(memberJobId);
+    return EnumSet.of(MemberJobId.ROLE_회장, MemberJobId.ROLE_부회장, MemberJobId.ROLE_총무).stream()
+        .anyMatch(jobId -> jobId.id == memberJobId);
+  }
+
+  public enum MemberJobId {
+    ROLE_회장(1),
+    ROLE_부회장(2),
+    ROLE_총무(8);
+
+    private final long id;
+
+    MemberJobId(long id) {
+      this.id = id;
+    }
+
   }
 
 }
