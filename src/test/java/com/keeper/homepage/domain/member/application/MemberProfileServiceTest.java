@@ -52,4 +52,30 @@ class MemberProfileServiceTest extends IntegrationTest {
       assertThat(findThumbnail).isEqualTo(findMember.getProfile().getThumbnail());
     }
   }
+
+  @Nested
+  @DisplayName("회원 이메일 변경 테스트")
+  class UpdateMemberProfileEmailAddressTest {
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.generate();
+      memberId = member.getId();
+    }
+
+    @Test
+    @DisplayName("회원 이메일 변경에 성공해야 한다.")
+    public void 회원_이메일_변경에_성공해야_한다() {
+      memberProfileService.updateProfileEmailAddress(member, "testtest@gmail.com");
+
+      em.flush();
+      em.clear();
+
+      Member findMember = memberFindService.findById(memberId);
+
+      assertThat(findMember.getId()).isEqualTo(memberId);
+      assertThat(findMember.getProfile().getEmailAddress().get()).isEqualTo("testtest@gmail.com");
+    }
+  }
+
 }
