@@ -232,3 +232,25 @@ include::{snippets}/update-member-emailAddress/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/update-member-emailAddress/http-response.adoc[]
+
+== *이메일 인증 코드 발송*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-email-auth/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/member-email-auth/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-email-auth/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-email-auth/http-response.adoc[]
