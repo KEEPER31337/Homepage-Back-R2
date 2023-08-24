@@ -108,3 +108,77 @@ include::{snippets}/get-elections/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-elections/response-fields.adoc[]
+
+== *선거 후보자 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-candidate/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-candidate/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/create-candidate/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-candidate/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-candidate/http-response.adoc[]
+
+== *선거 후보자 다중 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-candidates/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-candidates/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/create-candidates/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-candidates/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-candidates/http-response.adoc[]
+
+== *선거 후보자 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-candidate/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-candidate/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-candidate/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-candidate/http-response.adoc[]
