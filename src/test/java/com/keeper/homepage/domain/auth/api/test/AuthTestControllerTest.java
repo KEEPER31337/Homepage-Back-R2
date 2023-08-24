@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import java.util.Objects;
@@ -174,7 +175,7 @@ class AuthTestControllerTest extends IntegrationTest {
 
       @BeforeEach
       void setupRefreshToken() {
-        redisUtil.setDataExpire(String.valueOf(0), refreshToken, REFRESH_TOKEN.getExpiredMillis());
+        redisUtil.setDataExpire(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null), refreshToken, REFRESH_TOKEN.getExpiredMillis());
       }
 
       @Test
@@ -199,7 +200,7 @@ class AuthTestControllerTest extends IntegrationTest {
 
         jwtTokenProvider.getAuthId(newAccessToken);
         assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
-        assertThat(redisUtil.getData("0", String.class)).isNotEmpty();
+        assertThat(redisUtil.getData(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null), String.class)).isNotEmpty();
       }
 
       @Test
