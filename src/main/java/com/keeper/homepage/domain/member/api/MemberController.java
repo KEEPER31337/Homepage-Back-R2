@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.api;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileResponse;
@@ -105,5 +106,14 @@ public class MemberController {
       @PathVariable @PositiveOrZero long memberId
   ) {
     return ResponseEntity.ok(memberService.getMemberProfile(memberId));
+  }
+
+  @PatchMapping("/types/{typeId}")
+  public ResponseEntity<Void> updateMemberType(
+      @PathVariable long typeId,
+      @RequestBody @Valid UpdateMemberTypeRequest request
+  ) {
+    memberService.updateMemberType(request.getMemberIds(), typeId);
+    return ResponseEntity.noContent().build();
   }
 }
