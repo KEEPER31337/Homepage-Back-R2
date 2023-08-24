@@ -242,13 +242,13 @@ class MemberControllerTest extends MemberApiTestHelper {
       String securedValue = getSecuredValue(MemberController.class, "updateProfile");
 
       ProfileUpdateRequest request = ProfileUpdateRequest.builder()
-          .realName(RealName.from("바뀐이름"))
-          .studentId(StudentId.from("202055589"))
-          .birthday(LocalDate.parse("2021-01-30"))
+          .realName("바뀐이름")
+          .studentId("202055589")
+          .birthday(LocalDate.of(1970, 1, 1))
           .build();
 
       callUpdateProfileApi(memberToken, request)
-          .andExpect(status().isCreated())
+          .andExpect(status().isOk())
           .andDo(document("update-profile",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())

@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.member.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -52,7 +52,7 @@ public class MemberApiTestHelper extends IntegrationTest {
 
   ResultActions callUpdateProfileApi(String accessToken, ProfileUpdateRequest request)
       throws Exception {
-    return mockMvc.perform(put("/members/profile")
+    return mockMvc.perform(patch("/members/profile")
         .content(asJsonString(request))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.APPLICATION_JSON));
