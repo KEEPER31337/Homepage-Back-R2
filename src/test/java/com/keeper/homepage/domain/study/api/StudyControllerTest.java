@@ -20,6 +20,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
@@ -157,7 +158,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .information("자바 스터디 입니다")
           .year(2023)
           .season(1)
-          .gitLink("https://www.youtube.com/")
+          .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
           .build();
 
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
