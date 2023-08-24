@@ -234,3 +234,47 @@ include::{snippets}/delete-voters/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/delete-voters/http-response.adoc[]
+
+== *선거 공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/open-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/open-election/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/open-election/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/open-election/http-response.adoc[]
+
+== *선거 비공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/close-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/close-election/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/close-election/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/close-election/http-response.adoc[]
