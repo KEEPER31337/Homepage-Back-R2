@@ -30,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -383,4 +384,44 @@ class MemberControllerTest extends MemberApiTestHelper {
           .andExpect(status().isBadRequest());
     }
   }
+
+  @Nested
+  @DisplayName("회원 이메일 변경 테스트")
+  class UpdateMemberProfileEmailAddressTest {
+
+    private Member member, otherMember;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+      otherMember = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 회원 이메일 변경에 성공해야 한다.")
+    void 유효한_요청일_경우_회원_이메일_변경에_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateMemberEmail");
+
+      UpdateMemberEmailAddressRequest request = UpdateMemberEmailAddressRequest.builder()
+          .email("testtest@gmail.com")
+          .build();
+
+      mockMvc.perform(patch("/members/email")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNoContent())
+          .andDo(document("update-member-emailAddress",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("email").description("회원의 변경할 이메일")
+              )));
+    }
+  }
+
 }
