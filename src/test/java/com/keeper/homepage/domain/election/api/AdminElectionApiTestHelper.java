@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.election.dto.request.ElectionCandidateRegister
 import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionVotersRequest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -70,9 +71,25 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callDeleteRegisterApi(String adminToken, long electionId, long candidateId) throws Exception {
+  ResultActions callDeleteCandidateApi(String adminToken, long electionId, long candidateId) throws Exception {
     return mockMvc.perform(delete("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+  }
+
+  ResultActions callRegisterVotersApi(String adminToken, ElectionVotersRequest request, long electionId)
+      throws Exception {
+    return mockMvc.perform(post("/admin/elections/{electionId}/voters", electionId)
+        .content(asJsonString(request))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .contentType(MediaType.APPLICATION_JSON));
+  }
+
+  ResultActions callDeleteVotersApi(String adminToken, ElectionVotersRequest request, long electionId)
+      throws Exception {
+    return mockMvc.perform(delete("/admin/elections/{electionId}/voters", electionId)
+        .content(asJsonString(request))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .contentType(MediaType.APPLICATION_JSON));
   }
 
 }

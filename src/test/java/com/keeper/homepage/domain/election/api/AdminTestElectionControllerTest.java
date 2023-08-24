@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.election.api;
 
-import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_사서;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -19,11 +18,11 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.keeper.homepage.domain.election.ElectionCandidateTestHelper;
 import com.keeper.homepage.domain.election.dto.request.ElectionCandidateRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionVotersRequest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -31,7 +30,6 @@ import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -188,7 +186,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     public void 유효한_요청일_경우_후보자_등록은_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "registerCandidate");
 
-      long memberJobId = 1;
+      long memberJobId = ROLE_회장.getId();
       MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
       ElectionCandidate electionCandidate = electionCandidateTestHelper.generate(memberJob);
       ElectionCandidateRegisterRequest request = ElectionCandidateRegisterRequest.builder()
@@ -222,7 +220,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
 
       Election election = electionTestHelper.generate();
       long electionId = election.getId();
-      long memberJobId = 1;
+      long memberJobId = ROLE_회장.getId();
       List<Long> candidateIds = IntStream.range(0, 5)
           .mapToObj(member -> memberTestHelper.generate().getId())
           .collect(toList());
@@ -253,7 +251,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     @Test
     @DisplayName("후보자 다중 등록 null check")
     public void 후보자_다중_등록_null_check() throws Exception {
-      long memberJobId = 1;
+      long memberJobId = ROLE_회장.getId();
       List<Long> candidateIds = IntStream.range(0, 5)
           .mapToObj(member -> (member == 2) ? null : memberTestHelper.generate().getId())
           .collect(toList());
@@ -274,7 +272,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     public void 유효한_요청일_경우_후보자_삭제는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AdminElectionController.class, "deleteCandidate");
 
-      long memberJobId = 1;
+      long memberJobId = ROLE_회장.getId();
       MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
       Election election = electionTestHelper.builder().isAvailable(false).build();
       ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob).election(election).build();
@@ -282,7 +280,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getId();
 
-      callDeleteRegisterApi(adminToken, electionId, candidateId)
+      callDeleteCandidateApi(adminToken, electionId, candidateId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-candidate",
               requestCookies(
@@ -295,6 +293,71 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
               )));
     }
 
+  }
+
+  @Nested
+  @DisplayName("투표자 등록 및 삭제 테스트")
+  class VoterRegisterAndDeleteTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 투표자 다중 등록은 성공한다.")
+    public void 유효한_요청일_경우_투표자_다중_등록은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AdminElectionController.class, "registerVoters");
+
+      Election election = electionTestHelper.generate();
+      long electionId = election.getId();
+      List<Long> voterIds = IntStream.range(0, 5)
+          .mapToObj(member -> memberTestHelper.generate().getId())
+          .collect(toList());
+
+      ElectionVotersRequest request = ElectionVotersRequest.builder()
+          .voterIds(voterIds)
+          .build();
+
+      callRegisterVotersApi(adminToken, request, electionId)
+          .andExpect(status().isCreated())
+          .andDo(document("create-voters",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("voterIds").description("멤버들의 ID")
+              ),
+              pathParameters(
+                  parameterWithName("electionId").description("선거 ID")
+              )));
+    }
+  }
+
+  @Test
+  @DisplayName("유효한 요청일 경우 투표자 다중 삭제는 성공한다.")
+  public void 유효한_요청일_경우_투표자_다중_삭제는_성공한다() throws Exception {
+    String securedValue = getSecuredValue(AdminElectionController.class, "deleteVoters");
+
+    Election election = electionTestHelper.builder().isAvailable(false).build();
+    long electionId = election.getId();
+    List<Long> voterIds = IntStream.range(0, 5)
+        .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build().getMember().getId())
+        .collect(toList());
+
+    ElectionVotersRequest request = ElectionVotersRequest.builder()
+        .voterIds(voterIds)
+        .build();
+
+    callDeleteVotersApi(adminToken, request, electionId)
+        .andExpect(status().isNoContent())
+        .andDo(document("delete-voters",
+            requestCookies(
+                cookieWithName(ACCESS_TOKEN.getTokenName())
+                    .description("ACCESS TOKEN %s".formatted(securedValue))
+            ),
+            requestFields(
+                fieldWithPath("voterIds").description("투표자의 ID")
+            ),
+            pathParameters(
+                parameterWithName("electionId").description("선거 ID")
+            )));
   }
 
 }
