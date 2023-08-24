@@ -210,3 +210,25 @@ include::{snippets}/update-member-type/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/update-member-type/http-response.adoc[]
+
+== *이메일 변경 기능*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-member-emailAddress/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-member-emailAddress/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-member-emailAddress/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-member-emailAddress/http-response.adoc[]
