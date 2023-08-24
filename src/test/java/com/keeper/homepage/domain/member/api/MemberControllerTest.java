@@ -1,11 +1,15 @@
 package com.keeper.homepage.domain.member.api;
 
+import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -49,6 +53,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import org.springframework.web.multipart.MultipartFile;
 
 class MemberControllerTest extends MemberApiTestHelper {
@@ -405,8 +410,12 @@ class MemberControllerTest extends MemberApiTestHelper {
       String securedValue = getSecuredValue(MemberController.class, "updateMemberEmail");
 
       UpdateMemberEmailAddressRequest request = UpdateMemberEmailAddressRequest.builder()
-          .email("testtest@gmail.com")
+          .email("test@test.com")
+          .auth("authTest")
           .build();
+
+      doNothing().when(memberProfileService)
+          .updateProfileEmailAddress(any(Member.class), anyString(), anyString());
 
       mockMvc.perform(patch("/members/email")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
@@ -419,7 +428,8 @@ class MemberControllerTest extends MemberApiTestHelper {
                       .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
               requestFields(
-                  fieldWithPath("email").description("회원의 변경할 이메일")
+                  fieldWithPath("email").description("회원의 변경할 이메일"),
+                  fieldWithPath("auth").description("이메일 인증 코드")
               )));
     }
   }
