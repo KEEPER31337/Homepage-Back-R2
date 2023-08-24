@@ -292,7 +292,6 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
                   parameterWithName("candidateId").description("삭제하고자 하는 후보자 ID")
               )));
     }
-
   }
 
   @Nested
@@ -400,9 +399,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
               pathParameters(
                   parameterWithName("electionId").description("선거 ID")
               )));
-
     }
-
   }
 
 }
