@@ -41,7 +41,7 @@ public class StudyServiceTest extends IntegrationTest {
           .link(Link.builder().build())
           .build();
       assertThrows(BusinessException.class, () -> {
-        studyService.create(study, null);
+        studyService.create(member, study, List.of(), null);
       });
     }
   }

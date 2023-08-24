@@ -34,11 +34,16 @@ public class StudyService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public void create(Study study, MultipartFile thumbnail) {
+  public void create(Member headMember, Study study, List<Long> memberIds, MultipartFile thumbnail) {
     checkLink(study);
     saveStudyThumbnail(study, thumbnail);
-    long studyId = studyRepository.save(study).getId();
-    joinStudy(studyId, study.getHeadMember().getId());
+
+    Study savedStudy = studyRepository.save(study);
+
+    headMember.join(savedStudy);
+    memberIds.stream()
+        .map(memberFindService::findById)
+        .forEach(member -> member.join(savedStudy));
   }
 
   private void checkLink(Study study) {

@@ -41,7 +41,7 @@ public class StudyController {
       @RequestPart @Valid StudyCreateRequest request,
       @RequestPart(required = false) MultipartFile thumbnail
   ) {
-    studyService.create(request.toEntity(member), thumbnail);
+    studyService.create(member, request.toEntity(member), request.getMemberIds(), thumbnail);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }
