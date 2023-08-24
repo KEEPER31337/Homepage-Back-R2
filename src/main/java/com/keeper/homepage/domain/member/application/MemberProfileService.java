@@ -57,8 +57,7 @@ public class MemberProfileService {
   }
 
   private void checkEmailAuth(String email, String auth) {
-    Optional<String> data = redisUtil.getData(email, String.class);
-    data.map(findAuthCode -> findAuthCode.equals(auth))
+    redisUtil.getData(EMAIL_AUTH_CODE_KEY + email, String.class)
         .orElseThrow(() -> new BusinessException(auth, "auth", ErrorCode.AUTH_CODE_MISMATCH));
   }
 

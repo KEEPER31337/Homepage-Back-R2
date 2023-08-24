@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import java.io.IOException;
@@ -81,18 +82,24 @@ class MemberProfileServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("이메일 변경 인증 번호를 저장해야 한다.")
+    public void 이메일_변경_인증_번호를_저장해야_한다() {
+      memberProfileService.sendEmailChangeAuthCode(randomEmail);
+      String data = redisUtil.getData("EMAIL_AUTH_" + randomEmail, String.class)
+          .orElseThrow();
+      assertThat(data).isNotNull();
+    }
+
+    @Test
     @DisplayName("회원 이메일 변경에 성공해야 한다.")
     public void 회원_이메일_변경에_성공해야_한다() {
+      memberProfileService.sendEmailChangeAuthCode(randomEmail);
+      String data = redisUtil.getData("EMAIL_AUTH_" + randomEmail, String.class)
+          .orElseThrow();
 
-      memberProfileService.updateProfileEmailAddress(member, "test@test.com", "11");
+      memberProfileService.updateProfileEmailAddress(member, randomEmail, data);
 
-      em.flush();
-      em.clear();
-
-      Member findMember = memberFindService.findById(memberId);
-
-      assertThat(findMember.getId()).isEqualTo(memberId);
-      assertThat(findMember.getProfile().getEmailAddress().get()).isEqualTo("test@test.com");
+      assertThat(member.getProfile().getEmailAddress()).isEqualTo(EmailAddress.from(randomEmail));
     }
   }
 
