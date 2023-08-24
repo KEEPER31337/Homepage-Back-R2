@@ -22,6 +22,6 @@ public class UpdateMemberTypeRequest {
 
   @NotEmpty(message = "하나 이상의 회원 ID를 입력해주세요.")
   @UniqueElements(message = "중복된 회원이 있습니다.")
-  private List<Long> memberIds;
+  private List<@NotNull Long> memberIds;
 
 }
