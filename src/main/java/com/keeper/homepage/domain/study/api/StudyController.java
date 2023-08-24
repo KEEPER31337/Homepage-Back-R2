@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.study.api;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.application.StudyService;
 import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
-import com.keeper.homepage.domain.study.dto.request.StudyJoinRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyListResponse;
@@ -80,7 +79,7 @@ public class StudyController {
       @PathVariable long studyId,
       @RequestBody @Valid StudyUpdateRequest request
   ) {
-    studyService.update(member, studyId, request.toEntity());
+    studyService.update(member, studyId, request.toEntity(), request.getMemberIds());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/studies/" + studyId))
         .build();
@@ -93,33 +92,6 @@ public class StudyController {
       @ModelAttribute MultipartFile thumbnail
   ) {
     studyService.updateStudyThumbnail(member, studyId, thumbnail);
-    return ResponseEntity.noContent().build();
-  }
-
-  @PostMapping("/{studyId}/members/{memberId}")
-  public ResponseEntity<Void> joinStudy(
-      @PathVariable long studyId,
-      @PathVariable long memberId
-  ) {
-    studyService.joinStudy(studyId, memberId);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
-  @PostMapping("/{studyId}/members")
-  public ResponseEntity<Void> joinStudy(
-      @PathVariable long studyId,
-      @RequestBody @Valid StudyJoinRequest request
-  ) {
-    studyService.joinStudy(studyId, request.getMemberIds());
-    return ResponseEntity.status(HttpStatus.CREATED).build();
-  }
-
-  @DeleteMapping("/{studyId}/members/{memberId}")
-  public ResponseEntity<Void> leaveStudy(
-      @PathVariable long studyId,
-      @PathVariable long memberId
-  ) {
-    studyService.leaveStudy(studyId, memberId);
     return ResponseEntity.noContent().build();
   }
 }

@@ -11,7 +11,6 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.requestCo
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestPartFields;
@@ -25,9 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
-import com.keeper.homepage.domain.study.dto.request.StudyJoinRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
-import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -275,6 +272,10 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .year(2023)
           .season(2)
           .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
+          .notionLink("https://www.notion.so/KEEPER-NEW-HOMEPAGE-PROJECT-c4fd631881d84e4daa6fa14404ac6173?pvs=4")
+          .etcLink("https://plato.pusan.ac.kr/")
+          .etcTitle("plato")
+          .memberIds(List.of(other.getId()))
           .build();
 
       callUpdateStudyApi(memberToken, studyId, request)
@@ -298,7 +299,9 @@ public class StudyControllerTest extends StudyApiTestHelper {
                       .optional(),
                   field("notionLink", "노션 링크").optional(),
                   field("etcTitle", "기타 링크 이름").optional(),
-                  field("etcLink", "기타 링크").optional()
+                  field("etcLink", "기타 링크").optional(),
+                  fieldWithPath("memberIds[]")
+                      .description("스터디원 Id 리스트를 입력해주세요.")
               ),
               responseHeaders(
                   headerWithName("Location").description("수정한 스터디를 불러오는 URI 입니다.")
@@ -335,111 +338,6 @@ public class StudyControllerTest extends StudyApiTestHelper {
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
       callUpdateStudyThumbnailApi(otherToken, studyId, newThumbnailFile)
           .andExpect(status().isBadRequest());
-    }
-  }
-
-  @Nested
-  @DisplayName("스터디원 추가")
-  class AddStudyMember {
-
-    @Test
-    @DisplayName("유효한 요청일 경우 스터디원 추가는 성공한다.")
-    public void 유효한_요청일_경우_스터디원_추가는_성공한다() throws Exception {
-      String securedValue = getSecuredValue(StudyController.class, "joinStudy");
-
-      callJoinStudyApi(memberToken, studyId, other.getId())
-          .andExpect(status().isCreated())
-          .andDo(document("join-study",
-                  requestCookies(
-                      cookieWithName(ACCESS_TOKEN.getTokenName())
-                          .description("ACCESS TOKEN %s".formatted(securedValue))
-                  ),
-                  pathParameters(
-                      parameterWithName("studyId").description("스터디 ID"),
-                      parameterWithName("memberId").description("회원 ID")
-                  )
-              )
-          );
-    }
-
-    @Test
-    @DisplayName("유효한 요청일 경우 스터디원 다중 추가는 성공한다.")
-    public void 유효한_요청일_경우_스터디원_다중_추가는_성공한다() throws Exception {
-      String securedValue = getSecuredValue(StudyController.class, "joinStudy");
-
-      StudyJoinRequest request = StudyJoinRequest.builder()
-          .memberIds(List.of(member.getId(), other.getId()))
-          .build();
-
-      mockMvc.perform(post("/studies/{studyId}/members", studyId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
-              .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isCreated())
-          .andDo(document("members-join-study",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
-              ),
-              pathParameters(
-                  parameterWithName("studyId").description("스터디 ID")
-              ),
-              requestFields(
-                  field("memberIds[]", "회원 ID 리스트")
-              )));
-    }
-
-    @Test
-    @DisplayName("회원 ID 리스트가 null이면 스터디원 다중 추가는 실패한다.")
-    public void 회원_ID_리스트가_null이면_스터디원_다중_추가는_실패한다() throws Exception {
-      StudyJoinRequest request = StudyJoinRequest.builder()
-          .memberIds(null)
-          .build();
-
-      mockMvc.perform(post("/studies/{studyId}/members", studyId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
-              .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("회원 ID 리스트가 비어있으면 스터디원 다중 추가는 실패한다.")
-    public void 회원_ID_리스트가_비어있으면_스터디원_다중_추가는_실패한다() throws Exception {
-      StudyJoinRequest request = StudyJoinRequest.builder()
-          .memberIds(List.of())
-          .build();
-
-      mockMvc.perform(post("/studies/{studyId}/members", studyId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
-              .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
-          .andExpect(status().isBadRequest());
-    }
-  }
-
-  @Nested
-  @DisplayName("스터디원 삭제")
-  class DeleteStudyMember {
-
-    @Test
-    @DisplayName("유효한 요청일 경우 스터디원 삭제는 성공한다.")
-    public void 유효한_요청일_경우_스터디원_삭제는_성공한다() throws Exception {
-      String securedValue = getSecuredValue(StudyController.class, "leaveStudy");
-
-      callLeaveStudyApi(memberToken, studyId, other.getId())
-          .andExpect(status().isNoContent())
-          .andDo(document("leave-study",
-                  requestCookies(
-                      cookieWithName(ACCESS_TOKEN.getTokenName())
-                          .description("ACCESS TOKEN %s".formatted(securedValue))
-                  ),
-                  pathParameters(
-                      parameterWithName("studyId").description("스터디 ID"),
-                      parameterWithName("memberId").description("회원 ID")
-                  )
-              )
-          );
     }
   }
 }

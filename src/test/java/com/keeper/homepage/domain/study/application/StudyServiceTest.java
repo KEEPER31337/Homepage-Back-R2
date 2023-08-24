@@ -1,12 +1,13 @@
 package com.keeper.homepage.domain.study.application;
 
-import static java.util.List.of;
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_LINK_NEED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.Study;
+import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
@@ -42,7 +43,7 @@ public class StudyServiceTest extends IntegrationTest {
           .build();
       assertThrows(BusinessException.class, () -> {
         studyService.create(member, study, List.of(), null);
-      });
+      }, STUDY_LINK_NEED.getMessage());
     }
   }
 
@@ -60,57 +61,6 @@ public class StudyServiceTest extends IntegrationTest {
       study = studyRepository.findById(study.getId()).get();
 
       assertThat(study.getThumbnail().getId()).isEqualTo(1L);
-    }
-  }
-
-  @Nested
-  @DisplayName("스터디원 추가")
-  class AddStudyMember {
-
-    @Test
-    @DisplayName("스터디원 추가는 성공해야 한다.")
-    public void 스터디원_추가는_성공해야_한다() throws Exception {
-      studyService.joinStudy(study.getId(), member.getId());
-
-      assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isNotEmpty();
-    }
-
-    @Test
-    @DisplayName("스터디원 다중 추가는 성공해야 한다.")
-    public void 스터디원_다중_추가는_성공해야_한다() throws Exception {
-      //given
-      Member other = memberTestHelper.generate();
-
-      //when
-      List<Long> memberIds = of(member.getId(), other.getId());
-      studyService.joinStudy(study.getId(), memberIds);
-
-      em.flush();
-      em.clear();
-
-      //then
-      assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isNotEmpty();
-      assertThat(studyHasMemberRepository.findByStudyAndMember(study, other)).isNotEmpty();
-    }
-  }
-
-  @Nested
-  @DisplayName("스터디원 삭제")
-  class DeleteStudyMember {
-
-    @Test
-    @DisplayName("스터디원 삭제는 성공해야 한다.")
-    public void 스터디원_삭제는_성공해야_한다() throws Exception {
-      Member other = memberTestHelper.generate();
-      studyService.joinStudy(study.getId(), other.getId());
-      em.flush();
-      em.clear();
-      other = memberRepository.findById(other.getId()).get();
-      study = studyRepository.findById(study.getId()).get();
-
-      studyService.leaveStudy(study.getId(), other.getId());
-
-      assertThat(studyHasMemberRepository.findByStudyAndMember(study, other)).isEmpty();
     }
   }
 
@@ -135,6 +85,42 @@ public class StudyServiceTest extends IntegrationTest {
       assertThat(studyRepository.findById(studyId)).isEmpty();
       assertThat(studyHasMemberRepository.findByStudyAndMember(study, member)).isEmpty();
     }
+  }
 
+  @Nested
+  @DisplayName("스터디 수정")
+  class UpdateStudy {
+
+    @Test
+    @DisplayName("기존의 스터디원은 삭제되고, 현재 스터디원은 추가되어야 한다.")
+    public void 기존의_스터디원은_삭제되고_현재_스터디원은_추가되어야_한다() throws Exception {
+      //given
+      Member beforeMember = memberTestHelper.generate();
+      studyHasMemberRepository.save(StudyHasMember.builder()
+          .study(study)
+          .member(beforeMember)
+          .build());
+
+      em.flush();
+      em.clear();
+      //when
+      Study newStudy = Study.builder()
+          .title("자바 스터디")
+          .information("자바 스터디 입니다.")
+          .year(2023)
+          .season(2)
+          .link(Link.builder()
+              .etcLink("etc.com")
+              .build())
+          .build();
+      Member afterMember = memberTestHelper.generate();
+      studyService.update(member, study.getId(), newStudy, List.of(afterMember.getId()));
+
+      em.flush();
+      em.clear();
+      //then
+      assertThat(studyHasMemberRepository.findByStudyAndMember(study, beforeMember)).isEmpty();
+      assertThat(studyHasMemberRepository.findByStudyAndMember(study, afterMember)).isNotEmpty();
+    }
   }
 }
