@@ -23,4 +23,9 @@ public class MemberProfileService {
     Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
     member.getProfile().updateThumbnail(savedThumbnail);
   }
+
+  @Transactional
+  public void updateProfileEmailAddress(Member member, String email) {
+    member.getProfile().updateEmailAddress(email);
+  }
 }
