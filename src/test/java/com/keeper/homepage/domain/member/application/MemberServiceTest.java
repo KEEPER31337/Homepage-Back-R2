@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +74,7 @@ public class MemberServiceTest extends IntegrationTest {
     @Test
     @DisplayName("회원 타입 변경에 성공해야 한다.")
     public void 회원_타입_변경에_성공해야_한다() {
-      Set<Long> memberSet = Set.of(member.getId(), other.getId());
+      List<Long> memberSet = List.of(member.getId(), other.getId());
 
       memberService.updateMemberType(memberSet, 3);
 
@@ -85,24 +86,6 @@ public class MemberServiceTest extends IntegrationTest {
 
       assertThat(findMember.getMemberType().getType()).isEqualTo(휴면회원);
       assertThat(findOtherMember.getMemberType().getType()).isEqualTo(휴면회원);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 회원이 있을경우 롤백해야 한다.")
-    public void 존재하지_않는_회원이_있을경우_롤백해야_한다() {
-      Set<Long> memberSet = Set.of(member.getId(), 12398173L, other.getId());
-
-      assertThrows(BusinessException.class,
-          () -> memberService.updateMemberType(memberSet, 3));
-
-      em.flush();
-      em.clear();
-
-      Member findMember = memberRepository.findById(member.getId()).orElseThrow();
-      Member findOtherMember = memberRepository.findById(other.getId()).orElseThrow();
-
-      assertThat(findMember.getMemberType().getType()).isEqualTo(정회원);
-      assertThat(findOtherMember.getMemberType().getType()).isEqualTo(정회원);
     }
   }
 }

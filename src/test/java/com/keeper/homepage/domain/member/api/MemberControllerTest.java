@@ -36,6 +36,7 @@ import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -310,7 +311,7 @@ class MemberControllerTest extends MemberApiTestHelper {
   class UpdateMemberTypeTest {
 
     private Member member, otherMember;
-    private long typeId;
+    private Long typeId;
     private String memberToken;
 
     @BeforeEach
@@ -318,15 +319,14 @@ class MemberControllerTest extends MemberApiTestHelper {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-
-      typeId = 3;
+      typeId = 3L;
     }
 
     @Test
     @DisplayName("유효한 요청일 때 회원 타입 변경은 성공한다.")
     public void 유효한_요청일_때_회원_타입_변경은_성공한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "updateMemberType");
-      Set<Long> memberSet = Set.of(member.getId(), otherMember.getId());
+      List<Long> memberSet = List.of(member.getId(), otherMember.getId());
 
       UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
           .memberIds(memberSet)
@@ -353,7 +353,24 @@ class MemberControllerTest extends MemberApiTestHelper {
     @Test
     @DisplayName("회원 ID가 없을 때 타입 변경은 실패해야 한다.")
     public void 회원_ID가_없을_때_타입_변경은_실패해야_한다() throws Exception {
-      Set<Long> memberSet = new HashSet<>();
+      List<Long> memberSet = List.of();
+
+      UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
+          .memberIds(memberSet)
+          .build();
+
+      mockMvc.perform(patch("/members/types/{typeId}", typeId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andDo(print())
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("회원 ID가 중복될 때 타입 변경은 실패해야 한다.")
+    public void 회원_ID가_중복될_때_타입_변경은_실패해야_한다() throws Exception {
+      List<Long> memberSet = List.of(member.getId(), otherMember.getId(), otherMember.getId());
 
       UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
           .memberIds(memberSet)

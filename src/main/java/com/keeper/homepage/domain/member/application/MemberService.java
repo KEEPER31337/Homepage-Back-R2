@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -76,8 +77,8 @@ public class MemberService {
     );
   }
 
-  @Transactional(rollbackFor = {Exception.class})
-  public void updateMemberType(Set<Long> memberIds, long typeId) {
+  @Transactional
+  public void updateMemberType(List<Long> memberIds, long typeId) {
     MemberType findMemberType = memberTypeRepository.findById(typeId)
         .orElseThrow(() -> new BusinessException(typeId, "memberType", MEMBER_TYPE_NOT_FOUND));
 
