@@ -125,12 +125,12 @@ public class MemberController {
   }
 
   @PostMapping("/email-auth")
-  public ResponseEntity<EmailAuthResponse> emailAuth(
+  public ResponseEntity<String> emailAuth(
       @RequestBody @Valid EmailAuthRequest request
   ) {
     memberProfileService.checkDuplicateEmailAddress(request.getEmail());
-    int expiredSeconds = emailAuthService.emailAuth(request.getEmail());
-    return ResponseEntity.ok(EmailAuthResponse.from(expiredSeconds));
+    memberProfileService.sendEmailChangeAuthCode(request.getEmail());
+    return ResponseEntity.ok("이메일 인증 번호를 보냈습니다.");
   }
 
   @PatchMapping("/email")
