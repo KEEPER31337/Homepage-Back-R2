@@ -360,5 +360,50 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
             )));
   }
 
+  @Nested
+  @DisplayName("선거 공개 및 비공개 테스트")
+  class ElectionOpenAndCloseTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 선거 공개는 성공한다.")
+    public void 유효한_요청일_경우_선거_공개는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AdminElectionController.class, "openElection");
+
+      Election election = electionTestHelper.generate();
+
+      callOpenElectionApi(adminToken, election.getId())
+          .andExpect(status().isNoContent())
+          .andDo(document("open-election",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("electionId").description("선거 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 선거 비공개는 성공한다.")
+    public void 유효한_요청일_경우_선거_비공개는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(AdminElectionController.class, "closeElection");
+
+      Election election = electionTestHelper.generate();
+
+      callCloseElectionApi(adminToken, election.getId())
+          .andExpect(status().isNoContent())
+          .andDo(document("close-election",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("electionId").description("선거 ID")
+              )));
+
+    }
+
+  }
+
 }
 

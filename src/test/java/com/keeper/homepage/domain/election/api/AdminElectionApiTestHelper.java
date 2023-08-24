@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.election.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
@@ -90,6 +91,16 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
         .content(asJsonString(request))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
         .contentType(MediaType.APPLICATION_JSON));
+  }
+
+  ResultActions callOpenElectionApi(String adminToken, long electionId) throws Exception {
+    return mockMvc.perform(patch("/admin/elections/{electionId}/open", electionId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+  }
+
+  ResultActions callCloseElectionApi(String adminToken, long electionId) throws Exception {
+    return mockMvc.perform(patch("/admin/elections/{electionId}/close", electionId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
   }
 
 }
