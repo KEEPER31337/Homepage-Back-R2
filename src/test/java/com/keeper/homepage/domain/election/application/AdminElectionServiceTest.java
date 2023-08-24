@@ -31,8 +31,6 @@ import org.junit.jupiter.api.Test;
 
 public class AdminElectionServiceTest extends IntegrationTest {
 
-  private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-
   @Nested
   @DisplayName("선거 삭제 테스트")
   class DeleteElection {
@@ -135,35 +133,6 @@ public class AdminElectionServiceTest extends IntegrationTest {
       List<ElectionCandidate> savedCandidate = electionCandidateRepository.findAll();
 
       assertEquals(5, savedCandidate.size());
-    }
-
-    @Test
-    @DisplayName("후보자 다중 등록 null check")
-    public void 후보자_다중_등록_null_check() throws Exception {
-      List<Long> candidateIds = IntStream.range(0, 5)
-          .mapToObj(member -> (member == 2) ? null : memberTestHelper.generate().getId())
-          .collect(toList());
-
-      ElectionCandidatesRegisterRequest request = ElectionCandidatesRegisterRequest.builder()
-          .candidateIds(candidateIds)
-          .description("후보")
-          .memberJobId(memberJobId)
-          .build();
-
-      Set<ConstraintViolation<ElectionCandidatesRegisterRequest>> violations = validator.validate(request);
-
-      assertEquals(1, violations.size());
-
-      /*
-          결과 설명 추가
-          1. @NotEmpty(message = "후보자 아이디를 입력해주세요.")
-             private List<@NotNull Long> candidateIds;     => 성공
-          2. @NotEmpty(message = "후보자 아이디를 입력해주세요.")
-             private List<Long> candidateIds;              => 실패
-          3. private List<@NotNull Long> candidateIds;     => 성공
-          4. @NotNull(message = "후보자 아이디를 입력해주세요.")
-             private List<Long> candidateIds;              => 실패
-      */
     }
 
     @Test

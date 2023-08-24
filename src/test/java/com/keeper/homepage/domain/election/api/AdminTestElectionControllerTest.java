@@ -7,6 +7,7 @@ import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOK
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -27,8 +28,12 @@ import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +44,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
 
   private Member admin;
   private String adminToken;
+
+  private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @BeforeEach
   void setUp() {
@@ -241,6 +248,25 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
               pathParameters(
                   parameterWithName("electionId").description("선거 ID")
               )));
+    }
+
+    @Test
+    @DisplayName("후보자 다중 등록 null check")
+    public void 후보자_다중_등록_null_check() throws Exception {
+      long memberJobId = 1;
+      List<Long> candidateIds = IntStream.range(0, 5)
+          .mapToObj(member -> (member == 2) ? null : memberTestHelper.generate().getId())
+          .collect(toList());
+
+      ElectionCandidatesRegisterRequest request = ElectionCandidatesRegisterRequest.builder()
+          .candidateIds(candidateIds)
+          .description("후보")
+          .memberJobId(memberJobId)
+          .build();
+
+      Set<ConstraintViolation<ElectionCandidatesRegisterRequest>> violations = validator.validate(request);
+
+      assertEquals(1, violations.size());
     }
 
     @Test
