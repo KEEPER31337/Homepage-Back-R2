@@ -17,4 +17,7 @@ public class UpdateMemberEmailAddressRequest {
   @NotBlank(message = "이메일을 입력해주세요.")
   @Email(message = "이메일 형식을 확인해주세요.")
   private String email;
+
+  @NotBlank(message = "인증 번호를 입력해주세요.")
+  private String auth;
 }

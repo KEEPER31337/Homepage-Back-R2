@@ -1,5 +1,9 @@
 package com.keeper.homepage.domain.member.api;
 
+import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
+import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
+import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
@@ -40,6 +44,8 @@ public class MemberController {
 
   private final MemberService memberService;
   private final MemberProfileService memberProfileService;
+  private final EmailAuthService emailAuthService;
+  private final CheckDuplicateService checkDuplicateService;
 
   @PatchMapping("/change-password")
   public ResponseEntity<Void> changePassword(
@@ -118,12 +124,21 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
+  @PostMapping("/email-auth")
+  public ResponseEntity<EmailAuthResponse> emailAuth(
+      @RequestBody @Valid EmailAuthRequest request
+  ) {
+    memberProfileService.checkDuplicateEmailAddress(request.getEmail());
+    int expiredSeconds = emailAuthService.emailAuth(request.getEmail());
+    return ResponseEntity.ok(EmailAuthResponse.from(expiredSeconds));
+  }
+
   @PatchMapping("/email")
   public ResponseEntity<Void> updateMemberEmail(
       @LoginMember Member member,
       @RequestBody @Valid UpdateMemberEmailAddressRequest request
   ) {
-    memberProfileService.updateProfileEmailAddress(member, request.getEmail());
+    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth());
     return ResponseEntity.noContent().build();
   }
 }
