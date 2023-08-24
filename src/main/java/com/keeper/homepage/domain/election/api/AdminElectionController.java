@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.election.dto.request.ElectionCandidateRegister
 import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionVotersRequest;
 import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
@@ -91,6 +92,22 @@ public class AdminElectionController {
       @PathVariable long electionId,
       @PathVariable long candidateId) {
     adminElectionService.deleteCandidate(electionId, candidateId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{electionId}/voters")
+  public ResponseEntity<Void> registerVoters(
+      @RequestBody @Valid ElectionVotersRequest request,
+      @PathVariable long electionId) {
+    adminElectionService.registerVoters(request.getVoterIds(), electionId);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @DeleteMapping("/{electionId}/voters")
+  public ResponseEntity<Void> deleteVoters(
+      @RequestBody @Valid ElectionVotersRequest request,
+      @PathVariable long electionId) {
+    adminElectionService.deleteVoters(request.getVoterIds(), electionId);
     return ResponseEntity.noContent().build();
   }
 
