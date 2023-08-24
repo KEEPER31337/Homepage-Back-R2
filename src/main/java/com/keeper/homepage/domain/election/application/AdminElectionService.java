@@ -135,4 +135,16 @@ public class AdminElectionService {
     }
   }
 
+  @Transactional
+  public void openElection(long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+    election.open();
+  }
+
+  @Transactional
+  public void closeElection(long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+    election.close();
+  }
+
 }

@@ -20,6 +20,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -108,6 +109,20 @@ public class AdminElectionController {
       @RequestBody @Valid ElectionVotersRequest request,
       @PathVariable long electionId) {
     adminElectionService.deleteVoters(request.getVoterIds(), electionId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{electionId}/open")
+  public ResponseEntity<Void> openElection(
+      @PathVariable long electionId) {
+    adminElectionService.openElection(electionId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{electionId}/close")
+  public ResponseEntity<Void> closeElection(
+      @PathVariable long electionId) {
+    adminElectionService.closeElection(electionId);
     return ResponseEntity.noContent().build();
   }
 

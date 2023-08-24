@@ -81,4 +81,12 @@ public class Election {
     this.isAvailable = isAvailable;
   }
 
+  public void open() {
+    this.isAvailable = true;
+  }
+
+  public void close() {
+    this.isAvailable = false;
+  }
+
 }
