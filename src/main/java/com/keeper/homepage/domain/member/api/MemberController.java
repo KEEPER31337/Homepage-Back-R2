@@ -94,7 +94,7 @@ public class MemberController {
   @PatchMapping("/profile")
   public ResponseEntity<Void> updateProfile(
       @LoginMember Member member,
-      @RequestBody ProfileUpdateRequest request
+      @RequestBody @Valid ProfileUpdateRequest request
   ) {
     memberProfileService.updateProfile(member, request.toEntity());
     return ResponseEntity.status(HttpStatus.OK).build();
