@@ -140,7 +140,7 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
 
-  @OneToMany(mappedBy = "member", cascade = PERSIST)
+  @OneToMany(mappedBy = "member", cascade = ALL)
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @OneToMany(mappedBy = "member")
