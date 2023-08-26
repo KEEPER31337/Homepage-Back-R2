@@ -427,7 +427,6 @@ class MemberControllerTest extends MemberApiTestHelper {
               requestFields(
                   fieldWithPath("email").description("인증 코드를 보낼 이메일 주소")
               )));
-
     }
 
     @Test

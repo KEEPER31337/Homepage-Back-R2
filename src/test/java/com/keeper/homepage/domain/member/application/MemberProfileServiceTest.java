@@ -124,7 +124,4 @@ class MemberProfileServiceTest extends IntegrationTest {
               () -> memberProfileService.checkMemberPassword(member, "falsePassword"));
     }
   }
-
-
-
 }
