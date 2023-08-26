@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.library.dto.req.BookSearchType;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
@@ -43,7 +44,7 @@ public class BookServiceTest extends IntegrationTest {
     @Test
     @DisplayName("현재수량이 0이 아니고, 회원이 빌린 책의 개수가 5권 미만이면 도서 대여 가능 응답을 해야 한다.")
     public void 현재수량이_0이_아니고_회원이_빌린_책의_개수가_5권_미만이면_도서_대여_가능_응답을_해야_한다() throws Exception {
-      Page<BookResponse> books = bookService.getBooks(member, null, null, PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, null, PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isTrue();
     }
@@ -54,7 +55,7 @@ public class BookServiceTest extends IntegrationTest {
       bookBorrowInfoTestHelper.builder().book(book).borrowStatus(getBookBorrowStatusBy(대출승인))
           .build();
 
-      Page<BookResponse> books = bookService.getBooks(member, null, null, PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, null, PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
     }
@@ -73,7 +74,7 @@ public class BookServiceTest extends IntegrationTest {
       em.clear();
       member = memberRepository.findById(member.getId()).get();
 
-      Page<BookResponse> books = bookService.getBooks(member, null, null, PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, null, PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
     }
