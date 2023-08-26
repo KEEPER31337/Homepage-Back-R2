@@ -45,7 +45,6 @@ public class MemberController {
   private final MemberService memberService;
   private final MemberProfileService memberProfileService;
   private final EmailAuthService emailAuthService;
-  private final CheckDuplicateService checkDuplicateService;
 
   @PatchMapping("/change-password")
   public ResponseEntity<Void> changePassword(
@@ -138,6 +137,7 @@ public class MemberController {
       @LoginMember Member member,
       @RequestBody @Valid UpdateMemberEmailAddressRequest request
   ) {
+    memberProfileService.checkMemberPassword(member, request.getPassword());
     memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth());
     return ResponseEntity.noContent().build();
   }

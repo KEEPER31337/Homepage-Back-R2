@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import static java.util.stream.Collectors.counting;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -78,5 +80,11 @@ public class MemberProfileService {
         .limit(MAX_PASSWORD_AUTH_CODE_LENGTH)
         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
         .toString();
+  }
+
+  public void checkMemberPassword(Member member, String rawPassword) {
+    if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
+      throw new BusinessException(rawPassword, "rawPassword", ErrorCode.MEMBER_WRONG_PASSWORD);
+    }
   }
 }

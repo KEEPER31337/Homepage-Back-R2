@@ -437,10 +437,14 @@ class MemberControllerTest extends MemberApiTestHelper {
       UpdateMemberEmailAddressRequest request = UpdateMemberEmailAddressRequest.builder()
           .email("test@test.com")
           .auth("authTest")
+          .password(member.getProfile().getPassword().get())
           .build();
 
       doNothing().when(memberProfileService)
-          .updateProfileEmailAddress(any(Member.class), anyString(), anyString());
+                      .checkMemberPassword(any(Member.class), anyString());
+
+      doNothing().when(memberProfileService)
+              .updateProfileEmailAddress(any(Member.class), anyString(), anyString());
 
       mockMvc.perform(patch("/members/email")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
@@ -454,7 +458,8 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("email").description("회원의 변경할 이메일"),
-                  fieldWithPath("auth").description("이메일 인증 코드")
+                  fieldWithPath("auth").description("이메일 인증 코드"),
+                  fieldWithPath("password").description("비밀번호 검증")
               )));
     }
   }

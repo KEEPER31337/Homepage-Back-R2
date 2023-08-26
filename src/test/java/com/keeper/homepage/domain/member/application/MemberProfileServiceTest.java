@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import java.io.IOException;
@@ -101,6 +102,19 @@ class MemberProfileServiceTest extends IntegrationTest {
 
       assertThat(member.getProfile().getEmailAddress()).isEqualTo(EmailAddress.from(randomEmail));
     }
+
+    @Test
+    @DisplayName("회원 비밀번호가 틀릴시 예외를 던진다.")
+    public void 회원_비밀번호가_틀릴시_예외를_던진다() {
+      member = memberTestHelper.builder()
+              .password(Password.from("truePassword"))
+              .build();
+
+      assertThrows(BusinessException.class,
+              () -> memberProfileService.checkMemberPassword(member, "falsePassword"));
+    }
   }
+
+
 
 }

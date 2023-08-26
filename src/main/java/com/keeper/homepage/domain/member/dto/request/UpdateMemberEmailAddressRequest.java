@@ -20,4 +20,7 @@ public class UpdateMemberEmailAddressRequest {
 
   @NotBlank(message = "인증 번호를 입력해주세요.")
   private String auth;
+
+  @NotBlank(message = "현재 비밀번호를 입력해주세요.")
+  private String password;
 }
