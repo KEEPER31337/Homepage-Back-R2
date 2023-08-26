@@ -39,6 +39,7 @@ import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressReq
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
@@ -433,11 +434,10 @@ class MemberControllerTest extends MemberApiTestHelper {
     @DisplayName("유효한 요청일 경우 회원 이메일 변경에 성공해야 한다.")
     void 유효한_요청일_경우_회원_이메일_변경에_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MemberController.class, "updateMemberEmail");
-
       UpdateMemberEmailAddressRequest request = UpdateMemberEmailAddressRequest.builder()
           .email("test@test.com")
           .auth("authTest")
-          .password(member.getProfile().getPassword().get())
+          .password("truePassword")
           .build();
 
       doNothing().when(memberProfileService)

@@ -104,6 +104,16 @@ class MemberProfileServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("회원 비밀번호가 맞을 시 예외를 던지지 않는다.")
+    public void 회원_비밀번호가_맞을_시_예외를_던지지_않는다() {
+      member = memberTestHelper.builder()
+              .password(Password.from("truePassword"))
+              .build();
+
+      assertDoesNotThrow(() -> memberProfileService.checkMemberPassword(member, "truePassword"));
+    }
+
+    @Test
     @DisplayName("회원 비밀번호가 틀릴시 예외를 던진다.")
     public void 회원_비밀번호가_틀릴시_예외를_던진다() {
       member = memberTestHelper.builder()
