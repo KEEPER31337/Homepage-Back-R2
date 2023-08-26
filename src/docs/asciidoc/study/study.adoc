@@ -15,7 +15,7 @@ link:../keeper.html[API 목록으로 돌아가기]
 
 == *스터디 생성*
 
-NOTE: 호출 시 스터디원으로 추가됩니다.
+NOTE: 호출한 회원은 스터디원으로 등록됩니다.
 
 === 요청
 
@@ -145,6 +145,8 @@ include::{snippets}/update-study-thumbnail/http-response.adoc[]
 
 == *스터디 수정*
 
+NOTE: 호출한 회원은 스터디원으로 등록됩니다.
+
 === 요청
 
 ==== Request
@@ -174,76 +176,3 @@ include::{snippets}/update-study/http-response.adoc[]
 ==== Response Headers
 
 include::{snippets}/update-study/response-headers.adoc[]
-
-== *스터디원 추가*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/join-study/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/join-study/request-cookies.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/join-study/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/join-study/http-response.adoc[]
-
-== *스터디원 다중 추가*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/members-join-study/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/members-join-study/request-cookies.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/members-join-study/path-parameters.adoc[]
-
-==== Request Fields
-
-include::{snippets}/members-join-study/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/members-join-study/http-response.adoc[]
-
-
-== *스터디원 삭제*
-
-NOTE: 스터디장은 삭제할 수 없습니다.
-
-=== 요청
-
-==== Request
-
-include::{snippets}/leave-study/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/leave-study/request-cookies.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/leave-study/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/leave-study/http-response.adoc[]

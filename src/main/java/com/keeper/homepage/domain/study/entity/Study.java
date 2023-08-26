@@ -7,7 +7,6 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -75,7 +74,7 @@ public class Study extends BaseEntity {
   @JoinColumn(name = "head_member_id", nullable = false)
   private Member headMember;
 
-  @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "study")
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
