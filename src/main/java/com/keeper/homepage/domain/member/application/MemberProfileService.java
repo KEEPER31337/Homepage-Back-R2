@@ -31,12 +31,6 @@ public class MemberProfileService {
     member.getProfile().updateThumbnail(savedThumbnail);
   }
 
-  private void checkIsDuplicateStudentId(StudentId studentId) {
-    if (memberRepository.existsByProfileStudentId(studentId)) {
-      throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
-    }
-  }
-
   @Transactional
   public void updateProfile(Member member, Profile newProfile) {
     if (!member.getProfile().getStudentId().equals(newProfile.getStudentId())) {
@@ -44,5 +38,11 @@ public class MemberProfileService {
     }
     Profile profile = member.getProfile();
     profile.update(newProfile);
+  }
+
+  private void checkIsDuplicateStudentId(StudentId studentId) {
+    if (memberRepository.existsByProfileStudentId(studentId)) {
+      throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
+    }
   }
 }
