@@ -31,7 +31,7 @@ public class BookController {
   public ResponseEntity<Page<BookResponse>> getBooks(
       @LoginMember Member member,
       @RequestParam(required = false, defaultValue = "ALL") BookSearchType searchType,
-      @RequestParam(required = false) String search,
+      @RequestParam(required = false, defaultValue = "") String search,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {

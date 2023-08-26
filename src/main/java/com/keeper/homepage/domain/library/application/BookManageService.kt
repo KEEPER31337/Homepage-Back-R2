@@ -1,7 +1,9 @@
 package com.keeper.homepage.domain.library.application
 
 import com.keeper.homepage.domain.library.dao.BookRepository
+import com.keeper.homepage.domain.library.dto.req.BookSearchType
 import com.keeper.homepage.domain.library.dto.resp.BookDetailResponse
+import com.keeper.homepage.domain.library.dto.resp.BookResponse
 import com.keeper.homepage.domain.library.entity.Book
 import com.keeper.homepage.domain.library.entity.BookDepartment
 import com.keeper.homepage.global.error.BusinessException
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.util.function.Function
 
 fun BookRepository.getBookById(bookId: Long) = this.findById(bookId)
     .orElseThrow { throw BusinessException(bookId, "bookId", ErrorCode.BOOK_NOT_FOUND) }
@@ -22,11 +25,12 @@ class BookManageService(
     val bookRepository: BookRepository,
     val thumbnailUtil: ThumbnailUtil
 ) {
-    fun getBooks(bookKeyword: String?, pageable: PageRequest): Page<Book> {
-        if (bookKeyword.isNullOrBlank()) {
-            return bookRepository.findAll(pageable)
+    fun getBooks(bookKeyword: String, searchType: BookSearchType, pageable: PageRequest): Page<Book> {
+        return when (searchType) {
+            BookSearchType.ALL -> bookRepository.findAllByTitleOrAuthor(bookKeyword, pageable)
+            BookSearchType.TITLE -> bookRepository.findAllByTitleIgnoreCaseContaining(bookKeyword, pageable)
+            BookSearchType.AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContaining(bookKeyword, pageable)
         }
-        return bookRepository.findAllByTitleOrAuthor(bookKeyword, pageable)
     }
 
     @Transactional
