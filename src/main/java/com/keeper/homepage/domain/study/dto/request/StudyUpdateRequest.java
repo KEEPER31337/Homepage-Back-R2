@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,6 +53,9 @@ public class StudyUpdateRequest {
 
   @Nullable
   private String etcLink;
+
+  @NotNull(message = "회원의 ID 리스트를 입력해주세요.")
+  private List<@NotNull Long> memberIds;
 
   public Study toEntity() {
     return Study.builder()

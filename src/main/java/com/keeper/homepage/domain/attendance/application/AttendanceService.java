@@ -32,8 +32,6 @@ public class AttendanceService {
   private final RedisUtil redisUtil;
   private final MemberFindService memberFindService;
 
-  private static final long RANK_DATA_EXPIRE_DURATION = 60 * 60 * 24; // 60s * 60m * 24h로 하루를 의미함.
-
   private static final String ATTENDANCE_MESSAGE = "자동 출석입니다.";
   private static final String ATTENDANCE_POINT_MESSAGE = "출석 포인트";
   private static final int RANDOM_MIN_POINT = 100;
@@ -80,7 +78,7 @@ public class AttendanceService {
 
   private int getTodayRank(LocalDate now) {
     String key = "attendance:" + now.toString();
-    return redisUtil.increaseAndGetWithExpire(key, RANK_DATA_EXPIRE_DURATION).intValue();
+    return redisUtil.increaseAndGetWithExpire(key, RedisUtil.toMidNight()).intValue();
   }
 
   private int getRankPoint(int rank) {
@@ -132,11 +130,9 @@ public class AttendanceService {
         .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
   }
 
-  // TODO: 추후 프론트 라이브러리 요구사항에 맞게 수정이 필요
   public List<AttendanceResponse> getTotalAttendance(long memberId, LocalDate localDate) {
     Member member = memberFindService.findById(memberId);
-    LocalDate lastDate = localDate.minusYears(1);
-    return attendanceRepository.findAllRecent(member, lastDate)
+    return attendanceRepository.findAllRecent(member, localDate)
         .stream()
         .map(AttendanceResponse::from)
         .toList();

@@ -65,5 +65,7 @@ public class ElectionTestHelper {
           .isAvailable(isAvailable != null ? isAvailable : true)
           .build());
     }
+
   }
+
 }

@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.study.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.STUDY_HEAD_MEMBER_CANNOT_LEAVE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_LINK_NEED;
 
@@ -8,6 +7,7 @@ import com.keeper.homepage.domain.member.application.convenience.MemberFindServi
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.application.convenience.StudyDeleteService;
 import com.keeper.homepage.domain.study.application.convenience.StudyFindService;
+import com.keeper.homepage.domain.study.dao.StudyHasMemberRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.study.dto.response.StudyDetailResponse;
 import com.keeper.homepage.domain.study.dto.response.StudyListResponse;
@@ -28,17 +28,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class StudyService {
 
   private final StudyRepository studyRepository;
+  private final StudyHasMemberRepository studyHasMemberRepository;
+
   private final ThumbnailUtil thumbnailUtil;
   private final StudyFindService studyFindService;
   private final StudyDeleteService studyDeleteService;
   private final MemberFindService memberFindService;
 
   @Transactional
-  public void create(Study study, MultipartFile thumbnail) {
+  public void create(Member headMember, Study study, List<Long> memberIds, MultipartFile thumbnail) {
     checkLink(study);
     saveStudyThumbnail(study, thumbnail);
-    long studyId = studyRepository.save(study).getId();
-    joinStudy(studyId, study.getHeadMember().getId());
+
+    Study savedStudy = studyRepository.save(study);
+
+    joinAllStudyMember(headMember, memberIds, savedStudy);
   }
 
   private void checkLink(Study study) {
@@ -50,6 +54,13 @@ public class StudyService {
   private void saveStudyThumbnail(Study study, MultipartFile thumbnail) {
     Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
     study.changeThumbnail(savedThumbnail);
+  }
+
+  private void joinAllStudyMember(Member headMember, List<Long> memberIds, Study study) {
+    headMember.join(study);
+    memberIds.stream()
+        .map(memberFindService::findById)
+        .forEach(member -> member.join(study));
   }
 
   @Transactional
@@ -76,13 +87,17 @@ public class StudyService {
   }
 
   @Transactional
-  public void update(Member member, long studyId, Study newStudy) {
+  public void update(Member headMember, long studyId, Study newStudy, List<Long> memberIds) {
     Study study = studyFindService.findById(studyId);
-    if (!member.isHeadMember(study)) {
+    if (!headMember.isHeadMember(study)) {
       throw new BusinessException(studyId, "studyId", STUDY_INACCESSIBLE);
     }
+
     checkLink(newStudy);
+
     study.update(newStudy);
+    studyHasMemberRepository.deleteAllByStudy(study);
+    joinAllStudyMember(headMember, memberIds, study);
   }
 
   @Transactional
@@ -93,31 +108,5 @@ public class StudyService {
     }
     Thumbnail newThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
     study.changeThumbnail(newThumbnail);
-  }
-
-  @Transactional
-  public void joinStudy(long studyId, long memberId) {
-    Study study = studyFindService.findById(studyId);
-    Member member = memberFindService.findById(memberId);
-    member.join(study);
-  }
-
-  @Transactional
-  public void joinStudy(long studyId, List<Long> memberIds) {
-    Study study = studyFindService.findById(studyId);
-    memberIds.forEach(memberId -> {
-      Member member = memberFindService.findById(memberId);
-      member.join(study);
-    });
-  }
-
-  @Transactional
-  public void leaveStudy(long studyId, long memberId) {
-    Study study = studyFindService.findById(studyId);
-    Member member = memberFindService.findById(memberId);
-    if (member.isHeadMember(study)) {
-      throw new BusinessException(studyId, "studyId", STUDY_HEAD_MEMBER_CANNOT_LEAVE);
-    }
-    member.leave(study);
   }
 }

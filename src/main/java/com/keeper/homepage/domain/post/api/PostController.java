@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
+import com.keeper.homepage.domain.post.dto.response.CategoryResponse;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
 import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
@@ -13,6 +14,7 @@ import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostListResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.dto.response.TempPostResponse;
+import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.validation.Valid;
@@ -141,12 +143,12 @@ public class PostController {
   }
 
   @DeleteMapping("/{postId}")
-  public ResponseEntity<Void> deletePost(
+  public ResponseEntity<CategoryResponse> deletePost(
       @LoginMember Member member,
       @PathVariable long postId
   ) {
-    postService.delete(member, postId);
-    return ResponseEntity.noContent().build();
+    CategoryType categoryType = postService.delete(member, postId);
+    return ResponseEntity.ok(CategoryResponse.from(categoryType));
   }
 
   @PatchMapping("/{postId}/likes")

@@ -149,7 +149,7 @@ include::{snippets}/get-total-attendance/path-parameters.adoc[]
 
 ==== Query Parameters
 
-NOTE: 보낸 날짜로부터 1년 전 ~ 오늘까지의 출석 정보를 조회합니다.
+NOTE: 보낸 날짜로부터 오늘까지의 출석 정보를 조회합니다.
 
 include::{snippets}/get-total-attendance/query-parameters.adoc[]
 

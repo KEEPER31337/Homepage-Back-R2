@@ -12,12 +12,14 @@ import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +38,8 @@ public class SignInService {
   private final MailUtil mailUtil;
 
   @Transactional
-  public SignInResponse signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
+  public SignInResponse signIn(LoginId loginId, String rawPassword, HttpServletRequest request,
+      HttpServletResponse response) {
     Member member = memberRepository.findByProfileLoginId(loginId)
         .orElseThrow(
             () -> new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_NOT_FOUND));
@@ -44,7 +47,7 @@ public class SignInService {
       throw new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_WRONG_ID_OR_PASSWORD);
     }
     authCookieService.setNewCookieInResponse(String.valueOf(member.getId()),
-        getRoles(member), response);
+        getRoles(member), request.getHeader(HttpHeaders.USER_AGENT), response);
     return SignInResponse.of(member, Arrays.stream(getRoles(member)).toList());
   }
 

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ValidElectionFindService {
 
   private static final long VIRTUAL_ELECTION_ID = 1;
+
   private final ElectionRepository electionRepository;
 
   public Election findById(long electionId) {

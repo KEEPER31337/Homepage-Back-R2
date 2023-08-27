@@ -54,5 +54,7 @@ public class ElectionVoterTestHelper {
           .isVoted(isVoted != null ? isVoted : false)
           .build());
     }
+
   }
+
 }

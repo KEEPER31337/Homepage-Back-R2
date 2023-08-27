@@ -1,6 +1,8 @@
 package com.keeper.homepage.domain.election.api;
 
 import com.keeper.homepage.domain.election.application.AdminElectionService;
+import com.keeper.homepage.domain.election.dto.request.ElectionCandidateRegisterRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
@@ -64,6 +66,32 @@ public class AdminElectionController {
       @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
     Page<ElectionResponse> response = adminElectionService.getElections(PageRequest.of(page, size));
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/{electionId}/candidates/{candidateId}")
+  public ResponseEntity<Void> registerCandidate(
+      @RequestBody @Valid ElectionCandidateRegisterRequest request,
+      @PathVariable long electionId,
+      @PathVariable long candidateId) {
+    adminElectionService.registerCandidate(request.getDescription(), request.getMemberJobId(), electionId, candidateId);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @PostMapping("/{electionId}/candidates")
+  public ResponseEntity<Void> registerCandidates(
+      @RequestBody @Valid ElectionCandidatesRegisterRequest request,
+      @PathVariable long electionId) {
+    adminElectionService.registerCandidates(request.getCandidateIds(), request.getDescription(),
+        request.getMemberJobId(), electionId);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @DeleteMapping("/{electionId}/candidates/{candidateId}")
+  public ResponseEntity<Void> deleteCandidate(
+      @PathVariable long electionId,
+      @PathVariable long candidateId) {
+    adminElectionService.deleteCandidate(electionId, candidateId);
+    return ResponseEntity.noContent().build();
   }
 
 }

@@ -8,6 +8,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.election.dto.request.ElectionCandidateRegisterRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import jakarta.servlet.http.Cookie;
@@ -50,6 +52,27 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
         fieldWithPath("isAvailable").description("선거 공개 비공개 여부")
     };
 
+  }
+
+  ResultActions callRegisterCandidateApi(String adminToken, ElectionCandidateRegisterRequest request, long electionId,
+      long candidateId) throws Exception {
+    return mockMvc.perform(post("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
+        .content(asJsonString(request))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .contentType(MediaType.APPLICATION_JSON));
+  }
+
+  ResultActions callRegisterCandidatesApi(String adminToken, ElectionCandidatesRegisterRequest request, long electionId)
+      throws Exception {
+    return mockMvc.perform(post("/admin/elections/{electionId}/candidates", electionId)
+        .content(asJsonString(request))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .contentType(MediaType.APPLICATION_JSON));
+  }
+
+  ResultActions callDeleteRegisterApi(String adminToken, long electionId, long candidateId) throws Exception {
+    return mockMvc.perform(delete("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
   }
 
 }

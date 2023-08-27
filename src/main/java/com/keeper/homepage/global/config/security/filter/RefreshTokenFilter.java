@@ -3,6 +3,7 @@ package com.keeper.homepage.global.config.security.filter;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.EXPIRED;
+import static org.springframework.http.HttpHeaders.USER_AGENT;
 
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
@@ -41,27 +42,26 @@ public class RefreshTokenFilter extends GenericFilterBean {
     final var refreshTokenDto = jwtTokenProvider.tryCheckTokenValid(httpRequest, REFRESH_TOKEN);
     boolean isAccessExpiredAndRefreshValid = isAccessTokenExpired(accessTokenDto.getResultType()) &&
         isRefreshTokenValid(refreshTokenDto) &&
-        isTokenInRedis(refreshTokenDto);
+        isTokenInRedis(refreshTokenDto, httpRequest.getHeader(USER_AGENT));
 
     if (isAccessExpiredAndRefreshValid) {
       Authentication auth = jwtTokenProvider.getAuthentication(refreshTokenDto.getToken());
       SecurityContextHolder.getContext().setAuthentication(auth);
-    }
 
-    filterChain.doFilter(request, response);
-
-    if (isAccessExpiredAndRefreshValid) {
       String authId = String.valueOf(jwtTokenProvider.getAuthId(refreshTokenDto.getToken()));
       String[] roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());
       HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-      authCookieService.setNewCookieInResponse(authId, roles, httpResponse);
+      authCookieService.setNewCookieInResponse(authId, roles, httpRequest.getHeader(USER_AGENT), httpResponse);
     }
+
+    filterChain.doFilter(request, response);
   }
 
-  private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto) {
+  private boolean isTokenInRedis(TokenValidationResultDto refreshTokenDto, String userAgent) {
     long authId = jwtTokenProvider.getAuthId(refreshTokenDto.getToken());
-    Optional<String> tokenInRedis = redisUtil.getData(String.valueOf(authId), String.class);
+    String refreshTokenKey = JwtTokenProvider.getRefreshTokenKeyForRedis(String.valueOf(authId), userAgent);
+    Optional<String> tokenInRedis = redisUtil.getData(refreshTokenKey, String.class);
     return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
   }
 

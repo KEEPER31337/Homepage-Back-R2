@@ -10,7 +10,6 @@ import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTyp
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
-import static java.util.stream.Collectors.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -59,7 +58,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -142,7 +140,7 @@ public class Member {
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
   private final Set<MemberHasCommentDislike> commentDislikes = new HashSet<>();
 
-  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "member", cascade = ALL)
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @OneToMany(mappedBy = "member")
@@ -291,10 +289,6 @@ public class Member {
     studyMembers.add(studyMember);
   }
 
-  public void leave(Study study) {
-    studyMembers.removeIf(studyMember -> studyMember.getStudy().equals(study));
-  }
-
   public void join(CtfTeam ctfTeam) {
     ctfTeamHasMembers.add(CtfTeamHasMember.builder()
         .ctfTeam(ctfTeam)
@@ -397,5 +391,9 @@ public class Member {
         .map(MemberJob::getType)
         .map(MemberJobType::name)
         .toList();
+  }
+
+  public void updateType(MemberType memberType) {
+    this.memberType = memberType;
   }
 }

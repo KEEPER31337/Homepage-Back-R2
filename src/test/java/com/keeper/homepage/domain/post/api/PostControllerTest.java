@@ -544,7 +544,7 @@ public class PostControllerTest extends PostApiTestHelper {
       String securedValue = getSecuredValue(PostController.class, "deletePost");
 
       callDeletePostApi(memberToken, postId)
-          .andExpect(status().isNoContent())
+          .andExpect(status().isOk())
           .andDo(document("delete-post",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -553,6 +553,9 @@ public class PostControllerTest extends PostApiTestHelper {
               pathParameters(
                   parameterWithName("postId")
                       .description("삭제하고자 하는 게시글의 ID")
+              ),
+              responseFields(
+                  fieldWithPath("categoryName").description("게시글의 카테고리 이름")
               )));
     }
 

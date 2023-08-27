@@ -12,7 +12,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class SignInResponse {
 
-  private long id;
+  private long memberId;
+  private String loginId;
   private String emailAddress;
   private String realName;
   private LocalDate birthday;
@@ -29,6 +30,7 @@ public class SignInResponse {
   public static SignInResponse of(Member member, List<String> roles) {
     return new SignInResponse(
         member.getId(),
+        member.getProfile().getLoginId().get(),
         member.getProfile().getEmailAddress().get(),
         member.getRealName(),
         member.getProfile().getBirthday(),

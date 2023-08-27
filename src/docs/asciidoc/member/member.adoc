@@ -202,3 +202,29 @@ include::{snippets}/get-member-profile/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-member-profile/response-fields.adoc[]
+
+== *회원 타입 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-member-type/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-member-type/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/update-member-type/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-member-type/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-member-type/http-response.adoc[]

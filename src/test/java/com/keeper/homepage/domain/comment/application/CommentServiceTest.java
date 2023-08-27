@@ -80,28 +80,6 @@ public class CommentServiceTest extends IntegrationTest {
   }
 
   @Nested
-  @DisplayName("댓글 수정")
-  class UpdateComment {
-
-    private Member other;
-    private Comment comment;
-
-    @BeforeEach
-    void setUp() {
-      other = memberTestHelper.generate();
-      comment = commentTestHelper.builder().member(member).build();
-    }
-
-    @Test
-    @DisplayName("내가 작성한 댓글이 아닌 경우 댓글 수정은 실패한다.")
-    public void 내가_작성한_댓글이_아닌_경우_댓글_수정은_실패한다() throws Exception {
-      assertThrows(BusinessException.class, () -> {
-        commentService.update(other, comment.getId(), "수정할 댓글 내용");
-      });
-    }
-  }
-
-  @Nested
   @DisplayName("댓글 삭제")
   class DeleteComment {
 
@@ -115,8 +93,8 @@ public class CommentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("모든 좋아요와 싫어요는 삭제된다.")
-    public void 모든_좋아요와_싫어요는_삭제된다() throws Exception {
+    @DisplayName("댓글 삭제 시 댓글의 좋아요와 싫어요는 삭제된다.")
+    public void 댓글_삭제_시_댓글의_좋아요와_싫어요는_삭제된다() throws Exception {
       long commentId = comment.getId();
       em.flush();
       em.clear();
@@ -131,8 +109,8 @@ public class CommentServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("댓글 작성자와 댓글의 내용이 변경된다.")
-    public void 댓글_작성자와_댓글의_내용이_변경된다() throws Exception {
+    @DisplayName("댓글 삭제 시 댓글 작성자가 Virtual Member로 변경된다.")
+    public void 댓글_삭제_시_댓글_작성자와_Virtual_Member로_변경된다() throws Exception {
       commentService.delete(member, comment.getId());
 
       Member virtualMember = memberFindService.getVirtualMember();

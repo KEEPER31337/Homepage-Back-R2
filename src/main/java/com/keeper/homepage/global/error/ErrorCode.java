@@ -23,6 +23,7 @@ public enum ErrorCode {
   MEMBER_JOB_NOT_FOUND("해당 직책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   MEMBER_JOB_IS_NOT_EXECUTIVE("해당 직책은 임원 직책이 아닙니다.", HttpStatus.BAD_REQUEST),
   MEMBER_CANNOT_FOLLOW_ME("스스로를 팔로우 할 수 없습니다.", HttpStatus.BAD_REQUEST),
+  MEMBER_TYPE_NOT_FOUND("해당 회원 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // ABOUT
   TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR
@@ -89,6 +90,9 @@ public enum ErrorCode {
   // ELECTION
   ELECTION_NOT_FOUND("존재하지 않는 선거입니다.", HttpStatus.NOT_FOUND),
   ELECTION_CANNOT_DELETE("비공개 상태 선거만 삭제 가능합니다.", HttpStatus.BAD_REQUEST),
+  ELECTION_CANDIDATE_NOT_FOUND("해당 후보자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  ELECTION_CANDIDATE_CANNOT_REGISTER("해당 직위는 후보자 등록 불가합니다.", HttpStatus.BAD_REQUEST),
+  ELECTION_CANDIDATE_CANNOT_DELETE("비공개 상태 선거에서만 후보자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;

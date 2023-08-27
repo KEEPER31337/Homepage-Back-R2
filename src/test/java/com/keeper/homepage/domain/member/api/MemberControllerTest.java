@@ -34,12 +34,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
-import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -347,6 +350,84 @@ class MemberControllerTest extends MemberApiTestHelper {
               responseFields(
                   getMemberProfileResponse()
               )));
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 타입 변경 테스트")
+  class UpdateMemberTypeTest {
+
+    private Member member, otherMember;
+    private Long typeId;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+      otherMember = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      typeId = 3L;
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 때 회원 타입 변경은 성공한다.")
+    public void 유효한_요청일_때_회원_타입_변경은_성공한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateMemberType");
+      List<Long> memberSet = List.of(member.getId(), otherMember.getId());
+
+      UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
+          .memberIds(memberSet)
+          .build();
+
+      mockMvc.perform(patch("/members/types/{typeId}", typeId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNoContent())
+          .andDo(document("update-member-type",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("typeId").description("변경할 회원 타입")
+              ),
+              requestFields(
+                  fieldWithPath("memberIds").description("하나 이상의 회원 ID")
+              )));
+    }
+
+    @Test
+    @DisplayName("회원 ID가 없을 때 타입 변경은 실패해야 한다.")
+    public void 회원_ID가_없을_때_타입_변경은_실패해야_한다() throws Exception {
+      List<Long> memberSet = List.of();
+
+      UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
+          .memberIds(memberSet)
+          .build();
+
+      mockMvc.perform(patch("/members/types/{typeId}", typeId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andDo(print())
+          .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("회원 ID가 중복될 때 타입 변경은 실패해야 한다.")
+    public void 회원_ID가_중복될_때_타입_변경은_실패해야_한다() throws Exception {
+      List<Long> memberSet = List.of(member.getId(), otherMember.getId(), otherMember.getId());
+
+      UpdateMemberTypeRequest request = UpdateMemberTypeRequest.builder()
+          .memberIds(memberSet)
+          .build();
+
+      mockMvc.perform(patch("/members/types/{typeId}", typeId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
     }
   }
 }

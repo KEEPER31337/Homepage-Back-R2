@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.comment.api;
 
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest;
-import com.keeper.homepage.domain.comment.dto.request.CommentUpdateRequest;
 import com.keeper.homepage.domain.comment.dto.response.CommentListResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,18 +44,6 @@ public class CommentController {
   ) {
     CommentListResponse comments = commentService.getComments(member, postId);
     return ResponseEntity.ok(comments);
-  }
-
-  @PutMapping("/{commentId}")
-  public ResponseEntity<Void> updateComment(
-      @LoginMember Member member,
-      @PathVariable Long commentId,
-      @RequestBody @Valid CommentUpdateRequest request
-  ) {
-    long postId = commentService.update(member, commentId, request.getContent());
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .location(URI.create("/comments/posts/" + postId))
-        .build();
   }
 
   @DeleteMapping("/{commentId}")

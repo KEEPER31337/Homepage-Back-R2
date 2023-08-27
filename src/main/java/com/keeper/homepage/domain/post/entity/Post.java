@@ -194,4 +194,12 @@ public class Post extends BaseEntity {
         .map(Thumbnail::getPath)
         .orElse(null);
   }
+
+  public String getCategoryName() {
+    return this.category.getType().getName();
+  }
+
+  public CategoryType getCategoryType() {
+    return this.category.getType();
+  }
 }
