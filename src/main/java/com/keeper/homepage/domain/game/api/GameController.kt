@@ -44,8 +44,8 @@ class GameController(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballStartRequest
     ): ResponseEntity<BaseballResponse> {
-        val earnablePoint = baseballService.start(requestMember, request.bettingPoint)
-        return ResponseEntity.ok(BaseballResponse(emptyList(), earnablePoint, SECOND_PER_GAME))
+        val baseballResponse = baseballService.start(requestMember, request.bettingPoint)
+        return ResponseEntity.ok(baseballResponse)
     }
 
     @PostMapping("/baseball/guess")
@@ -53,19 +53,15 @@ class GameController(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballGuessRequest
     ): ResponseEntity<BaseballResponse> {
-        val (results, earnablePoint, remainedSeconds) = baseballService.guess(requestMember, request.guessNumber)
-        return ResponseEntity.ok(BaseballResponse(results.map { i ->
-            if (i == null) null else BaseballResponse.GuessResultResponse(i)
-        }, earnablePoint, remainedSeconds))
+        val baseballResponse = baseballService.guess(requestMember, request.guessNumber)
+        return ResponseEntity.ok(baseballResponse)
     }
 
     @GetMapping("/baseball/result")
     fun getBaseballResult(
         @LoginMember requestMember: Member
     ): ResponseEntity<BaseballResponse> {
-        val (results, earnablePoint, remainedSeconds) = baseballService.getResult(requestMember)
-        return ResponseEntity.ok(BaseballResponse(results.map { i ->
-            if (i == null) null else BaseballResponse.GuessResultResponse(i)
-        }, earnablePoint, remainedSeconds))
+        val baseballResponse = baseballService.getResult(requestMember)
+        return ResponseEntity.ok(baseballResponse)
     }
 }
