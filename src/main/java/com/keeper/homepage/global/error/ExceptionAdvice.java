@@ -95,6 +95,6 @@ public class ExceptionAdvice {
 
   public static String getErrorMessage(String invalidValue, String errorField,
       String errorMessage) {
-    return String.format("[%s] %s: %s", errorField, invalidValue, errorMessage);
+    return "[%s] %s: %s".formatted(errorField, invalidValue, errorMessage);
   }
 }
