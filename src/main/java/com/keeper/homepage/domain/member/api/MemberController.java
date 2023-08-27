@@ -98,7 +98,7 @@ public class MemberController {
       @RequestBody @Valid ProfileUpdateRequest request
   ) {
     memberProfileService.updateProfile(member, request.toEntity());
-    return ResponseEntity.status(HttpStatus.OK).build();
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   @PatchMapping("/thumbnail")
