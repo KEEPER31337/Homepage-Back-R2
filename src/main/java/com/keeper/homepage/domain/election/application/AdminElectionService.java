@@ -1,6 +1,8 @@
 package com.keeper.homepage.domain.election.application;
 
 
+import static java.util.stream.Collectors.toList;
+
 import com.keeper.homepage.domain.election.application.convenience.ElectionDeleteService;
 import com.keeper.homepage.domain.election.application.convenience.ValidCandidateService;
 import com.keeper.homepage.domain.election.application.convenience.ValidElectionFindService;
@@ -110,16 +112,18 @@ public class AdminElectionService {
   @Transactional
   public void registerVoters(List<Long> voterIds, long electionId) {
     Election election = validElectionFindService.findById(electionId);
-    for (Long votersId : voterIds) {
-      Member member = memberFindService.findById(votersId);
-      ElectionVoter electionVoter = ElectionVoter.builder()
-          .member(member)
-          .election(election)
-          .isVoted(false)
-          .build();
+    List<ElectionVoter> electionVoters = voterIds.stream()
+        .map(voterId -> {
+          Member member = memberFindService.findById(voterId);
+          return ElectionVoter.builder()
+              .member(member)
+              .election(election)
+              .isVoted(false)
+              .build();
+        })
+        .collect(toList());
 
-      electionVoterRepository.save(electionVoter);
-    }
+    electionVoterRepository.saveAll(electionVoters);
   }
 
   @Transactional
