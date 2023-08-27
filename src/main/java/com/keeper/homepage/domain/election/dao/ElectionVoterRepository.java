@@ -9,7 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ElectionVoterRepository extends JpaRepository<ElectionVoter, ElectionVoterPK> {
 
-  Optional <ElectionVoter> findByMemberAndElectionAndIsVoted(Member member, Election election, Boolean isVoted);
+  Optional<ElectionVoter> findByMemberAndElectionAndIsVoted(Member member, Election election, Boolean isVoted);
+
   void deleteAllByElection(Election election);
+
+  Optional<ElectionVoter> findByMemberIdAndMemberIdNot(long voterId, long virtualId);
 
 }

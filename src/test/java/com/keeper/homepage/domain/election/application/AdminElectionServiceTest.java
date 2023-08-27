@@ -4,24 +4,21 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.global.error.ErrorCode.ELECTION_CANDIDATE_CANNOT_DELETE;
 import static com.keeper.homepage.global.error.ErrorCode.ELECTION_CANDIDATE_CANNOT_REGISTER;
 import static com.keeper.homepage.global.error.ErrorCode.ELECTION_CANDIDATE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.ELECTION_VOTER_CANNOT_DELETE;
+import static com.keeper.homepage.global.error.ErrorCode.ELECTION_VOTER_NOT_FOUND;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
-import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.election.entity.ElectionVoter;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.global.error.BusinessException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,7 +72,7 @@ public class AdminElectionServiceTest extends IntegrationTest {
 
     private MemberJob memberJob;
     private ElectionCandidate electionCandidate;
-    private long memberJobId = 1;
+    private long memberJobId = ROLE_회장.getId();
 
     @BeforeEach
     void setUp() {
@@ -171,6 +168,77 @@ public class AdminElectionServiceTest extends IntegrationTest {
 
       assertThrows(BusinessException.class, () -> adminElectionService.deleteCandidate(election.getId(),
           electionCandidate.getId()), ELECTION_CANDIDATE_CANNOT_DELETE.getMessage());
+    }
+
+  }
+
+  @Nested
+  @DisplayName("투표자 등록 및 삭제 테스트")
+  class VoterRegisterAndDeleteTest {
+
+    @Test
+    @DisplayName("투표자 다중 등록에 성공한다.")
+    public void 투표자_다중_등록에_성공한다() throws Exception {
+      Election election = electionTestHelper.generate();
+      List<Long> voterIds = IntStream.range(0, 5)
+          .mapToObj(member -> memberTestHelper.generate().getId())
+          .collect(toList());
+
+      adminElectionService.registerVoters(voterIds, election.getId());
+
+      em.flush();
+      em.clear();
+
+      List<ElectionVoter> savedVoter = electionVoterRepository.findAll();
+
+      assertEquals(5, savedVoter.size());
+    }
+
+    @Test
+    @DisplayName("투표자 다중 삭제에 성공한다.")
+    public void 투표자_다중_삭제에_성공한다() throws Exception {
+      Election election = electionTestHelper.builder().isAvailable(false).build();
+      List<Long> voterIds = IntStream.range(0, 5)
+          .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build().getMember().getId())
+          .collect(toList());
+
+      adminElectionService.deleteVoters(voterIds, election.getId());
+
+      em.flush();
+      em.clear();
+
+      for (Long voterId : voterIds) {
+        assertThat(electionCandidateRepository.findById(voterId)).isEmpty();
+      }
+    }
+
+    @Test
+    @DisplayName("voterId가 유효하지 않다면 삭제에 실패한다.")
+    public void voterId가_유효하지_않다면_삭제에_실패한다() throws Exception {
+      Election election = electionTestHelper.builder().isAvailable(false).build();
+      List<Long> voterIds = IntStream.range(0, 5)
+          .mapToObj(electionVoter -> memberTestHelper.generate().getId())
+          .collect(toList());
+
+      assertThrows(BusinessException.class, () -> adminElectionService.deleteVoters(voterIds, election.getId()),
+          ELECTION_VOTER_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    @DisplayName("선거가 공개 상태라면 투표자 삭제는 실패한다.")
+    public void 선거가_공개_상태라면_투표자_삭제는_실패한다() throws Exception {
+      Election election = electionTestHelper.builder()
+          .name("제 1회 임원진 선거")
+          .description("임원진 선거입니다.")
+          .isAvailable(true)
+          .build();
+
+      List<Long> voterIds = IntStream.range(0, 5)
+          .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build().getMember().getId())
+          .collect(toList());
+
+      assertThrows(BusinessException.class, () -> adminElectionService.deleteVoters(voterIds, election.getId()),
+          ELECTION_VOTER_CANNOT_DELETE.getMessage());
     }
 
   }

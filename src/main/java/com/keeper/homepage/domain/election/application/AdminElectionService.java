@@ -1,14 +1,19 @@
 package com.keeper.homepage.domain.election.application;
 
 
+import static java.util.stream.Collectors.toList;
+
 import com.keeper.homepage.domain.election.application.convenience.ElectionDeleteService;
 import com.keeper.homepage.domain.election.application.convenience.ValidCandidateService;
 import com.keeper.homepage.domain.election.application.convenience.ValidElectionFindService;
+import com.keeper.homepage.domain.election.application.convenience.ValidVoterService;
 import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
+import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
 import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
+import com.keeper.homepage.domain.election.entity.ElectionVoter;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
@@ -28,9 +33,11 @@ public class AdminElectionService {
 
   private final ElectionRepository electionRepository;
   private final ElectionCandidateRepository electionCandidateRepository;
+  private final ElectionVoterRepository electionVoterRepository;
 
   private final ValidElectionFindService validElectionFindService;
   private final ValidCandidateService validCandidateService;
+  private final ValidVoterService validVoterService;
   private final ElectionDeleteService electionDeleteService;
   private final MemberFindService memberFindService;
 
@@ -100,6 +107,48 @@ public class AdminElectionService {
     }
 
     electionCandidateRepository.delete(electionCandidate);
+  }
+
+  @Transactional
+  public void registerVoters(List<Long> voterIds, long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+    List<ElectionVoter> electionVoters = voterIds.stream()
+        .map(voterId -> {
+          Member member = memberFindService.findById(voterId);
+          return ElectionVoter.builder()
+              .member(member)
+              .election(election)
+              .isVoted(false)
+              .build();
+        })
+        .collect(toList());
+
+    electionVoterRepository.saveAll(electionVoters);
+  }
+
+  @Transactional
+  public void deleteVoters(List<Long> voterIds, long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+    if (election.isAvailable()) {
+      throw new BusinessException(electionId, "electionId", ErrorCode.ELECTION_VOTER_CANNOT_DELETE);
+    }
+    for (Long votersId : voterIds) {
+      ElectionVoter electionVoter = validVoterService.findById(votersId);
+
+      electionVoterRepository.delete(electionVoter);
+    }
+  }
+
+  @Transactional
+  public void openElection(long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+    election.open();
+  }
+
+  @Transactional
+  public void closeElection(long electionId) {
+    Election election = validElectionFindService.findById(electionId);
+    election.close();
   }
 
 }
