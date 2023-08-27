@@ -149,6 +149,10 @@ include::{snippets}/update-profile/http-request.adoc[]
 
 include::{snippets}/update-profile/request-cookies.adoc[]
 
+==== Request Fields
+
+include::{snippets}/update-profile/request-fields.adoc[]
+
 === 응답
 
 ==== Response
