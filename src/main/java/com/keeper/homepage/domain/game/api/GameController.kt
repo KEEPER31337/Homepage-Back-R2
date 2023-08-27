@@ -4,10 +4,7 @@ import com.keeper.homepage.domain.game.application.BaseballService
 import com.keeper.homepage.domain.game.application.GameService
 import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
-import com.keeper.homepage.domain.game.dto.res.BaseballResponse
-import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
-import com.keeper.homepage.domain.game.dto.res.BaseballInfoByMemberResponse
-import com.keeper.homepage.domain.game.dto.res.GameRankResponse
+import com.keeper.homepage.domain.game.dto.res.*
 import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.config.security.annotation.LoginMember
@@ -24,6 +21,11 @@ class GameController(
     @GetMapping("/rank")
     fun getGameRank(): ResponseEntity<List<GameRankResponse>> {
         return ResponseEntity.ok(gameService.getGameRanks())
+    }
+
+    @GetMapping("/my-info")
+    fun getMyInfo(@LoginMember requestMember: Member): ResponseEntity<GameInfoByMemberResponse> {
+        return ResponseEntity.ok(gameService.getMyInfo(requestMember))
     }
 
     @GetMapping("/baseball/game-info")

@@ -42,6 +42,15 @@ class GameApiTestHelper : IntegrationTest() {
         )
     }
 
+    fun callGetMyGameInfo(
+        accessCookies: Array<Cookie> = playerCookies
+    ): ResultActions {
+        return mockMvc.perform(
+            get("$GAME_URL/my-info")
+                .cookie(*accessCookies)
+        )
+    }
+
     fun callBaseballGameInfo(
         accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {

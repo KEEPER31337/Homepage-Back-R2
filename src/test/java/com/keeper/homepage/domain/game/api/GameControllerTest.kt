@@ -23,7 +23,26 @@ class GameControllerTest : GameApiTestHelper() {
 
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @Nested
-    inner class `게임 랭킹` {
+    inner class `게임 정보` {
+        @Test
+        fun `나의 게임 관련 정보를 불러온다`() {
+            callGetMyGameInfo()
+                .andExpect(status().isOk)
+                .andDo(
+                    document(
+                        "get-my-game-info",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        ),
+                        responseFields(
+                            fieldWithPath("todayTotalEarnedPoint").description("오늘 게임으로 얻은 총 포인트"),
+                            fieldWithPath("currentMemberPoint").description("현재 멤버 보유 포인트"),
+                        )
+                    )
+                )
+        }
+
         @Test
         fun `게임 랭킹을 불러온다`() {
             (1..2).forEach { _ -> gameTestHelper.generate() }
