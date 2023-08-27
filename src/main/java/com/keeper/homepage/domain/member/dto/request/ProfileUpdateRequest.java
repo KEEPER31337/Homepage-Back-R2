@@ -26,10 +26,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = PRIVATE)
 public class ProfileUpdateRequest {
 
+  @NotNull
   @Pattern(regexp = REAL_NAME_REGEX, message = RealName.REAL_NAME_INVALID)
   private String realName;
+
   @JsonFormat(pattern = "yyyy.MM.dd")
   private LocalDate birthday;
+
+  @NotNull
   @Pattern(regexp = STUDENT_ID_REGEX, message = STUDENT_ID_INVALID)
   private String studentId;
 
