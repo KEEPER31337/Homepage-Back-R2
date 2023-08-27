@@ -213,6 +213,7 @@ class GameControllerTest : GameApiTestHelper() {
                     responseFields(
                         fieldWithPath("results").description("start API에선 빈 배열로 내려갑니다."),
                         fieldWithPath("earnablePoint").description("처음 할당된 획득할 포인트"),
+                        fieldWithPath("bettingPoint").description("게임 시작 베팅 포인트"),
                         fieldWithPath("remainedSecond").description("이번 라운드 남은 초. 이 API에선 항상 ${SECOND_PER_GAME}으로 반환됩니다."),
                     )
                 )
@@ -282,6 +283,7 @@ class GameControllerTest : GameApiTestHelper() {
                         fieldWithPath("results[].strike").description("strike"),
                         fieldWithPath("results[].ball").description("ball"),
                         fieldWithPath("earnablePoint").description("획득한 포인트 (마지막 게임이 아니면 0)"),
+                        fieldWithPath("bettingPoint").description("게임 시작 베팅 포인트"),
                         fieldWithPath("remainedSecond").description("이번 라운드 남은 초. 이 API에선 항상 0으로 반환됩니다."),
                     ),
                 )
@@ -388,6 +390,7 @@ class GameControllerTest : GameApiTestHelper() {
                         responseFields(
                             subsectionWithPath("results").description("타임아웃난 round는 null"),
                             fieldWithPath("earnablePoint").description("획득한 포인트 (오늘 끝낸 게임이 아니면 0)"),
+                            fieldWithPath("bettingPoint").description("게임 시작 베팅 포인트"),
                             fieldWithPath("remainedSecond").description("이번 라운드 남은 초. ms 단위는 버림해서 내려갑니다."),
                         ),
                     )

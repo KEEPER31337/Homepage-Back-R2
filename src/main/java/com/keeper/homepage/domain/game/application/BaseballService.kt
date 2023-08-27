@@ -80,7 +80,7 @@ class BaseballService(
             earnablePoint = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
         )
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, game.baseball.baseballPerDay)
-        return BaseballResponse(emptyList(), baseballResultEntity.earnablePoint, SECOND_PER_GAME)
+        return BaseballResponse(emptyList(), bettingPoint, baseballResultEntity.earnablePoint, SECOND_PER_GAME)
     }
 
     private fun isAlreadyPlayedAllOfThem(member: Member): Boolean {
@@ -118,6 +118,7 @@ class BaseballService(
         if (baseballResultEntity.isEnd()) {
             return BaseballResponse(
                 convertBaseballResult(baseballResultEntity.results),
+                baseballResultEntity.bettingPoint,
                 gameEntity.baseball.baseballDayPoint,
                 0
             )
@@ -130,13 +131,18 @@ class BaseballService(
         requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
         gameEntity.baseball.baseballDayPoint = earnablePoint
 
-        return BaseballResponse(convertBaseballResult(baseballResultEntity.results), earnablePoint, 0)
+        return BaseballResponse(
+            convertBaseballResult(baseballResultEntity.results),
+            baseballResultEntity.bettingPoint,
+            earnablePoint,
+            0
+        )
     }
 
     @Transactional
     fun getResult(requestMember: Member): BaseballResponse {
         if (isNotPlayedYet(requestMember)) {
-            return BaseballResponse(emptyList(), 0, 0)
+            return BaseballResponse(emptyList(), 0, 0, 0)
         }
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
@@ -144,6 +150,7 @@ class BaseballService(
         if (baseballResultEntity.isEnd()) {
             return BaseballResponse(
                 convertBaseballResult(baseballResultEntity.results),
+                baseballResultEntity.bettingPoint,
                 baseballResultEntity.earnablePoint,
                 0
             )
@@ -154,6 +161,7 @@ class BaseballService(
 
         return BaseballResponse(
             convertBaseballResult(baseballResultEntity.results),
+            baseballResultEntity.bettingPoint,
             baseballResultEntity.earnablePoint,
             remainedSeconds
         )
