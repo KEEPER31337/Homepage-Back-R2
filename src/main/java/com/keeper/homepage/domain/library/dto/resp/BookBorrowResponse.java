@@ -15,25 +15,25 @@ import lombok.Getter;
 public class BookBorrowResponse {
 
   private Long borrowInfoId;
-  private String title;
+  private String bookTitle;
   private String author;
   private boolean overdue;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime borrowDate;
+  private LocalDateTime borrowDateTime;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime expireDate;
+  private LocalDateTime expireDateTime;
 
   public static BookBorrowResponse from(BookBorrowInfo bookBorrowInfo) {
     LocalDateTime now = LocalDateTime.now();
     return BookBorrowResponse.builder()
         .borrowInfoId(bookBorrowInfo.getId())
-        .title(bookBorrowInfo.getBook().getTitle())
+        .bookTitle(bookBorrowInfo.getBook().getTitle())
         .author(bookBorrowInfo.getBook().getAuthor())
         .overdue(bookBorrowInfo.getExpireDate().isBefore(now))
-        .borrowDate(bookBorrowInfo.getBorrowDate())
-        .expireDate(bookBorrowInfo.getExpireDate())
+        .borrowDateTime(bookBorrowInfo.getBorrowDate())
+        .expireDateTime(bookBorrowInfo.getExpireDate())
         .build();
   }
 }

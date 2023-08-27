@@ -25,6 +25,7 @@ import org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.*
+import org.springframework.restdocs.snippet.Attributes
 import org.springframework.restdocs.snippet.Attributes.key
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -71,12 +72,12 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val securedValue = getSecuredValue(BookManageController::class.java, "getBooks")
             callGetBooksApi(validParams).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.content[0].id").value(bookList[0].id))
+                .andExpect(jsonPath("$.content[0].bookId").value(bookList[0].id))
                 .andExpect(jsonPath("$.content[0].title").value(bookList[0].title))
                 .andExpect(jsonPath("$.content[0].author").value(bookList[0].author))
                 .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[0].bookDepartment.type.name))
-                .andExpect(jsonPath("$.content[0].totalCount").value(2))
-                .andExpect(jsonPath("$.content[0].borrowingCount").value(1))
+                .andExpect(jsonPath("$.content[0].totalQuantity").value(2))
+                .andExpect(jsonPath("$.content[0].currentQuantity").value(1))
                 .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[0].thumbnailPath))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
@@ -94,7 +95,15 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
                             parameterWithName("bookKeyword").description("책의 제목이나 저자를 검색합니다. (만약 빈 값으로 보낼 경우 책 관련 정보를 모두 가져옵니다.)")
-                                .optional()
+                                .optional(),
+                            parameterWithName("searchType").description("검색 타입")
+                                .attributes(
+                                    Attributes.Attribute(
+                                        "format",
+                                        "title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회"
+                                    )
+                                )
+                                .optional(),
                         ),
                         responseFields(
                             *pageHelper(*getBookDetailResponseDocs())
@@ -340,12 +349,12 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val securedValue = getSecuredValue(BookManageController::class.java, "getBookDetail")
             callGetBookDetailApi(bookId = book.id)
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.id").value(book.id))
+                .andExpect(jsonPath("$.bookId").value(book.id))
                 .andExpect(jsonPath("$.title").value(book.title))
                 .andExpect(jsonPath("$.author").value(book.author))
                 .andExpect(jsonPath("$.bookDepartment").value(book.bookDepartment.type.name))
-                .andExpect(jsonPath("$.totalCount").value(3))
-                .andExpect(jsonPath("$.borrowingCount").value(2))
+                .andExpect(jsonPath("$.totalQuantity").value(3))
+                .andExpect(jsonPath("$.currentQuantity").value(1))
                 .andExpect(jsonPath("$.thumbnailPath").value(book.thumbnail.path))
                 .andExpect(jsonPath("$.borrowInfos[0].borrowInfoId").value(borrowList[0].id))
                 .andExpect(jsonPath("$.borrowInfos[0].bookId").value(borrowList[0].book.id))

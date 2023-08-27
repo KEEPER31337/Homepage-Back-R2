@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.library.dto.req.BookSearchType;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
@@ -42,26 +43,26 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("현재수량이 0이 아니고, 회원이 빌린 책의 개수가 5권 미만이면 도서 대여 가능 응답을 해야 한다.")
-    public void 현재수량이_0이_아니고_회원이_빌린_책의_개수가_5권_미만이면_도서_대여_가능_응답을_해야_한다() throws Exception {
-      Page<BookResponse> books = bookService.getBooks(member, null, null, PageRequest.of(0, 5));
+    public void 현재수량이_0이_아니고_회원이_빌린_책의_개수가_5권_미만이면_도서_대여_가능_응답을_해야_한다() {
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isTrue();
     }
 
     @Test
     @DisplayName("현재수량이 0이라면 도서 대여 불가능 응답을 해야 한다.")
-    public void 현재수량이_0이라면_도서_대여_불가능_응답을_해야_한다() throws Exception {
+    public void 현재수량이_0이라면_도서_대여_불가능_응답을_해야_한다() {
       bookBorrowInfoTestHelper.builder().book(book).borrowStatus(getBookBorrowStatusBy(대출승인))
           .build();
 
-      Page<BookResponse> books = bookService.getBooks(member, null, null, PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
     }
 
     @Test
     @DisplayName("회원이 빌린 책의 개수가 5권이라면 도서 대여 불가능 응답을 해야 한다.")
-    public void 회원이_빌린_책의_개수가_5권이라면_도서_대여_불가능_응답을_해야_한다() throws Exception {
+    public void 회원이_빌린_책의_개수가_5권이라면_도서_대여_불가능_응답을_해야_한다() {
       for (int i = 0; i < 5; i++) {
         bookBorrowInfoTestHelper.builder()
             .member(member)
@@ -73,7 +74,7 @@ public class BookServiceTest extends IntegrationTest {
       em.clear();
       member = memberRepository.findById(member.getId()).get();
 
-      Page<BookResponse> books = bookService.getBooks(member, null, null, PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
     }
@@ -94,14 +95,14 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("도서 대출중인 권수가 5권 이하면 도서 대출은 성공해야 한다.")
-    public void 도서_대출중인_권수가_5권_이하면_도서_대출은_성공해야_한다() throws Exception {
+    public void 도서_대출중인_권수가_5권_이하면_도서_대출은_성공해야_한다() {
       assertDoesNotThrow(() -> bookService.requestBorrow(member, book.getId()));
       assertThat(bookBorrowInfoRepository.findByMemberAndBook(member, book)).isNotEmpty();
     }
 
     @Test
     @DisplayName("도서 대출중인 권수가 5권 초과면 도서 대출은 실패해야 한다.")
-    public void 도서_대출중인_권수가_5권_초과면_도서_대출은_실패해야_한다() throws Exception {
+    public void 도서_대출중인_권수가_5권_초과면_도서_대출은_실패해야_한다() {
       for (int i = 0; i < 4; i++) {
         bookBorrowInfoTestHelper.builder()
             .member(member)
@@ -125,7 +126,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("현재 수량이 없는 책은 도서 대출이 실패해야 한다.")
-    public void 현재_수량이_없는_책은_도서_대출이_실패해야_한다() throws Exception {
+    public void 현재_수량이_없는_책은_도서_대출이_실패해야_한다() {
       bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
@@ -141,7 +142,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("이미 신청한 책은 도서 대출이 실패해야 한다.")
-    public void 이미_신청한_책은_도서_대출이_실패해야_한다() throws Exception {
+    public void 이미_신청한_책은_도서_대출이_실패해야_한다() {
       bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
@@ -171,7 +172,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("도서 반납 요청 시 lastRequestDate가 갱신되어야 한다.")
-    public void 도서_반납_요청_시_lastRequestDate가_갱신되어야_한다() throws Exception {
+    public void 도서_반납_요청_시_lastRequestDate가_갱신되어야_한다() {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
@@ -191,7 +192,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("도서 반납 요청 시 도서 상태가 갱신되어야 한다.")
-    public void 도서_반납_요청_시_도서_상태가_갱신되어야_한다() throws Exception {
+    public void 도서_반납_요청_시_도서_상태가_갱신되어야_한다() {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
@@ -208,7 +209,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("도서가 대출 승인 상태가 아니라면 도서 반납 요청은 실패해야 한다.")
-    public void 도서가_대출_승인_상태가_아니라면_도서_반납_요청은_실패해야_한다() throws Exception {
+    public void 도서가_대출_승인_상태가_아니라면_도서_반납_요청은_실패해야_한다() {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
@@ -222,7 +223,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("대출 내역이 없다면 도서 반납 요청이 실패해야 한다.")
-    public void 대출_내역이_없다면_도서_반납_요청이_실패해야_한다() throws Exception {
+    public void 대출_내역이_없다면_도서_반납_요청이_실패해야_한다() {
       long notExistBorrowId = 5;
 
       assertThrows(BusinessException.class, () -> bookService.requestReturn(member, notExistBorrowId));
@@ -230,7 +231,7 @@ public class BookServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("본인이 아니라면 도서 반납 요청이 실패해야 한다.")
-    public void 본인이_아니라면_도서_반납_요청이_실패해야_한다() throws Exception {
+    public void 본인이_아니라면_도서_반납_요청이_실패해야_한다() {
       Member otherMember = memberTestHelper.generate();
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(otherMember)

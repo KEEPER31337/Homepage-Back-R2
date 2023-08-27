@@ -1,8 +1,9 @@
 package com.keeper.homepage.domain.library.api;
 
 import com.keeper.homepage.domain.library.application.BookService;
-import com.keeper.homepage.domain.library.dto.resp.BookResponse;
+import com.keeper.homepage.domain.library.dto.req.BookSearchType;
 import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
+import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -29,8 +30,8 @@ public class BookController {
   @GetMapping
   public ResponseEntity<Page<BookResponse>> getBooks(
       @LoginMember Member member,
-      @RequestParam(required = false) String searchType,
-      @RequestParam(required = false) String search,
+      @RequestParam(required = false, defaultValue = "ALL") BookSearchType searchType,
+      @RequestParam(required = false, defaultValue = "") String search,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
