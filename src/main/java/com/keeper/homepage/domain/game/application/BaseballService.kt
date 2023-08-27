@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.game.application
 
 import com.keeper.homepage.domain.game.dto.res.BaseballStatus
-import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
+import com.keeper.homepage.domain.game.dto.res.BaseballInfoByMemberResponse
 import com.keeper.homepage.domain.game.entity.Game
 import com.keeper.homepage.domain.game.entity.embedded.Baseball.BASEBALL_MAX_PLAYTIME
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
@@ -11,9 +11,6 @@ import com.keeper.homepage.global.error.ErrorCode
 import com.keeper.homepage.global.util.redis.RedisUtil
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
-import java.time.ZoneOffset.UTC
-import java.time.temporal.ChronoUnit
 
 const val REDIS_KEY_PREFIX = "baseball_"
 const val GUESS_NUMBER_LENGTH = 4
@@ -29,8 +26,8 @@ class BaseballService(
     val redisUtil: RedisUtil,
     val gameFindService: GameFindService
 ) {
-    fun getBaseballGameInfoByMember(): GameInfoByMemberResponse =
-        GameInfoByMemberResponse(
+    fun getBaseballGameInfoByMember(): BaseballInfoByMemberResponse =
+        BaseballInfoByMemberResponse(
             guessNumberLength = GUESS_NUMBER_LENGTH,
             tryCount = TRY_COUNT,
             maxBettingPoint = MAX_BETTING_POINT,

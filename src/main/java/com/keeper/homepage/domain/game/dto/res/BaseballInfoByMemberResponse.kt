@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.game.dto.res
 
-data class GameInfoByMemberResponse(
+data class BaseballInfoByMemberResponse(
     val guessNumberLength: Int,
     val tryCount: Int,
     val maxBettingPoint: Long,

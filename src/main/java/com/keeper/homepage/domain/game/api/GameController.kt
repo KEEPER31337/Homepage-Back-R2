@@ -6,7 +6,7 @@ import com.keeper.homepage.domain.game.dto.req.BaseballGuessRequest
 import com.keeper.homepage.domain.game.dto.req.BaseballStartRequest
 import com.keeper.homepage.domain.game.dto.res.BaseballResponse
 import com.keeper.homepage.domain.game.dto.res.BaseballStatusResponse
-import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
+import com.keeper.homepage.domain.game.dto.res.BaseballInfoByMemberResponse
 import com.keeper.homepage.domain.game.dto.res.GameRankResponse
 import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
 import com.keeper.homepage.domain.member.entity.Member
@@ -27,7 +27,7 @@ class GameController(
     }
 
     @GetMapping("/baseball/game-info")
-    fun baseballGameInfoByMember(): ResponseEntity<GameInfoByMemberResponse> {
+    fun baseballGameInfoByMember(): ResponseEntity<BaseballInfoByMemberResponse> {
         return ResponseEntity.ok(baseballService.getBaseballGameInfoByMember())
     }
 
