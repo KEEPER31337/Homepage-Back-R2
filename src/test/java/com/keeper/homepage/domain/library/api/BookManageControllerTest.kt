@@ -61,7 +61,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기중, book = bookList[it]) }
             bookBorrowInfoTestHelper.generate(borrowStatus = 대출승인, book = bookList[0])
             validParams = multiValueMapOf(
-                "bookKeyword" to "",
+                "search" to "",
                 "page" to "0",
                 "size" to "3",
             )
@@ -94,7 +94,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                                 .optional(),
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
-                            parameterWithName("bookKeyword").description("책의 제목이나 저자를 검색합니다. (만약 빈 값으로 보낼 경우 책 관련 정보를 모두 가져옵니다.)")
+                            parameterWithName("search").description("책의 제목이나 저자를 검색합니다. (만약 빈 값으로 보낼 경우 책 관련 정보를 모두 가져옵니다.)")
                                 .optional(),
                             parameterWithName("searchType").description("검색 타입")
                                 .attributes(

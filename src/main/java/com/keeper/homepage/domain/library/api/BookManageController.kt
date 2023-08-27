@@ -35,13 +35,13 @@ class BookManageController(
 ) {
     @GetMapping
     fun getBooks(
-        @RequestParam(required = false, defaultValue = "") bookKeyword: String,
+        @RequestParam(required = false, defaultValue = "") search: String,
         @RequestParam(required = false, defaultValue = "ALL") searchType: BookSearchType,
         @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
         @RequestParam(defaultValue = GET_BOOKS_DEFAULT_SIZE.toString()) @Min(GET_BOOKS_MIN_SIZE) @Max(GET_BOOKS_MAX_SIZE) @NotNull size: Int,
     ): ResponseEntity<Page<BookDetailResponse>> {
         return ResponseEntity.ok(
-            bookManageService.getBooks(bookKeyword, searchType, PageRequest.of(page, size))
+            bookManageService.getBooks(search, searchType, PageRequest.of(page, size))
                 .map(::BookDetailResponse)
         )
     }

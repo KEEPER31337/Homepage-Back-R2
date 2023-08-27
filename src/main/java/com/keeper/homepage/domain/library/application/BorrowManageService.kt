@@ -19,12 +19,12 @@ fun BookBorrowInfoRepository.getBorrowById(borrowId: Long) = this.findById(borro
 class BorrowManageService(
     val borrowInfoRepository: BookBorrowInfoRepository
 ) {
-    fun getBorrow(keyword: String, pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowDetailResponse> {
+    fun getBorrow(search: String, pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowDetailResponse> {
         if (borrowStatusDto == null) {
             return borrowInfoRepository.findAll(pageable)
                 .map(::BorrowDetailResponse)
         }
-        return borrowStatusDto.getBorrowInfo(keyword, borrowInfoRepository, pageable)
+        return borrowStatusDto.getBorrowInfo(search, borrowInfoRepository, pageable)
             .map(::BorrowDetailResponse)
     }
 

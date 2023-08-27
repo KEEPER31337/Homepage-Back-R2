@@ -98,7 +98,7 @@ class BookManageApiTestHelper : IntegrationTest() {
 
     fun callGetBooksApi(
         params: MultiValueMap<String, String> = multiValueMapOf(
-            "bookKeyword" to "",
+            "search" to "",
             "page" to "0",
             "size" to "10",
         ),

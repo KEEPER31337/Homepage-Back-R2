@@ -64,7 +64,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                                 .optional(),
                             parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
                                 .optional(),
-                            parameterWithName("keyword").description("검색 키워드. 도서명, 저자, 실명에서 검색해옵니다.")
+                            parameterWithName("search").description("검색 키워드. 도서명, 저자, 실명에서 검색해옵니다.")
                                 .optional(),
                             parameterWithName("status")
                                 .attributes(
@@ -191,7 +191,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
             generateBorrowInfoByTitle(대출승인, "나다") // X
             generateBorrowInfoByTitle(반납, "나다") // X
             callGetBorrowApi(
-                params = multiValueMapOf("page" to "0", "size" to "5", "keyword" to searchKeyword),
+                params = multiValueMapOf("page" to "0", "size" to "5", "search" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
             ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.totalElements").value("8"))
@@ -217,7 +217,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
             generateBorrowInfoByAuthor(대출승인, "나다") // X
             generateBorrowInfoByAuthor(반납, "나다") // X
             callGetBorrowApi(
-                params = multiValueMapOf("page" to "0", "size" to "5", "keyword" to searchKeyword),
+                params = multiValueMapOf("page" to "0", "size" to "5", "search" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
             ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.totalElements").value("8"))
@@ -243,7 +243,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
             generateBorrowInfoByMemberRealName(대출승인, "나다") // X
             generateBorrowInfoByMemberRealName(반납, "나다") // X
             callGetBorrowApi(
-                params = multiValueMapOf("page" to "0", "size" to "5", "keyword" to searchKeyword),
+                params = multiValueMapOf("page" to "0", "size" to "5", "search" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
             ).andExpect(status().isOk)
                 .andExpect(jsonPath("$.totalElements").value("8"))
