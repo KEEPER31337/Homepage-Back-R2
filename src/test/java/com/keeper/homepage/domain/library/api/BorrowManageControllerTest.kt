@@ -47,6 +47,8 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookId").value(borrowInfoList[0].book.id))
                 .andExpect(jsonPath("$.content[0].bookTitle").value(borrowInfoList[0].book.title))
                 .andExpect(jsonPath("$.content[0].author").value(borrowInfoList[0].book.author))
+                .andExpect(jsonPath("$.content[0].totalQuantity").value(borrowInfoList[0].book.totalQuantity))
+                .andExpect(jsonPath("$.content[0].currentQuantity").value(borrowInfoList[0].book.currentQuantity))
                 .andExpect(jsonPath("$.content[0].borrowerId").value(borrowInfoList[0].member.id))
                 .andExpect(jsonPath("$.content[0].borrowerRealName").value(borrowInfoList[0].member.realName))
                 .andExpect(jsonPath("$.number").value("0"))
