@@ -64,6 +64,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 "search" to "",
                 "page" to "0",
                 "size" to "3",
+                "searchType" to "all",
             )
         }
 
