@@ -31,7 +31,7 @@ class BorrowManageService(
     @Transactional
     fun approveBorrow(borrowId: Long) {
         val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
-        if (borrowInfo.borrowStatus.type != 대출대기중) {
+        if (borrowInfo.borrowStatus.type != 대출대기) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_REQUESTS)
         }
         val book = borrowInfo.book
@@ -39,33 +39,33 @@ class BorrowManageService(
             throw BusinessException(borrowId, "borrowId", ErrorCode.BOOK_BORROWING_COUNT_OVER)
         }
         
-        borrowInfo.changeBorrowStatus(대출승인)
+        borrowInfo.changeBorrowStatus(대출중)
     }
 
     @Transactional
     fun denyBorrow(borrowId: Long) {
         val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
-        if (borrowInfo.borrowStatus.type != 대출대기중) {
+        if (borrowInfo.borrowStatus.type != 대출대기) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_REQUESTS)
         }
-        borrowInfo.changeBorrowStatus(대출거부)
+        borrowInfo.changeBorrowStatus(대출반려)
     }
 
     @Transactional
     fun approveReturn(borrowId: Long) {
         val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
-        if (borrowInfo.borrowStatus.type != 반납대기중) {
+        if (borrowInfo.borrowStatus.type != 반납대기) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
         }
-        borrowInfo.changeBorrowStatus(반납)
+        borrowInfo.changeBorrowStatus(반납완료)
     }
 
     @Transactional
     fun denyReturn(borrowId: Long) {
         val borrowInfo = borrowInfoRepository.getBorrowById(borrowId)
-        if (borrowInfo.borrowStatus.type != 반납대기중) {
+        if (borrowInfo.borrowStatus.type != 반납대기) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
         }
-        borrowInfo.changeBorrowStatus(대출승인)
+        borrowInfo.changeBorrowStatus(대출중)
     }
 }

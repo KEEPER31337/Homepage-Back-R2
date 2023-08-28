@@ -48,11 +48,11 @@ public class BookBorrowStatus {
   @Getter
   @RequiredArgsConstructor
   public enum BookBorrowStatusType {
-    대출대기중(1, "대출 대기 중"),
-    대출거부(2, "대출 거부"),
-    대출승인(3, "대출 승인"),
-    반납대기중(4, "반납 대기 중"),
-    반납(5, "반납"),
+    대출대기(1, "대출 대기"),
+    대출반려(2, "대출 반려"),
+    대출중(3, "대출중"),
+    반납대기(4, "반납 대기"),
+    반납완료(5, "반납 완료"),
     ;
 
     private final long id;

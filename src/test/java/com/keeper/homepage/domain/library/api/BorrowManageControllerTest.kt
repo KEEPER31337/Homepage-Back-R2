@@ -31,7 +31,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @BeforeEach
         fun setBorrowInfo() {
-            borrowInfoList = (1..20).map { bookBorrowInfoTestHelper.generate(대출대기중, bookTestHelper.generate()) }
+            borrowInfoList = (1..20).map { bookBorrowInfoTestHelper.generate(대출대기, bookTestHelper.generate()) }
         }
 
         @Test
@@ -126,9 +126,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `status 없이 보낼 경우 모든 대출 관련 목록을 가져와야 한다`() {
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출반려, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate()) }
             callGetBorrowApi(borrowStatus = null)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.number").value("0"))
@@ -139,9 +139,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `대출 대기중인 목록만 가져와야 한다`() {
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출반려, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate()) }
             callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
@@ -157,9 +157,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `대출 대기중이거나 반납 대기중인 목록만 가져와야 한다`() {
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출반려, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate()) }
             callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN)
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.content[0].borrowInfoId").value(borrowInfoList[0].id))
@@ -177,19 +177,19 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         @Test
         fun `대출 대기중이거나 반납 대기중인 목록만 가져와야 하고 제목 검색이 가능해야 한다`() {
             val searchKeyword = "나다"
-            generateBorrowInfoByTitle(대출대기중, "가나다라") // O
-            generateBorrowInfoByTitle(대출대기중, "가나다") // O
-            generateBorrowInfoByTitle(대출대기중, "나다라") // O
-            generateBorrowInfoByTitle(대출대기중, "나다") // O
-            generateBorrowInfoByTitle(대출대기중, "마바사") // X
-            generateBorrowInfoByTitle(대출대기중, "나마사") // X
-            generateBorrowInfoByTitle(반납대기중, "가나다라") // O
-            generateBorrowInfoByTitle(반납대기중, "가나다") // O
-            generateBorrowInfoByTitle(반납대기중, "나다라") // O
-            generateBorrowInfoByTitle(반납대기중, "나다") // O
-            generateBorrowInfoByTitle(대출거부, "나다") // X
-            generateBorrowInfoByTitle(대출승인, "나다") // X
-            generateBorrowInfoByTitle(반납, "나다") // X
+            generateBorrowInfoByTitle(대출대기, "가나다라") // O
+            generateBorrowInfoByTitle(대출대기, "가나다") // O
+            generateBorrowInfoByTitle(대출대기, "나다라") // O
+            generateBorrowInfoByTitle(대출대기, "나다") // O
+            generateBorrowInfoByTitle(대출대기, "마바사") // X
+            generateBorrowInfoByTitle(대출대기, "나마사") // X
+            generateBorrowInfoByTitle(반납대기, "가나다라") // O
+            generateBorrowInfoByTitle(반납대기, "가나다") // O
+            generateBorrowInfoByTitle(반납대기, "나다라") // O
+            generateBorrowInfoByTitle(반납대기, "나다") // O
+            generateBorrowInfoByTitle(대출반려, "나다") // X
+            generateBorrowInfoByTitle(대출중, "나다") // X
+            generateBorrowInfoByTitle(반납완료, "나다") // X
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "5", "search" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
@@ -203,19 +203,19 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         @Test
         fun `대출 대기중이거나 반납 대기중인 목록만 가져와야 하고 저자 검색이 가능해야 한다`() {
             val searchKeyword = "나다"
-            generateBorrowInfoByAuthor(대출대기중, "가나다라") // O
-            generateBorrowInfoByAuthor(대출대기중, "가나다") // O
-            generateBorrowInfoByAuthor(대출대기중, "나다라") // O
-            generateBorrowInfoByAuthor(대출대기중, "나다") // O
-            generateBorrowInfoByAuthor(대출대기중, "마바사") // X
-            generateBorrowInfoByAuthor(대출대기중, "나마사") // X
-            generateBorrowInfoByAuthor(반납대기중, "가나다라") // O
-            generateBorrowInfoByAuthor(반납대기중, "가나다") // O
-            generateBorrowInfoByAuthor(반납대기중, "나다라") // O
-            generateBorrowInfoByAuthor(반납대기중, "나다") // O
-            generateBorrowInfoByAuthor(대출거부, "나다") // X
-            generateBorrowInfoByAuthor(대출승인, "나다") // X
-            generateBorrowInfoByAuthor(반납, "나다") // X
+            generateBorrowInfoByAuthor(대출대기, "가나다라") // O
+            generateBorrowInfoByAuthor(대출대기, "가나다") // O
+            generateBorrowInfoByAuthor(대출대기, "나다라") // O
+            generateBorrowInfoByAuthor(대출대기, "나다") // O
+            generateBorrowInfoByAuthor(대출대기, "마바사") // X
+            generateBorrowInfoByAuthor(대출대기, "나마사") // X
+            generateBorrowInfoByAuthor(반납대기, "가나다라") // O
+            generateBorrowInfoByAuthor(반납대기, "가나다") // O
+            generateBorrowInfoByAuthor(반납대기, "나다라") // O
+            generateBorrowInfoByAuthor(반납대기, "나다") // O
+            generateBorrowInfoByAuthor(대출반려, "나다") // X
+            generateBorrowInfoByAuthor(대출중, "나다") // X
+            generateBorrowInfoByAuthor(반납완료, "나다") // X
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "5", "search" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
@@ -229,19 +229,19 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         @Test
         fun `대출 대기중이거나 반납 대기중인 목록만 가져와야 하고 대여자 실명 검색이 가능해야 한다`() {
             val searchKeyword = "나다"
-            generateBorrowInfoByMemberRealName(대출대기중, "가나다라") // O
-            generateBorrowInfoByMemberRealName(대출대기중, "가나다") // O
-            generateBorrowInfoByMemberRealName(대출대기중, "나다라") // O
-            generateBorrowInfoByMemberRealName(대출대기중, "나다") // O
-            generateBorrowInfoByMemberRealName(대출대기중, "마바사") // X
-            generateBorrowInfoByMemberRealName(대출대기중, "나마사") // X
-            generateBorrowInfoByMemberRealName(반납대기중, "가나다라") // O
-            generateBorrowInfoByMemberRealName(반납대기중, "가나다") // O
-            generateBorrowInfoByMemberRealName(반납대기중, "나다라") // O
-            generateBorrowInfoByMemberRealName(반납대기중, "나다") // O
-            generateBorrowInfoByMemberRealName(대출거부, "나다") // X
-            generateBorrowInfoByMemberRealName(대출승인, "나다") // X
-            generateBorrowInfoByMemberRealName(반납, "나다") // X
+            generateBorrowInfoByMemberRealName(대출대기, "가나다라") // O
+            generateBorrowInfoByMemberRealName(대출대기, "가나다") // O
+            generateBorrowInfoByMemberRealName(대출대기, "나다라") // O
+            generateBorrowInfoByMemberRealName(대출대기, "나다") // O
+            generateBorrowInfoByMemberRealName(대출대기, "마바사") // X
+            generateBorrowInfoByMemberRealName(대출대기, "나마사") // X
+            generateBorrowInfoByMemberRealName(반납대기, "가나다라") // O
+            generateBorrowInfoByMemberRealName(반납대기, "가나다") // O
+            generateBorrowInfoByMemberRealName(반납대기, "나다라") // O
+            generateBorrowInfoByMemberRealName(반납대기, "나다") // O
+            generateBorrowInfoByMemberRealName(대출반려, "나다") // X
+            generateBorrowInfoByMemberRealName(대출중, "나다") // X
+            generateBorrowInfoByMemberRealName(반납완료, "나다") // X
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "5", "search" to searchKeyword),
                 borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN
@@ -254,9 +254,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `대출 대기중이거나 반납 대기중인 목록 검색이 가능해야 한다`() {
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
-            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출반려, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(대출중, bookTestHelper.generate()) }
+            (1..3).map { bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate()) }
             callGetBorrowApi(borrowStatus = BorrowStatusDto.REQUESTS_OR_WILL_RETURN).andExpect(status().isOk)
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("10"))
@@ -265,9 +265,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `반납 대기중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
-            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
-            (1..4).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) }
-            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) }
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출반려, bookTestHelper.generate()) }
+            (1..4).map { bookBorrowInfoTestHelper.generate(대출중, bookTestHelper.generate()) }
+            (1..8).map { bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate()) }
             callGetBorrowApi(
                 params = multiValueMapOf("page" to "0", "size" to "3"),
                 borrowStatus = BorrowStatusDto.WILL_RETURN
@@ -281,19 +281,19 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @Test
         fun `연체중인 목록만 가져와야 하고 페이징이 되어야 한다`() {
-            (1..2).map { bookBorrowInfoTestHelper.generate(대출승인, bookTestHelper.generate()) } // 연체 안됨
-            (1..2).map { bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate()) } // 연체 안됨
-            (1..2).map { bookBorrowInfoTestHelper.generate(대출거부, bookTestHelper.generate()) }
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출중, bookTestHelper.generate()) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate()) } // 연체 안됨
+            (1..2).map { bookBorrowInfoTestHelper.generate(대출반려, bookTestHelper.generate()) }
             (1..4).map {
                 bookBorrowInfoTestHelper.generate(
-                    대출승인,
+                    대출중,
                     bookTestHelper.generate(),
                     LocalDateTime.now().minusDays(1)
                 )
             }
             (1..8).map {
                 bookBorrowInfoTestHelper.generate(
-                    반납대기중,
+                    반납대기,
                     bookTestHelper.generate(),
                     LocalDateTime.now().minusDays(1)
                 )
@@ -360,7 +360,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @BeforeEach
         fun setBorrowInfo() {
-            borrowInfo = bookBorrowInfoTestHelper.generate(대출대기중, bookTestHelper.generate())
+            borrowInfo = bookBorrowInfoTestHelper.generate(대출대기, bookTestHelper.generate())
         }
 
         @Test
@@ -381,7 +381,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                         )
                     )
                 )
-            borrowInfo.borrowStatus.type shouldBe 대출승인
+            borrowInfo.borrowStatus.type shouldBe 대출중
             borrowInfo.book.countInBorrowing shouldBe beforeBorrowingQuantity + 1
         }
 
@@ -402,7 +402,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                         )
                     )
                 )
-            borrowInfo.borrowStatus.type shouldBe 대출거부
+            borrowInfo.borrowStatus.type shouldBe 대출반려
         }
     }
 
@@ -414,7 +414,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
         @BeforeEach
         fun setBorrowInfo() {
-            borrowInfo = bookBorrowInfoTestHelper.generate(반납대기중, bookTestHelper.generate())
+            borrowInfo = bookBorrowInfoTestHelper.generate(반납대기, bookTestHelper.generate())
         }
 
         @Test
@@ -435,7 +435,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                         )
                     )
                 )
-            borrowInfo.borrowStatus.type shouldBe 반납
+            borrowInfo.borrowStatus.type shouldBe 반납완료
             borrowInfo.book.countInBorrowing shouldBe beforeBorrowingQuantity - 1
         }
 
@@ -456,7 +456,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                         )
                     )
                 )
-            borrowInfo.borrowStatus.type shouldBe 대출승인
+            borrowInfo.borrowStatus.type shouldBe 대출중
         }
     }
 }

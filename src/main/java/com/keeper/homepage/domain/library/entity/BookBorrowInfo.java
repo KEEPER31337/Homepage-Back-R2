@@ -1,8 +1,8 @@
 package com.keeper.homepage.domain.library.entity;
 
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -99,17 +99,17 @@ public class BookBorrowInfo extends BaseEntity {
 
   public boolean isCanBorrow() {
     BookBorrowStatusType type = getBorrowStatus().getType();
-    return type.equals(대출대기중) || isInBorrowing();
+    return type.equals(대출대기) || isInBorrowing();
   }
 
   public boolean isInBorrowing() {
     BookBorrowStatusType type = getBorrowStatus().getType();
-    return type.equals(대출승인) || type.equals(반납대기중);
+    return type.equals(대출중) || type.equals(반납대기);
   }
 
   public boolean isReadyToReturn() {
     BookBorrowStatusType type = getBorrowStatus().getType();
-    return 대출승인.equals(type);
+    return 대출중.equals(type);
   }
 
   public void changeBorrowStatus(BookBorrowStatusType type) {

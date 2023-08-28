@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.library.api;
 
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -133,7 +133,7 @@ public class BookControllerTest extends BookApiTestHelper {
       bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
       params.add("page", "0");
       params.add("size", "3");
@@ -166,7 +166,7 @@ public class BookControllerTest extends BookApiTestHelper {
         BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
             .member(member)
             .book(book)
-            .borrowStatus(getBookBorrowStatusBy(대출승인))
+            .borrowStatus(getBookBorrowStatusBy(대출중))
             .build();
 
         long borrowId = bookBorrowInfo.getId();

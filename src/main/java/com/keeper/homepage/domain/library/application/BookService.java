@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.library.application;
 
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
@@ -66,7 +66,7 @@ public class BookService {
         .orElseThrow(() -> new BusinessException(bookId, "bookId", BOOK_NOT_FOUND));
     checkCurrentQuantity(book);
     checkBorrowRequestAlready(member, book);
-    member.borrow(book, getBookBorrowStatusBy(대출대기중));
+    member.borrow(book, getBookBorrowStatusBy(대출대기));
   }
 
   private void checkCountInBorrowing(Member member) {
@@ -86,7 +86,7 @@ public class BookService {
 
   private void checkBorrowRequestAlready(Member member, Book book) {
     Optional<BookBorrowInfo> bookBorrowInfo = bookBorrowInfoRepository
-        .findByMemberAndBookAndBorrowStatus(member, book, getBookBorrowStatusBy(대출대기중));
+        .findByMemberAndBookAndBorrowStatus(member, book, getBookBorrowStatusBy(대출대기));
     if (bookBorrowInfo.isPresent()) {
       throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId",
           BORROW_REQUEST_ALREADY);
@@ -105,7 +105,7 @@ public class BookService {
       throw new BusinessException(borrowId, "borrowId", BORROW_REQUEST_RETURN_DENY);
     }
     bookBorrowInfo.changeLastRequestDate(LocalDateTime.now());
-    bookBorrowInfo.changeBorrowStatus(반납대기중);
+    bookBorrowInfo.changeBorrowStatus(반납대기);
   }
 
   public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {

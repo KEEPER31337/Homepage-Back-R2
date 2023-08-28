@@ -58,8 +58,8 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         @BeforeEach
         fun setUp() {
             bookList = (0..3).map { bookTestHelper.builder().totalQuantity(2).build() }
-            (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기중, book = bookList[it]) }
-            bookBorrowInfoTestHelper.generate(borrowStatus = 대출승인, book = bookList[0])
+            (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기, book = bookList[it]) }
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출중, book = bookList[0])
             validParams = multiValueMapOf(
                 "search" to "",
                 "page" to "0",
@@ -330,15 +330,15 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             borrowList = listOf(
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(대출승인))
+                    .borrowStatus(getBookBorrowStatusBy(대출중))
                     .build(),
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(반납대기중))
+                    .borrowStatus(getBookBorrowStatusBy(반납대기))
                     .build(),
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(반납))
+                    .borrowStatus(getBookBorrowStatusBy(반납완료))
                     .build(),
             )
         }
