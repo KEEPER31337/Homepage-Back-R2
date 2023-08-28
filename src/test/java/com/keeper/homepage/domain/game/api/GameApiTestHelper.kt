@@ -82,7 +82,7 @@ class GameApiTestHelper : IntegrationTest() {
     }
 
     fun callBaseballGuess(
-        guessNumber: String,
+        guessNumbers: List<String>,
         correctNumber: String,
         bettingPoint: Int,
         results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
@@ -94,15 +94,21 @@ class GameApiTestHelper : IntegrationTest() {
             BaseballResultEntity(correctNumber, bettingPoint, results, earnablePoint),
             0,
         )
+        for (guessNumber in guessNumbers.subList(0, guessNumbers.size - 1)) {
+            callBaseballGuess(guessNumber, accessCookies)
+        }
+        return callBaseballGuess(guessNumbers.last(), accessCookies)
+    }
+
+    private fun callBaseballGuess(guessNumber: String, accessCookies: Array<Cookie>): ResultActions {
         return mockMvc.perform(
             post("$GAME_URL/baseball/guess")
                 .content(asJsonString(BaseballGuessRequest(guessNumber)))
                 .contentType(APPLICATION_JSON)
-                .cookie(*accessCookies)
-        )
+                .cookie(*accessCookies))
     }
 
-    fun  callGetBaseballResult(
+    fun callGetBaseballResult(
         results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
         earnablePoint: Int = 1000,
         accessCookies: Array<Cookie> = playerCookies
