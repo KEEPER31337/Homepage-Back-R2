@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -440,10 +441,7 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       doNothing().when(memberProfileService)
-                      .checkMemberPassword(any(Member.class), anyString());
-
-      doNothing().when(memberProfileService)
-              .updateProfileEmailAddress(any(Member.class), anyString(), anyString());
+              .updateProfileEmailAddress(any(Member.class), anyString(), anyString(), anyString());
 
       mockMvc.perform(patch("/members/email")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))

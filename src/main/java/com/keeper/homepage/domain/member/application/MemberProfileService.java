@@ -46,7 +46,9 @@ public class MemberProfileService {
   }
 
   @Transactional
-  public void updateProfileEmailAddress(Member member, String email, String auth) {
+  public void updateProfileEmailAddress(Member member, String email,
+      String auth, String password) {
+    checkMemberPassword(member, password);
     checkEmailAuth(email, auth);
     member.getProfile().updateEmailAddress(email);
   }
@@ -60,8 +62,8 @@ public class MemberProfileService {
 
   private void checkEmailAuth(String email, String auth) {
     redisUtil.getData(EMAIL_AUTH_CODE_KEY + email, String.class)
-            .map(value -> value.equals(auth))
-            .orElseThrow(() -> new BusinessException(auth, "auth", ErrorCode.AUTH_CODE_MISMATCH));
+        .map(value -> value.equals(auth))
+        .orElseThrow(() -> new BusinessException(auth, "auth", ErrorCode.AUTH_CODE_MISMATCH));
   }
 
   public void sendEmailChangeAuthCode(String email) {
@@ -82,7 +84,7 @@ public class MemberProfileService {
         .toString();
   }
 
-  public void checkMemberPassword(Member member, String rawPassword) {
+  private void checkMemberPassword(Member member, String rawPassword) {
     if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
       throw new BusinessException(rawPassword, "rawPassword", ErrorCode.MEMBER_WRONG_PASSWORD);
     }

@@ -137,8 +137,7 @@ public class MemberController {
       @LoginMember Member member,
       @RequestBody @Valid UpdateMemberEmailAddressRequest request
   ) {
-    memberProfileService.checkMemberPassword(member, request.getPassword());
-    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth());
+    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(), request.getPassword());
     return ResponseEntity.noContent().build();
   }
 }
