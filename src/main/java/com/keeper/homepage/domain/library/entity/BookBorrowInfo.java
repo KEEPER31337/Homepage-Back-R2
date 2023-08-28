@@ -47,10 +47,10 @@ public class BookBorrowInfo extends BaseEntity {
   @JoinColumn(name = "status_id", nullable = false)
   private BookBorrowStatus borrowStatus;
 
-  @Column(name = "borrow_date", nullable = false)
+  @Column(name = "borrow_date", nullable = true)
   private LocalDateTime borrowDate;
 
-  @Column(name = "expire_date", nullable = false)
+  @Column(name = "expire_date", nullable = true)
   private LocalDateTime expireDate;
 
   @Column(name = "last_request_date", nullable = true)
@@ -118,6 +118,11 @@ public class BookBorrowInfo extends BaseEntity {
 
   public void changeLastRequestDate(LocalDateTime lastRequestDate) {
     this.lastRequestDate = lastRequestDate;
+  }
+
+  public void setBorrowTime(LocalDateTime borrowTime) {
+    this.borrowDate = borrowTime;
+    this.expireDate = borrowTime.plusWeeks(2);
   }
 
   public boolean isMine(Member member) {
