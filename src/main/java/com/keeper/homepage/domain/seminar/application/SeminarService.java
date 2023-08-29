@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_IS_DUPLICATED;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
 import static java.util.stream.Collectors.joining;
 
@@ -40,8 +41,10 @@ public class SeminarService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public SeminarIdResponse save() {
+  public SeminarIdResponse save(LocalDate openTime) {
+    checkDuplicateSeminar(openTime);
     Seminar seminar = seminarRepository.save(Seminar.builder()
+        .openTime(openTime.atStartOfDay())
         .attendanceCode(randomAttendanceCode())
         .build());
 
@@ -55,6 +58,12 @@ public class SeminarService {
               .build());
     });
     return new SeminarIdResponse(seminar.getId());
+  }
+
+  private void checkDuplicateSeminar(LocalDate openTime) {
+    if (seminarRepository.existsByOpenTime(openTime)) {
+      throw new BusinessException(openTime, "openTime", SEMINAR_IS_DUPLICATED);
+    }
   }
 
   private String randomAttendanceCode() {

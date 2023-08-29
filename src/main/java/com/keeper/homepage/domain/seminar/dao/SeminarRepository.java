@@ -38,4 +38,8 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
       + "ORDER BY s.openTime ASC "
       + "LIMIT 2")
   List<Seminar> findRecentlyUpcomingSeminar(@Param("localDate") LocalDate localDate);
+
+  @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END "
+      + "FROM Seminar s WHERE DATE(s.openTime) = :localDate")
+  boolean existsByOpenTime(@Param("localDate") LocalDate localDate);
 }
