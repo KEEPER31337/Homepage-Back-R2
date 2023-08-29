@@ -20,6 +20,7 @@ public enum ErrorCode {
   MEMBER_LOGIN_ID_DUPLICATE("회원의 로그인 아이디가 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_STUDENT_ID_DUPLICATE("회원의 학번이 중복됩니다.", HttpStatus.CONFLICT),
   MEMBER_WRONG_ID_OR_PASSWORD("아이디 혹은 비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
+  MEMBER_WRONG_PASSWORD("비밀번호가 잘못되었습니다.", HttpStatus.BAD_REQUEST),
   MEMBER_JOB_NOT_FOUND("해당 직책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   MEMBER_JOB_IS_NOT_EXECUTIVE("해당 직책은 임원 직책이 아닙니다.", HttpStatus.BAD_REQUEST),
   MEMBER_CANNOT_FOLLOW_ME("스스로를 팔로우 할 수 없습니다.", HttpStatus.BAD_REQUEST),
