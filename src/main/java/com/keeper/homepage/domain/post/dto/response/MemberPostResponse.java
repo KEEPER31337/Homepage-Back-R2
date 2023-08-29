@@ -21,7 +21,7 @@ public class MemberPostResponse {
   private Integer visitCount;
   private Boolean isSecret;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime registerTime;
 
   public static MemberPostResponse from(Post post) {
