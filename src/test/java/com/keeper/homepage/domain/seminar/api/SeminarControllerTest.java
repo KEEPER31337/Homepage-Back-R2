@@ -298,7 +298,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
             field("latenessCloseTime", "지각 마감 시간"),
             field("seminarName", "세미나명"),
             field("statusType", "세미나 출석 상태"),
-            field("attendanceCode", "세미나 출석 코드")
+            field("attendanceCode", "세미나 출석 코드"),
+            field("starterId", "세미나 출석을 시작한 회원 ID")
         };
 
         searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())

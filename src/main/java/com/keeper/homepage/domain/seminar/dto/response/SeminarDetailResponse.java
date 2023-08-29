@@ -20,6 +20,7 @@ public class SeminarDetailResponse {
   private LocalDateTime latenessCloseTime;
   private String statusType;
   private String attendanceCode;
+  private Long starterId;
 
   public static SeminarDetailResponse from(Seminar seminar, SeminarAttendanceStatusType seminarAttendanceStatusType) {
     return SeminarDetailResponse.builder()
@@ -30,6 +31,7 @@ public class SeminarDetailResponse {
         .latenessCloseTime(seminar.getLatenessCloseTime())
         .statusType(seminarAttendanceStatusType.toString())
         .attendanceCode(seminar.getAttendanceCode())
+        .starterId(seminar.getStarter().getId())
         .build();
   }
 }
