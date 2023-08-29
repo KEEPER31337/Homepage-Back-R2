@@ -24,6 +24,7 @@ import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -136,7 +137,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("세미나 지각을 성공한다.")
     public void should_success_when_attendanceSeminarLateness() throws Exception {
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
       seminar.changeCloseTime(now.plusMinutes(-2), now.plusMinutes(3));
 
@@ -160,7 +161,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("세미나 지각 마감 시간이 지나면 결석 처리한다.")
     public void should_success_when_attendanceSeminarAbsence() throws Exception {
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
       seminar.changeCloseTime(now.plusMinutes(-2), now.plusMinutes(-1));
 

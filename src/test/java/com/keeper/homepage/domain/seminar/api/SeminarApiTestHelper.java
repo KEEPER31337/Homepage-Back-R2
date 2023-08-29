@@ -13,6 +13,7 @@ import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusReq
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import jakarta.servlet.http.Cookie;
+import java.time.LocalDate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -20,7 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 public class SeminarApiTestHelper extends IntegrationTest {
 
   ResultActions createSeminarUsingApi(String token) throws Exception {
-    return mockMvc.perform(post("/seminars")
+    return mockMvc.perform(post("/seminars?openTime=" + LocalDate.now())
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 

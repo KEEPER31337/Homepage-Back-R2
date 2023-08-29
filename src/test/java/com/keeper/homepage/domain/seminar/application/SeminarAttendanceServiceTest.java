@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +30,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
     @DisplayName("출석코드 5회 초과 입력 시 출석이 불가능해야 한다.")
     public void 출석코드_5회_초과_입력_시_출석이_불가능해야_한다() throws Exception {
       Member member = memberTestHelper.generate();
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
 
       String invalidAttendanceCode = "12345";
@@ -66,7 +67,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //given
       LocalDateTime now = LocalDateTime.now();
 
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       String attendanceCode = seminarService.start(seminarId, now.plusMinutes(5), now.plusMinutes(10)).attendanceCode();
 
       //when
@@ -85,7 +86,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //given
       LocalDateTime now = LocalDateTime.now();
 
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       String attendanceCode = seminarService.start(seminarId, now.minusMinutes(10), now.minusMinutes(5))
           .attendanceCode();
 
@@ -106,7 +107,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //given
       LocalDateTime now = LocalDateTime.now();
 
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       String attendanceCode = seminarService.start(seminarId, now.minusMinutes(5), now.plusDays(5))
           .attendanceCode();
 
@@ -126,11 +127,11 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //given
       LocalDateTime now = LocalDateTime.now();
 
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(now.toLocalDate()).id();
       String attendanceCode = seminarService.start(seminarId, now.minusMinutes(5), now.plusDays(5))
           .attendanceCode();
 
-      long otherSeminarId = seminarService.save().id();
+      long otherSeminarId = seminarService.save(now.plusDays(1).toLocalDate()).id();
       String otherAttendanceCode = seminarService.start(otherSeminarId, now.minusMinutes(5), now.plusDays(5))
           .attendanceCode();
 
@@ -156,7 +157,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //given
       LocalDateTime now = LocalDateTime.now();
 
-      long seminarId = seminarService.save().id();
+      long seminarId = seminarService.save(LocalDate.now()).id();
       seminarService.start(seminarId, now.minusMinutes(10), now.minusMinutes(5));
 
       em.flush();
