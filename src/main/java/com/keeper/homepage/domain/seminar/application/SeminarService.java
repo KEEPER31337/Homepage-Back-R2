@@ -75,11 +75,12 @@ public class SeminarService {
   }
 
   @Transactional
-  public SeminarAttendanceCodeResponse start(Long seminarId, LocalDateTime attendanceCloseTime,
+  public SeminarAttendanceCodeResponse start(Member member, Long seminarId, LocalDateTime attendanceCloseTime,
       LocalDateTime latenessCloseTime) {
     validCloseTime(attendanceCloseTime, latenessCloseTime);
 
     Seminar seminar = validSeminarFindService.findById(seminarId);
+    seminar.setStarter(member);
     seminar.changeCloseTime(attendanceCloseTime, latenessCloseTime);
     return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }
