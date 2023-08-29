@@ -90,7 +90,7 @@ public class Seminar extends BaseEntity {
     this.name = name;
   }
 
-  public void setStarter(Member member) {
-    this.starter = member;
+  public void setStarter(Member starter) {
+    this.starter = starter;
   }
 }
