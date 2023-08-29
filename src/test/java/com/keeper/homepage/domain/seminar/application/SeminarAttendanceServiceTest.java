@@ -52,12 +52,13 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
   @DisplayName("세미나 지각 & 결석 벌점 테스트")
   class SeminarDemeritTest {
 
-    private Member member;
+    private Member member, admin;
     private static final long SEMINAR_ABSENCE_MERIT_TYPE_ID = 2;
     private static final long SEMINAR_DUAL_LATENESS_MERIT_TYPE_ID = 3;
 
     @BeforeEach
     void setUp() {
+      admin = memberTestHelper.generate();
       member = memberTestHelper.generate();
     }
 
@@ -68,7 +69,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
 
       long seminarId = seminarService.save(LocalDate.now()).id();
-      String attendanceCode = seminarService.start(member, seminarId, now.plusMinutes(5), now.plusMinutes(10))
+      String attendanceCode = seminarService.start(admin, seminarId, now.plusMinutes(5), now.plusMinutes(10))
           .attendanceCode();
 
       //when
@@ -88,7 +89,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
 
       long seminarId = seminarService.save(LocalDate.now()).id();
-      String attendanceCode = seminarService.start(member, seminarId, now.minusMinutes(10), now.minusMinutes(5))
+      String attendanceCode = seminarService.start(admin, seminarId, now.minusMinutes(10), now.minusMinutes(5))
           .attendanceCode();
 
       //when
@@ -109,7 +110,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
 
       long seminarId = seminarService.save(LocalDate.now()).id();
-      String attendanceCode = seminarService.start(member, seminarId, now.minusMinutes(5), now.plusDays(5))
+      String attendanceCode = seminarService.start(admin, seminarId, now.minusMinutes(5), now.plusDays(5))
           .attendanceCode();
 
       //when
@@ -129,11 +130,11 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
 
       long seminarId = seminarService.save(now.toLocalDate()).id();
-      String attendanceCode = seminarService.start(member, seminarId, now.minusMinutes(5), now.plusDays(5))
+      String attendanceCode = seminarService.start(admin, seminarId, now.minusMinutes(5), now.plusDays(5))
           .attendanceCode();
 
       long otherSeminarId = seminarService.save(now.plusDays(1).toLocalDate()).id();
-      String otherAttendanceCode = seminarService.start(member, otherSeminarId, now.minusMinutes(5), now.plusDays(5))
+      String otherAttendanceCode = seminarService.start(admin, otherSeminarId, now.minusMinutes(5), now.plusDays(5))
           .attendanceCode();
 
       //when
@@ -159,7 +160,7 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       LocalDateTime now = LocalDateTime.now();
 
       long seminarId = seminarService.save(LocalDate.now()).id();
-      seminarService.start(member, seminarId, now.minusMinutes(10), now.minusMinutes(5));
+      seminarService.start(admin, seminarId, now.minusMinutes(10), now.minusMinutes(5));
 
       em.flush();
       em.clear();

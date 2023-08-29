@@ -77,7 +77,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
 
-      MvcResult mvcResult = attendanceSeminarUsingApi(adminToken, seminarId, request)
+      MvcResult mvcResult = attendanceSeminarUsingApi(userToken, seminarId, request)
           .andExpect(status().isCreated())
           .andDo(document("attendance-seminar",
               requestCookies(
@@ -113,11 +113,11 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .build();
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      attendanceSeminarUsingApi(adminToken, seminarId, request).andExpect(status().isCreated());
+      attendanceSeminarUsingApi(userToken, seminarId, request).andExpect(status().isCreated());
       em.flush();
       em.clear();
 
-      attendanceSeminarUsingApi(adminToken, seminarId, request).andExpect(status().isConflict());
+      attendanceSeminarUsingApi(userToken, seminarId, request).andExpect(status().isConflict());
     }
 
     @ParameterizedTest
