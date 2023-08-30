@@ -85,6 +85,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
