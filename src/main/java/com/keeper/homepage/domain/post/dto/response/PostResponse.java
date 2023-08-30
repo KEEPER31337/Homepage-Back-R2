@@ -25,7 +25,7 @@ public class PostResponse {
   private String thumbnailPath;
   private Integer likeCount;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime registerTime;
 
   public static PostResponse from(Post post) {
