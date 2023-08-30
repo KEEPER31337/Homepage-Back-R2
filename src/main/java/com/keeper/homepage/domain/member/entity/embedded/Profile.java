@@ -57,6 +57,11 @@ public class Profile {
     this.password = Password.from(newPassword);
   }
 
+  public void update(Profile newProfile) {
+    this.realName = newProfile.realName;
+    this.studentId = newProfile.studentId;
+    this.birthday = newProfile.birthday;
+  }
   public void updateThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
   }

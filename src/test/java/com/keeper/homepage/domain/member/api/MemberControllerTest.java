@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.api;
 
-import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
+import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_INVALID;
+import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_INVALID;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
@@ -28,6 +29,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -36,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -44,6 +47,7 @@ import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -227,6 +231,46 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("프로필 수정")
+  class UpdateProfile {
+
+    private Member member;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 회원의 프로필 내용을 수정 한다.")
+    public void should_success_myProfile() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateProfile");
+
+      ProfileUpdateRequest request = ProfileUpdateRequest.builder()
+          .realName("바뀐이름")
+          .studentId("202055589")
+          .birthday(LocalDate.of(1970, 1, 1))
+          .build();
+
+      callUpdateProfileApi(memberToken, request)
+          .andExpect(status().isNoContent())
+          .andDo(document("update-profile",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("realName").description("실명을 입력해주세요. (" + REAL_NAME_INVALID + ")"),
+                  fieldWithPath("studentId").description(
+                      "학번을 입력해주세요. (" + STUDENT_ID_INVALID + ")"),
+                  fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
               )));
     }
   }
@@ -441,7 +485,7 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       doNothing().when(memberProfileService)
-              .updateProfileEmailAddress(any(Member.class), anyString(), anyString(), anyString());
+          .updateProfileEmailAddress(any(Member.class), anyString(), anyString(), anyString());
 
       mockMvc.perform(patch("/members/email")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))

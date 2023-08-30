@@ -1,23 +1,24 @@
 package com.keeper.homepage.domain.member.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
+
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static java.util.stream.Collectors.counting;
 
 @Service
 @RequiredArgsConstructor
@@ -25,16 +26,16 @@ import static java.util.stream.Collectors.counting;
 public class MemberProfileService {
 
   private static final Random RANDOM = new Random();
+
   private static final String EMAIL_AUTH_CODE_KEY = "EMAIL_AUTH_";
   private static final int MAX_PASSWORD_AUTH_CODE_LENGTH = 8;
   private static final int AUTH_CODE_EXPIRE_MILLIS = 5 * 60 * 1000; // 5분
 
+  private final MemberRepository memberRepository;
 
   private final ThumbnailUtil thumbnailUtil;
-  private final MemberRepository memberRepository;
   private final RedisUtil redisUtil;
   private final MailUtil mailUtil;
-
 
   @Transactional
   public void updateProfileThumbnail(Member member, MultipartFile thumbnail) {
@@ -46,6 +47,20 @@ public class MemberProfileService {
   }
 
   @Transactional
+  public void updateProfile(Member member, Profile newProfile) {
+    if (!member.getProfile().getStudentId().equals(newProfile.getStudentId())) {
+      checkIsDuplicateStudentId(newProfile.getStudentId());
+    }
+    Profile profile = member.getProfile();
+    profile.update(newProfile);
+  }
+
+  private void checkIsDuplicateStudentId(StudentId studentId) {
+    if (memberRepository.existsByProfileStudentId(studentId)) {
+      throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
+    }
+  }
+
   public void updateProfileEmailAddress(Member member, String email,
       String auth, String password) {
     checkMemberPassword(member, password);

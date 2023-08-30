@@ -137,6 +137,28 @@ include::{snippets}/unfollow-member/path-parameters.adoc[]
 
 include::{snippets}/unfollow-member/http-response.adoc[]
 
+== *회원 프로필 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-profile/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/update-profile/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-profile/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-profile/http-response.adoc[]
+
 == *회원 썸네일 변경*
 
 === 요청

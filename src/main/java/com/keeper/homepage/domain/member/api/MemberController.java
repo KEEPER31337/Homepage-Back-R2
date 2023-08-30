@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,6 +96,15 @@ public class MemberController {
   ) {
     memberService.unfollow(member, otherId);
     return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/profile")
+  public ResponseEntity<Void> updateProfile(
+      @LoginMember Member member,
+      @RequestBody @Valid ProfileUpdateRequest request
+  ) {
+    memberProfileService.updateProfile(member, request.toEntity());
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
   @PatchMapping("/thumbnail")
