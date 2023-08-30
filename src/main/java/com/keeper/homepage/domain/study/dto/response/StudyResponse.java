@@ -14,6 +14,7 @@ public class StudyResponse {
 
   private Long studyId;
   private String title;
+  private Long headId;
   private String headName;
   private Integer memberCount;
   private String thumbnailPath;
@@ -22,6 +23,7 @@ public class StudyResponse {
     return StudyResponse.builder()
         .studyId(study.getId())
         .title(study.getTitle())
+        .headId(study.getHeadMember().getId())
         .headName(study.getHeadMember().getRealName())
         .memberCount(study.getStudyMembers().size())
         .thumbnailPath(study.getThumbnailPath())
