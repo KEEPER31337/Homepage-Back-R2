@@ -8,22 +8,29 @@ import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceCodeRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
+import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.MvcResult;
 
 public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
@@ -263,6 +271,72 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, strJson.formatted(statusType)).andExpect(
           status().isBadRequest());
+    }
+  }
+
+  @Nested
+  @DisplayName("세미나 출석 정보 목록 조회 테스트")
+  class GetSeminarAttendanceTest {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 세미나 출석 목록 조회는 성공한다.")
+    public void 유효한_요청일_경우_세미나_출석_목록_조회는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(SeminarAttendanceController.class, "getAttendances");
+      // given
+      Long seminarId = seminarService.save(LocalDate.now()).id();
+      Member admin = memberRepository.findById(adminId).orElseThrow();
+      String attendanceCode = seminarService.start(admin, seminarId, LocalDateTime.now().minusMinutes(5),
+          LocalDateTime.now().plusMinutes(5)).attendanceCode();
+      Member user = memberRepository.findById(userId).orElseThrow();
+      seminarAttendanceService.attendance(seminarId, user, attendanceCode);
+
+      em.flush();
+      em.clear();
+      // then
+      mockMvc.perform(get("/seminars/attendances")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content[0].memberId").value(adminId))
+          .andExpect(jsonPath("$.content[0].memberName").value(admin.getRealName()))
+          .andExpect(jsonPath("$.content[0].generation").value(admin.getGeneration()))
+          .andExpect(jsonPath("$.content[0].attendances[0].seminarId").value(seminarId))
+          .andExpect(jsonPath("$.content[0].attendances[0].attendanceStatus").value(ATTENDANCE.toString()))
+          .andExpect(jsonPath("$.content[0].attendances[0].excuse").isEmpty())
+          .andExpect(jsonPath("$.content[0].attendances[0].seminarOpenTime").value(LocalDate.now().toString()))
+          .andExpect(jsonPath("$.content[1].memberId").value(userId))
+          .andExpect(jsonPath("$.content[1].memberName").value(user.getRealName()))
+          .andExpect(jsonPath("$.content[1].generation").value(user.getGeneration()))
+          .andExpect(jsonPath("$.content[1].attendances[0].seminarId").value(seminarId))
+          .andExpect(jsonPath("$.content[1].attendances[0].attendanceStatus").value(LATENESS.toString()))
+          .andExpect(jsonPath("$.content[1].attendances[0].excuse").isEmpty())
+          .andExpect(jsonPath("$.content[1].attendances[0].seminarOpenTime").value(LocalDate.now().toString()))
+          .andDo(document("get-seminar-attendances",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              queryParameters(
+                  parameterWithName("page").description("페이지 (default: 0)")
+                      .optional(),
+                  parameterWithName("size").description("한 페이지당 불러올 개수 (default: 10)")
+                      .optional()
+              ),
+              responseFields(
+                  pageHelper(getAttendances())
+              )));
+    }
+
+    FieldDescriptor[] getAttendances() {
+      return new FieldDescriptor[]{
+          fieldWithPath("memberId").description("회원 ID"),
+          fieldWithPath("memberName").description("회원 이름"),
+          fieldWithPath("generation").description("회원 기수"),
+          fieldWithPath("attendances[]").description("회원 출석 정보 리스트"),
+          fieldWithPath("attendances[].seminarId").description("세미나 ID"),
+          fieldWithPath("attendances[].seminarOpenTime").description("세미나 날짜"),
+          fieldWithPath("attendances[].attendanceStatus").description("세미나 출석 상태"),
+          fieldWithPath("attendances[].excuse").description("세미나 결석/지각 사유 (출석일 경우 null)"),
+      };
     }
   }
 }

@@ -17,14 +17,19 @@ import com.keeper.homepage.domain.merit.application.MeritLogService;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
+import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceManageResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.redis.RedisUtil;
+import com.keeper.homepage.global.util.semester.SemesterUtil;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -119,6 +124,17 @@ public class SeminarAttendanceService {
     beforeAttendances.forEach(seminarAttendance -> {
       seminarAttendance.changeStatus((ABSENCE));
       meritLogService.giveSeminarAbsenceDemerit(seminarAttendance.getMember());
+    });
+  }
+
+  public Page<SeminarAttendanceManageResponse> getAttendances(Pageable pageable) {
+    Page<Member> regulars = memberFindService.findAllRegular(pageable);
+    LocalDate now = LocalDate.now();
+    LocalDate semesterFirstDate = SemesterUtil.getSemesterFirstDate(now);
+
+    return regulars.map(member -> {
+      var seminarAttendances = attendanceRepository.findAllRecentByMember(member.getId(), semesterFirstDate);
+      return SeminarAttendanceManageResponse.of(member, seminarAttendances);
     });
   }
 }

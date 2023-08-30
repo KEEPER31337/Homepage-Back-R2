@@ -11,6 +11,8 @@ import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +45,10 @@ public class MemberFindService {
   }
 
   public List<Member> findAllRegular() {
-    return memberRepository.findAllByMemberType(getMemberTypeBy(정회원))
-        .stream()
-        .filter(member -> member.getId() != VIRTUAL_MEMBER_ID)
-        .toList();
+    return memberRepository.findAllByMemberTypeAndIdNot(getMemberTypeBy(정회원), VIRTUAL_MEMBER_ID);
+  }
+
+  public Page<Member> findAllRegular(Pageable pageable) {
+    return memberRepository.findAllByMemberTypeAndIdNot(getMemberTypeBy(정회원), VIRTUAL_MEMBER_ID, pageable);
   }
 }
