@@ -110,6 +110,9 @@ public class Member {
   @JoinColumn(name = "member_rank_id")
   private MemberRank memberRank;
 
+  @Column(name = "is_deleted", nullable = false)
+  private Boolean isDeleted;
+
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
@@ -165,6 +168,7 @@ public class Member {
     this.memberType = MemberType.getMemberTypeBy(정회원);
     this.memberRank = MemberRank.getMemberRankBy(일반회원);
     this.assignJob(MemberJobType.ROLE_회원);
+    this.isDeleted = false;
   }
 
   public void assignJob(MemberJobType jobType) {

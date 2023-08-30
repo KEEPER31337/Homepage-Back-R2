@@ -3,17 +3,13 @@ package com.keeper.homepage.domain.member.entity.job;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_출제자;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,10 +37,6 @@ public class MemberJob {
   @Column(name = "name", nullable = false, length = MAX_NAME_LENGTH)
   private MemberJobType type;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "badge_thumbnail_id", nullable = false)
-  private Thumbnail badge;
-
   public static MemberJob getMemberJobBy(MemberJobType type) {
     return MemberJob.builder()
         .id(type.id)
@@ -65,12 +57,12 @@ public class MemberJob {
     ROLE_대외부장(3),
     ROLE_학술부장(4),
     ROLE_FRONT_전산관리자(5),
-    ROLE_BACK_전산관리자(6),
-    ROLE_서기(7),
-    ROLE_총무(8),
-    ROLE_사서(9),
-    ROLE_회원(10),
-    ROLE_출제자(11),
+    ROLE_서기(6),
+    ROLE_총무(7),
+    ROLE_사서(8),
+    ROLE_회원(9),
+    ROLE_출제자(10),
+    ROLE_BACK_전산관리자(11),
     ROLE_INFRA_전산관리자(12),
     ;
 
