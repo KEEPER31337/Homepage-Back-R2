@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.seminar.dto.response;
 
-import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
-import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 import static lombok.AccessLevel.PACKAGE;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -30,8 +28,8 @@ public class SeminarAttendanceDetailResponse {
     return SeminarAttendanceDetailResponse.builder()
         .seminarId(seminarAttendance.getSeminar().getId())
         .attendanceStatus(seminarAttendance.getSeminarAttendanceStatus().getType().toString())
-        .excuse(seminarAttendance.getSeminarAttendanceStatus() != getSeminarAttendanceStatusBy(LATENESS) ? null
-            : seminarAttendance.getSeminarAttendanceExcuse().getAbsenceExcuse())
+        .excuse(seminarAttendance.getSeminarAttendanceExcuse() != null ?
+            seminarAttendance.getSeminarAttendanceExcuse().getAbsenceExcuse() : null)
         .seminarOpenTime(seminarAttendance.getSeminar().getOpenTime())
         .build();
   }
