@@ -52,7 +52,7 @@ public class PasswordFactory {
   private static String encodeWithPBKDF2SHA256(String password, String salt, int iterations)
       throws NoSuchAlgorithmException, InvalidKeySpecException {
     String hash = getEncodedHashWithPBKDF2SHA256(password, salt, iterations);
-    return String.format("%s:%d:%s:%s", "pbkdf2_sha256", iterations, salt, hash);
+    return "%s:%d:%s:%s".formatted("pbkdf2_sha256", iterations, salt, hash);
   }
 
   private static String getEncodedHashWithPBKDF2SHA256(String password, String salt, int iterations)

@@ -1,7 +1,9 @@
 package com.keeper.homepage.domain.game.application
 
+import com.keeper.homepage.domain.game.dto.res.GameInfoByMemberResponse
 import com.keeper.homepage.domain.game.dto.res.GameRankResponse
 import com.keeper.homepage.domain.game.entity.Game
+import com.keeper.homepage.domain.member.entity.Member
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -25,5 +27,15 @@ class GameService(
 
     private fun getTodayEarnedPoint(game: Game): Int {
         return game.baseball.baseballDayPoint + game.dice.diceDayPoint + game.lotto.lottoDayPoint + game.roulette.rouletteDayPoint
+    }
+
+    fun getMyInfo(requestMember: Member): GameInfoByMemberResponse {
+        val gameEntity = gameFindService.findByMemberOrInit(requestMember)
+        val todayTotalEarnedPoint = gameEntity.lotto.lottoDayPoint + gameEntity.dice.diceDayPoint +
+                gameEntity.roulette.rouletteDayPoint + gameEntity.baseball.baseballDayPoint
+        return GameInfoByMemberResponse(
+            todayTotalEarnedPoint = todayTotalEarnedPoint,
+            currentMemberPoint = requestMember.point
+        )
     }
 }

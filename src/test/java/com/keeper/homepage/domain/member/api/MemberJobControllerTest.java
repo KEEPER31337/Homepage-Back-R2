@@ -5,7 +5,6 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -55,7 +54,6 @@ public class MemberJobControllerTest extends IntegrationTest {
             responseFields(
                 fieldWithPath("[].jobId").description("직책 ID"),
                 fieldWithPath("[].jobName").description("직책 이름"),
-                fieldWithPath("[].jobThumbnailPath").description("직책 썸네일 경로"),
                 fieldWithPath("[].memberId").description("회원 ID"),
                 fieldWithPath("[].generation").description("회원 기수"),
                 fieldWithPath("[].realName").description("회원 실명")
@@ -77,8 +75,7 @@ public class MemberJobControllerTest extends IntegrationTest {
             ),
             responseFields(
                 fieldWithPath("[].jobId").description("직책 ID"),
-                fieldWithPath("[].jobName").description("직책 이름"),
-                fieldWithPath("[].jobThumbnailPath").description("직책 썸네일 경로")
+                fieldWithPath("[].jobName").description("직책 이름")
             )));
   }
 

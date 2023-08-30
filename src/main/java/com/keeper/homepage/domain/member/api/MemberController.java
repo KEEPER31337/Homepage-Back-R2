@@ -1,9 +1,14 @@
 package com.keeper.homepage.domain.member.api;
 
+import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
+import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
+import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
@@ -41,6 +46,7 @@ public class MemberController {
 
   private final MemberService memberService;
   private final MemberProfileService memberProfileService;
+  private final EmailAuthService emailAuthService;
 
   @PatchMapping("/change-password")
   public ResponseEntity<Void> changePassword(
@@ -125,6 +131,24 @@ public class MemberController {
       @RequestBody @Valid UpdateMemberTypeRequest request
   ) {
     memberService.updateMemberType(request.getMemberIds(), typeId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/email-auth")
+  public ResponseEntity<String> emailAuth(
+      @RequestBody @Valid EmailAuthRequest request
+  ) {
+    memberProfileService.checkDuplicateEmailAddress(request.getEmail());
+    memberProfileService.sendEmailChangeAuthCode(request.getEmail());
+    return ResponseEntity.ok("이메일 인증 번호를 보냈습니다.");
+  }
+
+  @PatchMapping("/email")
+  public ResponseEntity<Void> updateMemberEmail(
+      @LoginMember Member member,
+      @RequestBody @Valid UpdateMemberEmailAddressRequest request
+  ) {
+    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(), request.getPassword());
     return ResponseEntity.noContent().build();
   }
 }

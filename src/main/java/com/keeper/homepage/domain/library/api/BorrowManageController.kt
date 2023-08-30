@@ -27,12 +27,12 @@ class BorrowManageController(
 ) {
     @GetMapping
     fun getBorrowRequests(
-        @RequestParam(defaultValue = "") keyword: String,
+        @RequestParam(defaultValue = "") search: String,
         @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
         @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
         @RequestParam status: BorrowStatusDto?
     ): ResponseEntity<Page<BorrowDetailResponse>> {
-        val borrowRequests = borrowManageService.getBorrow(keyword, PageRequest.of(page, size), status)
+        val borrowRequests = borrowManageService.getBorrow(search, PageRequest.of(page, size), status)
         return ResponseEntity.ok(borrowRequests)
     }
 

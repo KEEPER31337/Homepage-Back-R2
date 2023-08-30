@@ -32,7 +32,7 @@ public class PostDetailResponse {
   private Boolean isLike;
   private Boolean isDislike;
 
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime registerTime;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -14,13 +14,11 @@ public class JobResponse {
 
   private Long jobId;
   private String jobName;
-  private String jobThumbnailPath;
 
   public static JobResponse from(MemberJob memberJob) {
     return JobResponse.builder()
         .jobId(memberJob.getId())
         .jobName(memberJob.getType().toString())
-        .jobThumbnailPath(memberJob.getBadge().getPath())
         .build();
   }
 }

@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.election.dto.request.ElectionCandidateRegister
 import com.keeper.homepage.domain.election.dto.request.ElectionCandidatesRegisterRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
+import com.keeper.homepage.domain.election.dto.request.ElectionVotersRequest;
 import com.keeper.homepage.domain.election.dto.response.ElectionResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
@@ -19,6 +20,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -91,6 +93,36 @@ public class AdminElectionController {
       @PathVariable long electionId,
       @PathVariable long candidateId) {
     adminElectionService.deleteCandidate(electionId, candidateId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{electionId}/voters")
+  public ResponseEntity<Void> registerVoters(
+      @RequestBody @Valid ElectionVotersRequest request,
+      @PathVariable long electionId) {
+    adminElectionService.registerVoters(request.getVoterIds(), electionId);
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
+
+  @DeleteMapping("/{electionId}/voters")
+  public ResponseEntity<Void> deleteVoters(
+      @RequestBody @Valid ElectionVotersRequest request,
+      @PathVariable long electionId) {
+    adminElectionService.deleteVoters(request.getVoterIds(), electionId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{electionId}/open")
+  public ResponseEntity<Void> openElection(
+      @PathVariable long electionId) {
+    adminElectionService.openElection(electionId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{electionId}/close")
+  public ResponseEntity<Void> closeElection(
+      @PathVariable long electionId) {
+    adminElectionService.closeElection(electionId);
     return ResponseEntity.noContent().build();
   }
 

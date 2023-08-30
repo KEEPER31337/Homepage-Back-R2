@@ -98,7 +98,7 @@ class BookManageApiTestHelper : IntegrationTest() {
 
     fun callGetBooksApi(
         params: MultiValueMap<String, String> = multiValueMapOf(
-            "bookKeyword" to "",
+            "search" to "",
             "page" to "0",
             "size" to "10",
         ),
@@ -227,13 +227,13 @@ class BookManageApiTestHelper : IntegrationTest() {
 
     fun getBookDetailResponseDocs(): Array<FieldDescriptor> {
         return arrayOf(
-            field("id", "책의 ID"),
-            field("title", "책의 제목"),
-            field("author", "책의 저자"),
+            field("bookId", "책 ID"),
+            field("thumbnailPath", "책 썸네일 주소"),
+            field("title", "책 이름"),
+            field("author", "책 저자"),
+            field("currentQuantity", "책 현재 수량"),
+            field("totalQuantity", "책 전체 수량"),
             field("bookDepartment", "책 카테고리"),
-            field("totalCount", "책의 총 권 수"),
-            field("borrowingCount", "현재 대출중인 책 수"),
-            field("thumbnailPath", "썸네일 URL"),
             *listHelper("borrowInfos", *getBorrowDetailResponseDocs()),
         )
     }

@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.post.dto.request;
 
-import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -39,8 +38,7 @@ public class PostUpdateRequest {
   @NotNull
   private Boolean isTemp;
 
-  @NotNull
-  @Size(max = POST_PASSWORD_LENGTH, message = "비밀번호는 {max}자 이하로 입력해주세요.")
+  @Nullable
   private String password;
 
   public Post toEntity(String ipAddress) {

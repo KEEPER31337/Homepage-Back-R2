@@ -2,8 +2,11 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.application.BookManageService
 import com.keeper.homepage.domain.library.dto.req.BookRequest
+import com.keeper.homepage.domain.library.dto.req.BookSearchType
 import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.BookDetailResponse
+import com.keeper.homepage.domain.library.dto.resp.BookResponse
+import com.keeper.homepage.domain.library.entity.Book
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
@@ -32,13 +35,15 @@ class BookManageController(
 ) {
     @GetMapping
     fun getBooks(
-        @RequestParam(required = false) bookKeyword: String?,
+        @RequestParam(required = false, defaultValue = "") search: String,
+        @RequestParam(required = false, defaultValue = "ALL") searchType: BookSearchType,
         @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
         @RequestParam(defaultValue = GET_BOOKS_DEFAULT_SIZE.toString()) @Min(GET_BOOKS_MIN_SIZE) @Max(GET_BOOKS_MAX_SIZE) @NotNull size: Int,
     ): ResponseEntity<Page<BookDetailResponse>> {
         return ResponseEntity.ok(
-            bookManageService.getBooks(bookKeyword, PageRequest.of(page, size))
-                .map { book -> BookDetailResponse(book) })
+            bookManageService.getBooks(search, searchType, PageRequest.of(page, size))
+                .map(::BookDetailResponse)
+        )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE])

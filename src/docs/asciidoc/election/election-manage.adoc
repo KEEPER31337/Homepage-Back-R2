@@ -182,3 +182,99 @@ include::{snippets}/delete-candidate/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/delete-candidate/http-response.adoc[]
+
+== *선거 투표자 다중 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-voters/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/create-voters/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/create-voters/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-voters/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-voters/http-response.adoc[]
+
+== *선거 투표자 다중 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-voters/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-voters/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-voters/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/delete-voters/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-voters/http-response.adoc[]
+
+== *선거 공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/open-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/open-election/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/open-election/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/open-election/http-response.adoc[]
+
+== *선거 비공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/close-election/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/close-election/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/close-election/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/close-election/http-response.adoc[]

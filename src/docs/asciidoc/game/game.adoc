@@ -39,3 +39,25 @@ include::{snippets}/game-rank/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/game-rank/response-fields.adoc[]
+
+== *내 게임 정보 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-my-game-info/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-my-game-info/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-my-game-info/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-my-game-info/response-fields.adoc[]

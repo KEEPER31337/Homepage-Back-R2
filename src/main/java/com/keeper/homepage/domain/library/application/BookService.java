@@ -14,6 +14,7 @@ import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BO
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
+import com.keeper.homepage.domain.library.dto.req.BookSearchType;
 import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.library.entity.Book;
@@ -23,6 +24,7 @@ import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -37,26 +39,19 @@ public class BookService {
   private final BookBorrowInfoRepository bookBorrowInfoRepository;
   public static final long MAX_BORROWING_COUNT = 5;
 
-  public Page<BookResponse> getBooks(Member member, String searchType, String search,
+  public Page<BookResponse> getBooks(Member member, @NotNull BookSearchType searchType, String search,
       PageRequest pageable) {
     boolean isUnderBorrowingLimit = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
-    if (searchType == null) {
-      return bookRepository.findAll(pageable)
+
+    return switch (searchType) {
+      case ALL -> bookRepository.findAllByTitleOrAuthor(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
-    }
-    if (searchType.equals("title")) {
-      return bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
+      case TITLE -> bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
-    }
-    if (searchType.equals("author")) {
-      return bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
+      case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
-    }
-    if (searchType.equals("all")) {
-      return bookRepository.findAllByTitleOrAuthor(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
-    }
-    throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
+      default -> throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
+    };
   }
 
   private boolean canBorrow(boolean isUnderBorrowingLimit, Book book) {

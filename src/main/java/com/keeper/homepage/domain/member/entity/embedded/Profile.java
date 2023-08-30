@@ -65,4 +65,8 @@ public class Profile {
   public void updateThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
   }
+
+  public void updateEmailAddress(String newEmailAddress) {
+    this.emailAddress = EmailAddress.from(newEmailAddress);
+  }
 }

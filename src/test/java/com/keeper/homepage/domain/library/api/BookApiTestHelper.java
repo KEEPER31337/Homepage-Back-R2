@@ -55,11 +55,11 @@ public class BookApiTestHelper extends IntegrationTest {
   FieldDescriptor[] getBorrowBooksResponse() {
     return new FieldDescriptor[]{
         fieldWithPath("borrowInfoId").description("빌린 전보 ID"),
-        fieldWithPath("title").description("빌린 책 이름"),
+        fieldWithPath("bookTitle").description("빌린 책 이름"),
         fieldWithPath("author").description("빌린 책 저자"),
         fieldWithPath("overdue").description("연체 여부"),
-        fieldWithPath("borrowDate").description("빌린 날짜"),
-        fieldWithPath("expireDate").description("반납 날짜")
+        fieldWithPath("borrowDateTime").description("빌린 날짜"),
+        fieldWithPath("expireDateTime").description("반납 날짜")
     };
   }
 }

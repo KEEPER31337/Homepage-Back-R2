@@ -8,6 +8,10 @@ import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TO
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -32,10 +36,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
@@ -53,6 +61,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
 import org.springframework.web.multipart.MultipartFile;
 
 class MemberControllerTest extends MemberApiTestHelper {
@@ -251,7 +260,7 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       callUpdateProfileApi(memberToken, request)
-          .andExpect(status().isOk())
+          .andExpect(status().isNoContent())
           .andDo(document("update-profile",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -428,4 +437,72 @@ class MemberControllerTest extends MemberApiTestHelper {
           .andExpect(status().isBadRequest());
     }
   }
+
+  @Nested
+  @DisplayName("회원 이메일 변경 테스트")
+  class UpdateMemberProfileEmailAddressTest {
+
+    private Member member, otherMember;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+      otherMember = memberTestHelper.generate();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 이메일 인증 코드 발송에 성공해야 한다.")
+    public void 유효한_요청일_경우_이메일_인증_코드_발송에_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "emailAuth");
+
+      EmailAuthRequest request = EmailAuthRequest.from("test@test.com");
+
+      mockMvc.perform(post("/members/email-auth")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andDo(document("member-email-auth",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("email").description("인증 코드를 보낼 이메일 주소")
+              )));
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 회원 이메일 변경에 성공해야 한다.")
+    void 유효한_요청일_경우_회원_이메일_변경에_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "updateMemberEmail");
+      UpdateMemberEmailAddressRequest request = UpdateMemberEmailAddressRequest.builder()
+          .email("test@test.com")
+          .auth("authTest")
+          .password("truePassword")
+          .build();
+
+      doNothing().when(memberProfileService)
+          .updateProfileEmailAddress(any(Member.class), anyString(), anyString(), anyString());
+
+      mockMvc.perform(patch("/members/email")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNoContent())
+          .andDo(document("update-member-emailAddress",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("email").description("회원의 변경할 이메일"),
+                  fieldWithPath("auth").description("이메일 인증 코드"),
+                  fieldWithPath("password").description("비밀번호 검증")
+              )));
+    }
+  }
+
 }
