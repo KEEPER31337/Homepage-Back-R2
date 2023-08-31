@@ -128,8 +128,11 @@ class BaseballService(
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
         val earnablePoint = baseballResultEntity.earnablePoint
-        requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
-        gameEntity.baseball.baseballDayPoint = earnablePoint
+
+        if (baseballResultEntity.isEnd()) {
+            requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
+            gameEntity.baseball.baseballDayPoint = earnablePoint
+        }
 
         return BaseballResponse(
             convertBaseballResult(baseballResultEntity.results),
