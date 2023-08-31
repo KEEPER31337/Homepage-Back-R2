@@ -53,6 +53,7 @@ import com.keeper.homepage.domain.library.application.BookManageService;
 import com.keeper.homepage.domain.library.application.BookService;
 import com.keeper.homepage.domain.library.application.BorrowManageService;
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookBorrowLogRepository;
 import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -183,6 +184,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected BookBorrowStatusRepository bookBorrowStatusRepository;
+
+  @SpyBean
+  protected BookBorrowLogRepository bookBorrowLogRepository;
 
   @SpyBean
   protected SeminarRepository seminarRepository;

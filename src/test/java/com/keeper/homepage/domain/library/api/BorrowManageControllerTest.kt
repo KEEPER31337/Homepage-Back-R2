@@ -2,12 +2,14 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
+import com.keeper.homepage.domain.library.entity.BookBorrowLog
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
 import com.keeper.homepage.domain.member.entity.embedded.RealName
 import com.keeper.homepage.global.config.security.data.JwtType
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import io.kotest.matchers.shouldBe
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -388,6 +390,22 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         }
 
         @Test
+        fun `책 대여 승인시 로그가 남아야 한다`() {
+            val beforeBorrowTime = LocalDateTime.now()
+            callApproveBorrowApi(borrowInfo.id).andExpect(status().isNoContent)
+
+            val borrowLogs = bookBorrowLogRepository.findAll()
+
+            checkBorrowLog(borrowLogs[0], borrowInfo)
+            assertThat(borrowLogs[0].borrowDate).isAfter(beforeBorrowTime)
+            assertThat(borrowLogs[0].borrowDate).isBefore(LocalDateTime.now())
+            assertThat(borrowLogs[0].expireDate).isAfter(beforeBorrowTime.plusWeeks(2))
+            assertThat(borrowLogs[0].expireDate).isBefore(LocalDateTime.now().plusWeeks(2))
+            assertThat(borrowLogs[0].returnDate).isNull()
+            assertThat(borrowLogs[0].rejectDate).isNull()
+        }
+
+        @Test
         fun `유효한 요청이면 책 대여 거절이 성공해야 한다`() {
             val securedValue = getSecuredValue(BorrowManageController::class.java, "denyBorrow")
             callDenyBorrowApi(borrowInfo.id)
@@ -405,6 +423,21 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     )
                 )
             borrowInfo.borrowStatus.type shouldBe 대출반려
+        }
+
+        @Test
+        fun `책 대여 거절시 로그가 남아야 한다`() {
+            val beforeBorrowTime = LocalDateTime.now()
+            callDenyBorrowApi(borrowInfo.id).andExpect(status().isNoContent)
+
+            val borrowLogs = bookBorrowLogRepository.findAll()
+
+            checkBorrowLog(borrowLogs[0], borrowInfo)
+            assertThat(borrowLogs[0].borrowDate).isBefore(beforeBorrowTime)
+            assertThat(borrowLogs[0].expireDate).isBefore(beforeBorrowTime.plusWeeks(2))
+            assertThat(borrowLogs[0].returnDate).isNull()
+            assertThat(borrowLogs[0].rejectDate).isAfter(beforeBorrowTime)
+            assertThat(borrowLogs[0].rejectDate).isBefore(LocalDateTime.now())
         }
     }
 
@@ -442,6 +475,21 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         }
 
         @Test
+        fun `책 반납 승인시 로그가 남아야 한다`() {
+            val beforeBorrowTime = LocalDateTime.now()
+            callApproveReturnApi(borrowInfo.id).andExpect(status().isNoContent)
+
+            val borrowLogs = bookBorrowLogRepository.findAll()
+
+            checkBorrowLog(borrowLogs[0], borrowInfo)
+            assertThat(borrowLogs[0].borrowDate).isBefore(beforeBorrowTime)
+            assertThat(borrowLogs[0].expireDate).isBefore(beforeBorrowTime.plusWeeks(2))
+            assertThat(borrowLogs[0].rejectDate).isNull()
+            assertThat(borrowLogs[0].returnDate).isAfter(beforeBorrowTime)
+            assertThat(borrowLogs[0].returnDate).isBefore(LocalDateTime.now())
+        }
+
+        @Test
         fun `유효한 요청이면 책 반납 거절이 성공해야 한다`() {
             val securedValue = getSecuredValue(BorrowManageController::class.java, "denyReturn")
             callDenyReturnApi(borrowInfo.id)
@@ -460,5 +508,15 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 )
             borrowInfo.borrowStatus.type shouldBe 대출중
         }
+    }
+
+    private fun checkBorrowLog(borrowLog: BookBorrowLog, borrowInfo: BookBorrowInfo) {
+        assertThat(borrowLog.bookId).isEqualTo(borrowInfo.book.id)
+        assertThat(borrowLog.bookTitle).isEqualTo(borrowInfo.book.title)
+        assertThat(borrowLog.bookAuthor).isEqualTo(borrowInfo.book.author)
+        assertThat(borrowLog.borrowId).isEqualTo(borrowInfo.id)
+        assertThat(borrowLog.borrowStatus).isEqualTo(borrowInfo.borrowStatus.type.status)
+        assertThat(borrowLog.memberId).isEqualTo(borrowInfo.member.id)
+        assertThat(borrowLog.memberRealName).isEqualTo(borrowInfo.member.realName)
     }
 }
