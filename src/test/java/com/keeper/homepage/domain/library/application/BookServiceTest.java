@@ -1,10 +1,10 @@
 package com.keeper.homepage.domain.library.application;
 
 import static com.keeper.homepage.domain.library.application.BookService.MAX_BORROWING_COUNT;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출거부;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출승인;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출반려;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -52,7 +52,7 @@ public class BookServiceTest extends IntegrationTest {
     @Test
     @DisplayName("현재수량이 0이라면 도서 대여 불가능 응답을 해야 한다.")
     public void 현재수량이_0이라면_도서_대여_불가능_응답을_해야_한다() {
-      bookBorrowInfoTestHelper.builder().book(book).borrowStatus(getBookBorrowStatusBy(대출승인))
+      bookBorrowInfoTestHelper.builder().book(book).borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
 
       Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
@@ -67,7 +67,7 @@ public class BookServiceTest extends IntegrationTest {
         bookBorrowInfoTestHelper.builder()
             .member(member)
             .book(book)
-            .borrowStatus(getBookBorrowStatusBy(대출승인))
+            .borrowStatus(getBookBorrowStatusBy(대출중))
             .build();
       }
       em.flush();
@@ -107,13 +107,13 @@ public class BookServiceTest extends IntegrationTest {
         bookBorrowInfoTestHelper.builder()
             .member(member)
             .book(book)
-            .borrowStatus(getBookBorrowStatusBy(대출승인))
+            .borrowStatus(getBookBorrowStatusBy(대출중))
             .build();
       }
       bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출대기중))
+          .borrowStatus(getBookBorrowStatusBy(대출대기))
           .build();
 
       em.flush();
@@ -130,7 +130,7 @@ public class BookServiceTest extends IntegrationTest {
       bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
 
       em.flush();
@@ -146,7 +146,7 @@ public class BookServiceTest extends IntegrationTest {
       bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출대기중))
+          .borrowStatus(getBookBorrowStatusBy(대출대기))
           .build();
 
       em.flush();
@@ -176,7 +176,7 @@ public class BookServiceTest extends IntegrationTest {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
 
       long borrowId = bookBorrowInfo.getId();
@@ -196,7 +196,7 @@ public class BookServiceTest extends IntegrationTest {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
 
       long borrowId = bookBorrowInfo.getId();
@@ -204,7 +204,7 @@ public class BookServiceTest extends IntegrationTest {
       bookService.requestReturn(member, borrowId);
       BookBorrowInfo borrowInfo = bookBorrowInfoRepository.findById(borrowId).orElseThrow();
 
-      assertThat(borrowInfo.getBorrowStatus().getType()).isEqualTo(반납대기중);
+      assertThat(borrowInfo.getBorrowStatus().getType()).isEqualTo(반납대기);
     }
 
     @Test
@@ -213,7 +213,7 @@ public class BookServiceTest extends IntegrationTest {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(member)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출거부))
+          .borrowStatus(getBookBorrowStatusBy(대출반려))
           .build();
 
       long borrowId = bookBorrowInfo.getId();
@@ -236,7 +236,7 @@ public class BookServiceTest extends IntegrationTest {
       BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
           .member(otherMember)
           .book(book)
-          .borrowStatus(getBookBorrowStatusBy(대출승인))
+          .borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
 
       long borrowId = bookBorrowInfo.getId();

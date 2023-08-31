@@ -58,12 +58,13 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         @BeforeEach
         fun setUp() {
             bookList = (0..3).map { bookTestHelper.builder().totalQuantity(2).build() }
-            (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기중, book = bookList[it]) }
-            bookBorrowInfoTestHelper.generate(borrowStatus = 대출승인, book = bookList[0])
+            (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기, book = bookList[it]) }
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출중, book = bookList[0])
             validParams = multiValueMapOf(
                 "search" to "",
                 "page" to "0",
                 "size" to "3",
+                "searchType" to "all",
             )
         }
 
@@ -75,6 +76,8 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].bookId").value(bookList[0].id))
                 .andExpect(jsonPath("$.content[0].title").value(bookList[0].title))
                 .andExpect(jsonPath("$.content[0].author").value(bookList[0].author))
+                .andExpect(jsonPath("$.content[0].totalQuantity").value(bookList[0].totalQuantity))
+                .andExpect(jsonPath("$.content[0].currentQuantity").value(bookList[0].currentQuantity))
                 .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[0].bookDepartment.type.name))
                 .andExpect(jsonPath("$.content[0].totalQuantity").value(2))
                 .andExpect(jsonPath("$.content[0].currentQuantity").value(1))
@@ -329,15 +332,15 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             borrowList = listOf(
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(대출승인))
+                    .borrowStatus(getBookBorrowStatusBy(대출중))
                     .build(),
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(반납대기중))
+                    .borrowStatus(getBookBorrowStatusBy(반납대기))
                     .build(),
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(반납))
+                    .borrowStatus(getBookBorrowStatusBy(반납완료))
                     .build(),
             )
         }
@@ -352,6 +355,8 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(jsonPath("$.bookId").value(book.id))
                 .andExpect(jsonPath("$.title").value(book.title))
                 .andExpect(jsonPath("$.author").value(book.author))
+                .andExpect(jsonPath("$.totalQuantity").value(book.totalQuantity))
+                .andExpect(jsonPath("$.currentQuantity").value(book.currentQuantity))
                 .andExpect(jsonPath("$.bookDepartment").value(book.bookDepartment.type.name))
                 .andExpect(jsonPath("$.totalQuantity").value(3))
                 .andExpect(jsonPath("$.currentQuantity").value(1))

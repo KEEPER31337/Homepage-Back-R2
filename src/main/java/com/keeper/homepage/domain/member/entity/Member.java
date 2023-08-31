@@ -206,6 +206,7 @@ public class Member {
         .member(this)
         .book(book)
         .borrowStatus(borrowStatus)
+        .lastRequestDate(LocalDateTime.now())
         .build());
   }
 

@@ -62,7 +62,7 @@ class BookManageServiceTest : IntegrationTest() {
 
         @Test
         fun `책을 빌린 사람이 있으면 책 삭제는 실패해야 한다`() {
-            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출승인)
+            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출중)
             em.flush()
             em.clear()
 
@@ -74,7 +74,7 @@ class BookManageServiceTest : IntegrationTest() {
 
         @Test
         fun `반납 대기중인 사람이 있으면 책 삭제는 실패해야 한다`() {
-            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.반납대기중)
+            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.반납대기)
             em.flush()
             em.clear()
 
@@ -86,8 +86,8 @@ class BookManageServiceTest : IntegrationTest() {
 
         @Test
         fun `대출중인 사람이 없으면 책 삭제는 성공해야 하고 대출 이력도 지워져야 한다`() {
-            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출대기중)
-            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출거부)
+            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출대기)
+            bookBorrowInfoTestHelper.generate(member, book, BookBorrowStatusType.대출반려)
             em.flush()
             em.clear()
 
@@ -123,7 +123,7 @@ class BookManageServiceTest : IntegrationTest() {
                 bookBorrowInfoTestHelper.builder()
                     .book(book)
                     .member(member)
-                    .borrowStatus(getBookBorrowStatusBy(BookBorrowStatusType.대출승인))
+                    .borrowStatus(getBookBorrowStatusBy(BookBorrowStatusType.대출중))
                     .build()
             }
 
