@@ -9,7 +9,6 @@ import static lombok.AccessLevel.PRIVATE;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.embedded.GitLink;
 import com.keeper.homepage.domain.study.entity.embedded.Link;
-import com.keeper.homepage.domain.study.entity.embedded.NotionLink;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -65,7 +64,7 @@ public class StudyUpdateRequest {
         .season(season)
         .link(Link.builder()
             .gitLink(gitLink == null ? null : GitLink.from(gitLink))
-            .notionLink(notionLink == null ? null : NotionLink.from(notionLink))
+            .notionLink(notionLink)
             .etcTitle(etcTitle)
             .etcLink(etcLink)
             .build())
