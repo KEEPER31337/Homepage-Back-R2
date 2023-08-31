@@ -50,7 +50,7 @@ public class BookBorrowStatus {
   public enum BookBorrowStatusType {
     대출대기(1, "대출 대기"),
     대출반려(2, "대출 반려"),
-    대출중(3, "대출중"),
+    대출중(3, "대출 중"),
     반납대기(4, "반납 대기"),
     반납완료(5, "반납 완료"),
     ;
