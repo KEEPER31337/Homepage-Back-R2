@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -77,7 +78,8 @@ public class MeritLogService {
     return meritLogRepository.findAllByMemberId(pageable, findMemberId);
   }
 
-  public Page<MeritLog> findMeritLogBySemester(Pageable pageable, LocalDateTime time) {
-    return meritLogRepository.findAllByTimeAfter(pageable, time);
+  public Page<MeritLog> findMeritLogByTime(Pageable pageable, LocalDateTime startTime) {
+    LocalDateTime endTime = startTime.plusMonths(6);
+    return meritLogRepository.findAllByTimeBetween(pageable, startTime, endTime);
   }
 }

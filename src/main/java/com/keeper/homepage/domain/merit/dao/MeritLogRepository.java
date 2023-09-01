@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.merit.dao;
 
 import com.keeper.homepage.domain.merit.entity.MeritLog;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -15,5 +16,5 @@ public interface MeritLogRepository extends JpaRepository<MeritLog, Long> {
 
   long countByMemberId(long memberId);
 
-  Page<MeritLog> findAllByTimeAfter(Pageable pageable, LocalDateTime time);
+  Page<MeritLog> findAllByTimeBetween(Pageable pageable, LocalDateTime startTime, LocalDateTime endTime);
 }
