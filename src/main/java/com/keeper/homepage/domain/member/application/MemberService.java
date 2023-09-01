@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.application;
 
 import static com.keeper.homepage.domain.member.application.convenience.MemberFindService.VIRTUAL_MEMBER_ID;
+import static com.keeper.homepage.global.error.ErrorCode.MEMBER_BOOK_NOT_EMPTY;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_TYPE_NOT_FOUND;
 
@@ -33,6 +34,7 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final MemberFindService memberFindService;
+  private final MemberProfileService memberProfileService;
   private final MemberTypeRepository memberTypeRepository;
 
   @Transactional
@@ -85,5 +87,19 @@ public class MemberService {
     memberIds.stream()
         .map(memberFindService::findById)
         .forEach(m -> m.updateType(findMemberType));
+  }
+
+  @Transactional
+  public void deleteMember(long memberId, String rawPassword) {
+    Member findMember = memberFindService.findById(memberId);
+    memberProfileService.checkMemberPassword(findMember, rawPassword);
+    checkBorrowedBook(findMember);
+
+  }
+
+  private void checkBorrowedBook(Member member) {
+    if (member.isBorrowBooks()) {
+      throw new BusinessException(member.getBookBorrowInfos(), "memberBorrowInfos", MEMBER_BOOK_NOT_EMPTY);
+    }
   }
 }
