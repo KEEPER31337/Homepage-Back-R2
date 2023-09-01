@@ -90,11 +90,10 @@ public class MemberService {
   }
 
   @Transactional
-  public void deleteMember(long memberId, String rawPassword) {
-    Member findMember = memberFindService.findById(memberId);
-    memberProfileService.checkMemberPassword(findMember, rawPassword);
-    checkBorrowedBook(findMember);
-
+  public void deleteMember(Member member, String rawPassword) {
+    memberProfileService.checkMemberPassword(member, rawPassword);
+    checkBorrowedBook(member);
+    member.deleteMember();
   }
 
   private void checkBorrowedBook(Member member) {

@@ -74,10 +74,10 @@ public class Profile {
 
   public void deleteMemberProfile() {
     this.loginId = LoginId.from("삭제");
-    this.emailAddress = EmailAddress.from("삭제");
-    this.password = Password.from("삭제");
+    this.emailAddress = EmailAddress.from("delete@delete.com");
+    this.password = Password.from("deletePassword");
     this.realName = RealName.from("삭제");
     this.birthday = null;
-    this.studentId = StudentId.from("삭제");
+    this.studentId = StudentId.from("0");
   }
 }

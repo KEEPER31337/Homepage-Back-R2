@@ -409,7 +409,7 @@ public class Member {
 
   public void deleteMember() {
     this.getProfile().deleteMemberProfile();
-    this.generation = Generation.generateGeneration(now());
+    this.generation = null;
     this.totalAttendance = 0;
     this.point = 0;
     this.level = 0;
