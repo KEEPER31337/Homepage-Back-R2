@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,5 +75,9 @@ public class MeritLogService {
   public Page<MeritLog> findAllByMemberId(Pageable pageable, long memberId) {
     long findMemberId = memberFindService.findById(memberId).getId();
     return meritLogRepository.findAllByMemberId(pageable, findMemberId);
+  }
+
+  public Page<MeritLog> findMeritLogBySemester(Pageable pageable, LocalDateTime time) {
+    return meritLogRepository.findAllByTimeAfter(pageable, time);
   }
 }
