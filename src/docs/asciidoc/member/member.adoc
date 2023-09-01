@@ -233,7 +233,7 @@ include::{snippets}/update-member-type/request-fields.adoc[]
 
 include::{snippets}/update-member-type/http-response.adoc[]
 
-== *이메일 변경 기능*
+== *이메일 변경*
 
 === 요청
 
@@ -276,3 +276,25 @@ include::{snippets}/member-email-auth/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/member-email-auth/http-response.adoc[]
+
+== *회원 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-member/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-member/request-cookies.adoc[]
+
+==== Request Fields
+
+include::{snippets}/delete-member/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-member/http-response.adoc[]
