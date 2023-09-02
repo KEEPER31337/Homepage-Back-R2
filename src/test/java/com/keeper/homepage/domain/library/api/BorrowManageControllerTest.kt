@@ -398,7 +398,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
             val borrowLogs = bookBorrowLogRepository.findAll()
 
-            checkBorrowLog(borrowLogs[0], borrowInfo)
+            checkBorrowLog(borrowLogs[0], borrowInfo, LogType.대출중)
             assertThat(borrowLogs[0].borrowDate).isAfter(beforeBorrowTime)
             assertThat(borrowLogs[0].borrowDate).isBefore(LocalDateTime.now())
             assertThat(borrowLogs[0].expireDate).isAfter(beforeBorrowTime.plusWeeks(2))
@@ -434,7 +434,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
             val borrowLogs = bookBorrowLogRepository.findAll()
 
-            checkBorrowLog(borrowLogs[0], borrowInfo)
+            checkBorrowLog(borrowLogs[0], borrowInfo, LogType.대출반려)
             assertThat(borrowLogs[0].borrowDate).isBefore(beforeBorrowTime)
             assertThat(borrowLogs[0].expireDate).isBefore(beforeBorrowTime.plusWeeks(2))
             assertThat(borrowLogs[0].returnDate).isNull()
@@ -483,7 +483,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
             val borrowLogs = bookBorrowLogRepository.findAll()
 
-            checkBorrowLog(borrowLogs[0], borrowInfo)
+            checkBorrowLog(borrowLogs[0], borrowInfo, LogType.반납완료)
             assertThat(borrowLogs[0].borrowDate).isBefore(beforeBorrowTime)
             assertThat(borrowLogs[0].expireDate).isBefore(beforeBorrowTime.plusWeeks(2))
             assertThat(borrowLogs[0].rejectDate).isNull()
@@ -512,12 +512,12 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         }
     }
 
-    private fun checkBorrowLog(borrowLog: BookBorrowLog, borrowInfo: BookBorrowInfo) {
+    private fun checkBorrowLog(borrowLog: BookBorrowLog, borrowInfo: BookBorrowInfo, logType: LogType) {
         assertThat(borrowLog.bookId).isEqualTo(borrowInfo.book.id)
         assertThat(borrowLog.bookTitle).isEqualTo(borrowInfo.book.title)
         assertThat(borrowLog.bookAuthor).isEqualTo(borrowInfo.book.author)
         assertThat(borrowLog.borrowId).isEqualTo(borrowInfo.id)
-        assertThat(borrowLog.borrowStatus).isEqualTo(borrowInfo.borrowStatus.type.status)
+        assertThat(borrowLog.borrowStatus).isEqualTo(logType.name)
         assertThat(borrowLog.memberId).isEqualTo(borrowInfo.member.id)
         assertThat(borrowLog.memberRealName).isEqualTo(borrowInfo.member.realName)
     }
