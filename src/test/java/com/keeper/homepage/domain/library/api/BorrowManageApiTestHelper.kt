@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
+import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType
 import jakarta.servlet.http.Cookie
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post
@@ -52,6 +53,19 @@ class BorrowManageApiTestHelper : BookManageApiTestHelper() {
         accessCookies: Array<Cookie> = bookManagerCookies
     ): ResultActions = mockMvc.perform(
         post("${BORROW_URL}/{borrowId}/return-deny", borrowId)
+            .cookie(*accessCookies)
+    )
+
+    fun callGetBorrowLogApi(
+        params: MultiValueMap<String, String> = LinkedMultiValueMap(),
+        searchType: LogType? = null,
+        search: String? = null,
+        accessCookies: Array<Cookie> = bookManagerCookies,
+    ): ResultActions = mockMvc.perform(
+        get("${BORROW_URL}/logs")
+            .params(params)
+            .param("searchType", searchType?.name)
+            .param("search", search)
             .cookie(*accessCookies)
     )
 }

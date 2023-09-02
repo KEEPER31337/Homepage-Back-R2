@@ -274,3 +274,30 @@ include::{snippets}/borrow-return-deny/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/borrow-return-deny/http-response.adoc[]
+
+== *대출 현황 로그 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-borrow-logs/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-borrow-logs/request-cookies.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/get-borrow-logs/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-borrow-logs/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-borrow-logs/response-fields.adoc[]
+

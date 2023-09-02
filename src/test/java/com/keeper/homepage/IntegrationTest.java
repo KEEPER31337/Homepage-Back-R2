@@ -49,6 +49,7 @@ import com.keeper.homepage.domain.game.application.GameService;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
+import com.keeper.homepage.domain.library.BorrowLogTestHelper;
 import com.keeper.homepage.domain.library.application.BookManageService;
 import com.keeper.homepage.domain.library.application.BookService;
 import com.keeper.homepage.domain.library.application.BorrowManageService;
@@ -390,6 +391,9 @@ public class IntegrationTest {
 
   @Autowired
   protected BookBorrowInfoTestHelper bookBorrowInfoTestHelper;
+
+  @Autowired
+  protected BorrowLogTestHelper borrowLogTestHelper;
 
   @Autowired
   protected SeminarTestHelper seminarTestHelper;
