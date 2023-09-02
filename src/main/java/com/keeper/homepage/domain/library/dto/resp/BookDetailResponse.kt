@@ -20,6 +20,8 @@ data class BookDetailResponse(
         totalQuantity = book.totalQuantity,
         currentQuantity = book.currentQuantity,
         thumbnailPath = book.thumbnailPath,
-        borrowInfos = book.bookBorrowInfos.map(::BorrowDetailResponse),
+        borrowInfos = book.bookBorrowInfos
+            .filter { borrowInfo -> borrowInfo.isInBorrowing }
+            .map(::BorrowDetailResponse),
     )
 }
