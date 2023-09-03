@@ -78,8 +78,6 @@ public class MeritLogService {
     return meritLogRepository.findAllByMemberId(pageable, findMemberId);
   }
 
-  public Page<MeritLog> findMeritLogByTime(Pageable pageable, LocalDateTime startTime) {
-    LocalDateTime endTime = startTime.plusMonths(6);
-    return meritLogRepository.findAllByTimeBetween(pageable, startTime, endTime);
-  }
+
+
 }

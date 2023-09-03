@@ -103,24 +103,6 @@ class MeritLogServiceTest extends IntegrationTest {
       winterOtherMeritLog = meritLogTestHelper.generate();
     }
 
-    @Test
-    @DisplayName("학기별 조회를 성공해야 한다.")
-    public void 학기별_조회를_성공해야_한다() {
-      summerMeritLog.updateTime(LocalDateTime.of(2023,6,1,0,0));
-      winterMeritLog.updateTime(LocalDateTime.of(2023,12,1,0,0));
-      summerOtherMeritLog.updateTime(LocalDateTime.of(2023,6,1,0,0));
-      winterOtherMeritLog.updateTime(LocalDateTime.of(2024,1,1,0,0));
-
-      em.flush();
-      em.clear();
-
-      LocalDateTime startTime = LocalDateTime.of(2023, 3, 1,0,0);
-      Page<MeritLog> pages = meritLogService.findMeritLogByTime(PageRequest.of(0, 10), startTime);
-
-      assertThat(pages.map(MeritLog::getId).toList()).contains(summerMeritLog.getId(), summerOtherMeritLog.getId());
-      assertThat(pages.map(MeritLog::getId).toList()).doesNotContain(winterMeritLog.getId(),
-          winterOtherMeritLog.getId());
-    }
   }
 
 }
