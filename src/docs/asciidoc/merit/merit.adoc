@@ -148,3 +148,25 @@ include::{snippets}/update-meritType/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/update-meritType/http-response.adoc[]
+
+== *회원 통계 상벌점 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/find-total-merit-logs/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/find-total-merit-logs/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/find-total-merit-logs/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/find-total-merit-logs/response-fields.adoc[]
