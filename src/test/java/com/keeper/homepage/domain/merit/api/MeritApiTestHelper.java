@@ -39,5 +39,15 @@ public class MeritApiTestHelper extends IntegrationTest {
     };
   }
 
+  FieldDescriptor[] getAllTotalMeritLogsResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("memberId").description("회원의 ID"),
+        fieldWithPath("memberName").description("회원의 이름"),
+        fieldWithPath("generation").description("회원의 기수"),
+        fieldWithPath("merit").description("상점"),
+        fieldWithPath("demerit").description("벌점")
+    };
+  }
+
 
 }

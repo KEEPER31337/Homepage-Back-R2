@@ -40,14 +40,15 @@ import org.springframework.http.MediaType;
 public class MeritControllerTest extends MeritApiTestHelper {
 
 
-  private MeritType meritType;
-  private Member member, admin;
+  private MeritType meritType, demeritType;
+  private Member member, admin, otherMember;
   private String userAccessToken, adminAccessToken;
 
   @BeforeEach
   void setUp() throws IOException {
     meritType = meritTypeHelper.generate();
     member = memberTestHelper.generate();
+    otherMember = memberTestHelper.generate();
     admin = memberTestHelper.generate();
     userAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(),
         ROLE_회원);
@@ -287,5 +288,71 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
+  }
+
+  @Nested
+  @DisplayName("회원 통계 상벌점 목록 조회 테스트")
+  class GetAllTotalMeritLogsTest {
+
+    @BeforeEach
+    void setUp() {
+      meritType = meritTypeHelper.builder().merit(5).build();
+      demeritType = meritTypeHelper.builder().merit(-3).build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .memberRealName(member.getRealName())
+          .memberGeneration(member.getGeneration())
+          .meritType(meritType)
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .memberRealName(member.getRealName())
+          .memberGeneration(member.getGeneration())
+          .meritType(demeritType)
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(otherMember.getId())
+          .memberRealName(otherMember.getRealName())
+          .memberGeneration(otherMember.getGeneration())
+          .meritType(meritType)
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(otherMember.getId())
+          .memberRealName(otherMember.getRealName())
+          .memberGeneration(otherMember.getGeneration())
+          .meritType(meritType)
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(otherMember.getId())
+          .memberRealName(otherMember.getRealName())
+          .memberGeneration(otherMember.getGeneration())
+          .meritType(demeritType)
+          .build();
+    }
+
+    @Test
+    @DisplayName("회원 통계 상벌점 목록 조회를 성공해야 한다.")
+    public void 회원_통계_상벌점_목록_조회를_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MeritController.class, "getAllTotalMeritLogs");
+
+      mockMvc.perform(get("/merits/members")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andDo(document("find-total-merit-logs",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              responseFields(
+                  pageHelper(getAllTotalMeritLogsResponse())
+              )));
+    }
+
   }
 }
