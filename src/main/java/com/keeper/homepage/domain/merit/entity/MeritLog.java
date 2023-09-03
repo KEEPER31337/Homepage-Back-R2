@@ -52,8 +52,4 @@ public class MeritLog {
     this.time = LocalDateTime.now();
     this.meritType = meritType;
   }
-
-  public void updateTime(LocalDateTime time) {
-    this.time = time;
-  }
 }

@@ -48,6 +48,4 @@ public class MeritApiTestHelper extends IntegrationTest {
         fieldWithPath("demerit").description("벌점")
     };
   }
-
-
 }
