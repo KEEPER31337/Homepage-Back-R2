@@ -3,9 +3,11 @@ package com.keeper.homepage.domain.merit.api;
 
 import com.keeper.homepage.domain.merit.application.MeritLogService;
 import com.keeper.homepage.domain.merit.application.MeritTypeService;
+import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
+import com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse;
 import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
 import com.keeper.homepage.domain.merit.dto.response.SearchMemberMeritLogResponse;
 import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
@@ -36,6 +38,7 @@ public class MeritController {
 
   private final MeritTypeService meritTypeService;
   private final MeritLogService meritLogService;
+  private final MeritLogRepository meritLogRepository;
 
   @GetMapping
   public ResponseEntity<Page<SearchMeritLogListResponse>> searchMeritLogList(
@@ -96,6 +99,14 @@ public class MeritController {
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/merits/types/" + meritTypeId))
         .build();
+  }
+
+  @GetMapping("/members")
+  public ResponseEntity<Page<MeritLogsGroupByMemberResponse>> getAllTotalMeritLogs(
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
+  ) {
+    return ResponseEntity.ok(meritLogRepository.findAllTotalMeritLogs(PageRequest.of(page, size)));
   }
 
 }
