@@ -89,20 +89,4 @@ class MeritLogServiceTest extends IntegrationTest {
     }
   }
 
-  @Nested
-  @DisplayName("상벌점 조회 테스트")
-  class FindMeritLogTest {
-
-    private MeritLog summerMeritLog, summerOtherMeritLog, winterMeritLog, winterOtherMeritLog;
-
-    @BeforeEach
-    void setUp() {
-      summerMeritLog = meritLogTestHelper.generate();
-      summerOtherMeritLog = meritLogTestHelper.generate();
-      winterMeritLog = meritLogTestHelper.generate();
-      winterOtherMeritLog = meritLogTestHelper.generate();
-    }
-
-  }
-
 }
