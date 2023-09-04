@@ -18,8 +18,6 @@ public interface MeritLogRepository extends JpaRepository<MeritLog, Long> {
 
   long countByMemberId(long memberId);
 
-  Page<MeritLog> findAllByTimeBetween(Pageable pageable, LocalDateTime startTime, LocalDateTime endTime);
-
   @Query("SELECT NEW com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse(m.memberId, m.memberRealName, m.memberGeneration, " +
       "CAST(SUM(CASE WHEN m.meritType.merit > 0 THEN m.meritType.merit ELSE 0 END) AS INTEGER), " +
       "CAST(SUM(CASE WHEN m.meritType.merit < 0 THEN m.meritType.merit ELSE 0 END) AS INTEGER)) " +
