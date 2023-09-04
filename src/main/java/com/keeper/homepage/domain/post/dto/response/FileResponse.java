@@ -14,7 +14,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = PRIVATE)
 public class FileResponse {
 
-  private Long id;
+  private Long fileId;
   private String name;
   private String path;
   private Long size;
@@ -25,7 +25,7 @@ public class FileResponse {
 
   public static FileResponse from(FileEntity file) {
     return FileResponse.builder()
-        .id(file.getId())
+        .fileId(file.getId())
         .name(file.getFileName())
         .path(file.getFilePath())
         .size(file.getFileSize())
