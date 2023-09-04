@@ -508,7 +508,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(new File(beforeFile.getFilePath())).exists();
       assertThat(fileRepository.findById(beforeFile.getId())).isNotEmpty();
 
-      postService.deletePostFile(member, postId, beforeFile.getId());
+      postService.deletePostFile(member, postId, List.of(beforeFile.getId()));
 
       assertThat(new File(beforeFile.getFilePath())).doesNotExist();
       assertThat(fileRepository.findById(beforeFile.getId())).isEmpty();

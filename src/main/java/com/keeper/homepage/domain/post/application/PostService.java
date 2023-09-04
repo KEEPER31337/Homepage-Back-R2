@@ -296,15 +296,17 @@ public class PostService {
   }
 
   @Transactional
-  public void deletePostFile(Member member, long postId, long fileId) {
+  public void deletePostFile(Member member, long postId, List<Long> fileIds) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-    FileEntity file = fileService.findById(fileId);
-    postHasFileRepository.deleteByPostAndFile(post, file);
-    fileUtil.deleteFileAndEntity(file);
+    fileIds.stream().forEach(fileId -> {
+      FileEntity file = fileService.findById(fileId);
+      postHasFileRepository.deleteByPostAndFile(post, file);
+      fileUtil.deleteFileAndEntity(file);
+    });
   }
 
   public Page<PostResponse> getPosts(long categoryId, String searchType, String search, PageRequest pageable) {
