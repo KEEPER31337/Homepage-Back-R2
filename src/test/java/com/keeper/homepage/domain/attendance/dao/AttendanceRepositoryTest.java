@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.Member;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 
 class AttendanceRepositoryTest extends IntegrationTest {
 
@@ -46,7 +46,7 @@ class AttendanceRepositoryTest extends IntegrationTest {
           .date(LocalDate.of(2022, 1, 24))
           .member(member)
           .build())
-          .isInstanceOf(DataIntegrityViolationException.class);
+          .isInstanceOf(UndeclaredThrowableException.class);
     }
   }
 

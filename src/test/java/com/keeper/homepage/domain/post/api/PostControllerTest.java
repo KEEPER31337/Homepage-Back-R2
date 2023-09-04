@@ -911,7 +911,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
               ),
               responseFields(
-                  fieldWithPath("[].id").description("파일 ID"),
+                  fieldWithPath("[].fileId").description("파일 ID"),
                   fieldWithPath("[].name").description("파일 이름"),
                   fieldWithPath("[].path").description("파일 경로"),
                   fieldWithPath("[].size").description("파일 크기"),
