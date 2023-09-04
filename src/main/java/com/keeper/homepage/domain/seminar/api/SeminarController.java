@@ -36,9 +36,9 @@ public class SeminarController {
 
   @PostMapping
   public ResponseEntity<SeminarIdResponse> createSeminar(
-      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate openTime
+      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate openDate
   ) {
-    SeminarIdResponse response = seminarService.save(openTime);
+    SeminarIdResponse response = seminarService.save(openDate);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 

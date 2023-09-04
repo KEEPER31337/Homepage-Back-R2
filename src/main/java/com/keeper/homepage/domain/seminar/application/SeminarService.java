@@ -43,10 +43,10 @@ public class SeminarService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public SeminarIdResponse save(LocalDate openTime) {
-    checkDuplicateSeminar(openTime);
+  public SeminarIdResponse save(LocalDate openDate) {
+    checkDuplicateSeminar(openDate);
     Seminar seminar = seminarRepository.save(Seminar.builder()
-        .openTime(openTime.atStartOfDay())
+        .openTime(openDate.atStartOfDay())
         .attendanceCode(randomAttendanceCode())
         .build());
 
