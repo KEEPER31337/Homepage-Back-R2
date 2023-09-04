@@ -20,7 +20,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
@@ -252,6 +251,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
                   fieldWithPath("studies[].studyId").description("스터디 ID"),
                   fieldWithPath("studies[].thumbnailPath").description("스터디 썸네일 경로"),
                   fieldWithPath("studies[].title").description("스터디 이름"),
+                  fieldWithPath("studies[].headId").description("스터디장 ID"),
                   fieldWithPath("studies[].headName").description("스터디장 이름 (실명)"),
                   fieldWithPath("studies[].memberCount").description("스터디원 수")
               )));

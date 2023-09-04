@@ -100,11 +100,11 @@ public class Study extends BaseEntity {
   }
 
   public String getGitLink() {
-    return this.link.getGitLink().get();
+    return this.link.getGitLink() != null ? this.link.getGitLink().get() : null;
   }
 
   public String getNotionLink() {
-    return this.link.getNotionLink().get();
+    return this.link.getNotionLink();
   }
 
   public String getEtcTitle() {

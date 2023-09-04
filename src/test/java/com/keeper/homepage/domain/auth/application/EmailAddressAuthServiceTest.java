@@ -16,7 +16,7 @@ class EmailAddressAuthServiceTest extends IntegrationTest {
   @DisplayName("알파벳과 숫자로 이루어진 인증 코드가 잘 생성되어야 하고, Redis에 해당 내용이 들어있어야 한다.")
   void should_generateSuccessfullyAndInRedis() {
     doNothing().when(emailAuthService).sendKeeperAuthCodeMail(anyString(), anyString());
-    String validEmail = String.format("%s@%s.%s", getRandomUUIDLengthWith(5),
+    String validEmail = "%s@%s.%s".formatted(getRandomUUIDLengthWith(5),
         getRandomUUIDLengthWith(5), getRandomUUIDLengthWith(3));
     assertThat(emailAuthRedisRepository.findById(validEmail)).isEmpty();
 

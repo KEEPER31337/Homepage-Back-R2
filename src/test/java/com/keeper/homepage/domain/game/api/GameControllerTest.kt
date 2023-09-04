@@ -256,7 +256,7 @@ class GameControllerTest : GameApiTestHelper() {
         @Test
         fun `valid한 request면 guess는 성공해야 한다`() {
             val result = callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
+                guessNumbers = listOf("1234"), correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(
                     GuessResultEntity("1357", 0, 0),
                     GuessResultEntity("2468", 2, 2),
@@ -292,9 +292,9 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `guessNumber가 4자가 아니면 guess는 실패한다`() {
-            callBaseballGuess(guessNumber = "123", correctNumber = "1234", bettingPoint = 1000)
+            callBaseballGuess(guessNumbers = listOf("123"), correctNumber = "1234", bettingPoint = 1000)
                 .andExpect(status().isBadRequest)
-            callBaseballGuess(guessNumber = "12345", correctNumber = "1234", bettingPoint = 1000)
+            callBaseballGuess(guessNumbers = listOf("12345"), correctNumber = "1234", bettingPoint = 1000)
                 .andExpect(status().isBadRequest)
         }
 
@@ -304,11 +304,14 @@ class GameControllerTest : GameApiTestHelper() {
             val earnablePoint = 3000
 
             callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000, earnablePoint = earnablePoint,
-                results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 3, 0))
+                guessNumbers = listOf("3456", "4567", "5678"),
+                correctNumber = "5678",
+                bettingPoint = 1000,
+                earnablePoint = earnablePoint,
+                results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("2345", 3, 0))
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint + earnablePoint).isEqualTo(player.point)
+            assertThat(beforePlayerPoint + 2430).isEqualTo(player.point) // 초기 3000 포인트에서 2번 틀렸다고 가정
         }
 
         @Test
@@ -316,7 +319,7 @@ class GameControllerTest : GameApiTestHelper() {
             val beforePlayerPoint = player.point
 
             callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
+                guessNumbers = listOf("1234"), correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0))
             ).andExpect(status().isOk)
 
@@ -328,7 +331,7 @@ class GameControllerTest : GameApiTestHelper() {
             val beforePlayerPoint = player.point
 
             callBaseballGuess(
-                guessNumber = "1234", correctNumber = "1234", bettingPoint = 1000,
+                guessNumbers = listOf("1234"), correctNumber = "1234", bettingPoint = 1000,
                 results = mutableListOf(
                     GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0),
                     null, null, null, null, null, null

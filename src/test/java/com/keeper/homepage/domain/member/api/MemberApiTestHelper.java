@@ -1,11 +1,14 @@
 package com.keeper.homepage.domain.member.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import jakarta.servlet.http.Cookie;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
@@ -46,5 +49,13 @@ public class MemberApiTestHelper extends IntegrationTest {
         fieldWithPath("followee[].thumbnailPath").description("내가 팔로우 하는 사람의 썸네일 경로"),
     };
   }
+
+  ResultActions callUpdateProfileApi(String accessToken, ProfileUpdateRequest request)
+      throws Exception {
+    return mockMvc.perform(patch("/members/profile")
+        .content(asJsonString(request))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .contentType(MediaType.APPLICATION_JSON));
+  };
 
 }

@@ -96,6 +96,7 @@ public class CommentService {
     Member virtualMember = memberFindService.getVirtualMember();
     comment.changeWriter(virtualMember);
     comment.updateContent(DELETED_COMMENT_CONTENT);
+    comment.delete();
     commentDeleteService.deleteAllLikeAndDislike(comment);
   }
 

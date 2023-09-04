@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.library;
 
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
@@ -83,7 +83,7 @@ public class BookBorrowInfoTestHelper {
     }
 
     private BookBorrowStatus getDefaultBorrowStatus() {
-      return bookBorrowStatusRepository.findById(대출대기중.getId()).orElseThrow();
+      return bookBorrowStatusRepository.findById(대출대기.getId()).orElseThrow();
     }
 
   }

@@ -14,7 +14,6 @@ public class MemberJobResponse {
 
   private Long jobId;
   private String jobName;
-  private String jobThumbnailPath;
   private Long memberId;
   private String generation;
   private String realName;
@@ -23,7 +22,6 @@ public class MemberJobResponse {
     return MemberJobResponse.builder()
         .jobId(memberHasMemberJob.getMemberJob().getId())
         .jobName(memberHasMemberJob.getMemberJob().getType().toString())
-        .jobThumbnailPath(memberHasMemberJob.getMemberJob().getBadge().getPath())
         .memberId(memberHasMemberJob.getMember().getId())
         .generation(memberHasMemberJob.getMember().getGeneration())
         .realName(memberHasMemberJob.getMember().getRealName())

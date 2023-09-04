@@ -1,8 +1,14 @@
 package com.keeper.homepage.domain.member.api;
 
+import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
+import com.keeper.homepage.domain.auth.application.EmailAuthService;
+import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
+import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,6 +46,7 @@ public class MemberController {
 
   private final MemberService memberService;
   private final MemberProfileService memberProfileService;
+  private final EmailAuthService emailAuthService;
 
   @PatchMapping("/change-password")
   public ResponseEntity<Void> changePassword(
@@ -90,6 +98,15 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
+  @PatchMapping("/profile")
+  public ResponseEntity<Void> updateProfile(
+      @LoginMember Member member,
+      @RequestBody @Valid ProfileUpdateRequest request
+  ) {
+    memberProfileService.updateProfile(member, request.toEntity());
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
   @PatchMapping("/thumbnail")
   public ResponseEntity<Void> updateProfileThumbnail(
       @LoginMember Member member,
@@ -114,6 +131,24 @@ public class MemberController {
       @RequestBody @Valid UpdateMemberTypeRequest request
   ) {
     memberService.updateMemberType(request.getMemberIds(), typeId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/email-auth")
+  public ResponseEntity<String> emailAuth(
+      @RequestBody @Valid EmailAuthRequest request
+  ) {
+    memberProfileService.checkDuplicateEmailAddress(request.getEmail());
+    memberProfileService.sendEmailChangeAuthCode(request.getEmail());
+    return ResponseEntity.ok("이메일 인증 번호를 보냈습니다.");
+  }
+
+  @PatchMapping("/email")
+  public ResponseEntity<Void> updateMemberEmail(
+      @LoginMember Member member,
+      @RequestBody @Valid UpdateMemberEmailAddressRequest request
+  ) {
+    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(), request.getPassword());
     return ResponseEntity.noContent().build();
   }
 }

@@ -280,7 +280,7 @@ public class PostService {
     Category category = categoryFindService.findById(categoryId);
     List<Post> posts = postRepository.findAllNoticeByCategory(category);
     List<PostResponse> postResponses = posts.stream()
-        .map(PostResponse::from)
+        .map(this::getPostResponse)
         .toList();
     return PostListResponse.from(postResponses);
   }
