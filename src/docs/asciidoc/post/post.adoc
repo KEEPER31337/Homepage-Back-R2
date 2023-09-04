@@ -287,6 +287,10 @@ include::{snippets}/delete-post-file/request-cookies.adoc[]
 
 include::{snippets}/delete-post-file/path-parameters.adoc[]
 
+==== Request Fields
+
+include::{snippets}/delete-post-file/request-fields.adoc[]
+
 === 응답
 
 ==== Response

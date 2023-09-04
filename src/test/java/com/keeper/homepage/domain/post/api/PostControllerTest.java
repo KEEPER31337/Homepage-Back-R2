@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
+import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
@@ -723,7 +724,11 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 유효한_요청인_경우_게시글_파일_제거는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "deletePostFile");
 
-      callDeletePostFileApi(memberToken, postId, fileId)
+      PostFileDeleteRequest request = PostFileDeleteRequest.builder()
+          .fileIds(List.of(fileId))
+          .build();
+
+      callDeletePostFileApi(memberToken, postId, request)
           .andExpect(status().isNoContent())
           .andDo(document("delete-post-file",
               requestCookies(
@@ -732,9 +737,10 @@ public class PostControllerTest extends PostApiTestHelper {
               ),
               pathParameters(
                   parameterWithName("postId")
-                      .description("파일을 삭제하고자 하는 게시글의 ID"),
-                  parameterWithName("fileId")
-                      .description("삭제하고자 하는 파일 ID")
+                      .description("파일을 삭제하고자 하는 게시글의 ID")
+              ),
+              requestFields(
+                  fieldWithPath("fileIds[]").description("삭제할 파일의 Id 리스트")
               )));
     }
   }
