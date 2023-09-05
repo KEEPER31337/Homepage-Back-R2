@@ -109,7 +109,7 @@ public class BookService {
   }
 
   public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {
-    return bookBorrowInfoRepository.findAllByMemberAndInBorrowing(member, pageable)
+    return bookBorrowInfoRepository.findAllByMemberAndInBorrowingOrWait(member, pageable)
         .map(BookBorrowResponse::from);
   }
 }

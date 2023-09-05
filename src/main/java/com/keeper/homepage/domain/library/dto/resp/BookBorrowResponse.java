@@ -18,6 +18,7 @@ public class BookBorrowResponse {
   private String bookTitle;
   private String author;
   private boolean overdue;
+  private String borrowStatus;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime borrowDateTime;
@@ -32,6 +33,7 @@ public class BookBorrowResponse {
         .bookTitle(bookBorrowInfo.getBook().getTitle())
         .author(bookBorrowInfo.getBook().getAuthor())
         .overdue(bookBorrowInfo.getExpireDate().isBefore(now))
+        .borrowStatus(bookBorrowInfo.getBorrowStatus().getType().getStatus())
         .borrowDateTime(bookBorrowInfo.getBorrowDate())
         .expireDateTime(bookBorrowInfo.getExpireDate())
         .build();
