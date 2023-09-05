@@ -159,7 +159,6 @@ public class MemberController {
       @LoginMember Member member,
       @RequestBody @Valid DeleteMemberRequest request) {
     memberService.deleteMember(member, request.getRawPassword());
-
     return ResponseEntity.noContent().build();
   }
 }

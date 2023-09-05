@@ -114,7 +114,7 @@ public class MemberServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("회원 탈퇴 시 유저 정보는 '삭제'로 마킹되어야 한다.")
-    public void 회원_탈퇴_시_유저_정보는_삭제로_마킹되어야_한다() {
+    public void 회원_탈퇴_시_유저_이름은_회원탈퇴로_마킹되어야_한다() {
       memberService.deleteMember(member, "TruePassword");
 
       em.flush();
@@ -123,16 +123,7 @@ public class MemberServiceTest extends IntegrationTest {
       Member findMember = memberRepository.findById(member.getId())
           .orElseThrow();
 
-      assertThat(findMember.getProfile().getLoginId().get()).isEqualTo("삭제");
-      assertThat(findMember.getProfile().getEmailAddress().get()).isEqualTo("delete@delete.com");
-      assertThat(findMember.getProfile().getRealName().get()).isEqualTo("삭제");
-      assertThat(findMember.getProfile().getBirthday()).isNull();
-      assertThat(findMember.getProfile().getStudentId().get()).isEqualTo("0");
-      assertThat(findMember.getProfile().getPassword().isWrongPassword("deletePassword")).isFalse();
-
-      assertThat(findMember.getTotalAttendance()).isEqualTo(0);
-      assertThat(findMember.getPoint()).isEqualTo(0);
-      assertThat(findMember.getLevel()).isEqualTo(0);
+      assertThat(findMember.getProfile().getRealName().get()).isEqualTo("탈퇴회원");
       assertThat(findMember.getIsDeleted()).isEqualTo(true);
 
     }
