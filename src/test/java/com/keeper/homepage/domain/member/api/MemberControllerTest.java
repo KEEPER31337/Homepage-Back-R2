@@ -554,6 +554,4 @@ class MemberControllerTest extends MemberApiTestHelper {
           .andExpect(status().isBadRequest());
     }
   }
-
-
 }
