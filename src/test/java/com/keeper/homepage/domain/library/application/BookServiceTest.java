@@ -66,7 +66,6 @@ public class BookServiceTest extends IntegrationTest {
       for (int i = 0; i < 5; i++) {
         bookBorrowInfoTestHelper.builder()
             .member(member)
-            .book(book)
             .borrowStatus(getBookBorrowStatusBy(대출중))
             .build();
       }
@@ -77,6 +76,33 @@ public class BookServiceTest extends IntegrationTest {
       Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
+    }
+
+    @Test
+    @DisplayName("회원이 빌린 책의 상태가 대출 대기, 대출 중, 반납 대기일 경우 도서 대여 불가능 응답을 해야 한다.")
+    public void 회원이_빌린_책의_상태가_대출_대기_대출_중_반납_대기일_경우_도서_대여_불가능_응답을_해야_한다() throws Exception {
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .book(book)
+          .borrowStatus(getBookBorrowStatusBy(대출대기))
+          .build();
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(대출중))
+          .build();
+      bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(반납대기))
+          .build();
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).get();
+
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
+
+      assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
+      assertThat(books.getContent().get(1).isCanBorrow()).isFalse();
+      assertThat(books.getContent().get(2).isCanBorrow()).isFalse();
     }
   }
 

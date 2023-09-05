@@ -45,17 +45,23 @@ public class BookService {
 
     return switch (searchType) {
       case ALL -> bookRepository.findAllByTitleOrAuthor(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, member, book)));
       case TITLE -> bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, member, book)));
       case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, book)));
+          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, member, book)));
       default -> throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
     };
   }
 
-  private boolean canBorrow(boolean isUnderBorrowingLimit, Book book) {
-    return book.getCurrentQuantity() != 0L && isUnderBorrowingLimit;
+  private boolean canBorrow(boolean isUnderBorrowingLimit, Member member, Book book) {
+    Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository.findByMemberAndBook(member, book);
+    if (borrowInfo.isEmpty()) {
+      return book.getCurrentQuantity() != 0L && isUnderBorrowingLimit;
+    }
+    return !borrowInfo.get().isCanBorrow()
+        && book.getCurrentQuantity() > 0L
+        && isUnderBorrowingLimit;
   }
 
   @Transactional
