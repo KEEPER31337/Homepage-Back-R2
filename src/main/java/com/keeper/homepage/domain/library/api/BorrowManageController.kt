@@ -34,7 +34,7 @@ class BorrowManageController(
         @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
         @RequestParam status: BorrowStatusDto?
     ): ResponseEntity<Page<BorrowDetailResponse>> {
-    val borrowRequests = borrowManageService.getBorrow(search, PageRequest.of(page, size), status)
+        val borrowRequests = borrowManageService.getBorrow(search, PageRequest.of(page, size), status)
         return ResponseEntity.ok(borrowRequests)
     }
 
