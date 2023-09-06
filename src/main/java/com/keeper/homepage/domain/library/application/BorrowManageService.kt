@@ -1,12 +1,17 @@
 package com.keeper.homepage.domain.library.application
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository
+import com.keeper.homepage.domain.library.dao.BookBorrowLogRepository
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.dto.resp.BorrowDetailResponse
+import com.keeper.homepage.domain.library.dto.resp.BorrowLogResponse
+import com.keeper.homepage.domain.library.entity.BookBorrowLog
+import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,7 +23,8 @@ fun BookBorrowInfoRepository.getBorrowById(borrowId: Long) = this.findById(borro
 @Service
 @Transactional(readOnly = true)
 class BorrowManageService(
-    val borrowInfoRepository: BookBorrowInfoRepository
+    val borrowInfoRepository: BookBorrowInfoRepository,
+    val borrowLogRepository: BookBorrowLogRepository,
 ) {
     fun getBorrow(search: String, pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowDetailResponse> {
         if (borrowStatusDto == null) {
@@ -42,6 +48,7 @@ class BorrowManageService(
 
         borrowInfo.setBorrowTime(LocalDateTime.now())
         borrowInfo.changeBorrowStatus(대출중)
+        borrowLogRepository.save(BookBorrowLog.of(borrowInfo, LogType.대출중))
     }
 
     @Transactional
@@ -50,7 +57,9 @@ class BorrowManageService(
         if (borrowInfo.borrowStatus.type != 대출대기) {
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_REQUESTS)
         }
+
         borrowInfo.changeBorrowStatus(대출반려)
+        borrowLogRepository.save(BookBorrowLog.of(borrowInfo, LogType.대출반려))
     }
 
     @Transactional
@@ -60,6 +69,7 @@ class BorrowManageService(
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
         }
         borrowInfo.changeBorrowStatus(반납완료)
+        borrowLogRepository.save(BookBorrowLog.of(borrowInfo, LogType.반납완료))
     }
 
     @Transactional
@@ -69,5 +79,23 @@ class BorrowManageService(
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_WAITING_RETURN)
         }
         borrowInfo.changeBorrowStatus(대출중)
+    }
+
+    fun getBorrowLogs(
+        search: String,
+        pageable: PageRequest,
+        searchType: LogType?
+    ): Page<BorrowLogResponse> {
+        return when (searchType) {
+            null -> borrowLogRepository.findAll(search, pageable)
+            LogType.대출중,
+            LogType.반납대기,
+            LogType.반납완료,
+            LogType.대출반려 -> borrowLogRepository.findAllByStatus(
+                searchType.name,
+                search,
+                pageable
+            )
+        }.map(::BorrowLogResponse)
     }
 }
