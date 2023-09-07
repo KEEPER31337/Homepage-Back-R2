@@ -45,12 +45,12 @@ public class PointController {
 
   @GetMapping
   public ResponseEntity<Page<FindAllPointLogResponse>> findAllPointLogs(
-      @RequestParam(defaultValue = "0") @PositiveOrZero int size,
-      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int page,
+      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
+      @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size,
       @LoginMember Member member
   ) {
     return ResponseEntity.ok(
-        pointLogService.findAllPointLogs(PageRequest.of(size, page), member.getId())
+        pointLogService.findAllPointLogs(PageRequest.of(page, size), member.getId())
             .map(FindAllPointLogResponse::from)
     );
   }
