@@ -66,11 +66,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 
 @DynamicInsert
 @DynamicUpdate
 @Getter
 @Entity
+@Where(clause = "is_deleted = false")
 @EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
@@ -403,8 +405,9 @@ public class Member {
     this.memberType = memberType;
   }
 
-  public boolean isBorrowBooks() {
-    return !this.bookBorrowInfos.isEmpty();
+  public boolean hasAnyBorrowBooks() {
+    return this.bookBorrowInfos.stream()
+        .anyMatch(BookBorrowInfo::isInBorrowing);
   }
 
   public void deleteMember() {
