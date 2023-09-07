@@ -56,6 +56,7 @@ public class BookApiTestHelper extends IntegrationTest {
     return new FieldDescriptor[]{
         fieldWithPath("borrowInfoId").description("빌린 전보 ID"),
         fieldWithPath("bookTitle").description("빌린 책 이름"),
+        fieldWithPath("thumbnailPath").description("빌린 책 썸네일 주소"),
         fieldWithPath("author").description("빌린 책 저자"),
         fieldWithPath("overdue").description("연체 여부"),
         fieldWithPath("status").description("대여 상태"),

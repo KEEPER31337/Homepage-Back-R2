@@ -16,6 +16,7 @@ public class BookBorrowResponse {
 
   private Long borrowInfoId;
   private String bookTitle;
+  private String thumbnailPath;
   private String author;
   private boolean overdue;
   private String status;
@@ -31,6 +32,7 @@ public class BookBorrowResponse {
     return BookBorrowResponse.builder()
         .borrowInfoId(bookBorrowInfo.getId())
         .bookTitle(bookBorrowInfo.getBook().getTitle())
+        .thumbnailPath(bookBorrowInfo.getBook().getThumbnailPath())
         .author(bookBorrowInfo.getBook().getAuthor())
         .overdue(bookBorrowInfo.getExpireDate().isBefore(now))
         .status(bookBorrowInfo.getBorrowStatus().getType().getStatus())
