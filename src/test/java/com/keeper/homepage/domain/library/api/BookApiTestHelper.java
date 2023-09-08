@@ -47,14 +47,14 @@ public class BookApiTestHelper extends IntegrationTest {
   }
 
   ResultActions callRequestReturnBookApi(String accessToken, long borrowId)
-    throws Exception {
+      throws Exception {
     return mockMvc.perform(patch("/books/borrows/{borrowId}/request-return", borrowId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
   FieldDescriptor[] getBorrowBooksResponse() {
     return new FieldDescriptor[]{
-        fieldWithPath("borrowInfoId").description("빌린 전보 ID"),
+        fieldWithPath("borrowInfoId").description("빌린 정보 ID"),
         fieldWithPath("bookTitle").description("빌린 책 이름"),
         fieldWithPath("thumbnailPath").description("빌린 책 썸네일 주소"),
         fieldWithPath("author").description("빌린 책 저자"),
