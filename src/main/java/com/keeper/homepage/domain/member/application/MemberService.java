@@ -97,7 +97,7 @@ public class MemberService {
   }
 
   private void checkBorrowedBook(Member member) {
-    if (member.isBorrowBooks()) {
+    if (member.hasAnyBorrowBooks()) {
       throw new BusinessException(member.getBookBorrowInfos(), "memberBorrowInfos", MEMBER_BOOK_NOT_EMPTY);
     }
   }
