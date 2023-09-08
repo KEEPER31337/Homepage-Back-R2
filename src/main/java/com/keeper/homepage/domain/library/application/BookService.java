@@ -41,27 +41,25 @@ public class BookService {
 
   public Page<BookResponse> getBooks(Member member, @NotNull BookSearchType searchType, String search,
       PageRequest pageable) {
-    boolean isUnderBorrowingLimit = member.getCountInBorrowing() < MAX_BORROWING_COUNT;
+    boolean isUnderLimit = member.getCountWaitOrInBorrowing() < MAX_BORROWING_COUNT;
 
     return switch (searchType) {
       case ALL -> bookRepository.findAllByTitleOrAuthor(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, member, book)));
+          .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       case TITLE -> bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, member, book)));
+          .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(isUnderBorrowingLimit, member, book)));
+          .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       default -> throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
     };
   }
 
-  private boolean canBorrow(boolean isUnderBorrowingLimit, Member member, Book book) {
+  private boolean canBorrow(Member member, Book book) {
     Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository.findByMemberAndBook(member, book);
     if (borrowInfo.isEmpty()) {
-      return book.getCurrentQuantity() != 0L && isUnderBorrowingLimit;
+      return book.getCurrentQuantity() > 0L;
     }
-    return !borrowInfo.get().isCanBorrow()
-        && book.getCurrentQuantity() > 0L
-        && isUnderBorrowingLimit;
+    return !borrowInfo.get().isWaitOrInBorrowing() && book.getCurrentQuantity() > 0L;
   }
 
   @Transactional
@@ -76,26 +74,23 @@ public class BookService {
   }
 
   private void checkCountInBorrowing(Member member) {
-    long countInBorrowing = member.getCountInBorrowing();
-    if (countInBorrowing >= MAX_BORROWING_COUNT) {
-      throw new BusinessException(countInBorrowing, "countInBorrowing", BOOK_BORROWING_COUNT_OVER);
+    long countWaitOrInBorrowing = member.getCountWaitOrInBorrowing();
+    if (countWaitOrInBorrowing >= MAX_BORROWING_COUNT) {
+      throw new BusinessException(countWaitOrInBorrowing, "countWaitOrInBorrowing", BOOK_BORROWING_COUNT_OVER);
     }
   }
 
   private void checkCurrentQuantity(Book book) {
     Long currentQuantity = book.getCurrentQuantity();
     if (currentQuantity == 0L) {
-      throw new BusinessException(currentQuantity, "currentQuantity",
-          BOOK_CURRENT_QUANTITY_IS_ZERO);
+      throw new BusinessException(currentQuantity, "currentQuantity", BOOK_CURRENT_QUANTITY_IS_ZERO);
     }
   }
 
   private void checkBorrowRequestAlready(Member member, Book book) {
-    Optional<BookBorrowInfo> bookBorrowInfo = bookBorrowInfoRepository
-        .findByMemberAndBookAndBorrowStatus(member, book, getBookBorrowStatusBy(대출대기));
-    if (bookBorrowInfo.isPresent()) {
-      throw new BusinessException(bookBorrowInfo.get().getId(), "bookBorrowInfoId",
-          BORROW_REQUEST_ALREADY);
+    Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository.findByMemberAndBook(member, book);
+    if (borrowInfo.isPresent() && borrowInfo.get().isWaitOrInBorrowing()) {
+      throw new BusinessException(borrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
     }
   }
 

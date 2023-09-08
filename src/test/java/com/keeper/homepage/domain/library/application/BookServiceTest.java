@@ -146,7 +146,7 @@ public class BookServiceTest extends IntegrationTest {
       em.clear();
       member = memberRepository.findById(member.getId()).get();
 
-      assertThat(member.getCountInBorrowing()).isEqualTo(MAX_BORROWING_COUNT);
+      assertThat(member.getCountWaitOrInBorrowing()).isEqualTo(MAX_BORROWING_COUNT);
       assertThrows(BusinessException.class, () -> bookService.requestBorrow(member, book.getId()));
     }
 
