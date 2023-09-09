@@ -35,7 +35,7 @@ public class BookBorrowResponse {
         .thumbnailPath(bookBorrowInfo.getBook().getThumbnailPath())
         .author(bookBorrowInfo.getBook().getAuthor())
         .overdue(bookBorrowInfo.getExpireDate().isBefore(now))
-        .status(bookBorrowInfo.getBorrowStatus().getType().getStatus())
+        .status(bookBorrowInfo.getBorrowStatus().getType().toString())
         .borrowDateTime(bookBorrowInfo.getBorrowDate())
         .expireDateTime(bookBorrowInfo.getExpireDate())
         .build();
