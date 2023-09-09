@@ -358,9 +358,9 @@ public class Member {
     return study.getHeadMember().equals(this);
   }
 
-  public long getCountInBorrowing() {
+  public long getCountWaitOrInBorrowing() {
     return this.bookBorrowInfos.stream()
-        .filter(BookBorrowInfo::isCanBorrow)
+        .filter(BookBorrowInfo::isWaitOrInBorrowing)
         .count();
   }
 
