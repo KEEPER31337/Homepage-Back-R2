@@ -3,6 +3,8 @@ package com.keeper.homepage.domain.library.api
 import com.keeper.homepage.domain.library.application.BorrowManageService
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.dto.resp.BorrowDetailResponse
+import com.keeper.homepage.domain.library.dto.resp.BorrowLogResponse
+import com.keeper.homepage.domain.library.entity.BookBorrowLog
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
@@ -58,5 +60,16 @@ class BorrowManageController(
     fun denyReturn(@PathVariable borrowId: Long): ResponseEntity<Void> {
         borrowManageService.denyReturn(borrowId)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/logs")
+    fun getBorrowLogs(
+        @RequestParam(defaultValue = "") search: String,
+        @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
+        @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
+        @RequestParam searchType: BookBorrowLog.LogType?,
+    ): ResponseEntity<Page<BorrowLogResponse>> {
+        val borrowLogs = borrowManageService.getBorrowLogs(search, PageRequest.of(page, size), searchType)
+        return ResponseEntity.ok(borrowLogs)
     }
 }

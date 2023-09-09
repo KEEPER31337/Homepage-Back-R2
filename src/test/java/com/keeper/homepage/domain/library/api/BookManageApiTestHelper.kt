@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.library.dto.req.ModifyBookRequest
 import com.keeper.homepage.domain.library.dto.resp.RESPONSE_DATETIME_FORMAT
 import com.keeper.homepage.domain.library.entity.Book
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
+import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.Member
@@ -237,6 +238,22 @@ class BookManageApiTestHelper : IntegrationTest() {
             field("totalQuantity", "책 전체 수량"),
             field("bookDepartment", "책 카테고리"),
             *listHelper("borrowInfos", *getBorrowDetailResponseDocs()),
+        )
+    }
+
+    fun getBorrowLogResponseDocs(): Array<FieldDescriptor> {
+        return arrayOf(
+            field("borrowInfoId", "대출 정보 ID (대출 로그 id는 아닙니다)"),
+            field("bookId", "대출한 책의 ID"),
+            field("bookTitle", "대출한 책의 제목"),
+            field("author", "대출한 책의 저자"),
+            field("borrowerId", "대출한 유저의 Id"),
+            field("borrowerRealName", "대출한 유저의 실명"),
+            field("borrowDateTime", "대출을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+            field("expireDateTime", "반납 예정 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
+            field("returnDateTime", "반납 승인을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)").optional(),
+            field("rejectDateTime", "반납 반려를 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)").optional(),
+            field("borrowStatus", "로그가 찍힐 때의 대출 상태. 종류: ${LogType.values().map(LogType::name).joinToString()}"),
         )
     }
 }

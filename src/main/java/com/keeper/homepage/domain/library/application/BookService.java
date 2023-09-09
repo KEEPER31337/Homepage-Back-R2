@@ -16,12 +16,15 @@ import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BO
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_RETURN_WAIT;
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookBorrowLogRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
 import com.keeper.homepage.domain.library.dto.req.BookSearchType;
 import com.keeper.homepage.domain.library.dto.resp.BookBorrowResponse;
 import com.keeper.homepage.domain.library.dto.resp.BookResponse;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.library.entity.BookBorrowLog;
+import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDateTime;
@@ -40,6 +43,7 @@ public class BookService {
 
   private final BookRepository bookRepository;
   private final BookBorrowInfoRepository bookBorrowInfoRepository;
+  private final BookBorrowLogRepository borrowLogRepository;
 
   private final BookBorrowInfoFindService bookBorrowInfoFindService;
 
@@ -125,6 +129,7 @@ public class BookService {
     }
     bookBorrowInfo.changeLastRequestDate(LocalDateTime.now());
     bookBorrowInfo.changeBorrowStatus(반납대기);
+    borrowLogRepository.save(BookBorrowLog.of(bookBorrowInfo, LogType.반납대기));
   }
 
   public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {

@@ -2,12 +2,15 @@ package com.keeper.homepage.domain.library.api
 
 import com.keeper.homepage.domain.library.dto.req.BorrowStatusDto
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo
+import com.keeper.homepage.domain.library.entity.BookBorrowLog
+import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
 import com.keeper.homepage.domain.member.entity.embedded.RealName
 import com.keeper.homepage.global.config.security.data.JwtType
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import io.kotest.matchers.shouldBe
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -18,6 +21,7 @@ import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
 import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
 import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Attributes.key
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDateTime
 
@@ -388,6 +392,22 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         }
 
         @Test
+        fun `책 대여 승인시 로그가 남아야 한다`() {
+            val beforeBorrowTime = LocalDateTime.now()
+            callApproveBorrowApi(borrowInfo.id).andExpect(status().isNoContent)
+
+            val borrowLogs = bookBorrowLogRepository.findAll()
+
+            checkBorrowLog(borrowLogs[0], borrowInfo, LogType.대출중)
+            assertThat(borrowLogs[0].borrowDate).isAfter(beforeBorrowTime)
+            assertThat(borrowLogs[0].borrowDate).isBefore(LocalDateTime.now())
+            assertThat(borrowLogs[0].expireDate).isAfter(beforeBorrowTime.plusWeeks(2))
+            assertThat(borrowLogs[0].expireDate).isBefore(LocalDateTime.now().plusWeeks(2))
+            assertThat(borrowLogs[0].returnDate).isNull()
+            assertThat(borrowLogs[0].rejectDate).isNull()
+        }
+
+        @Test
         fun `유효한 요청이면 책 대여 거절이 성공해야 한다`() {
             val securedValue = getSecuredValue(BorrowManageController::class.java, "denyBorrow")
             callDenyBorrowApi(borrowInfo.id)
@@ -405,6 +425,21 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     )
                 )
             borrowInfo.borrowStatus.type shouldBe 대출반려
+        }
+
+        @Test
+        fun `책 대여 거절시 로그가 남아야 한다`() {
+            val beforeBorrowTime = LocalDateTime.now()
+            callDenyBorrowApi(borrowInfo.id).andExpect(status().isNoContent)
+
+            val borrowLogs = bookBorrowLogRepository.findAll()
+
+            checkBorrowLog(borrowLogs[0], borrowInfo, LogType.대출반려)
+            assertThat(borrowLogs[0].borrowDate).isBefore(beforeBorrowTime)
+            assertThat(borrowLogs[0].expireDate).isBefore(beforeBorrowTime.plusWeeks(2))
+            assertThat(borrowLogs[0].returnDate).isNull()
+            assertThat(borrowLogs[0].rejectDate).isAfter(beforeBorrowTime)
+            assertThat(borrowLogs[0].rejectDate).isBefore(LocalDateTime.now())
         }
     }
 
@@ -442,6 +477,21 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
         }
 
         @Test
+        fun `책 반납 승인시 로그가 남아야 한다`() {
+            val beforeBorrowTime = LocalDateTime.now()
+            callApproveReturnApi(borrowInfo.id).andExpect(status().isNoContent)
+
+            val borrowLogs = bookBorrowLogRepository.findAll()
+
+            checkBorrowLog(borrowLogs[0], borrowInfo, LogType.반납완료)
+            assertThat(borrowLogs[0].borrowDate).isBefore(beforeBorrowTime)
+            assertThat(borrowLogs[0].expireDate).isBefore(beforeBorrowTime.plusWeeks(2))
+            assertThat(borrowLogs[0].rejectDate).isNull()
+            assertThat(borrowLogs[0].returnDate).isAfter(beforeBorrowTime)
+            assertThat(borrowLogs[0].returnDate).isBefore(LocalDateTime.now())
+        }
+
+        @Test
         fun `유효한 요청이면 책 반납 거절이 성공해야 한다`() {
             val securedValue = getSecuredValue(BorrowManageController::class.java, "denyReturn")
             callDenyReturnApi(borrowInfo.id)
@@ -459,6 +509,85 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     )
                 )
             borrowInfo.borrowStatus.type shouldBe 대출중
+        }
+    }
+
+    private fun checkBorrowLog(borrowLog: BookBorrowLog, borrowInfo: BookBorrowInfo, logType: LogType) {
+        assertThat(borrowLog.bookId).isEqualTo(borrowInfo.book.id)
+        assertThat(borrowLog.bookTitle).isEqualTo(borrowInfo.book.title)
+        assertThat(borrowLog.bookAuthor).isEqualTo(borrowInfo.book.author)
+        assertThat(borrowLog.borrowId).isEqualTo(borrowInfo.id)
+        assertThat(borrowLog.borrowStatus).isEqualTo(logType.name)
+        assertThat(borrowLog.memberId).isEqualTo(borrowInfo.member.id)
+        assertThat(borrowLog.memberRealName).isEqualTo(borrowInfo.member.realName)
+    }
+
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    @Nested
+    inner class `대출 현황 로그 조회` {
+
+        private lateinit var borrowLogList: List<BookBorrowLog>
+
+        @BeforeEach
+        fun setBorrowInfo() {
+            borrowLogList = listOf(
+                borrowLogTestHelper.builder().borrowStatus(LogType.대출중.name).build(),
+                borrowLogTestHelper.builder().rejectDate(LocalDateTime.now())
+                    .borrowStatus(LogType.대출반려.name).build(),
+                borrowLogTestHelper.builder().borrowStatus(LogType.반납대기.name).build(),
+                borrowLogTestHelper.builder().returnDate(LocalDateTime.now())
+                    .borrowStatus(LogType.반납완료.name).build(),
+            )
+        }
+
+        @Test
+        fun `유효한 요청이면 책 대출 현황 로그 조회는 성공해야 한다`() {
+            val securedValue = getSecuredValue(BorrowManageController::class.java, "getBorrowLogs")
+            callGetBorrowLogApi(
+                params = multiValueMapOf(
+                    "page" to "0",
+                    "size" to "3"
+                ),
+            ).andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content[0].borrowStatus").value("대출중"))
+                .andExpect(jsonPath("$.content[1].borrowStatus").value("대출반려"))
+                .andExpect(jsonPath("$.content[2].borrowStatus").value("반납대기"))
+                .andExpect(jsonPath("$.number").value("0"))
+                .andExpect(jsonPath("$.size").value("3"))
+                .andExpect(jsonPath("$.totalPages").value("2"))
+                .andDo(
+                    document(
+                        "get-borrow-logs",
+                        requestCookies(
+                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                        ),
+                        queryParameters(
+                            parameterWithName("page").description("페이지 (양수여야 합니다.)")
+                                .optional(),
+                            parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
+                                .optional(),
+                            parameterWithName("search").description("검색 키워드. 도서명, 저자, 실명에서 검색해옵니다.")
+                                .optional(),
+                            parameterWithName("searchType")
+                                .attributes(
+                                    key("format").value(LogType.values().map(LogType::name).joinToString())
+                                ).description("만약 null로 보낼 경우 대출 관련 정보를 모두 가져옵니다.")
+                                .optional()
+                        ),
+                        responseFields(
+                            *pageHelper(*getBorrowLogResponseDocs())
+                        )
+                    )
+                )
+
+            callGetBorrowLogApi(params = multiValueMapOf("page" to "1", "size" to "3"))
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content[0].borrowStatus").value("반납완료"))
+                .andExpect(jsonPath("$.number").value("1"))
+                .andExpect(jsonPath("$.size").value("3"))
+                .andExpect(jsonPath("$.totalPages").value("2"))
         }
     }
 }
