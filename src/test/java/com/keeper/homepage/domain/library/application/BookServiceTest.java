@@ -6,6 +6,7 @@ import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBor
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_WAIT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -180,6 +181,51 @@ public class BookServiceTest extends IntegrationTest {
       member = memberRepository.findById(member.getId()).get();
 
       assertThrows(BusinessException.class, () -> bookService.requestBorrow(member, book.getId()));
+    }
+  }
+
+  @Nested
+  @DisplayName("도서 대출 신청 취소")
+  class CancelRequestBookBorrow {
+
+    private Member member;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("도서 대출 신청 취소는 성공해야 한다.")
+    public void 도서_대출_신청_취소는_성공해야_한다() throws Exception {
+      //given
+      long bookBorrowInfoId = bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(대출대기))
+          .build()
+          .getId();
+
+      //when
+      bookService.cancelBorrow(member, bookBorrowInfoId);
+
+      em.flush();
+      em.clear();
+      //then
+      assertThat(bookBorrowInfoRepository.findById(bookBorrowInfoId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("대출 대기중 상태가 아닌 도서는 도서 대출 신청 취소가 실패한다.")
+    public void 대출_대기중_상태가_아닌_도서는_도서_대출_신청_취소가_실패한다() throws Exception {
+      long bookBorrowInfoId = bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(대출중))
+          .build()
+          .getId();
+
+      assertThrows(BusinessException.class, () -> {
+        bookService.cancelBorrow(member, bookBorrowInfoId);
+      }, BORROW_STATUS_IS_NOT_BORROW_WAIT.getMessage());
     }
   }
 

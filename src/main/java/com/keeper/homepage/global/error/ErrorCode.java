@@ -64,7 +64,9 @@ public enum ErrorCode {
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_BORROW_APPROVAL("대출 승인된 도서가 아닙니다.", HttpStatus.BAD_REQUEST),
+  BORROW_STATUS_IS_NOT_BORROW_WAIT("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_REQUEST_RETURN_DENY("대출자가 본인이 아니므로 반납 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
+  BORROW_CANCEL_REQUEST_DENY("대출자가 본인이 아니므로 반납 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
   // STUDY
   STUDY_NOT_FOUND("존재하지 않는 스터디입니다.", HttpStatus.NOT_FOUND),
   STUDY_INACCESSIBLE("스터디장만 접근할 수 있습니다.", HttpStatus.BAD_REQUEST),

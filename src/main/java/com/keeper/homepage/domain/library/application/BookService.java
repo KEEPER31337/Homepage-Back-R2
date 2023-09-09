@@ -7,10 +7,12 @@ import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OV
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_CANCEL_REQUEST_DENY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_RETURN_DENY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_APPROVAL;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_WAIT;
 
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -92,6 +94,20 @@ public class BookService {
     if (borrowInfo.isPresent() && borrowInfo.get().isWaitOrInBorrowing()) {
       throw new BusinessException(borrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
     }
+  }
+
+  @Transactional
+  public void cancelBorrow(Member member, long borrowId) {
+    BookBorrowInfo bookBorrowInfo = bookBorrowInfoRepository.findById(borrowId)
+        .orElseThrow(() -> new BusinessException(borrowId, "borrowId", BORROW_NOT_FOUND));
+
+    if (!bookBorrowInfo.isWait()) {
+      throw new BusinessException(borrowId, "borrowId", BORROW_STATUS_IS_NOT_BORROW_WAIT);
+    }
+    if (!bookBorrowInfo.isMine(member)) {
+      throw new BusinessException(borrowId, "borrowId", BORROW_CANCEL_REQUEST_DENY);
+    }
+    bookBorrowInfoRepository.delete(bookBorrowInfo);
   }
 
   @Transactional

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +49,15 @@ public class BookController {
     bookService.requestBorrow(member, bookId);
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
+  }
+
+  @DeleteMapping("/borrows/{borrowId}/cancel-borrow")
+  public ResponseEntity<Void> cancelBorrow(
+      @LoginMember Member member,
+      @PathVariable long borrowId
+  ) {
+    bookService.cancelBorrow(member, borrowId);
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/book-borrows")

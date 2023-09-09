@@ -1,16 +1,12 @@
 package com.keeper.homepage.domain.library.api;
 
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
-
-import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
-import com.keeper.homepage.domain.member.entity.Member;
-import org.springframework.restdocs.snippet.Attributes.Attribute;
-
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -21,22 +17,26 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.library.entity.Book;
+import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
+import com.keeper.homepage.domain.member.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.restdocs.snippet.Attributes.Attribute;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public class BookControllerTest extends BookApiTestHelper {
 
+  private Member member;
   private String memberToken;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
   @BeforeEach
   void setUp() {
-    long memberId = memberTestHelper.generate().getId();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
+    member = memberTestHelper.generate();
+    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
   }
 
   @Nested
@@ -106,6 +106,33 @@ public class BookControllerTest extends BookApiTestHelper {
               pathParameters(
                   parameterWithName("bookId")
                       .description("대출하고자 하는 도서 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("도서 대출 신청 취소")
+  class CancelRequestBorrow {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 도서 대출 신청 취소는 성공해야 한다.")
+    public void 유효한_요청일_경우_도서_대출_신청_취소는_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(BookController.class, "cancelBorrow");
+
+      long borrowId = bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(대출대기))
+          .build()
+          .getId();
+
+      callCancelBorrowBookApi(memberToken, borrowId)
+          .andExpect(status().isNoContent())
+          .andDo(document("cancel-book-borrow",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("borrowId").description("대출 신청 취소하고자 하는 도서대여 ID")
               )));
     }
   }
