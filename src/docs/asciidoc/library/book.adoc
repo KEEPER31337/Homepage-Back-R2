@@ -126,3 +126,26 @@ include::{snippets}/request-book-return/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/request-book-return/http-response.adoc[]
+
+== *도서 반납 취소*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/cancel-book-return/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/cancel-book-return/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/cancel-book-return/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/cancel-book-return/http-response.adoc[]
+

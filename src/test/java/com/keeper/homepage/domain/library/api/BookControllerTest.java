@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.library.api;
 
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -14,6 +15,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.library.entity.Book;
@@ -181,35 +183,62 @@ public class BookControllerTest extends BookApiTestHelper {
                   pageHelper(getBorrowBooksResponse())
               )));
     }
+  }
 
-    @Nested
-    @DisplayName("도서 반납 요청")
-    class RequestReturn {
+  @Nested
+  @DisplayName("도서 반납 요청")
+  class RequestReturn {
 
-      @Test
-      @DisplayName("유효한 도서 반납 요청은 성공해야 한다.")
-      public void 유효한_도서_반납_요청은_성공해야_한다() throws Exception {
-        String securedValue = getSecuredValue(BookController.class, "requestReturn");
-        BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
-            .member(member)
-            .book(book)
-            .borrowStatus(getBookBorrowStatusBy(대출중))
-            .build();
+    @Test
+    @DisplayName("유효한 도서 반납 요청은 성공해야 한다.")
+    public void 유효한_도서_반납_요청은_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(BookController.class, "requestReturn");
+      BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(대출중))
+          .build();
 
-        long borrowId = bookBorrowInfo.getId();
+      long borrowId = bookBorrowInfo.getId();
 
-        callRequestReturnBookApi(memberToken, borrowId)
-            .andExpect(status().isNoContent())
-            .andDo(document("request-book-return",
-                requestCookies(
-                    cookieWithName(ACCESS_TOKEN.getTokenName())
-                        .description("ACCESS TOKEN %s".formatted(securedValue))
-                ),
-                pathParameters(
-                    parameterWithName("borrowId")
-                        .description("도서 대출 내역 ID")
-                )));
-      }
+      callRequestReturnBookApi(memberToken, borrowId)
+          .andExpect(status().isNoContent())
+          .andDo(document("request-book-return",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("borrowId")
+                      .description("도서 대출 내역 ID")
+              )));
+    }
+  }
+
+  @Nested
+  @DisplayName("도서 반납 취소")
+  class CancelRequestReturn {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 도서 반납 취소는 성공한다.")
+    public void 유효한_요청일_경우_도서_반납_취소는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(BookController.class, "cancelReturn");
+      BookBorrowInfo bookBorrowInfo = bookBorrowInfoTestHelper.builder()
+          .member(member)
+          .borrowStatus(getBookBorrowStatusBy(반납대기))
+          .build();
+
+      long borrowId = bookBorrowInfo.getId();
+
+      callRequestCancelReturnBookApi(memberToken, borrowId)
+          .andDo(print())
+          .andExpect(status().isNoContent())
+          .andDo(document("cancel-book-return",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              pathParameters(
+                  parameterWithName("borrowId").description("도서 대출 내역 ID")
+              )));
     }
   }
 }

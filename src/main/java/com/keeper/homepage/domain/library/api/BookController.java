@@ -77,4 +77,13 @@ public class BookController {
     bookService.requestReturn(member, borrowId);
     return ResponseEntity.noContent().build();
   }
+
+  @PatchMapping("/borrows/{borrowId}/cancel-return")
+  public ResponseEntity<Void> cancelReturn(
+      @LoginMember Member member,
+      @PathVariable long borrowId
+  ) {
+    bookService.cancelReturn(member, borrowId);
+    return ResponseEntity.noContent().build();
+  }
 }
