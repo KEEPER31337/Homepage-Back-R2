@@ -133,6 +133,10 @@ public class PostService {
     if (post.isCategory(익명게시판)) {
       return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLike, isDislike, previousPost, nextPost);
     }
+    if (post.isCategory(시험게시판) && !post.isMine(member)) {
+      boolean isRead = member.isRead(post);
+      return PostDetailResponse.of(post, isLike, isDislike, isRead, previousPost, nextPost);
+    }
     return PostDetailResponse.of(post, isLike, isDislike, previousPost, nextPost);
   }
 
@@ -337,6 +341,10 @@ public class PostService {
   private PostResponse getPostResponse(Post post) {
     if (post.isCategory(익명게시판)) {
       return PostResponse.of(post, ANONYMOUS_NAME, null);
+    }
+    if (post.isCategory(시험게시판)) {
+      int fileCount = post.getPostHasFiles().size();
+      return PostResponse.of(post, fileCount);
     }
     return PostResponse.from(post);
   }

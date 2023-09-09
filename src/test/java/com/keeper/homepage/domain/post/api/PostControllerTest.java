@@ -393,6 +393,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("isTemp").description("임시 저장글 여부"),
                   fieldWithPath("isLike").description("좋아요 했는지 여부"),
                   fieldWithPath("isDislike").description("싫어요 했는지 여부"),
+                  fieldWithPath("isRead").description("게시글 열람 여부 (시험 게시판에서만 응답)"),
                   fieldWithPath("previousPost.postId").description("이전 게시글 ID"),
                   fieldWithPath("previousPost.title").description("이전 게시글 제목"),
                   fieldWithPath("nextPost.postId").description("다음 게시글 ID"),
@@ -650,6 +651,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("posts[].isSecret").description("게시글 비밀글 여부"),
                   fieldWithPath("posts[].thumbnailPath").description("게시글 썸네일 주소").optional(),
                   fieldWithPath("posts[].likeCount").description("게시글 좋아요 수"),
+                  fieldWithPath("posts[].fileCount").description("게시글 파일 수 (시험 게시판에서만 응답)").optional(),
                   fieldWithPath("posts[].registerTime").description("게시글 작성 시간")
               )));
     }
