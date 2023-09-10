@@ -611,8 +611,8 @@ public class PostControllerTest extends PostApiTestHelper {
   }
 
   @Nested
-  @DisplayName("게시글 목록 조회")
-  class FindPosts {
+  @DisplayName("공지 게시글 목록 조회")
+  class FindNoticePosts {
 
     @BeforeEach
     void setUp() {
@@ -892,6 +892,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   pageHelper(getTempPostsResponse())
               )));
     }
+
   }
 
   @Nested
