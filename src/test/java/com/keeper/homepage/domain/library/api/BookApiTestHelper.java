@@ -70,10 +70,10 @@ public class BookApiTestHelper extends IntegrationTest {
         fieldWithPath("bookTitle").description("빌린 책 이름"),
         fieldWithPath("thumbnailPath").description("빌린 책 썸네일 주소"),
         fieldWithPath("author").description("빌린 책 저자"),
-        fieldWithPath("overdue").description("연체 여부"),
+        fieldWithPath("overdue").description("연체 여부").optional(),
         fieldWithPath("status").description("대여 상태"),
-        fieldWithPath("borrowDateTime").description("빌린 날짜"),
-        fieldWithPath("expireDateTime").description("반납 날짜")
+        fieldWithPath("borrowDateTime").description("빌린 날짜").optional(),
+        fieldWithPath("expireDateTime").description("반납 날짜").optional()
     };
   }
 }

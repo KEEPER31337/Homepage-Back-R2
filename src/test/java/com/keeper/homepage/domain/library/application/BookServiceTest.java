@@ -124,7 +124,7 @@ public class BookServiceTest extends IntegrationTest {
     @DisplayName("도서 대출중인 권수가 5권 이하면 도서 대출은 성공해야 한다.")
     public void 도서_대출중인_권수가_5권_이하면_도서_대출은_성공해야_한다() {
       assertDoesNotThrow(() -> bookService.requestBorrow(member, book.getId()));
-      assertThat(bookBorrowInfoRepository.findByMemberAndBook(member, book)).isNotEmpty();
+      assertThat(bookBorrowInfoRepository.findByMemberAndBookAndInBorrowingOrWait(member, book)).isNotEmpty();
     }
 
     @Test

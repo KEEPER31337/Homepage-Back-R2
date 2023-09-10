@@ -65,11 +65,12 @@ public class BookService {
   }
 
   private boolean canBorrow(Member member, Book book) {
-    Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository.findByMemberAndBook(member, book);
-    if (borrowInfo.isEmpty()) {
-      return book.getCurrentQuantity() > 0L;
+    Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository
+        .findByMemberAndBookAndInBorrowingOrWait(member, book);
+    if (borrowInfo.isPresent()) {
+      return false;
     }
-    return !borrowInfo.get().isWaitOrInBorrowing() && book.getCurrentQuantity() > 0L;
+    return book.getCurrentQuantity() > 0L;
   }
 
   @Transactional
@@ -98,8 +99,9 @@ public class BookService {
   }
 
   private void checkBorrowRequestAlready(Member member, Book book) {
-    Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository.findByMemberAndBook(member, book);
-    if (borrowInfo.isPresent() && borrowInfo.get().isWaitOrInBorrowing()) {
+    Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository
+        .findByMemberAndBookAndInBorrowingOrWait(member, book);
+    if (borrowInfo.isPresent()) {
       throw new BusinessException(borrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
     }
   }
@@ -134,7 +136,14 @@ public class BookService {
 
   public Page<BookBorrowResponse> getBookBorrows(Member member, PageRequest pageable) {
     return bookBorrowInfoRepository.findAllByMemberAndInBorrowingOrWait(member, pageable)
-        .map(BookBorrowResponse::from);
+        .map(this::getBorrowResponse);
+  }
+
+  private BookBorrowResponse getBorrowResponse(BookBorrowInfo bookBorrowInfo) {
+    if (bookBorrowInfo.isStatus(대출대기)) {
+      return BookBorrowResponse.waitFrom(bookBorrowInfo);
+    }
+    return BookBorrowResponse.from(bookBorrowInfo);
   }
 
   @Transactional

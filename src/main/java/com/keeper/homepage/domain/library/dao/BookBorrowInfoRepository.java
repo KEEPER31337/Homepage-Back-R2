@@ -42,7 +42,15 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
       + "and borrow.expireDate <= current_timestamp")
   Page<BookBorrowInfo> findAllOverDue(@Param("now") LocalDateTime now, Pageable pageable);
 
-  Optional<BookBorrowInfo> findByMemberAndBook(Member member, Book book);
+  @Query(value = "SELECT borrow "
+      + "FROM BookBorrowInfo borrow "
+      + "WHERE (borrow.borrowStatus.id = 1 " // 대출 대기
+      + "OR borrow.borrowStatus.id = 3 " // 대출 중
+      + "OR borrow.borrowStatus.id = 4) " // 반납 대기
+      + "AND borrow.member = :member "
+      + "AND borrow.book = :book")
+  Optional<BookBorrowInfo> findByMemberAndBookAndInBorrowingOrWait(@Param("member") Member member,
+      @Param("book") Book book);
 
   Optional<BookBorrowInfo> findByMemberAndBookAndBorrowStatus(Member member, Book book, BookBorrowStatus borrowStatus);
 

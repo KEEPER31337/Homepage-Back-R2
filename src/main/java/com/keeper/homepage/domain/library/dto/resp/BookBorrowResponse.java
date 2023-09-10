@@ -40,4 +40,14 @@ public class BookBorrowResponse {
         .expireDateTime(bookBorrowInfo.getExpireDate())
         .build();
   }
+
+  public static BookBorrowResponse waitFrom(BookBorrowInfo bookBorrowInfo) {
+    return BookBorrowResponse.builder()
+        .borrowInfoId(bookBorrowInfo.getId())
+        .bookTitle(bookBorrowInfo.getBook().getTitle())
+        .thumbnailPath(bookBorrowInfo.getBook().getThumbnailPath())
+        .author(bookBorrowInfo.getBook().getAuthor())
+        .status(bookBorrowInfo.getBorrowStatus().getType().toString())
+        .build();
+  }
 }
