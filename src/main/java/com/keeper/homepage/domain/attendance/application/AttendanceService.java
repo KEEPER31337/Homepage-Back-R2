@@ -43,8 +43,12 @@ public class AttendanceService {
     checkAlreadyAttendance(member);
 
     LocalDateTime now = LocalDateTime.now();
-    int randomPoint = getRandomPoint();
+
     int rank = getTodayRank(now.toLocalDate());
+    String key = "attendance:member:" + member.getId();
+    redisUtil.setDataExpire(key, rank, RedisUtil.toMidNight());
+
+    int randomPoint = getRandomPoint();
     int rankPoint = getRankPoint(rank);
     int continuousDay = getContinuousDay(member, now.toLocalDate());
     int continuousPoint = getContinuousPoint(continuousDay);
