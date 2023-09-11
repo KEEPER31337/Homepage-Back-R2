@@ -24,6 +24,7 @@ public class PostResponse {
   private Boolean isSecret;
   private String thumbnailPath;
   private Integer likeCount;
+  private Integer fileCount;
 
   @JsonFormat(pattern = "yyyy-MM-dd")
   private LocalDateTime registerTime;
@@ -40,6 +41,23 @@ public class PostResponse {
         .isSecret(post.isSecret())
         .thumbnailPath(post.getThumbnailPath())
         .likeCount(post.getPostLikes().size())
+        .registerTime(post.getRegisterTime())
+        .build();
+  }
+
+  public static PostResponse of(Post post, int fileCount) {
+    return PostResponse.builder()
+        .id(post.getId())
+        .title(post.getTitle())
+        .writerId(post.getMember().getId())
+        .writerName(post.getWriterRealName())
+        .writerThumbnailPath(post.getMember().getThumbnailPath())
+        .visitCount(post.getVisitCount())
+        .commentCount(post.getComments().size())
+        .isSecret(post.isSecret())
+        .thumbnailPath(post.getThumbnailPath())
+        .likeCount(post.getPostLikes().size())
+        .fileCount(fileCount)
         .registerTime(post.getRegisterTime())
         .build();
   }
