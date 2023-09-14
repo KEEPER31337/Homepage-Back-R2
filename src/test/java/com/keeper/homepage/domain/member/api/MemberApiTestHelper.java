@@ -44,9 +44,11 @@ public class MemberApiTestHelper extends IntegrationTest {
         fieldWithPath("follower[].id").description("나를 팔로우 하는 회원의 ID"),
         fieldWithPath("follower[].name").description("나를 팔로우 하는 회원의 이름"),
         fieldWithPath("follower[].thumbnailPath").description("나를 팔로우 하는 회원의 썸네일 경로"),
+        fieldWithPath("follower[].generation").description("나를 팔로우 하는 회원의 기수"),
         fieldWithPath("followee[].id").description("내가 팔로우 하는 사람의 ID"),
         fieldWithPath("followee[].name").description("내가 팔로우 하는 사람의 이름"),
         fieldWithPath("followee[].thumbnailPath").description("내가 팔로우 하는 사람의 썸네일 경로"),
+        fieldWithPath("followee[].generation").description("내가 팔로우 하는 사람의 기수"),
     };
   }
 
@@ -56,6 +58,8 @@ public class MemberApiTestHelper extends IntegrationTest {
         .content(asJsonString(request))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
         .contentType(MediaType.APPLICATION_JSON));
-  };
+  }
+
+  ;
 
 }
