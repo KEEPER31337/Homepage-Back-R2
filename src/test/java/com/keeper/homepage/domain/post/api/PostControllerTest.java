@@ -387,6 +387,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("content").description("게시글 내용"),
                   fieldWithPath("likeCount").description("게시글의 좋아요 수"),
                   fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
+                  fieldWithPath("fileCount").description("게시글의 파일 수"),
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
                   fieldWithPath("isNotice").description("공지글 여부"),
                   fieldWithPath("isSecret").description("비밀글 여부"),
