@@ -651,7 +651,6 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("posts[].isSecret").description("게시글 비밀글 여부"),
                   fieldWithPath("posts[].thumbnailPath").description("게시글 썸네일 주소").optional(),
                   fieldWithPath("posts[].likeCount").description("게시글 좋아요 수"),
-                  fieldWithPath("posts[].fileCount").description("게시글 파일 수 (시험 게시판에서만 응답)").optional(),
                   fieldWithPath("posts[].registerTime").description("게시글 작성 시간")
               )));
     }

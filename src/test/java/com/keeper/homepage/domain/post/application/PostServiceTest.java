@@ -569,18 +569,5 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId1);
       assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId2);
     }
-
-    @Test
-    @DisplayName("시험 게시글의 파일 개수 응답은 성공적으로 조회되어야 한다.")
-    public void 시험_게시글의_파일_개수_응답은_성공적으로_조회되어야_한다() throws Exception {
-      postId = postService.create(post, 시험게시판.getId(), thumbnail, List.of(thumbnail));
-      em.flush();
-      em.clear();
-
-      Page<PostResponse> posts = postService.getPosts(시험게시판.getId(), null, null, PageRequest.of(0, 5));
-
-      assertThat(posts).hasSize(1);
-      assertThat(posts.getContent().get(0).getFileCount()).isEqualTo(1);
-    }
   }
 }
