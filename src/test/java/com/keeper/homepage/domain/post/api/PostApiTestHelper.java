@@ -9,6 +9,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
@@ -129,10 +130,12 @@ public class PostApiTestHelper extends IntegrationTest {
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callDeletePostFileApi(String accessToken, long postId, long fileId)
+  ResultActions callDeletePostFileApi(String accessToken, long postId, PostFileDeleteRequest request)
       throws Exception {
-    return mockMvc.perform(delete("/posts/{postId}/files/{fileId}", postId, fileId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+    return mockMvc.perform(delete("/posts/{postId}/files", postId)
+        .content(asJsonString(request))
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .contentType(MediaType.APPLICATION_JSON));
   }
 
   ResultActions callGetPostsApi(String memberToken, MultiValueMap<String, String> params) throws Exception {

@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
+import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
@@ -386,12 +387,14 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("content").description("게시글 내용"),
                   fieldWithPath("likeCount").description("게시글의 좋아요 수"),
                   fieldWithPath("dislikeCount").description("게시글의 싫어요 수"),
+                  fieldWithPath("fileCount").description("게시글의 파일 수"),
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
                   fieldWithPath("isNotice").description("공지글 여부"),
                   fieldWithPath("isSecret").description("비밀글 여부"),
                   fieldWithPath("isTemp").description("임시 저장글 여부"),
                   fieldWithPath("isLike").description("좋아요 했는지 여부"),
                   fieldWithPath("isDislike").description("싫어요 했는지 여부"),
+                  fieldWithPath("isRead").description("게시글 열람 여부 (시험 게시판에서만 응답)"),
                   fieldWithPath("previousPost.postId").description("이전 게시글 ID"),
                   fieldWithPath("previousPost.title").description("이전 게시글 제목"),
                   fieldWithPath("nextPost.postId").description("다음 게시글 ID"),
@@ -609,8 +612,8 @@ public class PostControllerTest extends PostApiTestHelper {
   }
 
   @Nested
-  @DisplayName("게시글 목록 조회")
-  class FindPosts {
+  @DisplayName("공지 게시글 목록 조회")
+  class FindNoticePosts {
 
     @BeforeEach
     void setUp() {
@@ -723,7 +726,11 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 유효한_요청인_경우_게시글_파일_제거는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "deletePostFile");
 
-      callDeletePostFileApi(memberToken, postId, fileId)
+      PostFileDeleteRequest request = PostFileDeleteRequest.builder()
+          .fileIds(List.of(fileId))
+          .build();
+
+      callDeletePostFileApi(memberToken, postId, request)
           .andExpect(status().isNoContent())
           .andDo(document("delete-post-file",
               requestCookies(
@@ -732,9 +739,10 @@ public class PostControllerTest extends PostApiTestHelper {
               ),
               pathParameters(
                   parameterWithName("postId")
-                      .description("파일을 삭제하고자 하는 게시글의 ID"),
-                  parameterWithName("fileId")
-                      .description("삭제하고자 하는 파일 ID")
+                      .description("파일을 삭제하고자 하는 게시글의 ID")
+              ),
+              requestFields(
+                  fieldWithPath("fileIds[]").description("삭제할 파일의 Id 리스트")
               )));
     }
   }
@@ -884,6 +892,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   pageHelper(getTempPostsResponse())
               )));
     }
+
   }
 
   @Nested
@@ -911,7 +920,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
               ),
               responseFields(
-                  fieldWithPath("[].id").description("파일 ID"),
+                  fieldWithPath("[].fileId").description("파일 ID"),
                   fieldWithPath("[].name").description("파일 이름"),
                   fieldWithPath("[].path").description("파일 경로"),
                   fieldWithPath("[].size").description("파일 크기"),

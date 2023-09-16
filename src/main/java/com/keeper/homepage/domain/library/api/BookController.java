@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,6 +51,15 @@ public class BookController {
         .build();
   }
 
+  @DeleteMapping("/borrows/{borrowId}/cancel-borrow")
+  public ResponseEntity<Void> cancelBorrow(
+      @LoginMember Member member,
+      @PathVariable long borrowId
+  ) {
+    bookService.cancelBorrow(member, borrowId);
+    return ResponseEntity.noContent().build();
+  }
+
   @GetMapping("/book-borrows")
   public ResponseEntity<Page<BookBorrowResponse>> getBookBorrows(
       @LoginMember Member member,
@@ -65,6 +75,15 @@ public class BookController {
       @PathVariable long borrowId
   ) {
     bookService.requestReturn(member, borrowId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/borrows/{borrowId}/cancel-return")
+  public ResponseEntity<Void> cancelReturn(
+      @LoginMember Member member,
+      @PathVariable long borrowId
+  ) {
+    bookService.cancelReturn(member, borrowId);
     return ResponseEntity.noContent().build();
   }
 }

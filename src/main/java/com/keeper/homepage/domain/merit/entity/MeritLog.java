@@ -44,7 +44,8 @@ public class MeritLog {
   private MeritType meritType;
 
   @Builder
-  public MeritLog(Long memberId, String memberRealName, String memberGeneration, MeritType meritType) {
+  public MeritLog(Long memberId, String memberRealName, String memberGeneration,
+      MeritType meritType) {
     this.memberId = memberId;
     this.memberRealName = memberRealName;
     this.memberGeneration = memberGeneration;

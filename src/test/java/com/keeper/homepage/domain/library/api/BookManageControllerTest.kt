@@ -54,12 +54,16 @@ class BookManageControllerTest : BookManageApiTestHelper() {
     inner class `관리자 책 목록 검색` {
         private lateinit var validParams: MultiValueMap<String, String>
         private lateinit var bookList: List<Book>
+        private lateinit var borrowList: List<BookBorrowInfo>
 
         @BeforeEach
         fun setUp() {
             bookList = (0..3).map { bookTestHelper.builder().totalQuantity(2).build() }
-            (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기, book = bookList[it]) }
-            bookBorrowInfoTestHelper.generate(borrowStatus = 대출중, book = bookList[0])
+            borrowList = (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출중, book = bookList[it]) }
+            bookBorrowInfoTestHelper.generate(borrowStatus = 반납대기, book = bookList[0])
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기, book = bookList[0])
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출반려, book = bookList[0])
+            bookBorrowInfoTestHelper.generate(borrowStatus = 반납완료, book = bookList[0])
             validParams = multiValueMapOf(
                 "search" to "",
                 "page" to "0",
@@ -79,9 +83,13 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                 .andExpect(jsonPath("$.content[0].totalQuantity").value(bookList[0].totalQuantity))
                 .andExpect(jsonPath("$.content[0].currentQuantity").value(bookList[0].currentQuantity))
                 .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[0].bookDepartment.type.name))
-                .andExpect(jsonPath("$.content[0].totalQuantity").value(2))
-                .andExpect(jsonPath("$.content[0].currentQuantity").value(1))
                 .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[0].thumbnailPath))
+                .andExpect(jsonPath("$.content[0].borrowInfos[0].borrowInfoId").value(borrowList[0].id))
+                .andExpect(jsonPath("$.content[1].borrowInfos[0].borrowInfoId").value(borrowList[1].id))
+                .andExpect(jsonPath("$.content[2].borrowInfos[0].borrowInfoId").value(borrowList[2].id))
+                .andExpect(jsonPath("$.content[0].borrowInfos.length()").value(2))
+                .andExpect(jsonPath("$.content[1].borrowInfos.length()").value(1))
+                .andExpect(jsonPath("$.content[2].borrowInfos.length()").value(1))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
                 .andExpect(jsonPath("$.totalPages").value("2"))

@@ -133,6 +133,10 @@ public class PostService {
     if (post.isCategory(익명게시판)) {
       return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLike, isDislike, previousPost, nextPost);
     }
+    if (post.isCategory(시험게시판) && !post.isMine(member)) {
+      boolean isRead = member.isRead(post);
+      return PostDetailResponse.of(post, isLike, isDislike, isRead, previousPost, nextPost);
+    }
     return PostDetailResponse.of(post, isLike, isDislike, previousPost, nextPost);
   }
 
@@ -194,7 +198,7 @@ public class PostService {
   public List<FileResponse> getFiles(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
 
-    if (post.isCategory(시험게시판) && !member.isRead(post)) {
+    if (post.isCategory(시험게시판) && !member.isRead(post) && !post.isMine(member)) {
       member.read(post);
       member.minusPoint(EXAM_READ_DEDUCTION_POINT, EXAM_READ_POINT_MESSAGE);
     }
@@ -296,15 +300,17 @@ public class PostService {
   }
 
   @Transactional
-  public void deletePostFile(Member member, long postId, long fileId) {
+  public void deletePostFile(Member member, long postId, List<Long> fileIds) {
     Post post = validPostFindService.findById(postId);
 
     if (!post.isMine(member)) {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
-    FileEntity file = fileService.findById(fileId);
-    postHasFileRepository.deleteByPostAndFile(post, file);
-    fileUtil.deleteFileAndEntity(file);
+    fileIds.stream().forEach(fileId -> {
+      FileEntity file = fileService.findById(fileId);
+      postHasFileRepository.deleteByPostAndFile(post, file);
+      fileUtil.deleteFileAndEntity(file);
+    });
   }
 
   public Page<PostResponse> getPosts(long categoryId, String searchType, String search, PageRequest pageable) {

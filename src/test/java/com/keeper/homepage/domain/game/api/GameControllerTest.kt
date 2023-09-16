@@ -78,8 +78,8 @@ class GameControllerTest : GameApiTestHelper() {
                 .andExpect(status().isOk)
                 .andExpect(jsonPath("$.guessNumberLength").value(4))
                 .andExpect(jsonPath("$.tryCount").value(9))
-                .andExpect(jsonPath("$.maxBettingPoint").value(1000L))
-                .andExpect(jsonPath("$.minBettingPoint").value(10L))
+                .andExpect(jsonPath("$.maxBettingPoint").value(5000L))
+                .andExpect(jsonPath("$.minBettingPoint").value(1000L))
                 .andDo(
                     document(
                         "baseball-game-info",

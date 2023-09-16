@@ -10,6 +10,8 @@ import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,4 +77,5 @@ public class MeritLogService {
     long findMemberId = memberFindService.findById(memberId).getId();
     return meritLogRepository.findAllByMemberId(pageable, findMemberId);
   }
+
 }

@@ -4,6 +4,7 @@ import static com.keeper.homepage.global.util.file.server.FileServerConstants.RE
 
 import com.keeper.homepage.domain.library.converter.BookDepartmentTypeConverter;
 import com.keeper.homepage.domain.library.converter.BookSearchTypeConverter;
+import com.keeper.homepage.domain.library.converter.BorrowLogTypeConverter;
 import com.keeper.homepage.domain.library.converter.BorrowStatusDtoConverter;
 import com.keeper.homepage.global.config.security.annotation.LoginMemberArgumentResolver;
 import java.util.List;
@@ -38,6 +39,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     registry.addConverter(new BookDepartmentTypeConverter());
     registry.addConverter(new BorrowStatusDtoConverter());
     registry.addConverter(new BookSearchTypeConverter());
+    registry.addConverter(new BorrowLogTypeConverter());
   }
 
   @Override

@@ -13,13 +13,13 @@ import lombok.Getter;
 public class MemberResponse {
 
   private Long memberId;
-  private String memberName;
+  private String realName;
   private String generation;
 
   public static MemberResponse from(Member member) {
     return MemberResponse.builder()
         .memberId(member.getId())
-        .memberName(member.getRealName())
+        .realName(member.getRealName())
         .generation(member.getGeneration())
         .build();
   }

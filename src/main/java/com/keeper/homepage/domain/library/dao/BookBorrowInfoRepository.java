@@ -37,20 +37,29 @@ public interface BookBorrowInfoRepository extends JpaRepository<BookBorrowInfo, 
 
   @Query(value = "select borrow "
       + "from BookBorrowInfo borrow "
-      + "where (borrow.borrowStatus.id = 3 " // 대출승인
-      + "or borrow.borrowStatus.id = 4) " // 반납대기중
+      + "where (borrow.borrowStatus.id = 3 " // 대출 중
+      + "or borrow.borrowStatus.id = 4) " // 반납 대기
       + "and borrow.expireDate <= current_timestamp")
   Page<BookBorrowInfo> findAllOverDue(@Param("now") LocalDateTime now, Pageable pageable);
 
-  Optional<BookBorrowInfo> findByMemberAndBook(Member member, Book book);
+  @Query(value = "SELECT borrow "
+      + "FROM BookBorrowInfo borrow "
+      + "WHERE (borrow.borrowStatus.id = 1 " // 대출 대기
+      + "OR borrow.borrowStatus.id = 3 " // 대출 중
+      + "OR borrow.borrowStatus.id = 4) " // 반납 대기
+      + "AND borrow.member = :member "
+      + "AND borrow.book = :book")
+  Optional<BookBorrowInfo> findByMemberAndBookAndInBorrowingOrWait(@Param("member") Member member,
+      @Param("book") Book book);
 
   Optional<BookBorrowInfo> findByMemberAndBookAndBorrowStatus(Member member, Book book, BookBorrowStatus borrowStatus);
 
   @Query(value = "SELECT borrow "
       + "FROM BookBorrowInfo borrow "
-      + "WHERE (borrow.borrowStatus.id = 3 " // 대출승인
-      + "OR borrow.borrowStatus.id = 4) " // 반납대기중
+      + "WHERE (borrow.borrowStatus.id = 1 " // 대출 대기
+      + "OR borrow.borrowStatus.id = 3 " // 대출 중
+      + "OR borrow.borrowStatus.id = 4) " // 반납 대기
       + "AND borrow.member = :member ")
-  Page<BookBorrowInfo> findAllByMemberAndInBorrowing(@Param("member") Member member, Pageable pageable);
+  Page<BookBorrowInfo> findAllByMemberAndInBorrowingOrWait(@Param("member") Member member, Pageable pageable);
 
 }

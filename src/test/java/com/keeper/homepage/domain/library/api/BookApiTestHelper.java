@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.library.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -39,6 +40,11 @@ public class BookApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
+  ResultActions callCancelBorrowBookApi(String accessToken, long borrowId) throws Exception {
+    return mockMvc.perform(delete("/books/borrows/{borrowId}/cancel-borrow", borrowId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
   ResultActions callGetBorrowBooksApi(String accessToken, MultiValueMap<String, String> params)
       throws Exception {
     return mockMvc.perform(get("/books/book-borrows")
@@ -47,19 +53,27 @@ public class BookApiTestHelper extends IntegrationTest {
   }
 
   ResultActions callRequestReturnBookApi(String accessToken, long borrowId)
-    throws Exception {
+      throws Exception {
     return mockMvc.perform(patch("/books/borrows/{borrowId}/request-return", borrowId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
+  ResultActions callRequestCancelReturnBookApi(String accessToken, long borrowId)
+      throws Exception {
+    return mockMvc.perform(patch("/books/borrows/{borrowId}/cancel-return", borrowId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
   FieldDescriptor[] getBorrowBooksResponse() {
     return new FieldDescriptor[]{
-        fieldWithPath("borrowInfoId").description("빌린 전보 ID"),
+        fieldWithPath("borrowInfoId").description("빌린 정보 ID"),
         fieldWithPath("bookTitle").description("빌린 책 이름"),
+        fieldWithPath("thumbnailPath").description("빌린 책 썸네일 주소"),
         fieldWithPath("author").description("빌린 책 저자"),
-        fieldWithPath("overdue").description("연체 여부"),
-        fieldWithPath("borrowDateTime").description("빌린 날짜"),
-        fieldWithPath("expireDateTime").description("반납 날짜")
+        fieldWithPath("overdue").description("연체 여부").optional(),
+        fieldWithPath("status").description("대여 상태"),
+        fieldWithPath("borrowDateTime").description("빌린 날짜").optional(),
+        fieldWithPath("expireDateTime").description("반납 날짜").optional()
     };
   }
 }
