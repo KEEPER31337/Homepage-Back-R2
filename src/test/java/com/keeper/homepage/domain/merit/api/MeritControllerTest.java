@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
+import com.keeper.homepage.domain.merit.dto.request.SearchMeritLogListRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import io.jsonwebtoken.io.IOException;
@@ -222,9 +223,12 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("상벌점 목록 조회를 성공해야 한다.")
     void 상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
+      SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
 
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-meritLog",
@@ -240,8 +244,12 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @Test
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
+      SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
+
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
