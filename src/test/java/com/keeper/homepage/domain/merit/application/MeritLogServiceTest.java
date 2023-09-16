@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -108,4 +109,35 @@ class MeritLogServiceTest extends IntegrationTest {
     }
   }
 
+  @Nested
+  @DisplayName("상벌점 내역 삭제 테스트")
+  class DeleteMeritLogTest {
+
+    MeritLog meritLog, otherMeritLog;
+
+    @BeforeEach
+    void setUp() {
+      meritLog = meritLogTestHelper.generate();
+      otherMeritLog = meritLogTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("상벌점 내역 삭제를 성공해야 한다.")
+    public void 상벌점_내역_삭제를_성공해야_한다() {
+      em.flush();
+      em.clear();
+
+      meritLogService.deleteMeritLog(otherMeritLog.getId());
+
+      em.flush();
+      em.clear();
+
+      List<MeritLog> meritLogs = meritLogRepository.findAll();
+
+      assertThat(meritLogs.stream()
+          .map(MeritLog::getId)
+          .toList())
+          .containsExactly(meritLog.getId());
+    }
+  }
 }
