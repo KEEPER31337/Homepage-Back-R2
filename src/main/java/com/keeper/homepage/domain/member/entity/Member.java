@@ -412,6 +412,9 @@ public class Member {
 
   public void deleteMember() {
     this.getProfile().deleteMemberProfile();
+    this.generation = Generation.generateGeneration(now());
+    this.totalAttendance = 0;
+    this.level = 0;
     this.isDeleted = true;
   }
 }
