@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 const val REDIS_KEY_PREFIX = "baseball_"
 const val GUESS_NUMBER_LENGTH = 4
 const val TRY_COUNT = 9
-const val MAX_BETTING_POINT = 1000L
-const val MIN_BETTING_POINT = 10L
+const val MAX_BETTING_POINT = 5000L
+const val MIN_BETTING_POINT = 1000L
 const val BETTING_POINT_MESSAGE = "야구 게임 베팅"
 const val EARN_POINT_MESSAGE = "야구 게임 획득"
 

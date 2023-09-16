@@ -49,10 +49,12 @@ import com.keeper.homepage.domain.game.application.GameService;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.library.BookBorrowInfoTestHelper;
 import com.keeper.homepage.domain.library.BookTestHelper;
+import com.keeper.homepage.domain.library.BorrowLogTestHelper;
 import com.keeper.homepage.domain.library.application.BookManageService;
 import com.keeper.homepage.domain.library.application.BookService;
 import com.keeper.homepage.domain.library.application.BorrowManageService;
 import com.keeper.homepage.domain.library.dao.BookBorrowInfoRepository;
+import com.keeper.homepage.domain.library.dao.BookBorrowLogRepository;
 import com.keeper.homepage.domain.library.dao.BookBorrowStatusRepository;
 import com.keeper.homepage.domain.library.dao.BookDepartmentRepository;
 import com.keeper.homepage.domain.library.dao.BookRepository;
@@ -183,6 +185,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected BookBorrowStatusRepository bookBorrowStatusRepository;
+
+  @SpyBean
+  protected BookBorrowLogRepository bookBorrowLogRepository;
 
   @SpyBean
   protected SeminarRepository seminarRepository;
@@ -386,6 +391,9 @@ public class IntegrationTest {
 
   @Autowired
   protected BookBorrowInfoTestHelper bookBorrowInfoTestHelper;
+
+  @Autowired
+  protected BorrowLogTestHelper borrowLogTestHelper;
 
   @Autowired
   protected SeminarTestHelper seminarTestHelper;

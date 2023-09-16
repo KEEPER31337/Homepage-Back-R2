@@ -11,7 +11,6 @@ public enum ErrorCode {
 
   // AUTH
   TOKEN_NOT_AVAILABLE("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
-  TOO_MANY_REQUEST_AUTH_CODE("인증 코드가 만료되기 전에 다시 보내실 수 없습니다.", HttpStatus.BAD_REQUEST),
   AUTH_CODE_EXPIRED("인증 코드가 없거나 만료되었습니다.", HttpStatus.NOT_FOUND),
   AUTH_CODE_MISMATCH("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
   // MEMBER
@@ -64,7 +63,10 @@ public enum ErrorCode {
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_BORROW_APPROVAL("대출 승인된 도서가 아닙니다.", HttpStatus.BAD_REQUEST),
+  BORROW_STATUS_IS_NOT_RETURN_WAIT("반납 대기중인 도서가 아닙니다.", HttpStatus.BAD_REQUEST),
+  BORROW_STATUS_IS_NOT_BORROW_WAIT("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_REQUEST_RETURN_DENY("대출자가 본인이 아니므로 반납 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
+  BORROW_CANCEL_REQUEST_DENY("대출자가 본인이 아니므로 반납 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
   // STUDY
   STUDY_NOT_FOUND("존재하지 않는 스터디입니다.", HttpStatus.NOT_FOUND),
   STUDY_INACCESSIBLE("스터디장만 접근할 수 있습니다.", HttpStatus.BAD_REQUEST),

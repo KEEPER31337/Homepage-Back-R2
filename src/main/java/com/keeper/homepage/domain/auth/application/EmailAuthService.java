@@ -24,10 +24,6 @@ public class EmailAuthService {
   private final EmailAuthRedisRepository emailAuthRedisRepository;
 
   public int emailAuth(String email) {
-    if (emailAuthRedisRepository.existsById(email)) {
-      throw new BusinessException(email, "email", ErrorCode.TOO_MANY_REQUEST_AUTH_CODE);
-    }
-
     String authCode = generateRandomAuthCode();
     setAuthCodeInRedis(email, authCode);
     sendKeeperAuthCodeMail(email, authCode);

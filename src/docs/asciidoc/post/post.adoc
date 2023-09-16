@@ -287,6 +287,10 @@ include::{snippets}/delete-post-file/request-cookies.adoc[]
 
 include::{snippets}/delete-post-file/path-parameters.adoc[]
 
+==== Request Fields
+
+include::{snippets}/delete-post-file/request-fields.adoc[]
+
 === 응답
 
 ==== Response
@@ -360,6 +364,8 @@ include::{snippets}/get-trend-posts/http-response.adoc[]
 include::{snippets}/get-trend-posts/response-fields.adoc[]
 
 == *게시글의 첨부파일 목록 조회*
+
+NOTE: 시험게시판 게시글의 첨부파일 목록을 최초 조회 시 포인트가 차감됩니다. 단, 본인의 게시글일 경우 포인트는 차감되지 않습니다.
 
 === 요청
 

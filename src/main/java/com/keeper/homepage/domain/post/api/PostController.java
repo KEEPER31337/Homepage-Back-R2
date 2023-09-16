@@ -5,6 +5,7 @@ import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
+import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.CategoryResponse;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
@@ -132,13 +133,13 @@ public class PostController {
         .build();
   }
 
-  @DeleteMapping("/{postId}/files/{fileId}")
+  @DeleteMapping("/{postId}/files")
   public ResponseEntity<Void> deletePostFile(
       @LoginMember Member member,
       @PathVariable long postId,
-      @PathVariable long fileId
+      @RequestBody @Valid PostFileDeleteRequest request
   ) {
-    postService.deletePostFile(member, postId, fileId);
+    postService.deletePostFile(member, postId, request.fileIds());
     return ResponseEntity.noContent().build();
   }
 
