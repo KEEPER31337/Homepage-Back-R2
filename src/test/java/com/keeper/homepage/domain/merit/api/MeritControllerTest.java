@@ -19,6 +19,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -363,4 +364,32 @@ public class MeritControllerTest extends MeritApiTestHelper {
     }
 
   }
+
+  @Nested
+  @DisplayName("상벌점 내역 삭제 테스트")
+  class DeleteMeritLogTest {
+
+    long meritLogId;
+
+    @BeforeEach
+    void setUp() {
+      meritLogId = meritLogTestHelper.generate().getId();
+    }
+
+    @Test
+    @DisplayName("상벌점 내역 삭제를 성공해야 한다.")
+    public void 상벌점_내역_삭제를_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MeritController.class, "deleteMeritLog");
+
+      mockMvc.perform(delete("/merits/{meritLogId}", meritLogId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-merit-log",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              )));
+    }
+  }
+
 }
