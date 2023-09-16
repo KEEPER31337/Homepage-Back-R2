@@ -83,6 +83,7 @@ public class MeritLogService {
     return meritLogRepository.findAllByMemberId(pageable, findMemberId);
   }
 
+  @Transactional
   public void deleteMeritLog(long meritLogId) {
     meritLogRepository.findById(meritLogId)
         .orElseThrow(() -> new BusinessException(meritLogId, "meritLogId", MERIT_LOG_NOT_FOUND));
