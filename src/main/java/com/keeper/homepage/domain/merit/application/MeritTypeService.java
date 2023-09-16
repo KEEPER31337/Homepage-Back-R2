@@ -6,6 +6,7 @@ import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,12 +49,12 @@ public class MeritTypeService {
   }
 
   private void checkDuplicateMeritTypeDetail(String reason, long meritTypeId) {
-    Long findMeritTypeId = meritTypeRepository.findByDetail(reason)
-        .orElseThrow()
-        .getId();
-
-    if (findMeritTypeId != meritTypeId) {
-      throw new BusinessException(reason, "Detail", MERIT_TYPE_DETAIL_DUPLICATE);
-    }
+    meritTypeRepository.findByDetail(reason)
+        .ifPresent(meritType -> {
+          if (meritType.getId() != meritTypeId) {
+            throw new BusinessException(reason, "Detail", MERIT_TYPE_DETAIL_DUPLICATE);
+          }
+        });
   }
 }
+
