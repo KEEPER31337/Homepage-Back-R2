@@ -113,18 +113,26 @@ public class MemberServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("회원 탈퇴 시 유저 이름은 '회원탈퇴'로 마킹되어야 한다.")
+    @DisplayName("회원 탈퇴 시 유저 정보는 마킹되어야 한다.")
     public void 회원_탈퇴_시_유저_이름은_회원탈퇴로_마킹되어야_한다() {
       memberService.deleteMember(member, "TruePassword");
 
       em.flush();
       em.clear();
+      System.out.println("member = " + member.getId());
+      System.out.println("member.getRealName() = " + member.getRealName());
 
-      Member findMember = memberRepository.findById(member.getId())
-          .orElseThrow();
+      Member findMember = (Member) em.createNativeQuery("SELECT * FROM member WHERE id = :id", Member.class)
+          .setParameter("id", member.getId())
+          .getSingleResult();
 
+      assertThat(findMember.getProfile().getLoginId().get()).isEqualTo("delete");
+      assertThat(findMember.getProfile().getEmailAddress().get()).isEqualTo("delete@delete.com");
+      assertThat(findMember.getProfile().getPassword().isWrongPassword("delete")).isFalse();
       assertThat(findMember.getProfile().getRealName().get()).isEqualTo("탈퇴회원");
-      assertThat(findMember.getIsDeleted()).isEqualTo(true);
+      assertThat(findMember.getProfile().getBirthday()).isNull();
+      assertThat(findMember.getProfile().getStudentId()).isNull();
+      assertThat(findMember.getProfile().getThumbnail()).isNull();
     }
 
     @Test
@@ -139,7 +147,7 @@ public class MemberServiceTest extends IntegrationTest {
     @DisplayName("대출 중인 도서가 있을 경우 예외를 던진다.")
     public void 대출_중인_도서가_있을_경우_예외를_던진다() {
       book = bookTestHelper.generate();
-      member.borrow(book, getBookBorrowStatusBy(대출대기));
+      member.borrow(book, getBookBorrowStatusBy(대출중));
 
       em.flush();
       em.clear();

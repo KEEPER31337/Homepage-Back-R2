@@ -41,6 +41,7 @@ import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
