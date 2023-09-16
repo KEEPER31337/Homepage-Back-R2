@@ -56,18 +56,37 @@ class MeritLogServiceTest extends IntegrationTest {
     @Test
     @DisplayName("상벌점 페이지를 조회할 수 있어야 한다.")
     void 상벌점_페이지를_조회할_수_있어야_한다() {
-      meritLogId = meritLogTestHelper.generate().getId();
-      otherMeritLogId = meritLogTestHelper.generate().getId();
+      final String MERIT_TYPE = "MERIT";
+      final String DEMERIT_TYPE = "DEMERIT";
+      final String ALL_TYPE = "ALL";
+
+      MeritType meritType = meritTypeHelper.builder().merit(3).build();
+      MeritType demeritType = meritTypeHelper.builder().merit(-3).build();
+
+      meritLogId = meritLogTestHelper.builder().meritType(meritType).build().getId();
+      otherMeritLogId = meritLogTestHelper.builder().meritType(demeritType).build().getId();
 
       em.flush();
       em.clear();
 
-      Page<MeritLog> meritLogs = meritLogService.findAll(PageRequest.of(0, 10));
+      Page<MeritLog> meritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), MERIT_TYPE);
+      Page<MeritLog> demeritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), DEMERIT_TYPE);
+      Page<MeritLog> allLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), ALL_TYPE);
 
       assertThat(meritLogs
           .map(MeritLog::getId)
-          .toList()).contains(meritLogId, otherMeritLogId);
+          .toList())
+          .containsExactly(meritLogId);
 
+      assertThat(demeritLogs
+          .map(MeritLog::getId)
+          .toList())
+          .containsExactly(otherMeritLogId);
+
+      assertThat(allLogs
+          .map(MeritLog::getId)
+          .toList())
+          .containsExactly(meritLogId, otherMeritLogId);
     }
 
     @Test
