@@ -186,7 +186,25 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("회원별 상벌점 목록 조회를 성공해야 한다.")
     void 회원별_상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "findMeritLogByMemberId");
-      meritLogTestHelper.builder().memberId(member.getId()).build();
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(3).build())
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(2).build())
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(-1).build())
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(-3).build())
+          .build();
 
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())
@@ -246,7 +264,6 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
       SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
-
       mockMvc.perform(get("/merits")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
               .contentType(MediaType.APPLICATION_JSON)
@@ -255,11 +272,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .andExpect(jsonPath("$.message").exists());
     }
 
-
     @Test
     @DisplayName("상벌점 부여 로그 생성을 성공해야 한다.")
     void 상벌점_부여_로그_생성을_성공해야_한다() throws Exception {
-
       String securedValue = getSecuredValue(MeritController.class, "registerMerit");
       GiveMeritPointRequest request = GiveMeritPointRequest.builder()
           .awarderId(member.getId())

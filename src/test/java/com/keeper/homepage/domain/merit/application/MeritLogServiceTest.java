@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 class MeritLogServiceTest extends IntegrationTest {
 
@@ -99,7 +100,8 @@ class MeritLogServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<MeritLog> meritLogPage = meritLogService.findAllByMemberId(PageRequest.of(0, 10),
+      Page<MeritLog> meritLogPage = meritLogService.findAllByMemberId(
+          PageRequest.of(0, 10, Sort.Direction.fromString("DESC"), "MeritType.merit"),
           giver.getId());
 
       assertThat(meritLogPage
