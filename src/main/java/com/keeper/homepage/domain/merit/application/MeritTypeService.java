@@ -43,7 +43,7 @@ public class MeritTypeService {
   public void updateMeritType(long meritTypeId, int score, String reason) {
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
-    checkDuplicateMeritTypeDetail(reason, meritTypeId);
+    checkDuplicateMeritTypeDetail(reason, meritType.getId());
     meritType.update(score, reason);
   }
 
