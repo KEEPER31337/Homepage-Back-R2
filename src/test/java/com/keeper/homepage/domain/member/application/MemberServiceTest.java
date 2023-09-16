@@ -113,7 +113,7 @@ public class MemberServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("회원 탈퇴 시 유저 정보는 '삭제'로 마킹되어야 한다.")
+    @DisplayName("회원 탈퇴 시 유저 이름은 '회원탈퇴'로 마킹되어야 한다.")
     public void 회원_탈퇴_시_유저_이름은_회원탈퇴로_마킹되어야_한다() {
       memberService.deleteMember(member, "TruePassword");
 
@@ -125,7 +125,6 @@ public class MemberServiceTest extends IntegrationTest {
 
       assertThat(findMember.getProfile().getRealName().get()).isEqualTo("탈퇴회원");
       assertThat(findMember.getIsDeleted()).isEqualTo(true);
-
     }
 
     @Test
