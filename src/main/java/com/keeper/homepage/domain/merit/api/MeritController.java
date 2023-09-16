@@ -14,11 +14,13 @@ import com.keeper.homepage.domain.merit.dto.response.SearchMemberMeritLogRespons
 import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -58,11 +60,14 @@ public class MeritController {
   @GetMapping("/members/{memberId}")
   public ResponseEntity<Page<SearchMemberMeritLogResponse>> findMeritLogByMemberId(
       @PathVariable long memberId,
+      @RequestParam(defaultValue = "ASC") @Pattern(regexp = "^(ASC|DESC)$") String sort,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity.ok(
-        meritLogService.findAllByMemberId(PageRequest.of(page, size), memberId)
+        meritLogService.findAllByMemberId(
+                PageRequest.of(page, size,
+                    Sort.Direction.fromString(sort), "MeritType.merit"), memberId)
             .map(SearchMemberMeritLogResponse::from));
   }
 
