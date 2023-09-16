@@ -60,7 +60,8 @@ public class MeritController {
   @GetMapping("/members/{memberId}")
   public ResponseEntity<Page<SearchMemberMeritLogResponse>> findMeritLogByMemberId(
       @PathVariable long memberId,
-      @RequestParam(defaultValue = "DESC") @Pattern(regexp = "^(ASC|DESC)$") String sort,
+      @RequestParam(defaultValue = "DESC")
+      @Pattern(regexp = "^(ASC|DESC)$", message = "올바른 정렬 타입을 입력해주세요.") String sort,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {

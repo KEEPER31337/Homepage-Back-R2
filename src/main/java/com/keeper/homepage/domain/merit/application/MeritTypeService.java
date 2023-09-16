@@ -22,7 +22,6 @@ public class MeritTypeService {
   @Transactional
   public Long addMeritType(int score, String reason) {
     checkDuplicateMeritTypeDetail(reason);
-
     return meritTypeRepository.save(MeritType.builder()
         .merit(score)
         .detail(reason)
@@ -42,9 +41,19 @@ public class MeritTypeService {
 
   @Transactional
   public void updateMeritType(long meritTypeId, int score, String reason) {
-    checkDuplicateMeritTypeDetail(reason);
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
+    checkDuplicateMeritTypeDetail(reason, meritTypeId);
     meritType.update(score, reason);
+  }
+
+  private void checkDuplicateMeritTypeDetail(String reason, long meritTypeId) {
+    Long findMeritTypeId = meritTypeRepository.findByDetail(reason)
+        .orElseThrow()
+        .getId();
+
+    if (findMeritTypeId != meritTypeId) {
+      throw new BusinessException(reason, "Detail", MERIT_TYPE_DETAIL_DUPLICATE);
+    }
   }
 }
