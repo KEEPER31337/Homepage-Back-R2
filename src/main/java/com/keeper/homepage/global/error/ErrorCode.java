@@ -24,6 +24,7 @@ public enum ErrorCode {
   MEMBER_JOB_IS_NOT_EXECUTIVE("해당 직책은 임원 직책이 아닙니다.", HttpStatus.BAD_REQUEST),
   MEMBER_CANNOT_FOLLOW_ME("스스로를 팔로우 할 수 없습니다.", HttpStatus.BAD_REQUEST),
   MEMBER_TYPE_NOT_FOUND("해당 회원 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  MEMBER_BOOK_NOT_EMPTY("아직 대여 중인 책이 있어 탈퇴가 불가능합니다.", HttpStatus.BAD_REQUEST),
   // ABOUT
   TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR

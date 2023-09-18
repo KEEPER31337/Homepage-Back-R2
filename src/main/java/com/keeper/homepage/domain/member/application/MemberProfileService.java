@@ -99,7 +99,7 @@ public class MemberProfileService {
         .toString();
   }
 
-  private void checkMemberPassword(Member member, String rawPassword) {
+  public void checkMemberPassword(Member member, String rawPassword) {
     if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
       throw new BusinessException(rawPassword, "rawPassword", ErrorCode.MEMBER_WRONG_PASSWORD);
     }

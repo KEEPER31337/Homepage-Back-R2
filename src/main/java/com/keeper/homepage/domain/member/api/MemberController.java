@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.DeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
@@ -148,7 +149,16 @@ public class MemberController {
       @LoginMember Member member,
       @RequestBody @Valid UpdateMemberEmailAddressRequest request
   ) {
-    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(), request.getPassword());
+    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(),
+        request.getPassword());
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping
+  public ResponseEntity<Void> deleteMember(
+      @LoginMember Member member,
+      @RequestBody @Valid DeleteMemberRequest request) {
+    memberService.deleteMember(member, request.getRawPassword());
     return ResponseEntity.noContent().build();
   }
 }
