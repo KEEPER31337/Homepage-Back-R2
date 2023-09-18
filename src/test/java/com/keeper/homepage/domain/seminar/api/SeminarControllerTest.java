@@ -19,7 +19,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,12 +72,11 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
     public void should_successCreateSeminar_when_admin() throws Exception {
       String securedValue = getSecuredValue(SeminarController.class, "createSeminar");
       MvcResult mvcResult = createSeminarUsingApi(adminToken).andExpect(status().isCreated())
-          .andDo(print())
           .andDo(document("create-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
               queryParameters(
-                  parameterWithName("openTime").attributes(dateFormat())
+                  parameterWithName("openDate").attributes(dateFormat())
                       .description("세미나 날짜")),
               responseFields(
                   field("id", "세미나 ID"))
