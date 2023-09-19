@@ -126,7 +126,7 @@ public class AttendanceService {
     Member member = memberFindService.findById(memberId);
     LocalDate now = LocalDate.now();
     return attendanceRepository.findByMemberAndDate(member, now)
-        .map(AttendanceInfoResponse::from)
+        .map(attendance -> AttendanceInfoResponse.of(member, attendance))
         .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
   }
 
