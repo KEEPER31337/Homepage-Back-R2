@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class MemberProfileResponse {
   private String realName;
   private LocalDate birthday;
   private String thumbnailPath;
+  private String studentId;
   private String generation;
   private int point;
   private String memberType;
@@ -30,13 +32,14 @@ public class MemberProfileResponse {
   private List<MemberFriendResponse> follower;
   private List<MemberFriendResponse> followee;
 
-  public static MemberProfileResponse of(Member member) {
+  public static MemberProfileResponse of(Member member, Member me) {
     return MemberProfileResponse.builder()
         .id(member.getId())
         .emailAddress(member.getProfile().getEmailAddress().get())
         .realName(member.getRealName())
         .birthday(member.getProfile().getBirthday())
         .thumbnailPath(member.getThumbnailPath())
+        .studentId(isProfileMine(member, me))
         .generation(member.getGeneration())
         .point(member.getPoint())
         .memberType(member.getMemberType().getType().name())
@@ -46,7 +49,16 @@ public class MemberProfileResponse {
         .build();
   }
 
+  private static String isProfileMine(Member member, Member me) {
+    return Objects.equals(member.getId(), me.getId()) ? member.getProfile().getStudentId().get() : "default";
+  }
+
   private static List<MemberFriendResponse> getFollower(Member member) {
+//    List<Long> followerIds = member.getFollowee().stream()
+//        .map(Friend::getFollower)
+//        .map(Member::getId)
+//        .toList();
+
     return member.getFollowee().stream()
         .map(Friend::getFollower)
         .map(MemberFriendResponse::from)

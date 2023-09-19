@@ -120,9 +120,10 @@ public class MemberController {
 
   @GetMapping("/{memberId}/profile")
   public ResponseEntity<MemberProfileResponse> getMemberProfile(
+      @LoginMember Member me,
       @PathVariable @PositiveOrZero long memberId
   ) {
-    return ResponseEntity.ok(memberService.getMemberProfile(memberId));
+    return ResponseEntity.ok(memberService.getMemberProfile(me, memberId));
   }
 
   @PatchMapping("/types/{typeId}")

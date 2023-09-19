@@ -323,13 +323,23 @@ class MemberControllerTest extends MemberApiTestHelper {
     @Test
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      System.out.println("=================== 팔로잉 전 ===================");
+//      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+//      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+//      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+//      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+//      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+//      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      for (int i = 0; i < 1000; i++) {
+        memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+        memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      }
+
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
       em.flush();
       em.clear();
-
+      System.out.println("=============== AFTER ===============");
       mockMvc.perform(get("/members/{memberId}/profile", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .contentType(MediaType.APPLICATION_JSON))

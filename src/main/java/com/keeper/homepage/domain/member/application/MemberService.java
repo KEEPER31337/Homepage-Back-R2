@@ -18,6 +18,7 @@ import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -71,10 +72,8 @@ public class MemberService {
     member.unfollow(other);
   }
 
-  public MemberProfileResponse getMemberProfile(long memberId) {
-    return MemberProfileResponse.of(
-        memberFindService.findById(memberId)
-    );
+  public MemberProfileResponse getMemberProfile(Member me, long memberId) {
+    return MemberProfileResponse.of(memberFindService.findById(memberId), me);
   }
 
   @Transactional
