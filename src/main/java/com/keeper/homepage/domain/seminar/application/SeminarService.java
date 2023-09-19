@@ -1,7 +1,9 @@
 package com.keeper.homepage.domain.seminar.application;
 
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_IS_DUPLICATED;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_TIME_NOT_AVAILABLE;
 import static java.util.stream.Collectors.joining;
 
@@ -22,6 +24,7 @@ import com.keeper.homepage.global.error.ErrorCode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,8 +43,10 @@ public class SeminarService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public SeminarIdResponse save() {
+  public SeminarIdResponse save(LocalDate openDate) {
+    checkDuplicateSeminar(openDate);
     Seminar seminar = seminarRepository.save(Seminar.builder()
+        .openTime(openDate.atStartOfDay())
         .attendanceCode(randomAttendanceCode())
         .build());
 
@@ -57,6 +62,12 @@ public class SeminarService {
     return new SeminarIdResponse(seminar.getId());
   }
 
+  private void checkDuplicateSeminar(LocalDate openTime) {
+    if (seminarRepository.existsByOpenTime(openTime)) {
+      throw new BusinessException(openTime, "openTime", SEMINAR_IS_DUPLICATED);
+    }
+  }
+
   private String randomAttendanceCode() {
     final int ATTENDANCE_CODE_LENGTH = 4;
 
@@ -66,16 +77,18 @@ public class SeminarService {
   }
 
   @Transactional
-  public SeminarAttendanceCodeResponse start(Long seminarId, LocalDateTime attendanceCloseTime,
+  public SeminarAttendanceCodeResponse start(Member starter, Long seminarId, LocalDateTime attendanceCloseTime,
       LocalDateTime latenessCloseTime) {
-    validCloseTime(attendanceCloseTime, latenessCloseTime);
+    checkValidCloseTime(attendanceCloseTime, latenessCloseTime);
 
     Seminar seminar = validSeminarFindService.findById(seminarId);
+    attendanceStarter(seminar, starter);
+    seminar.setStarter(starter);
     seminar.changeCloseTime(attendanceCloseTime, latenessCloseTime);
     return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }
 
-  private void validCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
+  private void checkValidCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
     if (attendanceCloseTime == null && latenessCloseTime == null) {
       return;
     }
@@ -89,10 +102,25 @@ public class SeminarService {
     }
   }
 
-  public static <T> void requireNonNull(T obj, String fieldName, ErrorCode errorCode) {
+  private static <T> void requireNonNull(T obj, String fieldName, ErrorCode errorCode) {
     if (obj == null) {
       throw new BusinessException("null", fieldName, errorCode);
     }
+  }
+
+  private void attendanceStarter(Seminar seminar, Member member) {
+    Optional<SeminarAttendance> seminarAttendance = seminarAttendanceRepository.findBySeminarAndMember(seminar,
+        member);
+    if (seminarAttendance.isPresent()) {
+      SeminarAttendance attendance = seminarAttendance.get();
+      attendance.changeStatus(ATTENDANCE);
+      return;
+    }
+    seminarAttendanceRepository.save(SeminarAttendance.builder()
+        .seminar(seminar)
+        .member(member)
+        .seminarAttendanceStatus(getSeminarAttendanceStatusBy(ATTENDANCE))
+        .build());
   }
 
   @Transactional

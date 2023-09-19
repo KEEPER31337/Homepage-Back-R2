@@ -29,6 +29,7 @@ public enum ErrorCode {
   TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR
   SEMINAR_NOT_FOUND("해당 세미나를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  SEMINAR_IS_DUPLICATED("해당 날짜의 세미나는 이미 존재합니다.", HttpStatus.CONFLICT),
   SEMINAR_TIME_NOT_AVAILABLE("올바르지 않은 시간 값입니다", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE("올바르지 않은 출석 코드입니다.", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE("출석코드 입력 가능 횟수를 초과하여 출석이 불가능합니다.", HttpStatus.BAD_REQUEST),

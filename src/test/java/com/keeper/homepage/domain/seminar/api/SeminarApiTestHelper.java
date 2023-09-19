@@ -5,6 +5,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
@@ -13,6 +14,7 @@ import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusReq
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
 import jakarta.servlet.http.Cookie;
+import java.time.LocalDate;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -20,13 +22,15 @@ import org.springframework.test.web.servlet.ResultActions;
 public class SeminarApiTestHelper extends IntegrationTest {
 
   ResultActions createSeminarUsingApi(String token) throws Exception {
-    return mockMvc.perform(post("/seminars")
+    return mockMvc.perform(post("/seminars?openDate=" + LocalDate.now())
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
   Long createSeminarAndGetId(String adminToken) throws Exception {
     MvcResult mvcResult = createSeminarUsingApi(adminToken)
-        .andExpect(status().isCreated()).andReturn();
+        .andDo(print())
+        .andExpect(status().isCreated())
+        .andReturn();
     Long seminarId = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
         SeminarIdResponse.class).id();
     return seminarId;
