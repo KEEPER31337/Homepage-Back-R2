@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.member.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
 
+import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -13,10 +14,12 @@ import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +39,8 @@ public class MemberProfileService {
   private final ThumbnailUtil thumbnailUtil;
   private final RedisUtil redisUtil;
   private final MailUtil mailUtil;
+  private final MemberFindService memberFindService;
+  private final EntityManager em;
 
   @Transactional
   public void updateProfileThumbnail(Member member, MultipartFile thumbnail) {
@@ -61,11 +66,14 @@ public class MemberProfileService {
     }
   }
 
+  @Transactional
   public void updateProfileEmailAddress(Member member, String email,
       String auth, String password) {
-    checkMemberPassword(member, password);
+    Member findMember = memberFindService.findById(member.getId());
+
+    checkMemberPassword(findMember, password);
     checkEmailAuth(email, auth);
-    member.getProfile().updateEmailAddress(email);
+    findMember.getProfile().updateEmailAddress(email);
   }
 
   public void checkDuplicateEmailAddress(String newEmail) {
@@ -75,7 +83,7 @@ public class MemberProfileService {
         });
   }
 
-  private void checkEmailAuth(String email, String auth) {
+  public void checkEmailAuth(String email, String auth) {
     redisUtil.getData(EMAIL_AUTH_CODE_KEY + email, String.class)
         .map(value -> value.equals(auth))
         .orElseThrow(() -> new BusinessException(auth, "auth", ErrorCode.AUTH_CODE_MISMATCH));
