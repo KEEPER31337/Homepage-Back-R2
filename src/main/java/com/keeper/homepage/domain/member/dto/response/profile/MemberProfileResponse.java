@@ -39,7 +39,7 @@ public class MemberProfileResponse {
         .realName(member.getRealName())
         .birthday(member.getProfile().getBirthday())
         .thumbnailPath(member.getThumbnailPath())
-        .studentId(isProfileMine(member, me))
+        .studentId(getStudentIdIfMine(member, me))
         .generation(member.getGeneration())
         .point(member.getPoint())
         .memberType(member.getMemberType().getType().name())
@@ -49,7 +49,7 @@ public class MemberProfileResponse {
         .build();
   }
 
-  private static String isProfileMine(Member member, Member me) {
+  private static String getStudentIdIfMine(Member member, Member me) {
     return Objects.equals(member.getId(), me.getId()) ? member.getProfile().getStudentId().get() : "default";
   }
 

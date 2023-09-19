@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.member.api;
 
+import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
+
 import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
@@ -139,9 +141,8 @@ public class MemberController {
   public ResponseEntity<EmailAuthResponse> emailAuth(
       @RequestBody @Valid EmailAuthRequest request
   ) {
-    memberProfileService.checkDuplicateEmailAddress(request.getEmail());
     memberProfileService.sendEmailChangeAuthCode(request.getEmail());
-    return ResponseEntity.ok(EmailAuthResponse.from(300));
+    return ResponseEntity.ok(EmailAuthResponse.from(EMAIL_EXPIRED_SECONDS));
   }
 
   @PatchMapping("/email")

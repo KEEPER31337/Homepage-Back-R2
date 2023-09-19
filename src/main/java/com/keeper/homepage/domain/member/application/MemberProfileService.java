@@ -76,7 +76,7 @@ public class MemberProfileService {
     findMember.getProfile().updateEmailAddress(email);
   }
 
-  public void checkDuplicateEmailAddress(String newEmail) {
+  private void checkDuplicateEmailAddress(String newEmail) {
     memberRepository.findByProfileEmailAddress(EmailAddress.from(newEmail))
         .ifPresent((e) -> {
           throw new BusinessException(newEmail, "newEmail", ErrorCode.MEMBER_EMAIL_DUPLICATE);
@@ -90,6 +90,7 @@ public class MemberProfileService {
   }
 
   public void sendEmailChangeAuthCode(String email) {
+    checkDuplicateEmailAddress(email);
     String auth = generateRandomAuthCode();
     redisUtil.setDataExpire(EMAIL_AUTH_CODE_KEY + email, auth, AUTH_CODE_EXPIRE_MILLIS);
     mailUtil.sendMail(List.of(email), "KEEPER 이메일 인증 번호입니다.",

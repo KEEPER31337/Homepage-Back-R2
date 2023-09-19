@@ -85,7 +85,7 @@ class MemberProfileServiceTest extends IntegrationTest {
     @DisplayName("이메일 중복 시 예외를 던져야 한다.")
     public void 이메일_중복_시_예외를_던져야_한다() {
       assertThrows(BusinessException.class,
-          () -> memberProfileService.checkDuplicateEmailAddress(member.getProfile()
+          () -> memberProfileService.sendEmailChangeAuthCode(member.getProfile()
               .getEmailAddress()
               .get()), MEMBER_EMAIL_DUPLICATE.getMessage());
     }
