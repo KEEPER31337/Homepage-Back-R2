@@ -136,12 +136,12 @@ public class MemberController {
   }
 
   @PostMapping("/email-auth")
-  public ResponseEntity<String> emailAuth(
+  public ResponseEntity<EmailAuthResponse> emailAuth(
       @RequestBody @Valid EmailAuthRequest request
   ) {
     memberProfileService.checkDuplicateEmailAddress(request.getEmail());
     memberProfileService.sendEmailChangeAuthCode(request.getEmail());
-    return ResponseEntity.ok("이메일 인증 번호를 보냈습니다.");
+    return ResponseEntity.ok(EmailAuthResponse.from(300));
   }
 
   @PatchMapping("/email")
@@ -149,7 +149,8 @@ public class MemberController {
       @LoginMember Member member,
       @RequestBody @Valid UpdateMemberEmailAddressRequest request
   ) {
-    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(), request.getPassword());
+    memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(),
+        request.getPassword());
     return ResponseEntity.noContent().build();
   }
 }
