@@ -13,8 +13,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SeminarDetailResponse {
 
-  private Long seminarId;
-  private String seminarName;
+  private Long id;
+  private String name;
   private LocalDateTime openTime;
   private LocalDateTime attendanceCloseTime;
   private LocalDateTime latenessCloseTime;
@@ -24,8 +24,8 @@ public class SeminarDetailResponse {
 
   public static SeminarDetailResponse from(Seminar seminar, SeminarAttendanceStatusType seminarAttendanceStatusType) {
     return SeminarDetailResponse.builder()
-        .seminarId(seminar.getId())
-        .seminarName(seminar.getName())
+        .id(seminar.getId())
+        .name(seminar.getName())
         .openTime(seminar.getOpenTime())
         .attendanceCloseTime(seminar.getAttendanceCloseTime())
         .latenessCloseTime(seminar.getLatenessCloseTime())
