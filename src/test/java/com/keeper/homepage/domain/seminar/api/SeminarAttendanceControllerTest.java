@@ -288,7 +288,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       String attendanceCode = seminarService.start(admin, seminarId, LocalDateTime.now().minusMinutes(5),
           LocalDateTime.now().plusMinutes(5)).attendanceCode();
       Member user = memberRepository.findById(userId).orElseThrow();
-      seminarAttendanceService.attendance(seminarId, user, attendanceCode);
+      Long attendanceId = seminarAttendanceService.attendance(seminarId, user, attendanceCode).getId();
 
       em.flush();
       em.clear();
@@ -299,17 +299,16 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .andExpect(jsonPath("$.content[0].memberId").value(adminId))
           .andExpect(jsonPath("$.content[0].memberName").value(admin.getRealName()))
           .andExpect(jsonPath("$.content[0].generation").value(admin.getGeneration()))
-          .andExpect(jsonPath("$.content[0].attendances[0].seminarId").value(seminarId))
           .andExpect(jsonPath("$.content[0].attendances[0].attendanceStatus").value(ATTENDANCE.toString()))
           .andExpect(jsonPath("$.content[0].attendances[0].excuse").isEmpty())
-          .andExpect(jsonPath("$.content[0].attendances[0].seminarOpenTime").value(LocalDate.now().toString()))
+          .andExpect(jsonPath("$.content[0].attendances[0].attendDate").value(LocalDate.now().toString()))
           .andExpect(jsonPath("$.content[1].memberId").value(userId))
           .andExpect(jsonPath("$.content[1].memberName").value(user.getRealName()))
           .andExpect(jsonPath("$.content[1].generation").value(user.getGeneration()))
-          .andExpect(jsonPath("$.content[1].attendances[0].seminarId").value(seminarId))
+          .andExpect(jsonPath("$.content[1].attendances[0].attendanceId").value(attendanceId))
           .andExpect(jsonPath("$.content[1].attendances[0].attendanceStatus").value(LATENESS.toString()))
           .andExpect(jsonPath("$.content[1].attendances[0].excuse").isEmpty())
-          .andExpect(jsonPath("$.content[1].attendances[0].seminarOpenTime").value(LocalDate.now().toString()))
+          .andExpect(jsonPath("$.content[1].attendances[0].attendDate").value(LocalDate.now().toString()))
           .andDo(document("get-seminar-attendances",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -332,10 +331,10 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           fieldWithPath("memberName").description("회원 이름"),
           fieldWithPath("generation").description("회원 기수"),
           fieldWithPath("attendances[]").description("회원 출석 정보 리스트"),
-          fieldWithPath("attendances[].seminarId").description("세미나 ID"),
-          fieldWithPath("attendances[].seminarOpenTime").description("세미나 날짜"),
+          fieldWithPath("attendances[].attendanceId").description("세미나 출석 ID"),
+          fieldWithPath("attendances[].attendDate").description("세미나 출석 날짜"),
           fieldWithPath("attendances[].attendanceStatus").description("세미나 출석 상태"),
-          fieldWithPath("attendances[].excuse").description("세미나 결석/지각 사유 (출석일 경우 null)"),
+          fieldWithPath("attendances[].excuse").description("세미나 결석/지각 사유").optional(),
       };
     }
   }
