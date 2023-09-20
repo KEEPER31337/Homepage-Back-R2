@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -29,14 +30,17 @@ public class AttendanceInterceptor implements HandlerInterceptor {
   public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
       ModelAndView modelAndView) throws Exception {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    long memberId = Long.parseLong(authentication.getName());
 
-    String key = "attendance:member:" + memberId;
-    Optional<String> data = redisUtil.getData(key, String.class);
-    if (data.isEmpty()) {
-      Member member = memberRepository.findById(memberId)
-          .orElseThrow(() -> new BusinessException(memberId, "memberId", MEMBER_NOT_FOUND));
-      attendanceService.create(member);
+    if (!(authentication instanceof AnonymousAuthenticationToken)) {
+      long memberId = Long.parseLong(authentication.getName());
+
+      String key = "attendance:member:" + memberId;
+      Optional<String> data = redisUtil.getData(key, String.class);
+      if (data.isEmpty()) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> new BusinessException(memberId, "memberId", MEMBER_NOT_FOUND));
+        attendanceService.create(member);
+      }
     }
   }
 }
