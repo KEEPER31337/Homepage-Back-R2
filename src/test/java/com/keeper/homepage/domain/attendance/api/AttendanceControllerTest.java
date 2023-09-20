@@ -9,7 +9,6 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -45,26 +44,6 @@ public class AttendanceControllerTest extends IntegrationTest {
 
     params.add("page", "0");
     params.add("size", "3");
-  }
-
-  @Nested
-  @DisplayName("출석 테스트")
-  class AttendanceTest {
-
-    @Test
-    @DisplayName("유효한 요청일 경우 출석은 성공한다.")
-    public void 유효한_요청일_경우_출석은_성공한다() throws Exception {
-      String securedValue = getSecuredValue(AttendanceController.class, "create");
-
-      mockMvc.perform(post("/attendances")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
-          .andExpect(status().isCreated())
-          .andDo(document("create-attendance",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
-              )));
-    }
   }
 
   @Nested
