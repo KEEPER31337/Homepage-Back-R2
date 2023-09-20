@@ -119,9 +119,6 @@ public class MemberServiceTest extends IntegrationTest {
     @Test
     @DisplayName("회원 이메일 변경을 성공해야 한다.")
     public void 회원_이메일_변경을_성공해야_한다() {
-      em.flush();
-      em.clear();
-
       doNothing().when(memberProfileService).checkEmailAuth(any(), any());
       memberProfileService.updateProfileEmailAddress(member, request.getEmail(),
           request.getAuth(), request.getPassword());

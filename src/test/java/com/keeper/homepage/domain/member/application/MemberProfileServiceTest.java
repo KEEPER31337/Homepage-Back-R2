@@ -99,9 +99,6 @@ class MemberProfileServiceTest extends IntegrationTest {
     @Test
     @DisplayName("회원 이메일 변경에 성공해야 한다.")
     public void 회원_이메일_변경에_성공해야_한다() {
-      em.flush();
-      em.clear();
-
       memberProfileService.updateProfileEmailAddress(member, randomEmail,
           data, "truePassword");
 
