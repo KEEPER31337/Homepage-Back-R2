@@ -69,11 +69,9 @@ public class MemberProfileService {
   @Transactional
   public void updateProfileEmailAddress(Member member, String email,
       String auth, String password) {
-    Member findMember = memberFindService.findById(member.getId());
-
-    checkMemberPassword(findMember, password);
+    checkMemberPassword(member, password);
     checkEmailAuth(email, auth);
-    findMember.getProfile().updateEmailAddress(email);
+    member.getProfile().updateEmailAddress(email);
   }
 
   private void checkDuplicateEmailAddress(String newEmail) {

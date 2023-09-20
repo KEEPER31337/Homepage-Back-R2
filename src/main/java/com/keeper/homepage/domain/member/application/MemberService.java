@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
+import com.keeper.homepage.domain.member.dto.response.profile.MemberFriendResponse;
 import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
@@ -18,8 +19,10 @@ import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +38,7 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final MemberFindService memberFindService;
   private final MemberTypeRepository memberTypeRepository;
+  private final FriendRepository friendRepository;
 
   @Transactional
   public void changePassword(Member me, String newPassword) {
@@ -73,7 +77,10 @@ public class MemberService {
   }
 
   public MemberProfileResponse getMemberProfile(Member me, long memberId) {
-    return MemberProfileResponse.of(memberFindService.findById(memberId), me);
+    Member member = memberRepository.findMemberProfileWithFetchJoin(memberId)
+        .orElseThrow();
+
+    return MemberProfileResponse.of(member, me);
   }
 
   @Transactional

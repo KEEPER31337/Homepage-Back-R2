@@ -13,8 +13,10 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
 public class MemberProfileResponse {
@@ -54,11 +56,6 @@ public class MemberProfileResponse {
   }
 
   private static List<MemberFriendResponse> getFollower(Member member) {
-//    List<Long> followerIds = member.getFollowee().stream()
-//        .map(Friend::getFollower)
-//        .map(Member::getId)
-//        .toList();
-
     return member.getFollowee().stream()
         .map(Friend::getFollower)
         .map(MemberFriendResponse::from)
