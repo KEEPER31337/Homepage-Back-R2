@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.attendance.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_NOT_FOUND;
 
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
@@ -40,8 +39,6 @@ public class AttendanceService {
 
   @Transactional
   public void create(Member member) {
-    checkAlreadyAttendance(member);
-
     LocalDateTime now = LocalDateTime.now();
 
     int rank = getTodayRank(now.toLocalDate());
@@ -68,12 +65,6 @@ public class AttendanceService {
         .build();
     attendanceRepository.save(attendance);
     member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
-  }
-
-  private void checkAlreadyAttendance(Member member) {
-    if (attendanceRepository.existsByMemberAndDate(member, LocalDate.now())) {
-      throw new BusinessException(member.getId(), "memberId", ATTENDANCE_ALREADY);
-    }
   }
 
   private int getRandomPoint() {
