@@ -244,6 +244,7 @@ public class PostService {
       throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
     }
     thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
+    post.deleteThumbnail();
   }
 
   @Transactional
