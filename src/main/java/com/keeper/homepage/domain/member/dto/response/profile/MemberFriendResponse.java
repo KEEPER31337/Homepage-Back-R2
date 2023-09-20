@@ -18,17 +18,6 @@ public class MemberFriendResponse {
   private String thumbnailPath;
   private String generation;
 
-  public MemberFriendResponse(Long id) {
-    this.id = id;
-  }
-
-  public MemberFriendResponse(Long id, String name, Float generation, String thumbnailPath) {
-    this.id = id;
-    this.name = name;
-    this.generation = generation.toString();
-    this.thumbnailPath = thumbnailPath;
-  }
-
   public static MemberFriendResponse from(Member member) {
     return MemberFriendResponse.builder()
         .id(member.getId())

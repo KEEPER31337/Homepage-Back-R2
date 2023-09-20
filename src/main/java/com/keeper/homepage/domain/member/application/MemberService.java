@@ -38,7 +38,6 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final MemberFindService memberFindService;
   private final MemberTypeRepository memberTypeRepository;
-  private final FriendRepository friendRepository;
 
   @Transactional
   public void changePassword(Member me, String newPassword) {

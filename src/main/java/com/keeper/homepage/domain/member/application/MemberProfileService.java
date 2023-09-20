@@ -39,8 +39,6 @@ public class MemberProfileService {
   private final ThumbnailUtil thumbnailUtil;
   private final RedisUtil redisUtil;
   private final MailUtil mailUtil;
-  private final MemberFindService memberFindService;
-  private final EntityManager em;
 
   @Transactional
   public void updateProfileThumbnail(Member member, MultipartFile thumbnail) {

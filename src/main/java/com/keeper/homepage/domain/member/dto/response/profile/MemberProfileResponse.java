@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
 public class MemberProfileResponse {
