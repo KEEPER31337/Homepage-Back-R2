@@ -1,9 +1,13 @@
 package com.keeper.homepage.domain.seminar.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_IS_DUPLICATED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarIdResponse;
+import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -109,6 +113,25 @@ public class SeminarServiceTest extends IntegrationTest {
       assertThat(recentlyUpcomingSeminars).hasSize(2);
       assertThat(recentlyUpcomingSeminars.get(0).id()).isEqualTo(seminarId1);
       assertThat(recentlyUpcomingSeminars.get(1).id()).isEqualTo(seminarId2);
+    }
+  }
+
+  @Nested
+  @DisplayName("세미나 생성 테스트")
+  class CreateSeminarTest {
+
+    @Test
+    @DisplayName("세미나는 하루에 하나만 생성되어야 한다.")
+    public void 세미나는_하루에_하나만_생성되어야_한다() throws Exception {
+      //given
+      seminarTestHelper.builder().openTime(LocalDateTime.now()).build();
+      em.flush();
+      em.clear();
+
+      //then
+      assertThrows(BusinessException.class, () -> {
+        seminarService.save(LocalDate.now());
+      }, SEMINAR_IS_DUPLICATED.getMessage());
     }
   }
 }

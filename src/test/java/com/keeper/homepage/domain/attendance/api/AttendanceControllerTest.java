@@ -177,6 +177,7 @@ public class AttendanceControllerTest extends IntegrationTest {
       mockMvc.perform(get("/attendances/members/{memberId}/info", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
+          .andExpect(jsonPath("$.totalAttendance").value(member.getTotalAttendance()))
           .andExpect(jsonPath("$.continuousDay").value(attendance.getContinuousDay()))
           .andExpect(jsonPath("$.todayRank").value(attendance.getRank()))
           .andExpect(jsonPath("$.todayPoint").value(attendance.getTotalPoint()))
@@ -189,8 +190,9 @@ public class AttendanceControllerTest extends IntegrationTest {
                   parameterWithName("memberId").description("회원 ID")
               ),
               responseFields(
+                  fieldWithPath("totalAttendance").description("총 출석일"),
                   fieldWithPath("continuousDay").description("연속 출석일"),
-                  fieldWithPath("todayRank").description("춣석 순위"),
+                  fieldWithPath("todayRank").description("출석 순위"),
                   fieldWithPath("todayPoint").description("오늘 출석 포인트")
               )));
     }

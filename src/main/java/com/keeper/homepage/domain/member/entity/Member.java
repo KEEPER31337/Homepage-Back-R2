@@ -10,6 +10,7 @@ import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTyp
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
+import static java.time.LocalDate.*;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -65,11 +66,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 
 @DynamicInsert
 @DynamicUpdate
 @Getter
 @Entity
+@Where(clause = "is_deleted = false")
 @EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
@@ -161,7 +164,7 @@ public class Member {
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer totalAttendance) {
     this.profile = profile;
-    this.generation = Generation.generateGeneration(LocalDate.now());
+    this.generation = Generation.generateGeneration(now());
     this.point = point;
     this.level = level;
     this.totalAttendance = totalAttendance;
@@ -400,5 +403,18 @@ public class Member {
 
   public void updateType(MemberType memberType) {
     this.memberType = memberType;
+  }
+
+  public boolean hasAnyBorrowBooks() {
+    return this.bookBorrowInfos.stream()
+        .anyMatch(BookBorrowInfo::isInBorrowing);
+  }
+
+  public void deleteMember() {
+    this.getProfile().deleteMemberProfile();
+    this.generation = Generation.generateGeneration(now());
+    this.totalAttendance = 0;
+    this.level = 0;
+    this.isDeleted = true;
   }
 }

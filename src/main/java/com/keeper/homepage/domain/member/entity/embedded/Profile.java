@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.member.entity.embedded;
 
+import static java.time.LocalDate.*;
+
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -68,5 +70,15 @@ public class Profile {
 
   public void updateEmailAddress(String newEmailAddress) {
     this.emailAddress = EmailAddress.from(newEmailAddress);
+  }
+
+  public void deleteMemberProfile() {
+    this.loginId = LoginId.from("delete");
+    this.emailAddress = EmailAddress.from("delete@delete.com");
+    this.password = Password.from("delete");
+    this.realName = RealName.from("탈퇴회원");
+    this.birthday = null;
+    this.studentId = null;
+    this.thumbnail = null;
   }
 }

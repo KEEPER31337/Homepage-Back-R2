@@ -37,5 +37,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
   void deleteAllByIdNot(Long virtualId);
 
-  List<Member> findAllByMemberType(MemberType type);
+  List<Member> findAllByMemberTypeAndIdNot(MemberType type, long virtualId);
+
+  Page<Member> findAllByMemberTypeAndIdNot(MemberType type, long virtualId, Pageable pageable);
 }

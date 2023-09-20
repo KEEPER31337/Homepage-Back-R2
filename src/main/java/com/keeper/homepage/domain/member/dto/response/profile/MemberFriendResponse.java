@@ -15,12 +15,14 @@ public class MemberFriendResponse {
   private Long id;
   private String name;
   private String thumbnailPath;
+  private String generation;
 
   public static MemberFriendResponse from(Member member) {
     return MemberFriendResponse.builder()
         .id(member.getId())
         .name(member.getRealName())
         .thumbnailPath(member.getThumbnailPath())
+        .generation(member.getGeneration())
         .build();
   }
 

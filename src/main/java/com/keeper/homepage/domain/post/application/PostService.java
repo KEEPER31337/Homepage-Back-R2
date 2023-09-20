@@ -342,10 +342,6 @@ public class PostService {
     if (post.isCategory(익명게시판)) {
       return PostResponse.of(post, ANONYMOUS_NAME, null);
     }
-    if (post.isCategory(시험게시판)) {
-      int fileCount = post.getPostHasFiles().size();
-      return PostResponse.of(post, fileCount);
-    }
     return PostResponse.from(post);
   }
 

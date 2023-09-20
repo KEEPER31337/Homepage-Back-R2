@@ -35,15 +35,20 @@ public class SeminarController {
   private final SeminarService seminarService;
 
   @PostMapping
-  public ResponseEntity<SeminarIdResponse> createSeminar() {
-    SeminarIdResponse response = seminarService.save();
+  public ResponseEntity<SeminarIdResponse> createSeminar(
+      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate openDate
+  ) {
+    SeminarIdResponse response = seminarService.save(openDate);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @PostMapping("/{seminarId}")
   public ResponseEntity<SeminarAttendanceCodeResponse> startSeminar(
-      @PathVariable long seminarId, @Valid @RequestBody SeminarStartRequest request) {
-    SeminarAttendanceCodeResponse response = seminarService.start(seminarId, request.attendanceCloseTime(),
+      @LoginMember Member member,
+      @PathVariable long seminarId,
+      @Valid @RequestBody SeminarStartRequest request
+  ) {
+    SeminarAttendanceCodeResponse response = seminarService.start(member, seminarId, request.attendanceCloseTime(),
         request.latenessCloseTime());
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }

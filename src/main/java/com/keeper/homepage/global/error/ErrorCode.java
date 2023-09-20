@@ -11,7 +11,6 @@ public enum ErrorCode {
 
   // AUTH
   TOKEN_NOT_AVAILABLE("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
-  TOO_MANY_REQUEST_AUTH_CODE("인증 코드가 만료되기 전에 다시 보내실 수 없습니다.", HttpStatus.BAD_REQUEST),
   AUTH_CODE_EXPIRED("인증 코드가 없거나 만료되었습니다.", HttpStatus.NOT_FOUND),
   AUTH_CODE_MISMATCH("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
   // MEMBER
@@ -25,10 +24,12 @@ public enum ErrorCode {
   MEMBER_JOB_IS_NOT_EXECUTIVE("해당 직책은 임원 직책이 아닙니다.", HttpStatus.BAD_REQUEST),
   MEMBER_CANNOT_FOLLOW_ME("스스로를 팔로우 할 수 없습니다.", HttpStatus.BAD_REQUEST),
   MEMBER_TYPE_NOT_FOUND("해당 회원 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  MEMBER_BOOK_NOT_EMPTY("아직 대여 중인 책이 있어 탈퇴가 불가능합니다.", HttpStatus.BAD_REQUEST),
   // ABOUT
   TITLE_TYPE_NOT_FOUND("해당 타입의 타이틀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // SEMINAR
   SEMINAR_NOT_FOUND("해당 세미나를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  SEMINAR_IS_DUPLICATED("해당 날짜의 세미나는 이미 존재합니다.", HttpStatus.CONFLICT),
   SEMINAR_TIME_NOT_AVAILABLE("올바르지 않은 시간 값입니다", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE("올바르지 않은 출석 코드입니다.", HttpStatus.BAD_REQUEST),
   SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE("출석코드 입력 가능 횟수를 초과하여 출석이 불가능합니다.", HttpStatus.BAD_REQUEST),

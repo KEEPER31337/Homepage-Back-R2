@@ -25,6 +25,7 @@ public class PostDetailResponse {
   private String content;
   private Integer likeCount;
   private Integer dislikeCount;
+  private Integer fileCount;
   private Boolean allowComment;
   private Boolean isNotice;
   private Boolean isSecret;
@@ -57,6 +58,7 @@ public class PostDetailResponse {
         .content(post.getContent())
         .likeCount(post.getPostLikes().size())
         .dislikeCount(post.getPostDislikes().size())
+        .fileCount(post.getPostHasFiles().size())
         .allowComment(post.allowComment())
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
@@ -84,6 +86,7 @@ public class PostDetailResponse {
         .content(post.getContent())
         .likeCount(post.getPostLikes().size())
         .dislikeCount(post.getPostDislikes().size())
+        .fileCount(post.getPostHasFiles().size())
         .allowComment(post.allowComment())
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
@@ -112,6 +115,7 @@ public class PostDetailResponse {
         .content(post.getContent())
         .likeCount(post.getPostLikes().size())
         .dislikeCount(post.getPostDislikes().size())
+        .fileCount(post.getPostHasFiles().size())
         .allowComment(post.allowComment())
         .isNotice(post.isNotice())
         .isSecret(post.isSecret())
