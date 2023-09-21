@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -73,12 +74,13 @@ public class Profile {
   }
 
   public void deleteMemberProfile() {
-    this.loginId = LoginId.from("delete");
-    this.emailAddress = EmailAddress.from("delete@delete.com");
+    final String uuid = UUID.randomUUID().toString();
+    this.loginId = LoginId.from(uuid);
+    this.emailAddress = EmailAddress.from(uuid);
+    this.studentId = StudentId.from(uuid);
     this.password = Password.from("delete");
     this.realName = RealName.from("탈퇴회원");
     this.birthday = null;
-    this.studentId = null;
     this.thumbnail = null;
   }
 }
