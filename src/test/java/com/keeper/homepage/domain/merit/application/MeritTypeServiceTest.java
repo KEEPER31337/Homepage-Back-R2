@@ -38,8 +38,8 @@ class MeritTypeServiceTest extends IntegrationTest {
     @Test
     @DisplayName("상벌점 타입 추가가 성공해야 한다.")
     void 상벌점_타입_추가가_성공해야_한다() {
-      meritTypeId = meritTypeService.addMeritType(3, "우수기술문서 작성");
-      otherMeritTypeId = meritTypeService.addMeritType(-3, "무단 결석");
+      meritTypeId = meritTypeService.addMeritType(3, "우수기술문서 작성", true);
+      otherMeritTypeId = meritTypeService.addMeritType(-3, "무단 결석", true);
 
       em.flush();
       em.clear();
@@ -67,10 +67,11 @@ class MeritTypeServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      meritTypeService.updateMeritType(meritType.getId(), -1, "수정된 사유");
+      meritTypeService.updateMeritType(meritType.getId(), -1, "수정된 사유", false);
       MeritType updatedMeritType = meritTypeRepository.findById(meritType.getId()).orElseThrow();
       assertThat(updatedMeritType.getMerit()).isEqualTo(-1);
       assertThat(updatedMeritType.getDetail()).isEqualTo("수정된 사유");
+      assertThat(updatedMeritType.getIsMerit()).isEqualTo(false);
     }
 
     @Test
@@ -81,11 +82,12 @@ class MeritTypeServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      meritTypeService.updateMeritType(meritType.getId(), 2, "변경 전 사유");
+      meritTypeService.updateMeritType(meritType.getId(), 2, "변경 전 사유", true);
       MeritType findMeritType = meritTypeRepository.findById(meritType.getId())
           .orElseThrow();
       assertThat(findMeritType.getMerit()).isEqualTo(2);
       assertThat(findMeritType.getDetail()).isEqualTo("변경 전 사유");
+      assertThat(findMeritType.getDetail()).isEqualTo(true);
     }
 
     @Test
@@ -98,7 +100,7 @@ class MeritTypeServiceTest extends IntegrationTest {
       em.clear();
 
       assertThrows(BusinessException.class,
-          () -> meritTypeService.updateMeritType(otherMeritType.getId(), 3, "변경 전 사유"),
+          () -> meritTypeService.updateMeritType(otherMeritType.getId(), 3, "변경 전 사유", true),
           MERIT_TYPE_DETAIL_DUPLICATE.getMessage());
     }
   }

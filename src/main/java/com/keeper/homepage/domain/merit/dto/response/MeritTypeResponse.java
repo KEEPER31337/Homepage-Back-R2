@@ -14,12 +14,14 @@ public class MeritTypeResponse {
   private long id;
   private int score;
   private String detail;
+  private boolean isMerit;
 
   public static MeritTypeResponse from(MeritType meritType) {
     return MeritTypeResponse.builder()
         .id(meritType.getId())
         .score(meritType.getMerit())
         .detail(meritType.getDetail())
+        .isMerit(meritType.getIsMerit())
         .build();
   }
 

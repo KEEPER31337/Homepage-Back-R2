@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -46,6 +47,14 @@ public class MeritController {
   private final MeritLogService meritLogService;
   private final MeritLogRepository meritLogRepository;
 
+  // 1. SearchMeritLogListResponse 수정 -> is_merit 컬럼 추가 -> 0
+  // 2. SearchMemberMeritLogResponse 수정 -> is_merit 컬럼 추가 -> 0
+  // 3. MeritTypeResponse 수정 -> is_merit 컬럼 추가 -> 0
+  // 4. AddMeritTypeRequest 수정 -> is_merit 컬럼 추가 -> 0
+  // 5. meritTypeService.addMeritType 수정 -> is_merit 컬럼도 DB에 밀어넣기 -> 0
+  // 6. UpdateMeritTypeRequest 수정 -> is_merit 컬럼 추가 -> 0
+  // 7. meritTypeService.updateMeritType 수정 -> is_merit 컬럼도 수정 ->
+
   @GetMapping
   public ResponseEntity<Page<SearchMeritLogListResponse>> searchMeritLogList(
       @RequestBody @Valid SearchMeritLogListRequest request,
@@ -68,7 +77,7 @@ public class MeritController {
     return ResponseEntity.ok(
         meritLogService.findAllByMemberId(
                 PageRequest.of(page, size,
-                    Sort.Direction.fromString(sort), "MeritType.merit"), memberId)
+                    Direction.fromString(sort), "MeritType.merit"), memberId)
             .map(SearchMemberMeritLogResponse::from));
   }
 
@@ -95,7 +104,7 @@ public class MeritController {
   public ResponseEntity<Void> registerMeritType(
       @RequestBody @Valid AddMeritTypeRequest request
   ) {
-    meritTypeService.addMeritType(request.getScore(), request.getReason());
+    meritTypeService.addMeritType(request.getScore(), request.getReason(), request.getIsMerit());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -106,7 +115,8 @@ public class MeritController {
     meritTypeService.updateMeritType(
         meritTypeId,
         request.getScore(),
-        request.getReason());
+        request.getReason(),
+        request.getIsMerit());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/merits/types/" + meritTypeId))
         .build();

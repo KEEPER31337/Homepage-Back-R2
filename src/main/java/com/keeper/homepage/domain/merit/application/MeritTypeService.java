@@ -21,11 +21,12 @@ public class MeritTypeService {
   private final MeritTypeRepository meritTypeRepository;
 
   @Transactional
-  public Long addMeritType(int score, String reason) {
+  public Long addMeritType(int score, String reason, boolean isMerit) {
     checkDuplicateMeritTypeDetail(reason);
     return meritTypeRepository.save(MeritType.builder()
         .merit(score)
         .detail(reason)
+        .isMerit(isMerit)
         .build()).getId();
   }
 
@@ -41,11 +42,11 @@ public class MeritTypeService {
   }
 
   @Transactional
-  public void updateMeritType(long meritTypeId, int score, String reason) {
+  public void updateMeritType(long meritTypeId, int score, String reason, boolean isMerit) {
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
     checkDuplicateMeritTypeDetail(reason, meritType.getId());
-    meritType.update(score, reason);
+    meritType.update(score, reason, isMerit);
   }
 
   private void checkDuplicateMeritTypeDetail(String reason, long meritTypeId) {

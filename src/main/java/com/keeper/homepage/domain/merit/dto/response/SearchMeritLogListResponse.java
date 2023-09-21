@@ -21,6 +21,7 @@ public class SearchMeritLogListResponse {
   private String awarderGeneration;
   private int score;
   private long meritTypeId;
+  private boolean isMerit;
   private String reason;
 
   public static SearchMeritLogListResponse from(MeritLog meritLog) {
@@ -31,6 +32,7 @@ public class SearchMeritLogListResponse {
         .awarderGeneration(meritLog.getMemberGeneration())
         .score(meritLog.getMeritType().getMerit())
         .meritTypeId(meritLog.getMeritType().getId())
+        .isMerit(meritLog.getMeritType().getIsMerit())
         .reason(meritLog.getMeritType().getDetail())
         .build();
   }

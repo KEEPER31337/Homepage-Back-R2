@@ -25,17 +25,18 @@ public class MeritType {
   private String detail;
 
   @Column(name = "is_merit", nullable = false)
-  private boolean is_merit;
+  private Boolean isMerit;
 
   @Builder
-  public MeritType(Integer merit, String detail, boolean is_merit) {
+  public MeritType(Integer merit, String detail, boolean isMerit) {
     this.merit = merit;
     this.detail = detail;
-    this.is_merit = is_merit;
+    this.isMerit = isMerit;
   }
 
-  public void update(Integer score, String reason) {
+  public void update(Integer score, String reason, boolean isMerit) {
     this.merit = score;
     this.detail = reason;
+    this.isMerit = isMerit;
   }
 }
