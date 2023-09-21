@@ -96,6 +96,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
           .score(3)
           .reason("우수기술문서 작성")
+          .isMerit(true)
           .build();
 
       mockMvc.perform(post("/merits/types")
@@ -110,7 +111,8 @@ public class MeritControllerTest extends MeritApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("score").description("상벌점 점수를 입력해주세요."),
-                  fieldWithPath("reason").description("상벌점 사유를 입력해주세요.")
+                  fieldWithPath("reason").description("상벌점 사유를 입력해주세요."),
+                  fieldWithPath("isMerit").description("상벌점 타입을 입력해주세요")
               )));
     }
 
@@ -120,6 +122,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
           .score(3)
           .reason("우수기술문서 작성")
+          .isMerit(true)
           .build();
 
       mockMvc.perform(post("/merits/types")
@@ -135,8 +138,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     void 상벌점_부여_로그_수정을_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "updateMeritType");
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
-          .score(5)
+          .score(-5)
           .reason("거짓 스터디")
+          .isMerit(false)
           .build();
 
       mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())
@@ -151,7 +155,8 @@ public class MeritControllerTest extends MeritApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("score").description("수정할 점수"),
-                  fieldWithPath("reason").description("수정할 사유")
+                  fieldWithPath("reason").description("수정할 사유"),
+                  fieldWithPath("isMerit").description("수정할 상벌점 타입")
               )));
     }
 
@@ -159,8 +164,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("일반회원은 상벌점 타입 수정을 성공할 수 없다.")
     void 일반회원은_상벌점_타입_수정을_성공할_수_없다() throws Exception {
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
-          .score(5)
+          .score(-5)
           .reason("거짓 스터디")
+          .isMerit(false)
           .build();
 
       mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())

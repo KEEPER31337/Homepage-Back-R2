@@ -18,7 +18,7 @@ public class SearchMemberMeritLogResponse {
   private LocalDateTime giveTime;
   private int score;
   private long meritTypeId;
-  private boolean isMerit;
+  private Boolean isMerit;
   private String reason;
 
   public static SearchMemberMeritLogResponse from(MeritLog meritLog) {

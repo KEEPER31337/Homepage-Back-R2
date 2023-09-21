@@ -87,7 +87,7 @@ class MeritTypeServiceTest extends IntegrationTest {
           .orElseThrow();
       assertThat(findMeritType.getMerit()).isEqualTo(2);
       assertThat(findMeritType.getDetail()).isEqualTo("변경 전 사유");
-      assertThat(findMeritType.getDetail()).isEqualTo(true);
+      assertThat(findMeritType.getIsMerit()).isTrue();
     }
 
     @Test

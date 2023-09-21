@@ -21,7 +21,7 @@ public class SearchMeritLogListResponse {
   private String awarderGeneration;
   private int score;
   private long meritTypeId;
-  private boolean isMerit;
+  private Boolean isMerit;
   private String reason;
 
   public static SearchMeritLogListResponse from(MeritLog meritLog) {

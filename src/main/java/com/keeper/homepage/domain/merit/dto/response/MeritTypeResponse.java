@@ -14,7 +14,7 @@ public class MeritTypeResponse {
   private long id;
   private int score;
   private String detail;
-  private boolean isMerit;
+  private Boolean isMerit;
 
   public static MeritTypeResponse from(MeritType meritType) {
     return MeritTypeResponse.builder()
