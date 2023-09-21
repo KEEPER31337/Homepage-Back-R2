@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.entity.embedded;
 
 import static java.time.LocalDate.*;
+import static java.util.UUID.*;
 
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.CascadeType;
@@ -11,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
+import java.util.Random;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -74,13 +76,36 @@ public class Profile {
   }
 
   public void deleteMemberProfile() {
-    final String uuid = UUID.randomUUID().toString();
-    this.loginId = LoginId.from(uuid);
-    this.emailAddress = EmailAddress.from(uuid);
-    this.studentId = StudentId.from(uuid);
+    this.loginId = LoginId.from(generateRandomString(80));
+    this.emailAddress = EmailAddress.from(generateRandomString(5) + '@' + generateRandomString(5) + ".com");
+    this.studentId = StudentId.from(generateRandomDigitString(45));
     this.password = Password.from("delete");
     this.realName = RealName.from("탈퇴회원");
     this.birthday = null;
     this.thumbnail = null;
+  }
+
+  public static final Random RANDOM = new Random();
+
+  private String generateRandomString(int length) {
+    char leftLimit = '0';
+    char rightLimit = 'z';
+
+    return Profile.RANDOM.ints(leftLimit, rightLimit + 1)
+        .filter(i -> Character.isAlphabetic(i) || Character.isDigit(i))
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+  }
+
+  private String generateRandomDigitString(int length) {
+    final Random random = new Random();
+    char leftLimit = '0';
+    char rightLimit = '9';
+
+    return random.ints(leftLimit, rightLimit + 1)
+        .limit(length)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
   }
 }
