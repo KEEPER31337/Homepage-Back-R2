@@ -4,13 +4,17 @@ import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+import static jakarta.persistence.FetchType.LAZY;
 
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -51,6 +55,10 @@ public class Seminar extends BaseEntity {
   @Column(name = "name", length = MAX_NAME_LENGTH)
   private String name;
 
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "starter_id")
+  private Member starter;
+
   public void changeCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
     this.attendanceCloseTime = attendanceCloseTime;
     this.latenessCloseTime = latenessCloseTime;
@@ -80,5 +88,9 @@ public class Seminar extends BaseEntity {
     this.latenessCloseTime = latenessCloseTime;
     this.attendanceCode = attendanceCode;
     this.name = name;
+  }
+
+  public void setStarter(Member starter) {
+    this.starter = starter;
   }
 }

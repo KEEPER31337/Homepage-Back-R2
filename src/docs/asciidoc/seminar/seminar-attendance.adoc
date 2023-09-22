@@ -70,3 +70,30 @@ include::{snippets}/change-attendance-seminar/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/change-attendance-seminar/http-response.adoc[]
+
+== *세미나 출석 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-seminar-attendances/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-seminar-attendances/request-cookies.adoc[]
+
+==== Query Parameters
+
+include::{snippets}/get-seminar-attendances/query-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-seminar-attendances/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-seminar-attendances/response-fields.adoc[]
+

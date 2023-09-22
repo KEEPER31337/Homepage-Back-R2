@@ -36,10 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.DeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
@@ -128,7 +130,8 @@ class MemberControllerTest extends MemberApiTestHelper {
               responseFields(
                   fieldWithPath("[].memberId").description("회원 ID"),
                   fieldWithPath("[].realName").description("회원 실명"),
-                  fieldWithPath("[].generation").description("회원 기수")
+                  fieldWithPath("[].generation").description("회원 기수"),
+                  fieldWithPath("[].memberType").description("회원 타입")
               )));
     }
   }
@@ -324,16 +327,11 @@ class MemberControllerTest extends MemberApiTestHelper {
     @Test
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
-//      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-//      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-//      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-//      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-//      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-//      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-      for (int i = 0; i < 1000; i++) {
-        memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-        memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-      }
+      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+
 
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
@@ -524,4 +522,52 @@ class MemberControllerTest extends MemberApiTestHelper {
     }
   }
 
+  @Nested
+  @DisplayName("회원 삭제 테스트")
+  class DeleteMemberTest {
+
+    private Member member;
+    private String memberToken;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.builder()
+          .password(Password.from("testPassword"))
+          .build();
+      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("유효한 요청일 경우 회원 탈퇴에 성공한다.")
+    public void 유효한_요청일_경우_회원_탈퇴에_성공한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "deleteMember");
+      DeleteMemberRequest request = DeleteMemberRequest.from("testPassword");
+
+      mockMvc.perform(patch("/members")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-member",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("rawPassword").description("현재 비밀번호")
+              )));
+    }
+
+    @Test
+    @DisplayName("비밀번호가 틀릴 시 탈퇴에 실패한다.")
+    public void 비밀번호가_틀릴_시_탈퇴에_실패한다() throws Exception {
+      DeleteMemberRequest request = DeleteMemberRequest.from("falsePassword");
+
+      mockMvc.perform(patch("/members")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .content(asJsonString(request))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isBadRequest());
+    }
+  }
 }

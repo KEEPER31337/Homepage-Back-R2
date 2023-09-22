@@ -2,13 +2,13 @@ package com.keeper.homepage.domain.member.api;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
 
-import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
+import com.keeper.homepage.domain.member.dto.request.DeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -152,6 +151,14 @@ public class MemberController {
   ) {
     memberProfileService.updateProfileEmailAddress(member, request.getEmail(), request.getAuth(),
         request.getPassword());
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping
+  public ResponseEntity<Void> deleteMember(
+      @LoginMember Member member,
+      @RequestBody @Valid DeleteMemberRequest request) {
+    memberService.deleteMember(member, request.getRawPassword());
     return ResponseEntity.noContent().build();
   }
 }

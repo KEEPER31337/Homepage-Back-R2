@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.member.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
 
-import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
@@ -14,12 +13,10 @@ import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,7 +101,7 @@ public class MemberProfileService {
         .toString();
   }
 
-  private void checkMemberPassword(Member member, String rawPassword) {
+  public void checkMemberPassword(Member member, String rawPassword) {
     if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
       throw new BusinessException(rawPassword, "rawPassword", ErrorCode.MEMBER_WRONG_PASSWORD);
     }

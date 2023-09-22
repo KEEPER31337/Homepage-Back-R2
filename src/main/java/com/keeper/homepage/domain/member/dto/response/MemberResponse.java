@@ -15,12 +15,14 @@ public class MemberResponse {
   private Long memberId;
   private String realName;
   private String generation;
+  private String memberType;
 
   public static MemberResponse from(Member member) {
     return MemberResponse.builder()
         .memberId(member.getId())
         .realName(member.getRealName())
         .generation(member.getGeneration())
+        .memberType(member.getMemberType().getType().toString())
         .build();
   }
 }

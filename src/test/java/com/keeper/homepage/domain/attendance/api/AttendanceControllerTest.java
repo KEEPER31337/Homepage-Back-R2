@@ -9,7 +9,6 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -19,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -45,26 +43,6 @@ public class AttendanceControllerTest extends IntegrationTest {
 
     params.add("page", "0");
     params.add("size", "3");
-  }
-
-  @Nested
-  @DisplayName("출석 테스트")
-  class AttendanceTest {
-
-    @Test
-    @DisplayName("유효한 요청일 경우 출석은 성공한다.")
-    public void 유효한_요청일_경우_출석은_성공한다() throws Exception {
-      String securedValue = getSecuredValue(AttendanceController.class, "create");
-
-      mockMvc.perform(post("/attendances")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
-          .andExpect(status().isCreated())
-          .andDo(document("create-attendance",
-              requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
-              )));
-    }
   }
 
   @Nested
@@ -137,13 +115,6 @@ public class AttendanceControllerTest extends IntegrationTest {
   @DisplayName("출석 조회 테스트")
   class GetAttendanceTest {
 
-    private Attendance attendance;
-
-    @BeforeEach
-    void setUp() {
-      attendance = attendanceTestHelper.builder().member(member).build();
-    }
-
     @Test
     @DisplayName("유효한 요청일 경우 오늘 출석 포인트 조회는 성공한다.")
     public void 유효한_요청일_경우_오늘_출석_포인트_조회는_성공한다() throws Exception {
@@ -152,10 +123,6 @@ public class AttendanceControllerTest extends IntegrationTest {
       mockMvc.perform(get("/attendances/point")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.point").value(attendance.getPoint()))
-          .andExpect(jsonPath("$.continuousPoint").value(attendance.getContinuousPoint()))
-          .andExpect(jsonPath("$.rankPoint").value(attendance.getRankPoint()))
-          .andExpect(jsonPath("$.randomPoint").value(attendance.getRandomPoint()))
           .andDo(document("get-today-attendance-point",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -177,9 +144,7 @@ public class AttendanceControllerTest extends IntegrationTest {
       mockMvc.perform(get("/attendances/members/{memberId}/info", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.continuousDay").value(attendance.getContinuousDay()))
-          .andExpect(jsonPath("$.todayRank").value(attendance.getRank()))
-          .andExpect(jsonPath("$.todayPoint").value(attendance.getTotalPoint()))
+          .andExpect(jsonPath("$.totalAttendance").value(member.getTotalAttendance()))
           .andDo(document("get-attendance-info",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -189,8 +154,9 @@ public class AttendanceControllerTest extends IntegrationTest {
                   parameterWithName("memberId").description("회원 ID")
               ),
               responseFields(
+                  fieldWithPath("totalAttendance").description("총 출석일"),
                   fieldWithPath("continuousDay").description("연속 출석일"),
-                  fieldWithPath("todayRank").description("춣석 순위"),
+                  fieldWithPath("todayRank").description("출석 순위"),
                   fieldWithPath("todayPoint").description("오늘 출석 포인트")
               )));
     }
@@ -207,7 +173,6 @@ public class AttendanceControllerTest extends IntegrationTest {
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$[0].value").value(1))
-          .andExpect(jsonPath("$[0].day").value(String.valueOf(attendance.getDate())))
           .andDo(document("get-total-attendance",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())

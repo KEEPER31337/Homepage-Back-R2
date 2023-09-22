@@ -74,8 +74,10 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       MvcResult mvcResult = createSeminarUsingApi(adminToken).andExpect(status().isCreated())
           .andDo(document("create-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
-                      "ACCESS TOKEN %s".formatted(securedValue))),
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
+              queryParameters(
+                  parameterWithName("openDate").attributes(dateFormat())
+                      .description("세미나 날짜")),
               responseFields(
                   field("id", "세미나 ID"))
           )).andReturn();
@@ -288,13 +290,14 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
         em.clear();
 
         var responseSeminarDescriptors = new FieldDescriptor[]{
-            field("seminarId", "세미나 ID"),
+            field("id", "세미나 ID"),
             field("openTime", "세미나 생성 시간"),
-            field("attendanceCloseTime", "출석 마감 시간"),
-            field("latenessCloseTime", "지각 마감 시간"),
-            field("seminarName", "세미나명"),
+            field("attendanceCloseTime", "출석 마감 시간").optional(),
+            field("latenessCloseTime", "지각 마감 시간").optional(),
+            field("name", "세미나명"),
             field("statusType", "세미나 출석 상태"),
-            field("attendanceCode", "세미나 출석 코드")
+            field("attendanceCode", "세미나 출석 코드").optional(),
+            field("starterId", "세미나 출석을 시작한 회원 ID").optional()
         };
 
         searchSeminarUsingApi(adminToken, seminarId).andExpect(status().isOk())

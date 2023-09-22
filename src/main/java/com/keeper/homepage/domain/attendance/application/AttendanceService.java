@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.attendance.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_NOT_FOUND;
 
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
@@ -39,12 +38,18 @@ public class AttendanceService {
   public static final int DAILY_POINT = 1000;
 
   @Transactional
-  public void create(Member member) {
-    checkAlreadyAttendance(member);
-
+  public void create(long memberId) {
+    Member member = memberFindService.findById(memberId);
     LocalDateTime now = LocalDateTime.now();
-    int randomPoint = getRandomPoint();
+    if (attendanceRepository.existsByMemberAndDate(member, now.toLocalDate())) {
+      return;
+    }
+
     int rank = getTodayRank(now.toLocalDate());
+    String key = "attendance:member:" + memberId;
+    redisUtil.setDataExpire(key, rank, RedisUtil.toMidNight());
+
+    int randomPoint = getRandomPoint();
     int rankPoint = getRankPoint(rank);
     int continuousDay = getContinuousDay(member, now.toLocalDate());
     int continuousPoint = getContinuousPoint(continuousDay);
@@ -64,12 +69,6 @@ public class AttendanceService {
         .build();
     attendanceRepository.save(attendance);
     member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
-  }
-
-  private void checkAlreadyAttendance(Member member) {
-    if (attendanceRepository.existsByMemberAndDate(member, LocalDate.now())) {
-      throw new BusinessException(member.getId(), "memberId", ATTENDANCE_ALREADY);
-    }
   }
 
   private int getRandomPoint() {
@@ -126,7 +125,7 @@ public class AttendanceService {
     Member member = memberFindService.findById(memberId);
     LocalDate now = LocalDate.now();
     return attendanceRepository.findByMemberAndDate(member, now)
-        .map(AttendanceInfoResponse::from)
+        .map(attendance -> AttendanceInfoResponse.of(member, attendance))
         .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
   }
 

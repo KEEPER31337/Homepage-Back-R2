@@ -202,4 +202,8 @@ public class Post extends BaseEntity {
   public CategoryType getCategoryType() {
     return this.category.getType();
   }
+
+  public void deleteThumbnail() {
+    this.thumbnail = null;
+  }
 }

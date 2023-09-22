@@ -14,12 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,15 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AttendanceController {
 
   private final AttendanceService attendanceService;
-
-  @PostMapping
-  public ResponseEntity<Void> create(
-      @LoginMember Member member
-  ) {
-    attendanceService.create(member);
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .build();
-  }
 
   @GetMapping("/today-rank")
   public ResponseEntity<Page<AttendanceRankResponse>> getTodayRanks(

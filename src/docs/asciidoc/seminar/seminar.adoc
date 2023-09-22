@@ -25,6 +25,10 @@ include::{snippets}/create-seminar/http-request.adoc[]
 
 include::{snippets}/create-seminar/request-cookies.adoc[]
 
+==== Query Parameters
+
+include::{snippets}/create-seminar/query-parameters.adoc[]
+
 === 응답
 
 ==== Response

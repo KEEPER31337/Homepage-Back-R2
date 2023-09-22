@@ -13,24 +13,6 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
-== *출석*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/create-attendance/http-request.adoc[]
-
-==== Request Cookies
-
-include::{snippets}/create-attendance/request-cookies.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/create-attendance/http-response.adoc[]
-
 == *당일 출석 랭킹 조회*
 
 NOTE: 당일의 출석 시간이 빠른 순서대로 정렬되어 조회됩니다.
