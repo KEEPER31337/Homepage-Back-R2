@@ -38,11 +38,12 @@ public class AttendanceService {
   public static final int DAILY_POINT = 1000;
 
   @Transactional
-  public void create(Member member) {
+  public void create(long memberId) {
+    Member member = memberFindService.findById(memberId);
     LocalDateTime now = LocalDateTime.now();
 
     int rank = getTodayRank(now.toLocalDate());
-    String key = "attendance:member:" + member.getId();
+    String key = "attendance:member:" + memberId;
     redisUtil.setDataExpire(key, rank, RedisUtil.toMidNight());
 
     int randomPoint = getRandomPoint();
