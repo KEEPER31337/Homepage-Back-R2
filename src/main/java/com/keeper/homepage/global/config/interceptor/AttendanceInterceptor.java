@@ -1,7 +1,6 @@
 package com.keeper.homepage.global.config.interceptor;
 
 import com.keeper.homepage.domain.attendance.application.AttendanceService;
-import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class AttendanceInterceptor implements HandlerInterceptor {
 
   private final AttendanceService attendanceService;
-  private final MemberRepository memberRepository;
   private final RedisUtil redisUtil;
 
   @Override

@@ -25,6 +25,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   private final LoginMemberArgumentResolver loginMemberArgumentResolver;
   private final AttendanceInterceptor attendanceInterceptor;
 
+  private static final String[] ATTENDANCE_PATH = {"/about/**", "/members/**", "/attendances/**"};
+
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
     resolvers.add(loginMemberArgumentResolver);
@@ -57,6 +59,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(attendanceInterceptor)
-        .addPathPatterns("/about/**", "/members/**", "/attendances/**");
+        .addPathPatterns(ATTENDANCE_PATH);
   }
 }
