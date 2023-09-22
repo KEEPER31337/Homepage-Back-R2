@@ -130,7 +130,8 @@ class MemberControllerTest extends MemberApiTestHelper {
               responseFields(
                   fieldWithPath("[].memberId").description("회원 ID"),
                   fieldWithPath("[].realName").description("회원 실명"),
-                  fieldWithPath("[].generation").description("회원 기수")
+                  fieldWithPath("[].generation").description("회원 기수"),
+                  fieldWithPath("[].memberType").description("회원 타입")
               )));
     }
   }
