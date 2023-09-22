@@ -1,8 +1,7 @@
 package com.keeper.homepage.domain.member.application;
 
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.*;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.*;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_BOOK_NOT_EMPTY;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
@@ -10,20 +9,17 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_WRONG_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import com.keeper.homepage.IntegrationTest;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.library.entity.Book;
-import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
-import com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum;
-import com.keeper.homepage.global.config.password.PasswordFactory;
 import com.keeper.homepage.global.error.BusinessException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -96,6 +92,43 @@ public class MemberServiceTest extends IntegrationTest {
       assertThat(findMember.getMemberType().getType()).isEqualTo(휴면회원);
       assertThat(findOtherMember.getMemberType().getType()).isEqualTo(휴면회원);
     }
+  }
+
+  @Nested
+  @DisplayName("회원 이메일 변경 테스트")
+  class UpdateEmailTest {
+
+    private Member member;
+    private UpdateMemberEmailAddressRequest request;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.builder()
+          .emailAddress(EmailAddress.from("beforeUpdated@gmail.com"))
+          .password(Password.from("truePassword"))
+          .build();
+
+      request = UpdateMemberEmailAddressRequest.builder()
+          .email("Updated@gmail.com")
+          .auth("123456789")
+          .password("truePassword")
+          .build();
+    }
+
+    @Test
+    @DisplayName("회원 이메일 변경을 성공해야 한다.")
+    public void 회원_이메일_변경을_성공해야_한다() {
+      doNothing().when(memberProfileService).checkEmailAuth(any(), any());
+      memberProfileService.updateProfileEmailAddress(member, request.getEmail(),
+          request.getAuth(), request.getPassword());
+
+      em.flush();
+      em.clear();
+
+      Member savedMember = memberFindService.findById(member.getId());
+      assertThat(savedMember.getProfile().getEmailAddress().get()).isEqualTo("Updated@gmail.com");
+    }
+
   }
 
   @Nested

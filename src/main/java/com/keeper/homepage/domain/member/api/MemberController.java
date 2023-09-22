@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.member.api;
 
-import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
+import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
+
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
@@ -32,7 +33,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -121,9 +121,10 @@ public class MemberController {
 
   @GetMapping("/{memberId}/profile")
   public ResponseEntity<MemberProfileResponse> getMemberProfile(
+      @LoginMember Member me,
       @PathVariable @PositiveOrZero long memberId
   ) {
-    return ResponseEntity.ok(memberService.getMemberProfile(memberId));
+    return ResponseEntity.ok(memberService.getMemberProfile(me, memberId));
   }
 
   @PatchMapping("/types/{typeId}")
@@ -136,12 +137,11 @@ public class MemberController {
   }
 
   @PostMapping("/email-auth")
-  public ResponseEntity<String> emailAuth(
+  public ResponseEntity<EmailAuthResponse> emailAuth(
       @RequestBody @Valid EmailAuthRequest request
   ) {
-    memberProfileService.checkDuplicateEmailAddress(request.getEmail());
     memberProfileService.sendEmailChangeAuthCode(request.getEmail());
-    return ResponseEntity.ok("이메일 인증 번호를 보냈습니다.");
+    return ResponseEntity.ok(EmailAuthResponse.from(EMAIL_EXPIRED_SECONDS));
   }
 
   @PatchMapping("/email")

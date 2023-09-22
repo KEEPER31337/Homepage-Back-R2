@@ -64,6 +64,7 @@ public class Profile {
     this.studentId = newProfile.studentId;
     this.birthday = newProfile.birthday;
   }
+
   public void updateThumbnail(Thumbnail thumbnail) {
     this.thumbnail = thumbnail;
   }
