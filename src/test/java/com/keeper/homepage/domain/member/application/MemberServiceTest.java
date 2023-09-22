@@ -126,12 +126,12 @@ public class MemberServiceTest extends IntegrationTest {
           .setParameter("id", member.getId())
           .getSingleResult();
 
-      assertThat(findMember.getProfile().getLoginId().get().length()).isEqualTo(80);
-      assertThat(findMember.getProfile().getEmailAddress().get().length()).isEqualTo(15);
+      assertThat(findMember.getProfile().getLoginId().get()).hasSize(80);
+      assertThat(findMember.getProfile().getEmailAddress().get()).hasSize(15);
       assertThat(findMember.getProfile().getPassword().isWrongPassword("delete")).isFalse();
       assertThat(findMember.getProfile().getRealName().get()).isEqualTo("탈퇴회원");
       assertThat(findMember.getProfile().getBirthday()).isNull();
-      assertThat(findMember.getProfile().getStudentId().get().length()).isEqualTo(45);
+      assertThat(findMember.getProfile().getStudentId().get()).hasSize(45);
       assertThat(findMember.getProfile().getThumbnail()).isNull();
     }
 
