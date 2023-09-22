@@ -41,6 +41,9 @@ public class AttendanceService {
   public void create(long memberId) {
     Member member = memberFindService.findById(memberId);
     LocalDateTime now = LocalDateTime.now();
+    if (attendanceRepository.existsByMemberAndDate(member, now.toLocalDate())) {
+      return;
+    }
 
     int rank = getTodayRank(now.toLocalDate());
     String key = "attendance:member:" + memberId;
