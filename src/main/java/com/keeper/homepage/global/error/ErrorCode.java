@@ -82,7 +82,6 @@ public enum ErrorCode {
   // FILE
   FILE_NOT_FOUND("해당 파일은 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
   // ATTENDANCE
-  ATTENDANCE_ALREADY("이미 출석을 완료했습니다.", HttpStatus.BAD_REQUEST),
   ATTENDANCE_NOT_FOUND("출석 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // CTF
   CTF_CONTEST_NOT_FOUND("해당 대회는 끝났거나 없는 대회입니다.", HttpStatus.BAD_REQUEST),
