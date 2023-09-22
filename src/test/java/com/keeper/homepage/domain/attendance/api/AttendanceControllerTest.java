@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.entity.Member;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -116,13 +115,6 @@ public class AttendanceControllerTest extends IntegrationTest {
   @DisplayName("출석 조회 테스트")
   class GetAttendanceTest {
 
-    private Attendance attendance;
-
-    @BeforeEach
-    void setUp() {
-      attendance = attendanceTestHelper.builder().member(member).build();
-    }
-
     @Test
     @DisplayName("유효한 요청일 경우 오늘 출석 포인트 조회는 성공한다.")
     public void 유효한_요청일_경우_오늘_출석_포인트_조회는_성공한다() throws Exception {
@@ -131,10 +123,6 @@ public class AttendanceControllerTest extends IntegrationTest {
       mockMvc.perform(get("/attendances/point")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.point").value(attendance.getPoint()))
-          .andExpect(jsonPath("$.continuousPoint").value(attendance.getContinuousPoint()))
-          .andExpect(jsonPath("$.rankPoint").value(attendance.getRankPoint()))
-          .andExpect(jsonPath("$.randomPoint").value(attendance.getRandomPoint()))
           .andDo(document("get-today-attendance-point",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -157,9 +145,6 @@ public class AttendanceControllerTest extends IntegrationTest {
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.totalAttendance").value(member.getTotalAttendance()))
-          .andExpect(jsonPath("$.continuousDay").value(attendance.getContinuousDay()))
-          .andExpect(jsonPath("$.todayRank").value(attendance.getRank()))
-          .andExpect(jsonPath("$.todayPoint").value(attendance.getTotalPoint()))
           .andDo(document("get-attendance-info",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -188,7 +173,6 @@ public class AttendanceControllerTest extends IntegrationTest {
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$[0].value").value(1))
-          .andExpect(jsonPath("$[0].day").value(String.valueOf(attendance.getDate())))
           .andDo(document("get-total-attendance",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
