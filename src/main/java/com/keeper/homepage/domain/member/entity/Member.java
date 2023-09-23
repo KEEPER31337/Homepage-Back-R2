@@ -10,7 +10,7 @@ import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTyp
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
-import static java.time.LocalDate.*;
+import static java.time.LocalDate.now;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -63,12 +63,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
-@BatchSize(size = 1000)
 @DynamicInsert
 @DynamicUpdate
 @Getter
