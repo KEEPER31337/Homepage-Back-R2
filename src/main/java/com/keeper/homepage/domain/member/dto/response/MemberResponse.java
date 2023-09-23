@@ -16,6 +16,7 @@ public class MemberResponse {
   private String realName;
   private String generation;
   private String memberType;
+  private String thumbnailPath;
 
   public static MemberResponse from(Member member) {
     return MemberResponse.builder()
@@ -23,6 +24,7 @@ public class MemberResponse {
         .realName(member.getRealName())
         .generation(member.getGeneration())
         .memberType(member.getMemberType().getType().toString())
+        .thumbnailPath(member.getThumbnailPath())
         .build();
   }
 }

@@ -131,7 +131,8 @@ class MemberControllerTest extends MemberApiTestHelper {
                   fieldWithPath("[].memberId").description("회원 ID"),
                   fieldWithPath("[].realName").description("회원 실명"),
                   fieldWithPath("[].generation").description("회원 기수"),
-                  fieldWithPath("[].memberType").description("회원 타입")
+                  fieldWithPath("[].memberType").description("회원 타입"),
+                  fieldWithPath("[].thumbnailPath").description("회원 썸네일 주소")
               )));
     }
   }
