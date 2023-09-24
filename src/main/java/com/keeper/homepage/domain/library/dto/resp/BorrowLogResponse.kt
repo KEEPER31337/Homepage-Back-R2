@@ -19,7 +19,7 @@ data class BorrowLogResponse(
     val returnDateTime: LocalDateTime?,
     @JsonFormat(pattern = RESPONSE_DATETIME_FORMAT)
     val rejectDateTime: LocalDateTime?,
-    val borrowStatus: String
+    val status: String
 ) {
     constructor(log: BookBorrowLog) : this(
         borrowInfoId = log.borrowId,
@@ -32,7 +32,7 @@ data class BorrowLogResponse(
         expireDateTime = log.expireDate,
         returnDateTime = log.returnDate,
         rejectDateTime = log.rejectDate,
-        borrowStatus = log.borrowStatus,
+        status = log.borrowStatus,
     )
 }
 

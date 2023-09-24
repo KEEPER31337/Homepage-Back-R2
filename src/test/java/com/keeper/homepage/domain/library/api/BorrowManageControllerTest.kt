@@ -550,9 +550,9 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 ),
             ).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.content[0].borrowStatus").value("대출중"))
-                .andExpect(jsonPath("$.content[1].borrowStatus").value("대출반려"))
-                .andExpect(jsonPath("$.content[2].borrowStatus").value("반납대기"))
+                .andExpect(jsonPath("$.content[0].status").value("대출중"))
+                .andExpect(jsonPath("$.content[1].status").value("대출반려"))
+                .andExpect(jsonPath("$.content[2].status").value("반납대기"))
                 .andExpect(jsonPath("$.number").value("0"))
                 .andExpect(jsonPath("$.size").value("3"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
@@ -584,7 +584,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
 
             callGetBorrowLogApi(params = multiValueMapOf("page" to "1", "size" to "3"))
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.content[0].borrowStatus").value("반납완료"))
+                .andExpect(jsonPath("$.content[0].status").value("반납완료"))
                 .andExpect(jsonPath("$.number").value("1"))
                 .andExpect(jsonPath("$.size").value("3"))
                 .andExpect(jsonPath("$.totalPages").value("2"))

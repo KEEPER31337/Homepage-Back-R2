@@ -253,7 +253,7 @@ class BookManageApiTestHelper : IntegrationTest() {
             field("expireDateTime", "반납 예정 시간 (양식: $RESPONSE_DATETIME_FORMAT)"),
             field("returnDateTime", "반납 승인을 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)").optional(),
             field("rejectDateTime", "반납 반려를 한 시간 (양식: $RESPONSE_DATETIME_FORMAT)").optional(),
-            field("borrowStatus", "로그가 찍힐 때의 대출 상태. 종류: ${LogType.values().map(LogType::name).joinToString()}"),
+            field("status", "로그가 찍힐 때의 대출 상태. 종류: ${LogType.values().map(LogType::name).joinToString()}"),
         )
     }
 }
