@@ -10,7 +10,7 @@ import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTyp
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
-import static java.time.LocalDate.*;
+import static java.time.LocalDate.now;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -52,7 +52,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -113,9 +112,6 @@ public class Member {
   @JoinColumn(name = "member_rank_id")
   private MemberRank memberRank;
 
-  @Column(name = "is_deleted", nullable = false)
-  private Boolean isDeleted;
-
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
@@ -171,7 +167,6 @@ public class Member {
     this.memberType = MemberType.getMemberTypeBy(정회원);
     this.memberRank = MemberRank.getMemberRankBy(일반회원);
     this.assignJob(MemberJobType.ROLE_회원);
-    this.isDeleted = false;
   }
 
   public void assignJob(MemberJobType jobType) {
@@ -408,13 +403,5 @@ public class Member {
   public boolean hasAnyBorrowBooks() {
     return this.bookBorrowInfos.stream()
         .anyMatch(BookBorrowInfo::isInBorrowing);
-  }
-
-  public void deleteMember() {
-    this.getProfile().deleteMemberProfile();
-    this.generation = Generation.generateGeneration(now());
-    this.totalAttendance = 0;
-    this.level = 0;
-    this.isDeleted = true;
   }
 }
