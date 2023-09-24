@@ -589,5 +589,17 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                 .andExpect(jsonPath("$.size").value("3"))
                 .andExpect(jsonPath("$.totalPages").value("2"))
         }
+
+
+        @Test
+        fun `전체 책 대출 현황 로그 조회는 성공해야 한다`() {
+            callGetBorrowLogApi(searchType = LogType.전체)
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.content.length()").value("4"))
+                .andExpect(jsonPath("$.content[0].status").value("반납완료"))
+                .andExpect(jsonPath("$.content[1].status").value("반납대기"))
+                .andExpect(jsonPath("$.content[2].status").value("대출반려"))
+                .andExpect(jsonPath("$.content[3].status").value("대출중"))
+        }
     }
 }
