@@ -15,6 +15,7 @@ public interface BookBorrowLogRepository extends JpaRepository<BookBorrowLog, Lo
       + "where (borrowLog.bookTitle like %:search% " // 도서명
       + "or borrowLog.bookAuthor like %:search% " // 저자
       + "or borrowLog.memberRealName like %:search%) " // 이름
+      + "order by borrowLog.id desc " // 최신순
   )
   Page<BookBorrowLog> findAll(@Param("search") String search, Pageable pageable);
 
@@ -24,6 +25,7 @@ public interface BookBorrowLogRepository extends JpaRepository<BookBorrowLog, Lo
       + "and (borrowLog.bookTitle like %:search% " // 도서명
       + "or borrowLog.bookAuthor like %:search% " // 저자
       + "or borrowLog.memberRealName like %:search%) " // 이름
+      + "order by borrowLog.id desc " // 최신순
   )
   Page<BookBorrowLog> findAllByStatus(@Param("borrowStatus") String borrowStatus,
       @Param("search") String search, Pageable pageable);
