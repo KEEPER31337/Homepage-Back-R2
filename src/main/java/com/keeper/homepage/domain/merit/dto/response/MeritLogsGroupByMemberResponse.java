@@ -10,16 +10,14 @@ public class MeritLogsGroupByMemberResponse {
   private String generation;
   private Integer merit;
   private Integer demerit;
-  private Boolean isMerit;
 
   public MeritLogsGroupByMemberResponse(Long memberId, String memberName, String generation,
-      Boolean isMerit, Integer merit, Integer demerit) {
+      Integer merit, Integer demerit) {
     this.memberId = memberId;
     this.memberName = memberName;
     this.generation = generation;
     this.merit = merit;
     this.demerit = demerit;
-    this.isMerit = isMerit;
   }
 
 }
