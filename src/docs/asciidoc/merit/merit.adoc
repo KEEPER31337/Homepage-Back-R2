@@ -83,6 +83,24 @@ include::{snippets}/create-meritLog/request-fields.adoc[]
 
 include::{snippets}/create-meritLog/http-response.adoc[]
 
+== *상벌점 로그 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-merit-log/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/delete-merit-log/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-merit-log/http-response.adoc[]
+
 == *상벌점 타입 조회*
 
 === 요청

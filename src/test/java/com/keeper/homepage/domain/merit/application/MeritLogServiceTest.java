@@ -8,12 +8,14 @@ import com.keeper.homepage.domain.merit.entity.MeritLog;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 class MeritLogServiceTest extends IntegrationTest {
 
@@ -56,18 +58,37 @@ class MeritLogServiceTest extends IntegrationTest {
     @Test
     @DisplayName("상벌점 페이지를 조회할 수 있어야 한다.")
     void 상벌점_페이지를_조회할_수_있어야_한다() {
-      meritLogId = meritLogTestHelper.generate().getId();
-      otherMeritLogId = meritLogTestHelper.generate().getId();
+      final String MERIT_TYPE = "MERIT";
+      final String DEMERIT_TYPE = "DEMERIT";
+      final String ALL_TYPE = "ALL";
+
+      MeritType meritType = meritTypeHelper.builder().merit(3).build();
+      MeritType demeritType = meritTypeHelper.builder().merit(-3).build();
+
+      meritLogId = meritLogTestHelper.builder().meritType(meritType).build().getId();
+      otherMeritLogId = meritLogTestHelper.builder().meritType(demeritType).build().getId();
 
       em.flush();
       em.clear();
 
-      Page<MeritLog> meritLogs = meritLogService.findAll(PageRequest.of(0, 10));
+      Page<MeritLog> meritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), MERIT_TYPE);
+      Page<MeritLog> demeritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), DEMERIT_TYPE);
+      Page<MeritLog> allLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), ALL_TYPE);
 
       assertThat(meritLogs
           .map(MeritLog::getId)
-          .toList()).contains(meritLogId, otherMeritLogId);
+          .toList())
+          .containsExactly(meritLogId);
 
+      assertThat(demeritLogs
+          .map(MeritLog::getId)
+          .toList())
+          .containsExactly(otherMeritLogId);
+
+      assertThat(allLogs
+          .map(MeritLog::getId)
+          .toList())
+          .containsExactly(meritLogId, otherMeritLogId);
     }
 
     @Test
@@ -79,7 +100,8 @@ class MeritLogServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<MeritLog> meritLogPage = meritLogService.findAllByMemberId(PageRequest.of(0, 10),
+      Page<MeritLog> meritLogPage = meritLogService.findAllByMemberId(
+          PageRequest.of(0, 10, Sort.Direction.fromString("DESC"), "MeritType.merit"),
           giver.getId());
 
       assertThat(meritLogPage
@@ -89,4 +111,35 @@ class MeritLogServiceTest extends IntegrationTest {
     }
   }
 
+  @Nested
+  @DisplayName("상벌점 내역 삭제 테스트")
+  class DeleteMeritLogTest {
+
+    MeritLog meritLog, otherMeritLog;
+
+    @BeforeEach
+    void setUp() {
+      meritLog = meritLogTestHelper.generate();
+      otherMeritLog = meritLogTestHelper.generate();
+    }
+
+    @Test
+    @DisplayName("상벌점 내역 삭제를 성공해야 한다.")
+    public void 상벌점_내역_삭제를_성공해야_한다() {
+      em.flush();
+      em.clear();
+
+      meritLogService.deleteMeritLog(otherMeritLog.getId());
+
+      em.flush();
+      em.clear();
+
+      List<MeritLog> meritLogs = meritLogRepository.findAll();
+
+      assertThat(meritLogs.stream()
+          .map(MeritLog::getId)
+          .toList())
+          .containsExactly(meritLog.getId());
+    }
+  }
 }

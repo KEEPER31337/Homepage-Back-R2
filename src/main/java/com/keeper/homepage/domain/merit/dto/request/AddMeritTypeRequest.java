@@ -19,13 +19,17 @@ public class AddMeritTypeRequest {
   @NotNull(message = "상벌점 점수를 입력해주세요.")
   private Integer score;
 
-  @NotEmpty(message = "상벌점 타입에 대해서 입력해주세요.")
+  @NotEmpty(message = "상벌점 사유에 대해서 입력해주세요.")
   private String reason;
+
+  @NotNull(message = "상벌점 타입에 대해서 입력해주세요.")
+  private Boolean isMerit;
 
   public AddMeritTypeRequest from(MeritType meritType) {
     return AddMeritTypeRequest.builder()
         .score(meritType.getMerit())
         .reason(meritType.getDetail())
+        .isMerit(meritType.getIsMerit())
         .build();
   }
 

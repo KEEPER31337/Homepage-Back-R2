@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
+import com.keeper.homepage.domain.merit.dto.request.SearchMeritLogListRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse;
 import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
@@ -13,14 +14,19 @@ import com.keeper.homepage.domain.merit.dto.response.SearchMemberMeritLogRespons
 import com.keeper.homepage.domain.merit.dto.response.SearchMeritLogListResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequestMapping("/merits")
 @RequiredArgsConstructor
@@ -40,24 +47,37 @@ public class MeritController {
   private final MeritLogService meritLogService;
   private final MeritLogRepository meritLogRepository;
 
+  // 1. SearchMeritLogListResponse 수정 -> is_merit 컬럼 추가 -> 0
+  // 2. SearchMemberMeritLogResponse 수정 -> is_merit 컬럼 추가 -> 0
+  // 3. MeritTypeResponse 수정 -> is_merit 컬럼 추가 -> 0
+  // 4. AddMeritTypeRequest 수정 -> is_merit 컬럼 추가 -> 0
+  // 5. meritTypeService.addMeritType 수정 -> is_merit 컬럼도 DB에 밀어넣기 -> 0
+  // 6. UpdateMeritTypeRequest 수정 -> is_merit 컬럼 추가 -> 0
+  // 7. meritTypeService.updateMeritType 수정 -> is_merit 컬럼도 수정 ->
+
   @GetMapping
   public ResponseEntity<Page<SearchMeritLogListResponse>> searchMeritLogList(
+      @RequestBody @Valid SearchMeritLogListRequest request,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity
-        .ok(meritLogService.findAll(PageRequest.of(page, size))
+        .ok(meritLogService.findAllByMeritType(PageRequest.of(page, size), request.getMeritType())
             .map(SearchMeritLogListResponse::from));
   }
 
   @GetMapping("/members/{memberId}")
   public ResponseEntity<Page<SearchMemberMeritLogResponse>> findMeritLogByMemberId(
       @PathVariable long memberId,
+      @RequestParam(defaultValue = "DESC")
+      @Pattern(regexp = "^(ASC|DESC)$", message = "올바른 정렬 타입을 입력해주세요.") String sort,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity.ok(
-        meritLogService.findAllByMemberId(PageRequest.of(page, size), memberId)
+        meritLogService.findAllByMemberId(
+                PageRequest.of(page, size,
+                    Direction.fromString(sort), "MeritType.merit"), memberId)
             .map(SearchMemberMeritLogResponse::from));
   }
 
@@ -84,7 +104,7 @@ public class MeritController {
   public ResponseEntity<Void> registerMeritType(
       @RequestBody @Valid AddMeritTypeRequest request
   ) {
-    meritTypeService.addMeritType(request.getScore(), request.getReason());
+    meritTypeService.addMeritType(request.getScore(), request.getReason(), request.getIsMerit());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -95,7 +115,8 @@ public class MeritController {
     meritTypeService.updateMeritType(
         meritTypeId,
         request.getScore(),
-        request.getReason());
+        request.getReason(),
+        request.getIsMerit());
     return ResponseEntity.status(HttpStatus.CREATED)
         .location(URI.create("/merits/types/" + meritTypeId))
         .build();
@@ -107,6 +128,12 @@ public class MeritController {
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity.ok(meritLogRepository.findAllTotalMeritLogs(PageRequest.of(page, size)));
+  }
+
+  @DeleteMapping("/{meritLogId}")
+  public ResponseEntity<Void> deleteMeritLog(@PathVariable long meritLogId) {
+    meritLogService.deleteMeritLog(meritLogId);
+    return ResponseEntity.noContent().build();
   }
 
 }

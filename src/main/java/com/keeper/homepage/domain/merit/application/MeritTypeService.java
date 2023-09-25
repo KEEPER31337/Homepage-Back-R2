@@ -6,6 +6,7 @@ import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
 import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,12 +21,12 @@ public class MeritTypeService {
   private final MeritTypeRepository meritTypeRepository;
 
   @Transactional
-  public Long addMeritType(int score, String reason) {
+  public Long addMeritType(int score, String reason, boolean isMerit) {
     checkDuplicateMeritTypeDetail(reason);
-
     return meritTypeRepository.save(MeritType.builder()
         .merit(score)
         .detail(reason)
+        .isMerit(isMerit)
         .build()).getId();
   }
 
@@ -41,10 +42,20 @@ public class MeritTypeService {
   }
 
   @Transactional
-  public void updateMeritType(long meritTypeId, int score, String reason) {
-    checkDuplicateMeritTypeDetail(reason);
+  public void updateMeritType(long meritTypeId, int score, String reason, boolean isMerit) {
     MeritType meritType = meritTypeRepository.findById(meritTypeId)
         .orElseThrow(() -> new BusinessException(meritTypeId, "meritType", MERIT_TYPE_NOT_FOUND));
-    meritType.update(score, reason);
+    checkDuplicateMeritTypeDetail(reason, meritType.getId());
+    meritType.update(score, reason, isMerit);
+  }
+
+  private void checkDuplicateMeritTypeDetail(String reason, long meritTypeId) {
+    meritTypeRepository.findByDetail(reason)
+        .ifPresent(meritType -> {
+          if (meritType.getId() != meritTypeId) {
+            throw new BusinessException(reason, "Detail", MERIT_TYPE_DETAIL_DUPLICATE);
+          }
+        });
   }
 }
+

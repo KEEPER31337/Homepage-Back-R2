@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.merit.application;
 
 
+import static com.keeper.homepage.global.error.ErrorCode.MERIT_LOG_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.MERIT_TYPE_NOT_FOUND;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
@@ -69,8 +70,12 @@ public class MeritLogService {
         .build());
   }
 
-  public Page<MeritLog> findAll(Pageable pageable) {
-    return meritLogRepository.findAll(pageable);
+  public Page<MeritLog> findAllByMeritType(Pageable pageable, String meritType) {
+    return switch (meritType) {
+      case "MERIT" -> meritLogRepository.findMeritLogs(pageable);
+      case "DEMERIT" -> meritLogRepository.findDeMeritLogs(pageable);
+      default -> meritLogRepository.findAll(pageable);
+    };
   }
 
   public Page<MeritLog> findAllByMemberId(Pageable pageable, long memberId) {
@@ -78,4 +83,11 @@ public class MeritLogService {
     return meritLogRepository.findAllByMemberId(pageable, findMemberId);
   }
 
+  @Transactional
+  public void deleteMeritLog(long meritLogId) {
+    meritLogRepository.findById(meritLogId)
+        .orElseThrow(() -> new BusinessException(meritLogId, "meritLogId", MERIT_LOG_NOT_FOUND));
+
+    meritLogRepository.deleteById(meritLogId);
+  }
 }

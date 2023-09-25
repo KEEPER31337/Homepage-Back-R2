@@ -20,10 +20,14 @@ public class UpdateMeritTypeRequest {
   @NotEmpty(message = "변경할 사유에 대해서 입력해주세요.")
   private String reason;
 
+  @NotNull(message = "변경할 상벌점 타입에 대해서 입력해주세요.")
+  private Boolean isMerit;
+
   public UpdateMeritTypeRequest toEntity() {
     return UpdateMeritTypeRequest.builder()
         .score(score)
         .reason(reason)
+        .isMerit(isMerit)
         .build();
   }
 
