@@ -20,6 +20,6 @@ public interface ElectionRepository extends JpaRepository<Election, Long> {
   @Query("UPDATE Election e "
       + "SET e.member = :virtualMember "
       + "WHERE e.member = :member")
-  void updateMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
 }

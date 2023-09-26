@@ -21,6 +21,6 @@ public interface CtfTeamRepository extends JpaRepository<CtfTeam, Long> {
   @Query("UPDATE CtfTeam c "
       + "SET c.creator = :virtualMember "
       + "WHERE c.creator = :member")
-  void updateCreator(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
 }

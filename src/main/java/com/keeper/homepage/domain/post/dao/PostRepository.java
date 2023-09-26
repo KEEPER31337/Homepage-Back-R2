@@ -152,7 +152,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("UPDATE Post p "
       + "SET p.member = :virtualMember "
       + "WHERE p.member = :member AND p.isTemp = false ")
-  void updateMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
   void deleteAllByMemberAndIsTempTrue(Member member);
 }

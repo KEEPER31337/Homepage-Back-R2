@@ -48,14 +48,14 @@ public class MemberDeleteService {
 
   public void delete(Member member) {
     Member virtualMember = getVirtualMember();
-    postRepository.updateMember(member, virtualMember);
-    commentRepository.updateMember(member, virtualMember);
-    studyRepository.updateMember(member, virtualMember);
-    seminarRepository.updateStarter(member, virtualMember);
-    ctfChallengeRepository.updateCreator(member, virtualMember);
-    ctfTeamRepository.updateCreator(member, virtualMember);
-    ctfContestRepository.updateCreator(member, virtualMember);
-    electionRepository.updateMember(member, virtualMember);
+    postRepository.updateVirtualMember(member, virtualMember);
+    commentRepository.updateVirtualMember(member, virtualMember);
+    studyRepository.updateVirtualMember(member, virtualMember);
+    seminarRepository.updateVirtualMember(member, virtualMember);
+    ctfChallengeRepository.updateVirtualMember(member, virtualMember);
+    ctfTeamRepository.updateVirtualMember(member, virtualMember);
+    ctfContestRepository.updateVirtualMember(member, virtualMember);
+    electionRepository.updateVirtualMember(member, virtualMember);
 
     gameRepository.deleteAllByMember(member);
     postLikeRepository.deleteAllByMember(member);

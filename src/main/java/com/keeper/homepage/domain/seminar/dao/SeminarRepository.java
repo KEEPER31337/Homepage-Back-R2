@@ -49,6 +49,6 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
   @Query("UPDATE Seminar s "
       + "SET s.starter = :virtualMember "
       + "WHERE s.starter = :member")
-  void updateStarter(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
 }

@@ -16,6 +16,6 @@ public interface StudyRepository extends JpaRepository<Study, Long> {
   @Query("UPDATE Study s "
       + "SET s.headMember = :virtualMember "
       + "WHERE s.headMember = :member")
-  void updateMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
 }
