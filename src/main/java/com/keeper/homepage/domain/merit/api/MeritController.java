@@ -47,22 +47,15 @@ public class MeritController {
   private final MeritLogService meritLogService;
   private final MeritLogRepository meritLogRepository;
 
-  // 1. SearchMeritLogListResponse 수정 -> is_merit 컬럼 추가 -> 0
-  // 2. SearchMemberMeritLogResponse 수정 -> is_merit 컬럼 추가 -> 0
-  // 3. MeritTypeResponse 수정 -> is_merit 컬럼 추가 -> 0
-  // 4. AddMeritTypeRequest 수정 -> is_merit 컬럼 추가 -> 0
-  // 5. meritTypeService.addMeritType 수정 -> is_merit 컬럼도 DB에 밀어넣기 -> 0
-  // 6. UpdateMeritTypeRequest 수정 -> is_merit 컬럼 추가 -> 0
-  // 7. meritTypeService.updateMeritType 수정 -> is_merit 컬럼도 수정 ->
-
   @GetMapping
   public ResponseEntity<Page<SearchMeritLogListResponse>> searchMeritLogList(
-      @RequestBody @Valid SearchMeritLogListRequest request,
+      @RequestParam(defaultValue = "ALL")
+      @Pattern(regexp = "^(MERIT|DEMERIT|ALL)$", message = "조회 타입을 올바르게 입력해주세요.") String meritType,
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity
-        .ok(meritLogService.findAllByMeritType(PageRequest.of(page, size), request.getMeritType())
+        .ok(meritLogService.findAllByMeritType(PageRequest.of(page, size), meritType)
             .map(SearchMeritLogListResponse::from));
   }
 

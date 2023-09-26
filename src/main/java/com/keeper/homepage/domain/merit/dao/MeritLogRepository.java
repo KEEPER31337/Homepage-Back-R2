@@ -25,9 +25,9 @@ public interface MeritLogRepository extends JpaRepository<MeritLog, Long> {
           "FROM MeritLog m GROUP BY m.memberId, m.memberRealName, m.memberGeneration")
   Page<MeritLogsGroupByMemberResponse> findAllTotalMeritLogs(Pageable pageable);
 
-  @Query("SELECT m FROM MeritLog m WHERE m.meritType.merit > 0")
+  @Query("SELECT m FROM MeritLog m WHERE m.meritType.isMerit = true")
   Page<MeritLog> findMeritLogs(Pageable pageable);
 
-  @Query("SELECT m FROM MeritLog m WHERE m.meritType.merit < 0")
+  @Query("SELECT m FROM MeritLog m WHERE m.meritType.isMerit = false")
   Page<MeritLog> findDeMeritLogs(Pageable pageable);
 }
