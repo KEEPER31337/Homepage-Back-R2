@@ -8,6 +8,7 @@ import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class ValidSeminarFindService {
   private final SeminarRepository seminarRepository;
 
   public List<SeminarResponse> findAll() {
-    return seminarRepository.findAllByIdIsNot(VIRTUAL_SEMINAR_ID).stream()
+    return seminarRepository.findAllByIdIsNot(VIRTUAL_SEMINAR_ID, Sort.by(Sort.Direction.DESC, "openTime")).stream()
         .map(SeminarResponse::from)
         .toList();
   }

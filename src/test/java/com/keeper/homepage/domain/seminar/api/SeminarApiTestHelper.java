@@ -21,13 +21,13 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class SeminarApiTestHelper extends IntegrationTest {
 
-  ResultActions createSeminarUsingApi(String token) throws Exception {
-    return mockMvc.perform(post("/seminars?openDate=" + LocalDate.now())
+  ResultActions createSeminarUsingApi(String token, LocalDate openDate) throws Exception {
+    return mockMvc.perform(post("/seminars?openDate=" + openDate)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
-  Long createSeminarAndGetId(String adminToken) throws Exception {
-    MvcResult mvcResult = createSeminarUsingApi(adminToken)
+  Long createSeminarAndGetId(String adminToken, LocalDate openDate) throws Exception {
+    MvcResult mvcResult = createSeminarUsingApi(adminToken, openDate)
         .andDo(print())
         .andExpect(status().isCreated())
         .andReturn();

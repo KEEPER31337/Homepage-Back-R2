@@ -75,7 +75,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_success_attendanceSeminar() throws Exception {
       String securedValue = getSecuredValue(SeminarAttendanceController.class, "attendanceSeminar");
 
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -112,7 +112,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("세미나 중복 출석을 실패한다.")
     public void should_fail_attendanceSeminarDuplicate() throws Exception {
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -135,7 +135,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_fail_invalidInputValue(String attendanceCode) throws Exception {
       String strJson = """
           {"attendanceCode":%s}""";
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       attendanceSeminarUsingApi(adminToken, seminarId, strJson.formatted(attendanceCode)).andExpect(
@@ -200,7 +200,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_success_when_changeSeminarAttendanceStatus() throws Exception {
       String securedValue = getSecuredValue(SeminarAttendanceController.class, "changeAttendanceStatus");
 
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -240,7 +240,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_success_when_emptyExcuse(String excuse) throws Exception {
       String strJson = """
           {"excuse":%s, "statusType":"LATENESS"}""";
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -260,7 +260,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_fail_when_invalidValue(String statusType) throws Exception {
       String strJson = """
           {"excuse":"", "statusType": %s}""";
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
