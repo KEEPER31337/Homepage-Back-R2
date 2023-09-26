@@ -520,7 +520,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       String securedValue = getSecuredValue(MemberController.class, "deleteMember");
       DeleteMemberRequest request = DeleteMemberRequest.from("testPassword");
 
-      mockMvc.perform(patch("/members")
+      mockMvc.perform(delete("/members")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
               .contentType(MediaType.APPLICATION_JSON))
@@ -540,7 +540,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     public void 비밀번호가_틀릴_시_탈퇴에_실패한다() throws Exception {
       DeleteMemberRequest request = DeleteMemberRequest.from("falsePassword");
 
-      mockMvc.perform(patch("/members")
+      mockMvc.perform(delete("/members")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
               .contentType(MediaType.APPLICATION_JSON))
