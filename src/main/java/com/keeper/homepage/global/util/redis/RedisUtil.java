@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -47,8 +46,15 @@ public class RedisUtil {
 
   public Long increaseAndGetWithExpire(String key, long durationMillis) {
     ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-    redisTemplate.expire(key, durationMillis, TimeUnit.SECONDS);
-    return valueOperations.increment(key);
+    Duration expireDuration = Duration.ofMillis(durationMillis);
+
+    long incrementedValue = valueOperations.increment(key);
+    try {
+      valueOperations.set(key, objectMapper.writeValueAsString(incrementedValue), expireDuration);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+    return incrementedValue;
   }
 
   public static long toMidNight() {
