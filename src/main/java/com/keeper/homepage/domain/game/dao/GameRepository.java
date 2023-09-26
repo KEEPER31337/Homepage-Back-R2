@@ -12,4 +12,6 @@ public interface GameRepository extends JpaRepository<Game, Long> {
   Optional<Game> findByMemberAndPlayDate(Member member, LocalDate playDate);
 
   List<Game> findAllByPlayDate(LocalDate playDate);
+
+  void deleteAllByMember(Member member);
 }

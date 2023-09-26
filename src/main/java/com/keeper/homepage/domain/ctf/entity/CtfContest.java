@@ -71,4 +71,8 @@ public class CtfContest extends BaseEntity {
   public void close() {
     this.isJoinable = false;
   }
+
+  public void changeCreator(Member member) {
+    this.creator = member;
+  }
 }

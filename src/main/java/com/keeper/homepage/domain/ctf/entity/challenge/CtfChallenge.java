@@ -124,4 +124,8 @@ public class CtfChallenge extends BaseEntity {
     this.ctfDynamicChallengeInfo = ctfDynamicChallengeInfo;
     ctfDynamicChallengeInfo.setCtfChallenge(this);
   }
+
+  public void changeCreator(Member member) {
+    this.creator = member;
+  }
 }

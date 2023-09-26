@@ -5,6 +5,7 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_BOOK_NOT_EMPTY;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_TYPE_NOT_FOUND;
 
+import com.keeper.homepage.domain.member.application.convenience.MemberDeleteService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
@@ -31,6 +32,8 @@ public class MemberService {
   private final MemberFindService memberFindService;
   private final MemberProfileService memberProfileService;
   private final MemberTypeRepository memberTypeRepository;
+  private final MemberDeleteService memberDeleteService;
+
 
   @Transactional
   public void changePassword(Member me, String newPassword) {
@@ -88,7 +91,8 @@ public class MemberService {
   public void deleteMember(Member member, String rawPassword) {
     memberProfileService.checkMemberPassword(member, rawPassword);
     checkBorrowedBook(member);
-    // TODO: 회원 delete
+
+    memberDeleteService.delete(member);
   }
 
   private void checkBorrowedBook(Member member) {

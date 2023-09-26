@@ -81,4 +81,8 @@ public class CtfTeam extends BaseEntity {
     this.name = name;
     this.description = description;
   }
+
+  public void changeCreator(Member member) {
+    this.creator = member;
+  }
 }

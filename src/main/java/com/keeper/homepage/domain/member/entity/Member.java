@@ -8,15 +8,19 @@ import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_ST
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static jakarta.persistence.CascadeType.ALL;
-import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
 import static java.time.LocalDate.now;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
+import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallenge;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.ctf.entity.team.CtfTeamHasMember;
+import com.keeper.homepage.domain.election.entity.Election;
+import com.keeper.homepage.domain.election.entity.ElectionCandidate;
+import com.keeper.homepage.domain.election.entity.ElectionVoter;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
@@ -35,16 +39,17 @@ import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
+import com.keeper.homepage.domain.survey.entity.SurveyMemberReply;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -65,13 +70,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Where;
 
 @DynamicInsert
 @DynamicUpdate
 @Getter
 @Entity
-@Where(clause = "is_deleted = false")
 @EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "member")
@@ -104,18 +107,18 @@ public class Member {
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "member_type_id")
   private MemberType memberType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "member_rank_id")
   private MemberRank memberRank;
 
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<Attendance> memberAttendance = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", cascade = PERSIST)
+  @OneToMany(mappedBy = "member", cascade = ALL)
   private final List<BookBorrowInfo> bookBorrowInfos = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -124,7 +127,7 @@ public class Member {
   @OneToMany(mappedBy = "follower", cascade = ALL, orphanRemoval = true)
   private final Set<Friend> follower = new HashSet<>();
 
-  @OneToMany(mappedBy = "followee")
+  @OneToMany(mappedBy = "followee", cascade = REMOVE)
   private final Set<Friend> followee = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -146,9 +149,30 @@ public class Member {
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @OneToMany(mappedBy = "member")
+  private final List<Post> posts = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member")
   private final List<Comment> comments = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", cascade = PERSIST)
+  @OneToMany(mappedBy = "headMember")
+  private final List<Study> studies = new ArrayList<>();
+
+  @OneToMany(mappedBy = "starter")
+  private final List<Seminar> seminars = new ArrayList<>();
+
+  @OneToMany(mappedBy = "creator")
+  private final List<CtfChallenge> ctfChallenges = new ArrayList<>();
+
+  @OneToMany(mappedBy = "creator")
+  private final List<CtfTeam> ctfTeams = new ArrayList<>();
+
+  @OneToMany(mappedBy = "creator")
+  private final List<CtfContest> ctfContests = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member")
+  private final List<Election> elections = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = ALL)
   private final List<PointLog> pointLogs = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
@@ -156,6 +180,15 @@ public class Member {
 
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<SeminarAttendance> seminarAttendances = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = REMOVE)
+  private final List<SurveyMemberReply> surveyMemberReplies = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = REMOVE)
+  private final List<ElectionCandidate> electionCandidates = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", cascade = REMOVE)
+  private final List<ElectionVoter> electionVoters = new ArrayList<>();
 
   @Builder
   private Member(Profile profile, Integer point, Integer level, Integer totalAttendance) {

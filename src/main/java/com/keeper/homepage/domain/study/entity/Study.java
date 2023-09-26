@@ -122,4 +122,8 @@ public class Study extends BaseEntity {
     this.season = newStudy.getSeason();
     this.link = newStudy.getLink();
   }
+
+  public void changeHeadMember(Member member) {
+    this.headMember = member;
+  }
 }
