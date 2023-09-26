@@ -251,8 +251,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
 
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
-              .contentType(MediaType.APPLICATION_JSON))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-meritLog",
@@ -269,8 +268,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
-              .contentType(MediaType.APPLICATION_JSON))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
