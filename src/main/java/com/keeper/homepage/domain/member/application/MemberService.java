@@ -100,4 +100,14 @@ public class MemberService {
       throw new BusinessException(member.getBookBorrowInfos(), "memberBorrowInfos", MEMBER_BOOK_NOT_EMPTY);
     }
   }
+
+  @Transactional
+  public void deleteMemberByAdmin(List<Long> memberIds) {
+    for (long memberId : memberIds) {
+      Member member = memberFindService.findById(memberId);
+      checkBorrowedBook(member);
+
+      memberDeleteService.delete(member);
+    }
+  }
 }

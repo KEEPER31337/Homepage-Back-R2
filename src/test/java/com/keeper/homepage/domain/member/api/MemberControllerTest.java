@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.api;
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_INVALID;
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_INVALID;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
@@ -11,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
+import com.keeper.homepage.domain.member.dto.request.AdminDeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.request.DeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
@@ -79,7 +82,7 @@ class MemberControllerTest extends MemberApiTestHelper {
 
       mockMvc.perform(patch("/members/change-password")
               .cookie(tokenCookies)
-              .contentType(MediaType.APPLICATION_JSON)
+              .contentType(APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isNoContent())
           .andExpect(header().string(HttpHeaders.LOCATION, "/members/me"))
@@ -115,7 +118,7 @@ class MemberControllerTest extends MemberApiTestHelper {
 
       mockMvc.perform(get("/members/real-name")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(document("get-members-by-real-name",
               requestCookies(
@@ -334,7 +337,7 @@ class MemberControllerTest extends MemberApiTestHelper {
 
       mockMvc.perform(get("/members/{memberId}/profile", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(print())
           .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
@@ -358,15 +361,17 @@ class MemberControllerTest extends MemberApiTestHelper {
   @DisplayName("회원 타입 변경 테스트")
   class UpdateMemberTypeTest {
 
-    private Member member, otherMember;
+    private Member member, otherMember, admin;
     private Long typeId;
-    private String memberToken;
+    private String memberToken, adminToken;
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
+      admin = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원, ROLE_회장);
       typeId = 3L;
     }
 
@@ -381,9 +386,9 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       mockMvc.perform(patch("/members/types/{typeId}", typeId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("update-member-type",
               requestCookies(
@@ -410,7 +415,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       mockMvc.perform(patch("/members/types/{typeId}", typeId)
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andDo(print())
           .andExpect(status().isBadRequest());
     }
@@ -427,7 +432,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       mockMvc.perform(patch("/members/types/{typeId}", typeId)
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isBadRequest());
     }
   }
@@ -456,7 +461,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       mockMvc.perform(post("/members/email-auth")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(document("member-email-auth",
               requestCookies(
@@ -484,7 +489,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       mockMvc.perform(patch("/members/email")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("update-member-emailAddress",
               requestCookies(
@@ -503,8 +508,8 @@ class MemberControllerTest extends MemberApiTestHelper {
   @DisplayName("회원 삭제 테스트")
   class DeleteMemberTest {
 
-    private Member member;
-    private String memberToken;
+    private Member member, admin;
+    private String memberToken, adminToken;
 
     @BeforeEach
     void setUp() {
@@ -512,6 +517,8 @@ class MemberControllerTest extends MemberApiTestHelper {
           .password(Password.from("testPassword"))
           .build();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      admin = memberTestHelper.builder().build();
+      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원, ROLE_회장);
     }
 
     @Test
@@ -523,7 +530,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       mockMvc.perform(delete("/members")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("delete-member",
               requestCookies(
@@ -536,6 +543,32 @@ class MemberControllerTest extends MemberApiTestHelper {
     }
 
     @Test
+    @DisplayName("관리자 권한으로 회원 탈퇴는 성공한다.")
+    public void 관리자_권한으로_회원_탈퇴는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(MemberController.class, "deleteMemberByAdmin");
+
+      List<Long> memberSet = List.of(member.getId());
+
+      AdminDeleteMemberRequest request = AdminDeleteMemberRequest.builder()
+          .memberIds(memberSet)
+          .build();
+
+      mockMvc.perform(delete("/members/admin")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+              .content(asJsonString(request))
+              .contentType(APPLICATION_JSON))
+          .andExpect(status().isNoContent())
+          .andDo(document("admin-delete-member",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              ),
+              requestFields(
+                  fieldWithPath("memberIds").description("하나 이상의 회원 ID")
+              )));
+    }
+
+    @Test
     @DisplayName("비밀번호가 틀릴 시 탈퇴에 실패한다.")
     public void 비밀번호가_틀릴_시_탈퇴에_실패한다() throws Exception {
       DeleteMemberRequest request = DeleteMemberRequest.from("falsePassword");
@@ -543,7 +576,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       mockMvc.perform(delete("/members")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .content(asJsonString(request))
-              .contentType(MediaType.APPLICATION_JSON))
+              .contentType(APPLICATION_JSON))
           .andExpect(status().isBadRequest());
     }
   }
