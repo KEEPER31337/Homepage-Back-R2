@@ -331,6 +331,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           fieldWithPath("memberName").description("회원 이름"),
           fieldWithPath("generation").description("회원 기수"),
           fieldWithPath("attendances[]").description("회원 출석 정보 리스트"),
+          fieldWithPath("attendances[].seminarId").description("세미나 ID"),
           fieldWithPath("attendances[].attendanceId").description("세미나 출석 ID"),
           fieldWithPath("attendances[].attendDate").description("세미나 출석 날짜"),
           fieldWithPath("attendances[].attendanceStatus").description("세미나 출석 상태"),
