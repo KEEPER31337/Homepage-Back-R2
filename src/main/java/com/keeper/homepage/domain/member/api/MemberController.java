@@ -1,7 +1,10 @@
 package com.keeper.homepage.domain.member.api;
 
+import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
+
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
+import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
 import com.keeper.homepage.domain.member.dto.request.AdminDeleteMemberRequest;
@@ -120,9 +123,10 @@ public class MemberController {
 
   @GetMapping("/{memberId}/profile")
   public ResponseEntity<MemberProfileResponse> getMemberProfile(
+      @LoginMember Member me,
       @PathVariable @PositiveOrZero long memberId
   ) {
-    return ResponseEntity.ok(memberService.getMemberProfile(memberId));
+    return ResponseEntity.ok(memberService.getMemberProfile(me, memberId));
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
@@ -136,12 +140,11 @@ public class MemberController {
   }
 
   @PostMapping("/email-auth")
-  public ResponseEntity<String> emailAuth(
+  public ResponseEntity<EmailAuthResponse> emailAuth(
       @RequestBody @Valid EmailAuthRequest request
   ) {
-    memberProfileService.checkDuplicateEmailAddress(request.getEmail());
     memberProfileService.sendEmailChangeAuthCode(request.getEmail());
-    return ResponseEntity.ok("이메일 인증 번호를 보냈습니다.");
+    return ResponseEntity.ok(EmailAuthResponse.from(EMAIL_EXPIRED_SECONDS));
   }
 
   @PatchMapping("/email")

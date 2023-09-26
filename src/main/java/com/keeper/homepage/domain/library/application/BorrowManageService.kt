@@ -87,7 +87,7 @@ class BorrowManageService(
         searchType: LogType?
     ): Page<BorrowLogResponse> {
         return when (searchType) {
-            null -> borrowLogRepository.findAll(search, pageable)
+            null, LogType.전체 -> borrowLogRepository.findAll(search, pageable)
             LogType.대출중,
             LogType.반납대기,
             LogType.반납완료,

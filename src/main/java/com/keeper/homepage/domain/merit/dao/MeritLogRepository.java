@@ -18,9 +18,16 @@ public interface MeritLogRepository extends JpaRepository<MeritLog, Long> {
 
   long countByMemberId(long memberId);
 
-  @Query("SELECT NEW com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse(m.memberId, m.memberRealName, m.memberGeneration, " +
-      "CAST(SUM(CASE WHEN m.meritType.merit > 0 THEN m.meritType.merit ELSE 0 END) AS INTEGER), " +
-      "CAST(SUM(CASE WHEN m.meritType.merit < 0 THEN m.meritType.merit ELSE 0 END) AS INTEGER)) " +
-      "FROM MeritLog m GROUP BY m.memberId, m.memberRealName, m.memberGeneration")
+  @Query(
+      "SELECT NEW com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse(m.memberId, m.memberRealName, m.memberGeneration, " +
+          "CAST(SUM(CASE WHEN m.meritType.isMerit = true THEN m.meritType.merit ELSE 0 END) AS INTEGER), " +
+          "CAST(SUM(CASE WHEN m.meritType.isMerit = false THEN m.meritType.merit ELSE 0 END) AS INTEGER)) " +
+          "FROM MeritLog m GROUP BY m.memberId, m.memberRealName, m.memberGeneration")
   Page<MeritLogsGroupByMemberResponse> findAllTotalMeritLogs(Pageable pageable);
+
+  @Query("SELECT m FROM MeritLog m WHERE m.meritType.merit > 0")
+  Page<MeritLog> findMeritLogs(Pageable pageable);
+
+  @Query("SELECT m FROM MeritLog m WHERE m.meritType.merit < 0")
+  Page<MeritLog> findDeMeritLogs(Pageable pageable);
 }

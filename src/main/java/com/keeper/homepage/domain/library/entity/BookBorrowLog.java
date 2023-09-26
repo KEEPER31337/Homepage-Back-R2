@@ -141,6 +141,6 @@ public class BookBorrowLog extends BaseEntity {
   }
 
   public enum LogType {
-    대출중, 반납대기, 반납완료, 대출반려,
+    대출중, 반납대기, 반납완료, 대출반려, 전체,
   }
 }

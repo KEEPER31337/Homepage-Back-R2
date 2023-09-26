@@ -15,7 +15,8 @@ public class MeritApiTestHelper extends IntegrationTest {
         fieldWithPath("awarderGeneration").description("수상자의 학번"),
         fieldWithPath("score").description("상벌점 점수"),
         fieldWithPath("meritTypeId").description("상벌점 타입의 ID"),
-        fieldWithPath("reason").description("상벌점의 사유")
+        fieldWithPath("reason").description("상벌점의 사유"),
+        fieldWithPath("isMerit").description("상벌점 타입")
     };
   }
 
@@ -26,7 +27,8 @@ public class MeritApiTestHelper extends IntegrationTest {
         fieldWithPath("giveTime").description("상벌점 로그의 생성시간"),
         fieldWithPath("score").description("상벌점 점수"),
         fieldWithPath("meritTypeId").description("상벌점 타입의 ID"),
-        fieldWithPath("reason").description("상벌점의 사유")
+        fieldWithPath("reason").description("상벌점의 사유"),
+        fieldWithPath("isMerit").description("상벌점 타입")
     };
   }
 
@@ -35,7 +37,8 @@ public class MeritApiTestHelper extends IntegrationTest {
     return new FieldDescriptor[]{
         fieldWithPath("id").description("상벌점 타입의 ID"),
         fieldWithPath("score").description("상벌점 점수"),
-        fieldWithPath("detail").description("상벌점의 사유")
+        fieldWithPath("detail").description("상벌점의 사유"),
+        fieldWithPath("isMerit").description("상벌점 타입")
     };
   }
 

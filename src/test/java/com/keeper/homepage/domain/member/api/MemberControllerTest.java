@@ -133,7 +133,9 @@ class MemberControllerTest extends MemberApiTestHelper {
               responseFields(
                   fieldWithPath("[].memberId").description("회원 ID"),
                   fieldWithPath("[].realName").description("회원 실명"),
-                  fieldWithPath("[].generation").description("회원 기수")
+                  fieldWithPath("[].generation").description("회원 기수"),
+                  fieldWithPath("[].memberType").description("회원 타입"),
+                  fieldWithPath("[].thumbnailPath").description("회원 썸네일 주소")
               )));
     }
   }
@@ -316,20 +318,25 @@ class MemberControllerTest extends MemberApiTestHelper {
   class getMemberProfile {
 
     private Member member, otherMember;
-    private String memberToken;
+    private String memberToken, otherMemberToken;
 
     @BeforeEach
     void setUp() throws IOException {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      otherMemberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, otherMember.getId(), ROLE_회원);
     }
 
     @Test
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
       memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
       memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+
+
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
       em.flush();
@@ -339,7 +346,6 @@ class MemberControllerTest extends MemberApiTestHelper {
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
-          .andDo(print())
           .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
           .andExpect(jsonPath("$.followee[0].name").value("일일"))
           .andDo(document("get-member-profile",
@@ -354,6 +360,24 @@ class MemberControllerTest extends MemberApiTestHelper {
               responseFields(
                   getMemberProfileResponse()
               )));
+    }
+
+    @Test
+    @DisplayName("다른 회원의 프로필을 조회할 때는 학번이 노출되면 안된다.")
+    public void 다른_회원의_프로필_조회할_때는_학번이_노출되면_안된다() throws Exception {
+      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/{memberId}/profile", member.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherMemberToken))
+              .contentType(MediaType.APPLICATION_JSON))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
+          .andExpect(jsonPath("$.followee[0].name").value("일일"))
+          .andExpect(jsonPath("$.studentId").value("default"));
     }
   }
 

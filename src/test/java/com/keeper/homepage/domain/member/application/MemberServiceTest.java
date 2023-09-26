@@ -22,8 +22,12 @@ import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.election.entity.ElectionChartLog;
+import static org.mockito.Mockito.*;
+
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -105,6 +109,43 @@ public class MemberServiceTest extends IntegrationTest {
       assertThat(findMember.getMemberType().getType()).isEqualTo(휴면회원);
       assertThat(findOtherMember.getMemberType().getType()).isEqualTo(휴면회원);
     }
+  }
+
+  @Nested
+  @DisplayName("회원 이메일 변경 테스트")
+  class UpdateEmailTest {
+
+    private Member member;
+    private UpdateMemberEmailAddressRequest request;
+
+    @BeforeEach
+    void setUp() {
+      member = memberTestHelper.builder()
+          .emailAddress(EmailAddress.from("beforeUpdated@gmail.com"))
+          .password(Password.from("truePassword"))
+          .build();
+
+      request = UpdateMemberEmailAddressRequest.builder()
+          .email("Updated@gmail.com")
+          .auth("123456789")
+          .password("truePassword")
+          .build();
+    }
+
+    @Test
+    @DisplayName("회원 이메일 변경을 성공해야 한다.")
+    public void 회원_이메일_변경을_성공해야_한다() {
+      doNothing().when(memberProfileService).checkEmailAuth(any(), any());
+      memberProfileService.updateProfileEmailAddress(member, request.getEmail(),
+          request.getAuth(), request.getPassword());
+
+      em.flush();
+      em.clear();
+
+      Member savedMember = memberFindService.findById(member.getId());
+      assertThat(savedMember.getProfile().getEmailAddress().get()).isEqualTo("Updated@gmail.com");
+    }
+
   }
 
   @Nested

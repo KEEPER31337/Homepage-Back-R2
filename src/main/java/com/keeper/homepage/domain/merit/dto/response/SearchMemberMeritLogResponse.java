@@ -18,6 +18,7 @@ public class SearchMemberMeritLogResponse {
   private LocalDateTime giveTime;
   private int score;
   private long meritTypeId;
+  private Boolean isMerit;
   private String reason;
 
   public static SearchMemberMeritLogResponse from(MeritLog meritLog) {
@@ -26,6 +27,7 @@ public class SearchMemberMeritLogResponse {
         .giveTime(meritLog.getTime())
         .score(meritLog.getMeritType().getMerit())
         .meritTypeId(meritLog.getMeritType().getId())
+        .isMerit(meritLog.getMeritType().getIsMerit())
         .reason(meritLog.getMeritType().getDetail())
         .build();
   }

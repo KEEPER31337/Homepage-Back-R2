@@ -71,10 +71,11 @@ public class MemberService {
     member.unfollow(other);
   }
 
-  public MemberProfileResponse getMemberProfile(long memberId) {
-    return MemberProfileResponse.of(
-        memberFindService.findById(memberId)
-    );
+  public MemberProfileResponse getMemberProfile(Member me, long memberId) {
+    Member member = memberRepository.findMemberProfileWithFetchJoin(memberId)
+        .orElseThrow();
+
+    return MemberProfileResponse.of(member, me);
   }
 
   @Transactional

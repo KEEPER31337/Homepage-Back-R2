@@ -67,16 +67,14 @@ class MemberProfileServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() throws IOException {
-      randomEmail = memberTestHelper.generate()
-          .getProfile()
-          .getEmailAddress()
-          .get();
+      randomEmail = "afterUpdated@gmail.com";
 
       memberProfileService.sendEmailChangeAuthCode(randomEmail);
       data = redisUtil.getData("EMAIL_AUTH_" + randomEmail, String.class)
           .orElseThrow();
 
       member = memberTestHelper.builder()
+          .emailAddress(EmailAddress.from("beforeUpdated@gmail.com"))
           .password(Password.from("truePassword"))
           .build();
 
@@ -87,7 +85,7 @@ class MemberProfileServiceTest extends IntegrationTest {
     @DisplayName("이메일 중복 시 예외를 던져야 한다.")
     public void 이메일_중복_시_예외를_던져야_한다() {
       assertThrows(BusinessException.class,
-          () -> memberProfileService.checkDuplicateEmailAddress(member.getProfile()
+          () -> memberProfileService.sendEmailChangeAuthCode(member.getProfile()
               .getEmailAddress()
               .get()), MEMBER_EMAIL_DUPLICATE.getMessage());
     }
@@ -104,7 +102,11 @@ class MemberProfileServiceTest extends IntegrationTest {
       memberProfileService.updateProfileEmailAddress(member, randomEmail,
           data, "truePassword");
 
-      assertThat(member.getProfile().getEmailAddress()).isEqualTo(EmailAddress.from(randomEmail));
+      em.flush();
+      em.clear();
+
+      Member updatedMember = memberFindService.findById(memberId);
+      assertThat(updatedMember.getProfile().getEmailAddress().get()).isEqualTo(EmailAddress.from(randomEmail).get());
     }
 
     @Test

@@ -6,6 +6,9 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
     defer-datasource-initialization: true
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
 
   servlet:
     multipart:

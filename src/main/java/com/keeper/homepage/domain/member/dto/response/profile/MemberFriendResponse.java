@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.dto.response.profile;
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

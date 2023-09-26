@@ -19,6 +19,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
+import com.keeper.homepage.domain.merit.dto.request.SearchMeritLogListRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
 import io.jsonwebtoken.io.IOException;
@@ -94,6 +96,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
           .score(3)
           .reason("우수기술문서 작성")
+          .isMerit(true)
           .build();
 
       mockMvc.perform(post("/merits/types")
@@ -108,7 +111,8 @@ public class MeritControllerTest extends MeritApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("score").description("상벌점 점수를 입력해주세요."),
-                  fieldWithPath("reason").description("상벌점 사유를 입력해주세요.")
+                  fieldWithPath("reason").description("상벌점 사유를 입력해주세요."),
+                  fieldWithPath("isMerit").description("상벌점 타입을 입력해주세요")
               )));
     }
 
@@ -118,6 +122,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
           .score(3)
           .reason("우수기술문서 작성")
+          .isMerit(true)
           .build();
 
       mockMvc.perform(post("/merits/types")
@@ -133,8 +138,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     void 상벌점_부여_로그_수정을_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "updateMeritType");
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
-          .score(5)
+          .score(-5)
           .reason("거짓 스터디")
+          .isMerit(false)
           .build();
 
       mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())
@@ -149,7 +155,8 @@ public class MeritControllerTest extends MeritApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("score").description("수정할 점수"),
-                  fieldWithPath("reason").description("수정할 사유")
+                  fieldWithPath("reason").description("수정할 사유"),
+                  fieldWithPath("isMerit").description("수정할 상벌점 타입")
               )));
     }
 
@@ -157,8 +164,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("일반회원은 상벌점 타입 수정을 성공할 수 없다.")
     void 일반회원은_상벌점_타입_수정을_성공할_수_없다() throws Exception {
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
-          .score(5)
+          .score(-5)
           .reason("거짓 스터디")
+          .isMerit(false)
           .build();
 
       mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())
@@ -184,7 +192,25 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("회원별 상벌점 목록 조회를 성공해야 한다.")
     void 회원별_상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "findMeritLogByMemberId");
-      meritLogTestHelper.builder().memberId(member.getId()).build();
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(3).build())
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(2).build())
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(-1).build())
+          .build();
+
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(-3).build())
+          .build();
 
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())
@@ -222,9 +248,12 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("상벌점 목록 조회를 성공해야 한다.")
     void 상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
+      SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
 
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-meritLog",
@@ -240,17 +269,18 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @Test
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
+      SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(request)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
 
-
     @Test
     @DisplayName("상벌점 부여 로그 생성을 성공해야 한다.")
     void 상벌점_부여_로그_생성을_성공해야_한다() throws Exception {
-
       String securedValue = getSecuredValue(MeritController.class, "registerMerit");
       GiveMeritPointRequest request = GiveMeritPointRequest.builder()
           .awarderId(member.getId())
@@ -355,4 +385,32 @@ public class MeritControllerTest extends MeritApiTestHelper {
     }
 
   }
+
+  @Nested
+  @DisplayName("상벌점 내역 삭제 테스트")
+  class DeleteMeritLogTest {
+
+    long meritLogId;
+
+    @BeforeEach
+    void setUp() {
+      meritLogId = meritLogTestHelper.generate().getId();
+    }
+
+    @Test
+    @DisplayName("상벌점 내역 삭제를 성공해야 한다.")
+    public void 상벌점_내역_삭제를_성공해야_한다() throws Exception {
+      String securedValue = getSecuredValue(MeritController.class, "deleteMeritLog");
+
+      mockMvc.perform(delete("/merits/{meritLogId}", meritLogId)
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+          .andExpect(status().isNoContent())
+          .andDo(document("delete-merit-log",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName())
+                      .description("ACCESS TOKEN %s".formatted(securedValue))
+              )));
+    }
+  }
+
 }

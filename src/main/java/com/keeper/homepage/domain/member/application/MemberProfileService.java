@@ -61,6 +61,7 @@ public class MemberProfileService {
     }
   }
 
+  @Transactional
   public void updateProfileEmailAddress(Member member, String email,
       String auth, String password) {
     checkMemberPassword(member, password);
@@ -68,20 +69,21 @@ public class MemberProfileService {
     member.getProfile().updateEmailAddress(email);
   }
 
-  public void checkDuplicateEmailAddress(String newEmail) {
+  private void checkDuplicateEmailAddress(String newEmail) {
     memberRepository.findByProfileEmailAddress(EmailAddress.from(newEmail))
         .ifPresent((e) -> {
           throw new BusinessException(newEmail, "newEmail", ErrorCode.MEMBER_EMAIL_DUPLICATE);
         });
   }
 
-  private void checkEmailAuth(String email, String auth) {
+  public void checkEmailAuth(String email, String auth) {
     redisUtil.getData(EMAIL_AUTH_CODE_KEY + email, String.class)
         .map(value -> value.equals(auth))
         .orElseThrow(() -> new BusinessException(auth, "auth", ErrorCode.AUTH_CODE_MISMATCH));
   }
 
   public void sendEmailChangeAuthCode(String email) {
+    checkDuplicateEmailAddress(email);
     String auth = generateRandomAuthCode();
     redisUtil.setDataExpire(EMAIL_AUTH_CODE_KEY + email, auth, AUTH_CODE_EXPIRE_MILLIS);
     mailUtil.sendMail(List.of(email), "KEEPER 이메일 인증 번호입니다.",

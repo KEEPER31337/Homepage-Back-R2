@@ -206,4 +206,8 @@ public class Post extends BaseEntity {
   public void changeWriter(Member member) {
     this.member = member;
   }
+
+  public void deleteThumbnail() {
+    this.thumbnail = null;
+  }
 }
