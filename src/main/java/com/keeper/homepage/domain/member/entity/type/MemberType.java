@@ -12,8 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.util.Arrays;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,7 +58,6 @@ public class MemberType {
     정회원(2),
     휴면회원(3),
     졸업(4),
-    탈퇴(5),
     ;
 
     @Getter

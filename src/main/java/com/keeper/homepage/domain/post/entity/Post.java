@@ -203,6 +203,10 @@ public class Post extends BaseEntity {
     return this.category.getType();
   }
 
+  public void changeWriter(Member member) {
+    this.member = member;
+  }
+
   public void deleteThumbnail() {
     this.thumbnail = null;
   }
