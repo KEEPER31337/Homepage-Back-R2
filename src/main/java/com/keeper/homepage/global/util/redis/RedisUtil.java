@@ -48,7 +48,7 @@ public class RedisUtil {
     ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
     Duration expireDuration = Duration.ofMillis(durationMillis);
 
-    long incrementedValue = valueOperations.increment(key);
+    Long incrementedValue = valueOperations.increment(key);
     try {
       valueOperations.set(key, objectMapper.writeValueAsString(incrementedValue), expireDuration);
     } catch (JsonProcessingException e) {
