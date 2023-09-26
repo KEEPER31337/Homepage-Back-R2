@@ -62,8 +62,8 @@ class MeritLogServiceTest extends IntegrationTest {
       final String DEMERIT_TYPE = "DEMERIT";
       final String ALL_TYPE = "ALL";
 
-      MeritType meritType = meritTypeHelper.builder().merit(3).build();
-      MeritType demeritType = meritTypeHelper.builder().merit(-3).build();
+      MeritType meritType = meritTypeHelper.builder().merit(3).isMerit(true).build();
+      MeritType demeritType = meritTypeHelper.builder().merit(-3).isMerit(false).build();
 
       meritLogId = meritLogTestHelper.builder().meritType(meritType).build().getId();
       otherMeritLogId = meritLogTestHelper.builder().meritType(demeritType).build().getId();

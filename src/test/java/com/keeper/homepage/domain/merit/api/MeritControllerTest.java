@@ -20,6 +20,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -248,12 +249,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("상벌점 목록 조회를 성공해야 한다.")
     void 상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
-      SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
 
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(request)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-meritLog",
@@ -269,13 +267,50 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @Test
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
-      SearchMeritLogListRequest request = SearchMeritLogListRequest.from("ALL");
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(request)))
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("벌점 목록 조회를 성공해야 한다.")
+    void 벌점_목록_조회를_성공해야_한다() throws Exception {
+      meritLogTestHelper.builder()
+              .memberId(member.getId())
+              .meritType(meritTypeHelper.builder().merit(3).isMerit(true).build())
+              .build();
+
+      meritLogTestHelper.builder()
+              .memberId(member.getId())
+              .meritType(meritTypeHelper.builder().merit(-3).isMerit(false).build())
+              .build();
+
+      mockMvc.perform(get("/merits")
+                      .param("meritType", "DEMERIT")
+                      .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.content[0].isMerit").value("false"));
+    }
+
+    @Test
+    @DisplayName("상점 목록 조회를 성공해야 한다.")
+    void 상점_목록_조회를_성공해야_한다() throws Exception {
+      meritLogTestHelper.builder()
+              .memberId(member.getId())
+              .meritType(meritTypeHelper.builder().merit(-3).isMerit(false).build())
+              .build();
+
+      meritLogTestHelper.builder()
+              .memberId(member.getId())
+              .meritType(meritTypeHelper.builder().merit(3).isMerit(true).build())
+              .build();
+
+      mockMvc.perform(get("/merits")
+                      .param("meritType", "MERIT")
+                      .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$.content[0].isMerit").value("true"));
     }
 
     @Test
