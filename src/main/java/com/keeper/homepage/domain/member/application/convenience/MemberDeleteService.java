@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentDislikeRepository;
 import com.keeper.homepage.domain.member.dao.comment.MemberHasCommentLikeRepository;
+import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberReadPostRepository;
@@ -45,6 +46,7 @@ public class MemberDeleteService {
   private final CtfContestRepository ctfContestRepository;
   private final ElectionRepository electionRepository;
   private final GameRepository gameRepository;
+  private final FriendRepository friendRepository;
 
   public void delete(Member member) {
     Member virtualMember = getVirtualMember();
@@ -57,6 +59,8 @@ public class MemberDeleteService {
     ctfContestRepository.updateVirtualMember(member, virtualMember);
     electionRepository.updateVirtualMember(member, virtualMember);
 
+    friendRepository.deleteAllByFollowee(member);
+    friendRepository.deleteAllByFollower(member);
     gameRepository.deleteAllByMember(member);
     postLikeRepository.deleteAllByMember(member);
     postDislikeRepository.deleteAllByMember(member);

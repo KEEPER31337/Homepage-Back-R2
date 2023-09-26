@@ -13,6 +13,8 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_WRONG_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.comment.entity.Comment;
@@ -22,10 +24,8 @@ import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.election.entity.ElectionChartLog;
-import static org.mockito.Mockito.*;
-
-import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.library.entity.Book;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
