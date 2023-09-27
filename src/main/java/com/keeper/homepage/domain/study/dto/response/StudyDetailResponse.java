@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.study.dto.response;
 
 import static lombok.AccessLevel.PRIVATE;
 
-import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.domain.study.entity.StudyHasMember;
 import java.util.List;
@@ -16,7 +15,7 @@ import lombok.Getter;
 public class StudyDetailResponse {
 
   private String information;
-  private List<String> members;
+  private List<StudyMemberResponse> members;
   private List<LinkResponse> links;
 
   public static StudyDetailResponse from(Study study) {
@@ -25,7 +24,7 @@ public class StudyDetailResponse {
         .members(study.getStudyMembers()
             .stream()
             .map(StudyHasMember::getMember)
-            .map(Member::getRealName)
+            .map(StudyMemberResponse::from)
             .toList())
         .links(List.of(LinkResponse.of("Github", study.getGitLink()),
             LinkResponse.of("Notion", study.getNotionLink()),

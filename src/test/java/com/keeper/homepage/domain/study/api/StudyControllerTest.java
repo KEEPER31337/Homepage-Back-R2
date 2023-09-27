@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.study.dto.request.StudyCreateRequest;
 import com.keeper.homepage.domain.study.dto.request.StudyUpdateRequest;
+import com.keeper.homepage.domain.study.entity.Study;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -202,17 +203,24 @@ public class StudyControllerTest extends StudyApiTestHelper {
   @DisplayName("스터디 조회")
   class GetStudy {
 
+    private Study study;
+    private Member member;
+
     @BeforeEach
     void setUp() {
-      studyTestHelper.builder().year(2023).season(1).build();
+      study = studyTestHelper.builder().year(2023).season(1).build();
+      member = memberTestHelper.generate();
     }
 
     @Test
     @DisplayName("스터디 조회는 성공해야 한다.")
     public void 스터디_조회는_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "getStudy");
+      member.join(study);
+      em.flush();
+      em.clear();
 
-      callGetStudyApi(memberToken, studyId)
+      callGetStudyApi(memberToken, study.getId())
           .andExpect(status().isOk())
           .andDo(document("get-study",
               requestCookies(
@@ -224,7 +232,10 @@ public class StudyControllerTest extends StudyApiTestHelper {
               ),
               responseFields(
                   fieldWithPath("information").description("스터디 정보"),
-                  fieldWithPath("members[]").description("스터디원 실명 리스트"),
+                  fieldWithPath("members[]").description("스터디원 리스트"),
+                  fieldWithPath("members[].memberId").description("스터디원 회원 ID"),
+                  fieldWithPath("members[].generation").description("스터디원 회원 기수"),
+                  fieldWithPath("members[].realName").description("스터디원 회원 이름"),
                   fieldWithPath("links[]").description("스터디 링크 리스트"),
                   fieldWithPath("links[].title").description("스터디 링크 제목").optional(),
                   fieldWithPath("links[].content").description("스터디 링크").optional()
