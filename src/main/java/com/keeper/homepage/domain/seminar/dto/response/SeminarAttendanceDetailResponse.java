@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = PACKAGE)
 public class SeminarAttendanceDetailResponse {
 
+  private Long seminarId;
   private Long attendanceId;
   private String attendanceStatus;
   private String excuse;
@@ -26,6 +27,7 @@ public class SeminarAttendanceDetailResponse {
 
   public static SeminarAttendanceDetailResponse from(SeminarAttendance seminarAttendance) {
     return SeminarAttendanceDetailResponse.builder()
+        .seminarId(seminarAttendance.getSeminar().getId())
         .attendanceId(seminarAttendance.getId())
         .attendanceStatus(seminarAttendance.getSeminarAttendanceStatus().getType().toString())
         .excuse(seminarAttendance.getSeminarAttendanceExcuse() != null ?

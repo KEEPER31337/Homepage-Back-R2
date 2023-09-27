@@ -134,4 +134,36 @@ public class SeminarServiceTest extends IntegrationTest {
       }, SEMINAR_IS_DUPLICATED.getMessage());
     }
   }
+
+  @Nested
+  @DisplayName("이용 가능한 세미나 조회 테스트")
+  class GetAvailableSeminarTest {
+
+    @Test
+    @DisplayName("이용 가능한 세미나는 마감시간이 설정된 세미나 중 세미나 날짜가 가장 최신인 세미나 하나를 조회해야 한다.")
+    public void 이용_가능한_세미나는_마감시간이_설정된_세미나_중_세미나_날짜가_가장_최신인_세미나_하나를_조회해야_한다() throws Exception {
+      //given
+      LocalDateTime now = LocalDateTime.now();
+      Long lastSeminarId = seminarTestHelper.builder().openTime(now.minusDays(3))
+          .attendanceCloseTime(now.plusMinutes(5))
+          .latenessCloseTime(now.plusMinutes(10))
+          .build().getId();
+      Long seminarId = seminarTestHelper.builder().openTime(now)
+          .attendanceCloseTime(now.plusMinutes(5))
+          .latenessCloseTime(now.plusMinutes(10))
+          .build().getId();
+      Long recentSeminarId = seminarTestHelper.builder().openTime(now.plusDays(3))
+          .attendanceCloseTime(now.plusMinutes(5))
+          .latenessCloseTime(now.plusMinutes(10))
+          .build().getId();
+      em.flush();
+      em.clear();
+
+      //when
+      Long findSeminarId = seminarService.findByAvailable().getId();
+
+      //then
+      assertThat(findSeminarId).isEqualTo(seminarId);
+    }
+  }
 }

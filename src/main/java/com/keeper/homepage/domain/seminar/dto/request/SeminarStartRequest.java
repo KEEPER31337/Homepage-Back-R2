@@ -9,12 +9,12 @@ import org.springframework.lang.Nullable;
 @Builder
 public record SeminarStartRequest(
     @Nullable
-    @Future
+    @Future(message = "현재 시간 이전 시간으로 설정할 수 없습니다.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime attendanceCloseTime,
 
     @Nullable
-    @Future
+    @Future(message = "현재 시간 이전 시간으로 설정할 수 없습니다.")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime latenessCloseTime) {
 

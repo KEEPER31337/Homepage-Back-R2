@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/seminars")
@@ -35,7 +37,8 @@ public class SeminarAttendanceController {
       @PathVariable Long seminarId,
       @LoginMember Member member,
       @RequestBody @Valid SeminarAttendanceCodeRequest request) {
-    SeminarAttendanceResponse response = seminarAttendanceService.attendance(seminarId, member, request.attendanceCode());
+    SeminarAttendanceResponse response = seminarAttendanceService.attendance(seminarId, member,
+        request.attendanceCode());
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
@@ -50,12 +53,11 @@ public class SeminarAttendanceController {
     return ResponseEntity.ok(responses);
   }
 
-  @PatchMapping("/{seminarId}/attendances/{memberId}") // TODO: 관리자 권한으로 접근 가능하게 설정
+  @PatchMapping("/attendances/{attendanceId}") // TODO: 관리자 권한으로 접근 가능하게 설정
   public ResponseEntity<Void> changeAttendanceStatus(
-      @PathVariable long seminarId,
-      @PathVariable long memberId,
+      @PathVariable long attendanceId,
       @RequestBody @Valid SeminarAttendanceStatusRequest request) {
-    seminarAttendanceService.changeStatus(seminarId, memberId, request);
+    seminarAttendanceService.changeStatus(attendanceId, request);
     return ResponseEntity.noContent().build();
   }
 }

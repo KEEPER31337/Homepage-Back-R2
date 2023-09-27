@@ -21,13 +21,13 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class SeminarApiTestHelper extends IntegrationTest {
 
-  ResultActions createSeminarUsingApi(String token) throws Exception {
-    return mockMvc.perform(post("/seminars?openDate=" + LocalDate.now())
+  ResultActions createSeminarUsingApi(String token, LocalDate openDate) throws Exception {
+    return mockMvc.perform(post("/seminars?openDate=" + openDate)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
-  Long createSeminarAndGetId(String adminToken) throws Exception {
-    MvcResult mvcResult = createSeminarUsingApi(adminToken)
+  Long createSeminarAndGetId(String adminToken, LocalDate openDate) throws Exception {
+    MvcResult mvcResult = createSeminarUsingApi(adminToken, openDate)
         .andDo(print())
         .andExpect(status().isCreated())
         .andReturn();
@@ -92,18 +92,17 @@ public class SeminarApiTestHelper extends IntegrationTest {
         .content(strJson));
   }
 
-  ResultActions changeAttendanceStatusUsingApi(String token, long seminarId, long memberId,
-      SeminarAttendanceStatusRequest request)
+  ResultActions changeAttendanceStatusUsingApi(String token, long attendanceId, SeminarAttendanceStatusRequest request)
       throws Exception {
-    return mockMvc.perform(patch("/seminars/{seminarId}/attendances/{memberId}", seminarId, memberId)
+    return mockMvc.perform(patch("/seminars/attendances/{attendanceId}", attendanceId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
 
-  ResultActions changeAttendanceStatusUsingApi(String token, long seminarId, long memberId, String strJson)
+  ResultActions changeAttendanceStatusUsingApi(String token, long attendanceId, String strJson)
       throws Exception {
-    return mockMvc.perform(patch("/seminars/{seminarId}/attendances/{memberId}", seminarId, memberId)
+    return mockMvc.perform(patch("/seminars/attendances/{attendanceId}", attendanceId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));

@@ -29,6 +29,7 @@ import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusReq
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -75,7 +76,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_success_attendanceSeminar() throws Exception {
       String securedValue = getSecuredValue(SeminarAttendanceController.class, "attendanceSeminar");
 
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -112,7 +113,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("세미나 중복 출석을 실패한다.")
     public void should_fail_attendanceSeminarDuplicate() throws Exception {
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
@@ -135,7 +136,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_fail_invalidInputValue(String attendanceCode) throws Exception {
       String strJson = """
           {"attendanceCode":%s}""";
-      Long seminarId = createSeminarAndGetId(adminToken);
+      Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
 
       startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       attendanceSeminarUsingApi(adminToken, seminarId, strJson.formatted(attendanceCode)).andExpect(
@@ -200,32 +201,22 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_success_when_changeSeminarAttendanceStatus() throws Exception {
       String securedValue = getSecuredValue(SeminarAttendanceController.class, "changeAttendanceStatus");
 
-      Long seminarId = createSeminarAndGetId(adminToken);
-      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
-          .getAttendanceCode();
-
-      SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
-          .attendanceCode(attendanceCode)
-          .build();
+      SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.generate();
 
       SeminarAttendanceStatusRequest statusRequest = SeminarAttendanceStatusRequest.builder()
           .excuse("늦게 일어나서")
           .statusType(LATENESS)
           .build();
 
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-
-      changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, statusRequest)
+      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(), statusRequest)
           .andExpect(status().isNoContent())
           .andDo(document("change-attendance-seminar",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description(
                       "ACCESS TOKEN %s".formatted(securedValue))),
               pathParameters(
-                  parameterWithName("memberId")
-                      .description("출석 상태를 변경하고자 하는 회원의 ID"),
-                  parameterWithName("seminarId")
-                      .description("세미나의 ID")
+                  parameterWithName("attendanceId")
+                      .description("출석 상태를 변경하고자 하는 세미나 출석 ID")
               ),
               requestFields(
                   field("excuse", "세미나 사유"),
@@ -240,16 +231,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_success_when_emptyExcuse(String excuse) throws Exception {
       String strJson = """
           {"excuse":%s, "statusType":"LATENESS"}""";
-      Long seminarId = createSeminarAndGetId(adminToken);
-      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
-          .getAttendanceCode();
-
-      SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
-          .attendanceCode(attendanceCode)
-          .build();
-
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, strJson.formatted(excuse)).andExpect(
+      SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.generate();
+      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(), strJson.formatted(excuse)).andExpect(
           status().isNoContent());
     }
 
@@ -260,16 +243,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     public void should_fail_when_invalidValue(String statusType) throws Exception {
       String strJson = """
           {"excuse":"", "statusType": %s}""";
-      Long seminarId = createSeminarAndGetId(adminToken);
-      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
-          .getAttendanceCode();
-
-      SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
-          .attendanceCode(attendanceCode)
-          .build();
-
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
-      changeAttendanceStatusUsingApi(adminToken, seminarId, adminId, strJson.formatted(statusType)).andExpect(
+      SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.generate();
+      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(), strJson.formatted(statusType)).andExpect(
           status().isBadRequest());
     }
   }
@@ -331,6 +306,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           fieldWithPath("memberName").description("회원 이름"),
           fieldWithPath("generation").description("회원 기수"),
           fieldWithPath("attendances[]").description("회원 출석 정보 리스트"),
+          fieldWithPath("attendances[].seminarId").description("세미나 ID"),
           fieldWithPath("attendances[].attendanceId").description("세미나 출석 ID"),
           fieldWithPath("attendances[].attendDate").description("세미나 출석 날짜"),
           fieldWithPath("attendances[].attendanceStatus").description("세미나 출석 상태"),

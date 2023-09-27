@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface SeminarRepository extends JpaRepository<Seminar, Long> {
 
-  List<Seminar> findAllByIdIsNot(Long seminarId);
+  List<Seminar> findAllByIdIsNot(Long seminarId, Sort sort);
 
   Optional<Seminar> findByIdAndIdNot(Long seminarId, Long virtualId);
 
@@ -23,8 +24,11 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
   @Query("SELECT s FROM Seminar s "
       + "WHERE s.attendanceCloseTime is not null "
       + "AND s.latenessCloseTime is not null "
-      + "AND s.latenessCloseTime > :dateTime")
-  Optional<Seminar> findByAvailable(@Param("dateTime") LocalDateTime dateTime);
+      + "AND s.latenessCloseTime > :dateTime "
+      + "AND DATE(s.openTime) >= :localDate "
+      + "ORDER BY s.openTime ASC "
+      + "LIMIT 1")
+  Optional<Seminar> findByAvailable(@Param("dateTime") LocalDateTime dateTime, @Param("localDate") LocalDate localDate);
 
   @Query("SELECT s FROM Seminar s "
       + "WHERE s.id <> 1 " // virtual seminar data 제외
