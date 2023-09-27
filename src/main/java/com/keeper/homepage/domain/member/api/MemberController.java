@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
 import com.keeper.homepage.domain.member.application.MemberService;
+import com.keeper.homepage.domain.member.dto.request.AdminDeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ChangePasswordRequest;
 import com.keeper.homepage.domain.member.dto.request.DeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -127,6 +129,7 @@ public class MemberController {
     return ResponseEntity.ok(memberService.getMemberProfile(me, memberId));
   }
 
+  @Secured({"ROLE_회장", "ROLE_서기"})
   @PatchMapping("/types/{typeId}")
   public ResponseEntity<Void> updateMemberType(
       @PathVariable long typeId,
@@ -154,11 +157,20 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
-  @PatchMapping
+  @DeleteMapping
   public ResponseEntity<Void> deleteMember(
       @LoginMember Member member,
       @RequestBody @Valid DeleteMemberRequest request) {
     memberService.deleteMember(member, request.getRawPassword());
+    return ResponseEntity.noContent().build();
+  }
+
+  @Secured({"ROLE_회장", "ROLE_서기"})
+  @DeleteMapping("/admin")
+  public ResponseEntity<Void> deleteMemberByAdmin(
+      @RequestBody @Valid AdminDeleteMemberRequest request
+  ) {
+    memberService.deleteMemberByAdmin(request.getMemberIds());
     return ResponseEntity.noContent().build();
   }
 }

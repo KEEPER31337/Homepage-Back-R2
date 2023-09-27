@@ -89,4 +89,8 @@ public class Election {
     this.isAvailable = false;
   }
 
+  public void changeMember(Member member) {
+    this.member = member;
+  }
+
 }

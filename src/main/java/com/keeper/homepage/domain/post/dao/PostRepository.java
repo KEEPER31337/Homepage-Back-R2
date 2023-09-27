@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -146,4 +147,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findAllByMemberAndIsTempFalse(Member member, Pageable pageable);
 
   Page<Post> findAllByMemberAndIsTempTrue(Member member, Pageable pageable);
+
+  @Modifying
+  @Query("UPDATE Post p "
+      + "SET p.member = :virtualMember "
+      + "WHERE p.member = :member AND p.isTemp = false ")
+  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+
+  void deleteAllByMemberAndIsTempTrue(Member member);
 }

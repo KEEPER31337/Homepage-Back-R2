@@ -26,6 +26,15 @@ import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
+import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
+import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
+import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
+import com.keeper.homepage.domain.ctf.application.CtfTeamService;
+import com.keeper.homepage.domain.ctf.dao.CtfContestRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeCategoryRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
+import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeTypeRepository;
+import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
 import com.keeper.homepage.domain.election.ElectionCandidateTestHelper;
 import com.keeper.homepage.domain.election.ElectionTestHelper;
 import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
@@ -34,13 +43,6 @@ import com.keeper.homepage.domain.election.dao.ElectionCandidateRepository;
 import com.keeper.homepage.domain.election.dao.ElectionChartLogRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.election.dao.ElectionVoterRepository;
-import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
-import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
-import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
-import com.keeper.homepage.domain.ctf.application.CtfTeamService;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeCategoryRepository;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeTypeRepository;
 import com.keeper.homepage.domain.file.dao.FileRepository;
 import com.keeper.homepage.domain.game.GameTestHelper;
 import com.keeper.homepage.domain.game.application.BaseballService;
@@ -117,12 +119,10 @@ import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import com.ninjasquad.springmockk.SpykBean;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Random;
-
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -288,6 +288,12 @@ public class IntegrationTest {
   @Autowired
   protected CtfChallengeRepository ctfChallengeRepository;
 
+  @Autowired
+  protected CtfTeamRepository ctfTeamRepository;
+
+  @Autowired
+  protected CtfContestRepository ctfContestRepository;
+
   /******* Service *******/
   @SpyBean
   protected MemberService memberService;
@@ -357,7 +363,7 @@ public class IntegrationTest {
 
   @SpyBean
   protected CtfTeamService ctfTeamService;
-  
+
   @SpyBean
   protected MeritTypeService meritTypeService;
 

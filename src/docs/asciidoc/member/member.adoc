@@ -298,3 +298,25 @@ include::{snippets}/delete-member/request-fields.adoc[]
 ==== Response
 
 include::{snippets}/delete-member/http-response.adoc[]
+
+== *관리자용 회원 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/admin-delete-member/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/admin-delete-member/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/admin-delete-member/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/admin-delete-member/http-response.adoc[]

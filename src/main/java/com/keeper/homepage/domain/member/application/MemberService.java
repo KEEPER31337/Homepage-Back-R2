@@ -5,30 +5,22 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_BOOK_NOT_EMPTY;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_TYPE_NOT_FOUND;
 
+import com.keeper.homepage.domain.member.application.convenience.MemberDeleteService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
-import com.keeper.homepage.domain.member.dao.friend.FriendRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
-import com.keeper.homepage.domain.member.dto.response.profile.MemberFriendResponse;
 import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
-import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.global.error.BusinessException;
-import com.keeper.homepage.global.error.ErrorCode;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -40,6 +32,8 @@ public class MemberService {
   private final MemberFindService memberFindService;
   private final MemberProfileService memberProfileService;
   private final MemberTypeRepository memberTypeRepository;
+  private final MemberDeleteService memberDeleteService;
+
 
   @Transactional
   public void changePassword(Member me, String newPassword) {
@@ -98,12 +92,23 @@ public class MemberService {
   public void deleteMember(Member member, String rawPassword) {
     memberProfileService.checkMemberPassword(member, rawPassword);
     checkBorrowedBook(member);
-    member.deleteMember();
+
+    memberDeleteService.delete(member);
   }
 
   private void checkBorrowedBook(Member member) {
     if (member.hasAnyBorrowBooks()) {
       throw new BusinessException(member.getBookBorrowInfos(), "memberBorrowInfos", MEMBER_BOOK_NOT_EMPTY);
+    }
+  }
+
+  @Transactional
+  public void deleteMemberByAdmin(List<Long> memberIds) {
+    for (long memberId : memberIds) {
+      Member member = memberFindService.findById(memberId);
+      checkBorrowedBook(member);
+
+      memberDeleteService.delete(member);
     }
   }
 }

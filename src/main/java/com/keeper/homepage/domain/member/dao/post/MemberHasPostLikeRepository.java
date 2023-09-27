@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.member.dao.post;
 
+import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.Post;
 import java.util.List;
@@ -11,5 +12,5 @@ public interface MemberHasPostLikeRepository extends JpaRepository<MemberHasPost
 
   void deleteAllByPost(Post post);
 
-  Long countByPost(Post post);
+  void deleteAllByMember(Member member);
 }

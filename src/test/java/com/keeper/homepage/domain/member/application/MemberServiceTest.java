@@ -2,23 +2,40 @@ package com.keeper.homepage.domain.member.application;
 
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
-import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.*;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.getMemberJobBy;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.휴면회원;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ATTENDANCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_BOOK_NOT_EMPTY;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_WRONG_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
 
 import com.keeper.homepage.IntegrationTest;
-import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
+import com.keeper.homepage.domain.comment.entity.Comment;
+import com.keeper.homepage.domain.ctf.entity.CtfContest;
+import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallenge;
+import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
+import com.keeper.homepage.domain.election.entity.Election;
+import com.keeper.homepage.domain.election.entity.ElectionCandidate;
+import com.keeper.homepage.domain.election.entity.ElectionChartLog;
 import com.keeper.homepage.domain.library.entity.Book;
+import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
+import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.seminar.entity.Seminar;
+import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
+import com.keeper.homepage.domain.study.entity.Study;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -135,7 +152,7 @@ public class MemberServiceTest extends IntegrationTest {
   @DisplayName("회원 탈퇴 기능 테스트")
   class DeleteMemberTest {
 
-    private Member member;
+    private Member member, other;
     private Book book;
 
     @BeforeEach
@@ -143,29 +160,7 @@ public class MemberServiceTest extends IntegrationTest {
       member = memberTestHelper.builder()
           .password(Password.from("TruePassword"))
           .build();
-    }
-
-    @Test
-    @DisplayName("회원 탈퇴 시 유저 정보는 마킹되어야 한다.")
-    public void 회원_탈퇴_시_유저_이름은_회원탈퇴로_마킹되어야_한다() {
-      memberService.deleteMember(member, "TruePassword");
-
-      em.flush();
-      em.clear();
-      System.out.println("member = " + member.getId());
-      System.out.println("member.getRealName() = " + member.getRealName());
-
-      Member findMember = (Member) em.createNativeQuery("SELECT * FROM member WHERE id = :id", Member.class)
-          .setParameter("id", member.getId())
-          .getSingleResult();
-
-      assertThat(findMember.getProfile().getLoginId().get()).isEqualTo("delete");
-      assertThat(findMember.getProfile().getEmailAddress().get()).isEqualTo("delete@delete.com");
-      assertThat(findMember.getProfile().getPassword().isWrongPassword("delete")).isFalse();
-      assertThat(findMember.getProfile().getRealName().get()).isEqualTo("탈퇴회원");
-      assertThat(findMember.getProfile().getBirthday()).isNull();
-      assertThat(findMember.getProfile().getStudentId()).isNull();
-      assertThat(findMember.getProfile().getThumbnail()).isNull();
+      other = memberTestHelper.generate();
     }
 
     @Test
@@ -189,6 +184,101 @@ public class MemberServiceTest extends IntegrationTest {
           () -> memberService.deleteMember(member, "TruePassword"),
           MEMBER_BOOK_NOT_EMPTY.getMessage());
     }
-  }
 
+    @Test
+    @DisplayName("탈퇴 시 남겨야 하는 데이터는 남아야 하고, 더미 회원이 작성자로 남아야 한다.")
+    public void 탈퇴_시_남겨야_하는_데이터는_남아야_하고_더미_회원이_작성자로_남아야_한다() throws Exception {
+      //given
+      Post post = postTestHelper.builder().member(member).build();
+      Comment comment = commentTestHelper.builder().member(member).build();
+      Study study = studyTestHelper.builder().headMember(member).build();
+      Seminar seminar = seminarTestHelper.builder().build();
+      seminar.setStarter(member);
+      CtfChallenge challenge = ctfChallengeTestHelper.builder().creator(member).build();
+      CtfTeam team = ctfTeamTestHelper.builder().creator(member).build();
+      CtfContest contest = ctfContestTestHelper.builder().creator(member).build();
+      Election election = electionTestHelper.builder().member(member).build();
+      em.flush();
+      em.clear();
+
+      //when
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      memberService.deleteMember(member, "TruePassword");
+      em.flush();
+      em.clear();
+
+      //then
+      post = postRepository.findById(post.getId()).orElseThrow();
+      comment = commentRepository.findById(comment.getId()).orElseThrow();
+      study = studyRepository.findById(study.getId()).orElseThrow();
+      seminar = seminarRepository.findById(seminar.getId()).orElseThrow();
+      challenge = ctfChallengeRepository.findById(challenge.getId()).orElseThrow();
+      team = ctfTeamRepository.findById(team.getId()).orElseThrow();
+      contest = ctfContestRepository.findById(contest.getId()).orElseThrow();
+      election = electionRepository.findById(election.getId()).orElseThrow();
+
+      Member virtualMember = memberFindService.getVirtualMember();
+      assertThat(post.getMember()).isEqualTo(virtualMember);
+      assertThat(comment.getMember()).isEqualTo(virtualMember);
+      assertThat(study.getHeadMember()).isEqualTo(virtualMember);
+      assertThat(seminar.getStarter()).isEqualTo(virtualMember);
+      assertThat(challenge.getCreator()).isEqualTo(virtualMember);
+      assertThat(team.getCreator()).isEqualTo(virtualMember);
+      assertThat(contest.getCreator()).isEqualTo(virtualMember);
+      assertThat(election.getMember()).isEqualTo(virtualMember);
+    }
+
+    @Test
+    @DisplayName("탈퇴 시 필요없는 데이터는 cascade REMOVE로 제거된다.")
+    public void 탈퇴_시_필요없는_데이터는_cascade_REMOVE로_제거된다() throws Exception {
+      //given
+      long memberId = member.getId();
+      Long attendanceId = attendanceTestHelper.builder().member(member).build().getId(); // O
+      Long borrowId = bookBorrowInfoTestHelper.builder().member(member).build().getId(); // O
+      Post post = postTestHelper.builder().member(member).isTemp(true).build(); // O
+      Long pointId = pointLogTestHelper.builder().member(member).build().getId(); // O
+      member.follow(other); // O
+      other.follow(member); // O
+      member.like(post); // O
+      member.dislike(post); // O
+      member.read(post); // O
+      Study study = studyTestHelper.generate();
+      member.join(study); // O
+      CtfTeam ctfTeam = ctfTeamTestHelper.generate();
+      member.join(ctfTeam); // O
+      Seminar seminar = seminarTestHelper.generate();
+      Long seminarAttendanceId = seminarAttendanceRepository.save(SeminarAttendance.builder()
+          .seminar(seminar)
+          .member(member)
+          .seminarAttendanceStatus(getSeminarAttendanceStatusBy(ATTENDANCE))
+          .attendTime(LocalDateTime.now())
+          .build()).getId();// O
+      Long replyId = surveyMemberReplyTestHelper.builder().member(member).build().getId();// O
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(getMemberJobBy(ROLE_회장)).member(member)
+          .build(); // O
+      electionVoterTestHelper.builder().member(member).build(); // O
+      electionChartLogRepository.save(ElectionChartLog.builder()
+          .electionCandidate(electionCandidate)
+          .voteTime(LocalDateTime.now())
+          .build()); // O
+      Long gameId = gameTestHelper.builder().member(member).build().getId();// O
+      em.flush();
+      em.clear();
+
+      //when
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      memberService.deleteMember(member, "TruePassword");
+      em.flush();
+      em.clear();
+
+      //then
+      assertThat(memberRepository.findById(memberId)).isEmpty();
+      assertThat(attendanceRepository.findById(attendanceId)).isEmpty();
+      assertThat(bookBorrowInfoRepository.findById(borrowId)).isEmpty();
+      assertThat(pointLogRepository.findById(pointId)).isEmpty();
+      assertThat(seminarAttendanceRepository.findById(seminarAttendanceId)).isEmpty();
+      assertThat(surveyMemberReplyRepository.findById(replyId)).isEmpty();
+      assertThat(gameRepository.findById(gameId)).isEmpty();
+    }
+  }
 }
