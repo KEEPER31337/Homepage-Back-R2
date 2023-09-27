@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.attendance.application.AttendanceService;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -29,7 +30,11 @@ public class AttendanceInterceptor implements HandlerInterceptor {
       String key = "attendance:member:" + memberId;
       Optional<String> data = redisUtil.getData(key, String.class);
       if (data.isEmpty()) {
-        attendanceService.create(memberId);
+        try {
+          attendanceService.create(memberId);
+        } catch (UndeclaredThrowableException e) {
+          // 출석 중복 저장 발생
+        }
       }
     }
     return true;
