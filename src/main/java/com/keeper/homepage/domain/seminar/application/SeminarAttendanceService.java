@@ -5,10 +5,10 @@ import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
-import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_DUPLICATE;
+import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_UNABLE;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
@@ -106,12 +106,9 @@ public class SeminarAttendanceService {
   }
 
   @Transactional
-  public void changeStatus(long seminarId, long memberId, SeminarAttendanceStatusRequest request) {
-    Member member = memberFindService.findById(memberId);
-    Seminar seminar = validSeminarFindService.findById(seminarId);
-
-    SeminarAttendance seminarAttendance = attendanceRepository.findBySeminarAndMember(seminar, member)
-        .orElseThrow(() -> new BusinessException(member.getRealName(), "realName", MEMBER_NOT_FOUND));
+  public void changeStatus(long attendanceId, SeminarAttendanceStatusRequest request) {
+    SeminarAttendance seminarAttendance = attendanceRepository.findById(attendanceId)
+        .orElseThrow(() -> new BusinessException(attendanceId, "attendanceId", SEMINAR_ATTENDANCE_NOT_FOUND));
 
     seminarAttendance.changeStatus(request.excuse(), request.statusType());
   }

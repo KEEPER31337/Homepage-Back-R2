@@ -90,6 +90,7 @@ import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.dao.category.CategoryRepository;
+import com.keeper.homepage.domain.seminar.SeminarAttendanceTestHelper;
 import com.keeper.homepage.domain.seminar.SeminarTestHelper;
 import com.keeper.homepage.domain.seminar.application.SeminarAttendanceService;
 import com.keeper.homepage.domain.seminar.application.SeminarService;
@@ -403,6 +404,9 @@ public class IntegrationTest {
 
   @Autowired
   protected SeminarTestHelper seminarTestHelper;
+
+  @Autowired
+  protected SeminarAttendanceTestHelper seminarAttendanceTestHelper;
 
   @Autowired
   protected PostTestHelper postTestHelper;
