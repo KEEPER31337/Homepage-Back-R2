@@ -15,15 +15,18 @@ import lombok.Getter;
 public class StudyDetailResponse {
 
   private String information;
+  private StudyMemberResponse headMember;
   private List<StudyMemberResponse> members;
   private List<LinkResponse> links;
 
   public static StudyDetailResponse from(Study study) {
     return StudyDetailResponse.builder()
         .information(study.getInformation())
+        .headMember(StudyMemberResponse.from(study.getHeadMember()))
         .members(study.getStudyMembers()
             .stream()
             .map(StudyHasMember::getMember)
+            .filter(member -> !member.isHeadMember(study))
             .map(StudyMemberResponse::from)
             .toList())
         .links(List.of(LinkResponse.of("Github", study.getGitLink()),

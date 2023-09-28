@@ -204,11 +204,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
   class GetStudy {
 
     private Study study;
-    private Member member;
+    private Member member, headMember;
 
     @BeforeEach
     void setUp() {
-      study = studyTestHelper.builder().year(2023).season(1).build();
+      headMember = memberTestHelper.generate();
+      study = studyTestHelper.builder().year(2023).season(1).headMember(headMember).build();
       member = memberTestHelper.generate();
     }
 
@@ -216,6 +217,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     @DisplayName("스터디 조회는 성공해야 한다.")
     public void 스터디_조회는_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "getStudy");
+      headMember.join(study);
       member.join(study);
       em.flush();
       em.clear();
@@ -232,7 +234,9 @@ public class StudyControllerTest extends StudyApiTestHelper {
               ),
               responseFields(
                   fieldWithPath("information").description("스터디 정보"),
-                  fieldWithPath("members[]").description("스터디원 리스트"),
+                  fieldWithPath("headMember.memberId").description("스터디장 회원 ID"),
+                  fieldWithPath("headMember.generation").description("스터디장 회원 기수"),
+                  fieldWithPath("headMember.realName").description("스터디장 회원 이름"),
                   fieldWithPath("members[].memberId").description("스터디원 회원 ID"),
                   fieldWithPath("members[].generation").description("스터디원 회원 기수"),
                   fieldWithPath("members[].realName").description("스터디원 회원 이름"),
