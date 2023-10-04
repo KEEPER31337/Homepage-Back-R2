@@ -1,19 +1,23 @@
 package com.keeper.homepage.domain.member.application;
 
+import static com.keeper.homepage.domain.member.entity.embedded.Profile.builder;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_EMAIL_DUPLICATE;
+import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_WRONG_PASSWORD;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import java.io.IOException;
-import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -122,6 +126,77 @@ class MemberProfileServiceTest extends IntegrationTest {
       assertThrows(BusinessException.class,
           () -> memberProfileService.updateProfileEmailAddress(member, randomEmail,
               data, "falsePassword"), MEMBER_WRONG_PASSWORD.getMessage());
+    }
+  }
+
+  @Nested
+  @DisplayName("회원 프로필 변경 테스트")
+  class UpdateMemberProfileTest {
+
+    private Member other;
+
+    @BeforeEach
+    void setUp() throws IOException {
+      member = memberTestHelper.generate();
+      other = memberTestHelper.builder().studentId(StudentId.from("4321")).build();
+      memberId = member.getId();
+    }
+
+    @Test
+    @DisplayName("프로필 변경은 성공해야 한다.")
+    public void 프로필_변경은_성공해야_한다() throws Exception {
+      //given
+      Profile profile = builder()
+          .realName(RealName.from("손현경"))
+          .studentId(StudentId.from("1234"))
+          .build();
+
+      //when
+      memberProfileService.updateProfile(member, profile);
+      em.flush();
+      em.clear();
+
+      //then
+      Member findMember = memberRepository.findById(memberId).orElseThrow();
+      assertThat(findMember.getProfile().getRealName()).isEqualTo(profile.getRealName());
+      assertThat(findMember.getProfile().getStudentId()).isEqualTo(profile.getStudentId());
+      assertThat(findMember.getProfile().getBirthday()).isNull();
+    }
+
+    @Test
+    @DisplayName("존재하는 학번으로는 프로필 수정을 할 수 없다.")
+    public void 존재하는_학번으로는_프로필_수정을_할_수_없다() throws Exception {
+      //given
+      Profile profile = builder()
+          .realName(RealName.from("손현경"))
+          .studentId(other.getProfile().getStudentId())
+          .build();
+
+      //when & then
+      assertThrows(BusinessException.class, () -> {
+        memberProfileService.updateProfile(member, profile);
+      }, MEMBER_STUDENT_ID_DUPLICATE.getMessage());
+    }
+
+    @Test
+    @DisplayName("본인의 학번은 중복체크를 하지 않아야 한다.")
+    public void 본인의_학번은_중복체크를_하지_않아야_한다() throws Exception {
+      //given
+      Profile profile = builder()
+          .realName(RealName.from("손현경"))
+          .studentId(member.getProfile().getStudentId())
+          .build();
+
+      //when
+      memberProfileService.updateProfile(member, profile);
+      em.flush();
+      em.clear();
+
+      //then
+      Member findMember = memberRepository.findById(memberId).orElseThrow();
+      assertThat(findMember.getProfile().getRealName()).isEqualTo(profile.getRealName());
+      assertThat(findMember.getProfile().getStudentId()).isEqualTo(profile.getStudentId());
+      assertThat(findMember.getProfile().getBirthday()).isNull();
     }
   }
 }
