@@ -81,6 +81,18 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("익명 게시글 생성 시 작성자는 더미 회원으로 저장되어야 한다.")
+    public void 익명_게시글_생성_시_작성자는_더미_회원으로_저장되어야_한다() throws Exception {
+      postId = postService.create(post, 익명게시판.getId(), thumbnail, List.of(thumbnail));
+      em.flush();
+      em.clear();
+      Member virtualMember = memberFindService.getVirtualMember();
+      Post findPost = postRepository.findById(postId).orElseThrow();
+
+      assertThat(findPost.getMember()).isEqualTo(virtualMember);
+    }
+
+    @Test
     @DisplayName("요청한 카테고리를 찾을 수 없는 경우 BusinessException 던진다.")
     void should_throwBusinessException_when_requestNotFoundCategory() {
       assertThatThrownBy(() -> postService.create(post, 0L, thumbnail, List.of(thumbnail)))
