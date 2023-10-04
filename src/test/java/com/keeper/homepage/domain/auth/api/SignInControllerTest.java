@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.auth.api;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
 import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -29,7 +28,6 @@ import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
 import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import org.junit.jupiter.api.BeforeEach;
@@ -135,8 +133,7 @@ class SignInControllerTest extends IntegrationTest {
     @Test
     @DisplayName("유효한 이메일과 로그인 아이디일 경우 비밀번호 인증코드가 전송되야 한다.")
     void should_successfullySendTmpPassword_when_validRequest() throws Exception {
-      doNothing().when(signInService)
-          .sendPasswordChangeAuthCode(any(EmailAddress.class), any(LoginId.class));
+      doNothing().when(mailUtil).sendMail(anyList(), anyString(), anyString());
       MemberIdAndEmailRequest request = MemberIdAndEmailRequest.builder()
           .email(member.getProfile().getEmailAddress().get())
           .loginId(member.getProfile().getLoginId().get())
@@ -146,11 +143,14 @@ class SignInControllerTest extends IntegrationTest {
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andDo(print())
-          .andExpect(status().isNoContent())
+          .andExpect(status().isOk())
           .andDo(document("send-password-change-auth-code",
               requestFields(
                   fieldWithPath("email").description("이메일"),
                   fieldWithPath("loginId").description("로그인 아이디")
+              ),
+              responseFields(
+                  fieldWithPath("expiredSeconds").description("인증 코드 만료 시간(초)")
               )));
     }
 

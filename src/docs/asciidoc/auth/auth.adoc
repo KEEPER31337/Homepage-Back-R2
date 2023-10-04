@@ -207,6 +207,10 @@ include::{snippets}/send-password-change-auth-code/request-fields.adoc[]
 
 include::{snippets}/send-password-change-auth-code/http-response.adoc[]
 
+==== Response Fields
+
+include::{snippets}/send-password-change-auth-code/response-fields.adoc[]
+
 == *인증 코드 확인*
 
 === 요청

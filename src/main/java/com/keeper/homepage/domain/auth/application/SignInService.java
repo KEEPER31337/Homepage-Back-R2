@@ -68,13 +68,15 @@ public class SignInService {
         "회원님의 로그인 아이디: " + member.getProfile().getLoginId().get());
   }
 
-  public void sendPasswordChangeAuthCode(EmailAddress email, LoginId loginId) {
+  public int sendPasswordChangeAuthCode(EmailAddress email, LoginId loginId) {
     Member member = memberRepository.findByProfileEmailAddressAndProfileLoginId(email, loginId)
         .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
 
     String authCode = generateRandomAuthCode();
     redisUtil.setDataExpire(PASSWORD_AUTH_CODE_KEY + member.getId(), authCode, AUTH_CODE_EXPIRE_MILLIS);
     mailUtil.sendMail(List.of(email.get()), "KEEPER 비밀번호 변경 인증 코드입니다.", "회원님의 비밀번호 변경 인증 코드: " + authCode);
+
+    return AUTH_CODE_EXPIRE_MILLIS / 1000;
   }
 
   private static String generateRandomAuthCode() {

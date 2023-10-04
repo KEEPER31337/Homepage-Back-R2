@@ -6,6 +6,7 @@ import com.keeper.homepage.domain.auth.dto.request.FindLoginIdRequest;
 import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.auth.dto.response.CheckAuthCodeResponse;
+import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
@@ -47,11 +48,11 @@ public class SignInController {
   }
 
   @PostMapping("/send-password-change-auth-code")
-  public ResponseEntity<Void> sendPasswordChangeAuthCode(
+  public ResponseEntity<EmailAuthResponse> sendPasswordChangeAuthCode(
       @RequestBody @Valid MemberIdAndEmailRequest request) {
-    signInService.sendPasswordChangeAuthCode(EmailAddress.from(request.getEmail()),
+    int expiredSeconds = signInService.sendPasswordChangeAuthCode(EmailAddress.from(request.getEmail()),
         LoginId.from(request.getLoginId()));
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(EmailAuthResponse.from(expiredSeconds));
   }
 
   @GetMapping("/check-auth-code")
