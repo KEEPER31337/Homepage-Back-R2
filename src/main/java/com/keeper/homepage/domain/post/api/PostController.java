@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.post.api;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.keeper.homepage.domain.file.application.FileService;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -207,7 +210,8 @@ public class PostController {
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
-    Page<MemberPostResponse> responses = postService.getMemberPosts(memberId, PageRequest.of(page, size));
+    Page<MemberPostResponse> responses = postService.getMemberPosts(memberId,
+        PageRequest.of(page, size, Sort.by(DESC, "registerTime")));
     return ResponseEntity.ok(responses);
   }
 
@@ -217,7 +221,8 @@ public class PostController {
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
-    Page<TempPostResponse> responses = postService.getTempPosts(member, PageRequest.of(page, size));
+    Page<TempPostResponse> responses = postService.getTempPosts(member,
+        PageRequest.of(page, size, Sort.by(DESC, "registerTime")));
     return ResponseEntity.ok(responses);
   }
 

@@ -77,7 +77,7 @@ public class AttendanceControllerTest extends IntegrationTest {
                       .optional()
               ),
               responseFields(
-                  pageHelper(getAttendanceResponse())
+                  pageHelper(getTodayAttendanceResponse())
               )));
     }
 
@@ -95,11 +95,22 @@ public class AttendanceControllerTest extends IntegrationTest {
                       .description("ACCESS TOKEN %s".formatted(securedValue))
               ),
               responseFields(
-                  listHelper("", getAttendanceResponse())
+                  listHelper("", getContinuousAttendanceResponse())
               )));
     }
 
-    FieldDescriptor[] getAttendanceResponse() {
+    FieldDescriptor[] getTodayAttendanceResponse() {
+      return new FieldDescriptor[]{
+          fieldWithPath("rank").description("회원 당일 출석 순위"),
+          fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),
+          fieldWithPath("realName").description("회원 실명"),
+          fieldWithPath("generation").description("회원 기수"),
+          fieldWithPath("totalAttendance").description("회원 연속 출석 일수"),
+          fieldWithPath("time").description("회원 출석 시간")
+      };
+    }
+
+    FieldDescriptor[] getContinuousAttendanceResponse() {
       return new FieldDescriptor[]{
           fieldWithPath("rank").description("회원 당일 출석 순위"),
           fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),

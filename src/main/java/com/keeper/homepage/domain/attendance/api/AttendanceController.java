@@ -1,10 +1,11 @@
 package com.keeper.homepage.domain.attendance.api;
 
 import com.keeper.homepage.domain.attendance.application.AttendanceService;
+import com.keeper.homepage.domain.attendance.dto.response.AttendanceContinuousRankResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendanceInfoResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendancePointResponse;
-import com.keeper.homepage.domain.attendance.dto.response.AttendanceRankResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendanceResponse;
+import com.keeper.homepage.domain.attendance.dto.response.AttendanceTodayRankResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -31,7 +32,7 @@ public class AttendanceController {
   private final AttendanceService attendanceService;
 
   @GetMapping("/today-rank")
-  public ResponseEntity<Page<AttendanceRankResponse>> getTodayRanks(
+  public ResponseEntity<Page<AttendanceTodayRankResponse>> getTodayRanks(
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
@@ -39,7 +40,7 @@ public class AttendanceController {
   }
 
   @GetMapping("/continuous-rank")
-  public ResponseEntity<List<AttendanceRankResponse>> getContinuousRanks() {
+  public ResponseEntity<List<AttendanceContinuousRankResponse>> getContinuousRanks() {
     return ResponseEntity.ok(attendanceService.getContinuousRanks());
   }
 

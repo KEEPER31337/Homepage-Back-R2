@@ -78,6 +78,10 @@ public class PostService {
     if (!post.isTemp()) {
       checkContent(post.getContent());
     }
+    if (categoryId == 익명게시판.getId()) {
+      Member virtualMember = memberFindService.getVirtualMember();
+      post.changeWriter(virtualMember);
+    }
 
     savePostThumbnail(post, thumbnail);
     savePostFiles(post, multipartFiles);
@@ -131,7 +135,7 @@ public class PostService {
     boolean isDislike = member.isDislike(post);
 
     if (post.isCategory(익명게시판)) {
-      return PostDetailResponse.of(post, ANONYMOUS_NAME, null, isLike, isDislike, previousPost, nextPost);
+      return PostDetailResponse.of(post, ANONYMOUS_NAME, isLike, isDislike, previousPost, nextPost);
     }
     if (post.isCategory(시험게시판) && !post.isMine(member)) {
       boolean isRead = member.isRead(post);
@@ -341,14 +345,14 @@ public class PostService {
 
   private PostResponse getPostResponse(Post post) {
     if (post.isCategory(익명게시판)) {
-      return PostResponse.of(post, ANONYMOUS_NAME, null);
+      return PostResponse.of(post, ANONYMOUS_NAME);
     }
     return PostResponse.from(post);
   }
 
   private MainPostResponse getMainPostResponse(Post post) {
     if (post.isCategory(익명게시판)) {
-      return MainPostResponse.of(post, ANONYMOUS_NAME, null);
+      return MainPostResponse.of(post, ANONYMOUS_NAME);
     }
     return MainPostResponse.from(post);
   }

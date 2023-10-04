@@ -1,11 +1,12 @@
 package com.keeper.homepage.domain.point.api;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.point.application.GivePointService;
 import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.domain.point.dto.request.presentPointRequest;
 import com.keeper.homepage.domain.point.dto.response.FindAllPointLogResponse;
-import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -13,6 +14,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -50,7 +52,7 @@ public class PointController {
       @LoginMember Member member
   ) {
     return ResponseEntity.ok(
-        pointLogService.findAllPointLogs(PageRequest.of(page, size), member.getId())
+        pointLogService.findAllPointLogs(PageRequest.of(page, size, Sort.by(DESC, "time")), member.getId())
             .map(FindAllPointLogResponse::from)
     );
   }

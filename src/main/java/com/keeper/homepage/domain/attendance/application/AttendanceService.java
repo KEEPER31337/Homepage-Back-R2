@@ -3,10 +3,11 @@ package com.keeper.homepage.domain.attendance.application;
 import static com.keeper.homepage.global.error.ErrorCode.ATTENDANCE_NOT_FOUND;
 
 import com.keeper.homepage.domain.attendance.dao.AttendanceRepository;
+import com.keeper.homepage.domain.attendance.dto.response.AttendanceContinuousRankResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendanceInfoResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendancePointResponse;
-import com.keeper.homepage.domain.attendance.dto.response.AttendanceRankResponse;
 import com.keeper.homepage.domain.attendance.dto.response.AttendanceResponse;
+import com.keeper.homepage.domain.attendance.dto.response.AttendanceTodayRankResponse;
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -109,18 +110,18 @@ public class AttendanceService {
         .orElse(0);
   }
 
-  public Page<AttendanceRankResponse> getTodayRanks(Pageable pageable) {
+  public Page<AttendanceTodayRankResponse> getTodayRanks(Pageable pageable) {
     LocalDate now = LocalDate.now();
     Page<Attendance> attendances = attendanceRepository.findAllByDateOrderByRankAsc(now, pageable);
-    return attendances.map(AttendanceRankResponse::from);
+    return attendances.map(AttendanceTodayRankResponse::from);
   }
 
-  public List<AttendanceRankResponse> getContinuousRanks() {
+  public List<AttendanceContinuousRankResponse> getContinuousRanks() {
     LocalDate now = LocalDate.now();
     List<Attendance> attendances = attendanceRepository.findAllByDateOrderByContinuousDayDesc(now);
     return attendances.stream()
         .limit(4)
-        .map(AttendanceRankResponse::from)
+        .map(AttendanceContinuousRankResponse::from)
         .toList();
   }
 
