@@ -42,7 +42,7 @@ public class MainPostResponse {
         .build();
   }
 
-  public static MainPostResponse of(Post post, String writerName, String writerThumbnailPath) {
+  public static MainPostResponse of(Post post, String writerName) {
     return MainPostResponse.builder()
         .id(post.getId())
         .title(post.getTitle())
@@ -50,7 +50,7 @@ public class MainPostResponse {
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
         .writerName(writerName)
-        .writerThumbnailPath(writerThumbnailPath)
+        .writerThumbnailPath(post.getMember().getThumbnailPath())
         .visitCount(post.getVisitCount())
         .isSecret(post.isSecret())
         .registerTime(post.getRegisterTime())

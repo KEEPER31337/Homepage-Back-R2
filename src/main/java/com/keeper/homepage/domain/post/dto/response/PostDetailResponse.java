@@ -99,15 +99,15 @@ public class PostDetailResponse {
         .build();
   }
 
-  public static PostDetailResponse of(Post post, String writerName, String writerThumbnailPath, boolean isLike,
-      boolean isDislike, Post previousPost, Post nextPost) {
+  public static PostDetailResponse of(Post post, String writerName, boolean isLike, boolean isDislike,
+      Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
         .title(post.getTitle())
-        .writerId(1L)
+        .writerId(post.getMember().getId())
         .writerName(writerName)
-        .writerThumbnailPath(writerThumbnailPath)
+        .writerThumbnailPath(post.getMember().getThumbnailPath())
         .registerTime(post.getRegisterTime())
         .updateTime(post.getUpdateTime())
         .visitCount(post.getVisitCount())

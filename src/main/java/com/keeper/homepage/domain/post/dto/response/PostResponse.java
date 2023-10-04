@@ -44,12 +44,12 @@ public class PostResponse {
         .build();
   }
 
-  public static PostResponse of(Post post, String writerName, String writerThumbnailPath) {
+  public static PostResponse of(Post post, String writerName) {
     return PostResponse.builder()
         .id(post.getId())
         .title(post.getTitle())
         .writerName(writerName)
-        .writerThumbnailPath(writerThumbnailPath)
+        .writerThumbnailPath(post.getMember().getThumbnailPath())
         .visitCount(post.getVisitCount())
         .commentCount(post.getComments().size())
         .isSecret(post.isSecret())
