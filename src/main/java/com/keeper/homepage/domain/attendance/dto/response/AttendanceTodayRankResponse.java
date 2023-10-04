@@ -12,25 +12,26 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
-public class AttendanceRankResponse {
+public class AttendanceTodayRankResponse {
 
   private Integer rank;
   private String thumbnailPath;
   private String realName;
   private String generation;
-  private Integer continuousDay;
+  private Integer totalAttendance;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime time;
 
-  public static AttendanceRankResponse from(Attendance attendance) {
-    return AttendanceRankResponse.builder()
+  public static AttendanceTodayRankResponse from(Attendance attendance) {
+    return AttendanceTodayRankResponse.builder()
         .rank(attendance.getRank())
         .thumbnailPath(attendance.getMember().getThumbnailPath())
         .realName(attendance.getMember().getRealName())
         .generation(attendance.getMember().getGeneration())
-        .continuousDay(attendance.getContinuousDay())
+        .totalAttendance(attendance.getMember().getTotalAttendance())
         .time(attendance.getTime())
         .build();
   }
+
 }
