@@ -94,4 +94,9 @@ public class SeminarAttendance {
     SeminarAttendanceStatusType type = getSeminarAttendanceStatus().getType();
     return type.equals(LATENESS);
   }
+
+  public boolean isStatus(SeminarAttendanceStatusType statusType) {
+    SeminarAttendanceStatusType type = getSeminarAttendanceStatus().getType();
+    return type.equals(statusType);
+  }
 }

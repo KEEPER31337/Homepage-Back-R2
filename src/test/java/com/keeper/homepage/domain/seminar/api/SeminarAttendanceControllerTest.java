@@ -311,6 +311,10 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           fieldWithPath("attendances[].attendDate").description("세미나 출석 날짜"),
           fieldWithPath("attendances[].attendanceStatus").description("세미나 출석 상태"),
           fieldWithPath("attendances[].excuse").description("세미나 결석/지각 사유").optional(),
+          fieldWithPath("totalAttendance").description("총 출석일"),
+          fieldWithPath("totalLateness").description("총 지각일"),
+          fieldWithPath("totalAbsence").description("총 결석일"),
+          fieldWithPath("totalPersonal").description("총 개인사정일"),
       };
     }
   }
