@@ -65,7 +65,7 @@ public class SeminarAttendance {
     return Optional.ofNullable(this.getSeminarAttendanceExcuse().getAbsenceExcuse());
   }
 
-  public void changeStatus(String excuse, SeminarAttendanceStatusType type) {
+  public void changeStatus(SeminarAttendanceStatusType type, String excuse) {
     seminarAttendanceStatus = getSeminarAttendanceStatusBy(type);
     if (seminarAttendanceExcuse == null) {
       seminarAttendanceExcuse = SeminarAttendanceExcuse.builder()

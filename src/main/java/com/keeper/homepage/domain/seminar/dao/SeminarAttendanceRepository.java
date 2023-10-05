@@ -19,8 +19,8 @@ public interface SeminarAttendanceRepository extends JpaRepository<SeminarAttend
 
   @Modifying
   @Query("UPDATE SeminarAttendance s "
-      + "SET s.seminarAttendanceStatus.id = 3 "
-      + "WHERE s.seminarAttendanceStatus.id = 5")
+      + "SET s.seminarAttendanceStatus.id = 3 " // 결석
+      + "WHERE s.seminarAttendanceStatus.id = 5") // 출석 전
   void updateAllBeforeAttendanceToAbsence();
 
   @Query("SELECT s FROM SeminarAttendance s "

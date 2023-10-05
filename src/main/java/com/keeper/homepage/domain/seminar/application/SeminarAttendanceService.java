@@ -1,6 +1,8 @@
 package com.keeper.homepage.domain.seminar.application;
 
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.PERSONAL;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_DUPLICATE;
@@ -11,7 +13,6 @@ import com.keeper.homepage.domain.member.application.convenience.MemberFindServi
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.application.convenience.ValidSeminarFindService;
 import com.keeper.homepage.domain.seminar.dao.SeminarAttendanceRepository;
-import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceManageResponse;
 import com.keeper.homepage.domain.seminar.dto.response.SeminarAttendanceResponse;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
@@ -83,11 +84,14 @@ public class SeminarAttendanceService {
   }
 
   @Transactional
-  public void changeStatus(long attendanceId, SeminarAttendanceStatusRequest request) {
+  public void changeStatus(long attendanceId, SeminarAttendanceStatusType statusType, String excuse) {
     SeminarAttendance seminarAttendance = attendanceRepository.findById(attendanceId)
         .orElseThrow(() -> new BusinessException(attendanceId, "attendanceId", SEMINAR_ATTENDANCE_NOT_FOUND));
-
-    seminarAttendance.changeStatus(request.excuse(), request.statusType());
+    if (statusType == LATENESS || statusType == PERSONAL) {
+      seminarAttendance.changeStatus(statusType, excuse);
+      return;
+    }
+    seminarAttendance.changeStatus(statusType);
   }
 
   @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 매일 자정에 실행

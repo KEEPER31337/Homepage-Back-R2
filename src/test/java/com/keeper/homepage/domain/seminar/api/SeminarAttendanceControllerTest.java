@@ -219,7 +219,7 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
                       .description("출석 상태를 변경하고자 하는 세미나 출석 ID")
               ),
               requestFields(
-                  field("excuse", "세미나 사유"),
+                  field("excuse", "세미나 사유").optional(),
                   field("statusType", "출석 타입"))
           )).andReturn();
     }
