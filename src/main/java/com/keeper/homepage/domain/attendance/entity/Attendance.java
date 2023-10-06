@@ -90,6 +90,6 @@ public class Attendance {
   }
 
   public Integer getTotalPoint() {
-    return point + randomPoint + continuousPoint;
+    return point + randomPoint + rankPoint + continuousPoint;
   }
 }
