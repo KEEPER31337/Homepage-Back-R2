@@ -92,11 +92,11 @@ public class SeminarAttendance {
 
   public boolean isLateness() {
     SeminarAttendanceStatusType type = getSeminarAttendanceStatus().getType();
-    return type.equals(LATENESS);
+    return type == LATENESS;
   }
 
   public boolean isStatus(SeminarAttendanceStatusType statusType) {
     SeminarAttendanceStatusType type = getSeminarAttendanceStatus().getType();
-    return type.equals(statusType);
+    return type == statusType;
   }
 }
