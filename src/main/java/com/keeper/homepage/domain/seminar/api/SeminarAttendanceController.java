@@ -53,11 +53,12 @@ public class SeminarAttendanceController {
     return ResponseEntity.ok(responses);
   }
 
-  @PatchMapping("/attendances/{attendanceId}") // TODO: 관리자 권한으로 접근 가능하게 설정
+  @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
+  @PatchMapping("/attendances/{attendanceId}")
   public ResponseEntity<Void> changeAttendanceStatus(
       @PathVariable long attendanceId,
       @RequestBody @Valid SeminarAttendanceStatusRequest request) {
-    seminarAttendanceService.changeStatus(attendanceId, request);
+    seminarAttendanceService.changeStatus(attendanceId, request.statusType(), request.excuse());
     return ResponseEntity.noContent().build();
   }
 }

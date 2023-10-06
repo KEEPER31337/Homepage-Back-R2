@@ -53,7 +53,8 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
 
       assertThat(seminarAttendance.getMember().getId()).isEqualTo(member.getId());
-      assertThat(seminarAttendance.getMember().getProfile().getStudentId()).isEqualTo(member.getProfile().getStudentId());
+      assertThat(seminarAttendance.getMember().getProfile().getStudentId()).isEqualTo(
+          member.getProfile().getStudentId());
       assertThat(seminarAttendance.getSeminar().getId()).isEqualTo(seminar.getId());
       assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(seminar.getAttendanceCode());
       assertThat(seminarAttendance.getSeminar().getName()).isNotNull();
@@ -70,7 +71,7 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 세미나 지각 사유를 저장해야 한다.")
     void should_success_when_saveAttendExcuseSeminar() {
       String excuse = "늦게 일어나서";
-      seminarAttendance.changeStatus(excuse, LATENESS);
+      seminarAttendance.changeStatus(LATENESS, excuse);
       em.flush();
       em.clear();
 
@@ -96,12 +97,12 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
     @DisplayName("DB에 세미나 지각 사유를 수정해야 한다.")
     void should_success_when_modifyAttendExcuseSeminar() {
       String excuse = "늦게 일어났습니다!";
-      seminarAttendance.changeStatus("늦게 일어나서", LATENESS);
+      seminarAttendance.changeStatus(LATENESS, "늦게 일어나서");
       em.flush();
       em.clear();
 
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-      seminarAttendance.changeStatus(excuse, LATENESS);
+      seminarAttendance.changeStatus(LATENESS, excuse);
       SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
           .orElseThrow();
 
@@ -113,10 +114,11 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
   @Nested
   @DisplayName("세미나 참석 삭제 테스트")
   class SeminarAttendanceDeleteTest {
+
     @Test
     @DisplayName("DB에 저장된 세미나 참석 정보를 삭제했을 때 지각 사유도 삭제되어야 한다.")
     void should_deleteSeminarAttendance_when_deleteSeminarAttendanceStatus() {
-      seminarAttendance.changeStatus("늦게 일어나서", LATENESS);
+      seminarAttendance.changeStatus(LATENESS, "늦게 일어나서");
       em.flush();
       em.clear();
 
