@@ -106,6 +106,7 @@ public class SeminarAttendanceService {
       return;
     }
     seminarAttendance.changeStatus(statusType);
+    seminarAttendance.removeExcuse();
   }
 
   @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 매일 자정에 실행

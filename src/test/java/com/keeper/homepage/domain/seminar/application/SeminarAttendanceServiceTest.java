@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.seminar.application;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.휴면회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
-import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.ABSENCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
@@ -81,22 +80,28 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("지각, 개인사정 외의 출석 상태 타입으로 변경할 경우 사유는 변경되지 않는다.")
-    public void 지각_개인사정_외의_출석_상태_타입으로_변경할_경우_사유는_변경되지_않는다() throws Exception {
+    @DisplayName("지각, 개인사정 외의 출석 상태 타입으로 변경할 경우 기존의 사유는 삭제되어야 한다.")
+    public void 지각_개인사정_외의_출석_상태_타입으로_변경할_경우_기존의_사유는_삭제되어야_한다() throws Exception {
       //given
       SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.builder()
           .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
           .build();
       long seminarAttendanceId = seminarAttendance.getId();
+      String excuse = "늦잠";
 
       //when
-      seminarAttendanceService.changeStatus(seminarAttendance.getId(), ABSENCE, null);
+      seminarAttendanceService.changeStatus(seminarAttendanceId, LATENESS, excuse);
+      em.flush();
+      em.clear();
+
+      //when
+      seminarAttendanceService.changeStatus(seminarAttendanceId, BEFORE_ATTENDANCE, null);
       em.flush();
       em.clear();
 
       //then
       SeminarAttendance findSeminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-      assertThat(findSeminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(ABSENCE);
+      assertThat(findSeminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(BEFORE_ATTENDANCE);
       assertThat(findSeminarAttendance.getSeminarAttendanceExcuse()).isNull();
     }
   }

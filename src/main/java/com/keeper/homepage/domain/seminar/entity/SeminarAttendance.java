@@ -2,10 +2,10 @@ package com.keeper.homepage.domain.seminar.entity;
 
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
+import static jakarta.persistence.CascadeType.ALL;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -52,7 +52,7 @@ public class SeminarAttendance {
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatus seminarAttendanceStatus;
 
-  @OneToOne(mappedBy = "seminarAttendance", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @OneToOne(mappedBy = "seminarAttendance", cascade = ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private SeminarAttendanceExcuse seminarAttendanceExcuse;
 
   @Column(name = "attend_time", nullable = false, updatable = false)
@@ -98,5 +98,9 @@ public class SeminarAttendance {
   public boolean isStatus(SeminarAttendanceStatusType statusType) {
     SeminarAttendanceStatusType type = getSeminarAttendanceStatus().getType();
     return type == statusType;
+  }
+
+  public void removeExcuse() {
+    this.seminarAttendanceExcuse = null;
   }
 }
