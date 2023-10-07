@@ -20,29 +20,6 @@ public class SeminarServiceTest extends IntegrationTest {
   @DisplayName("가장 최근에 마감된 세미나 조회 테스트")
   class GetRecentlyDoneSeminarTest {
 
-
-    @Test
-    @DisplayName("지각 마감시간이 지난 세미나를 불러와야 한다.")
-    public void 지각_마감시간이_지난_세미나를_불러와야_한다() throws Exception {
-      //given
-      Long ongoingSeminarId = seminarTestHelper.builder()
-          .openTime(LocalDateTime.now().minusDays(2))
-          .latenessCloseTime(LocalDateTime.now().plusDays(1))
-          .build()
-          .getId();
-      Long doneSeminarId = seminarTestHelper.builder()
-          .openTime(LocalDateTime.now().minusDays(1))
-          .latenessCloseTime(LocalDateTime.now().minusDays(1))
-          .build()
-          .getId();
-
-      //when
-      Long seminarId = seminarService.getRecentlyDoneSeminar().id();
-
-      //then
-      assertThat(seminarId).isEqualTo(doneSeminarId);
-    }
-
     @Test
     @DisplayName("오늘 날짜의 세미나는 불러오면 안된다.")
     public void 오늘_날짜의_세미나는_불러오면_안된다() throws Exception {
@@ -66,8 +43,8 @@ public class SeminarServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("마감된 세미나 중 시작시간 기준으로 현재와 가장 가까운 세미나를 불러와야 한다.")
-    public void 마감된_세미나_중_시작시간_기준으로_현재와_가장_가까운_세미나를_불러와야_한다() throws Exception {
+    @DisplayName("openTime 기준으로 현재와 가장 가까운 세미나를 불러와야 한다.")
+    public void openTime_기준으로_현재와_가장_가까운_세미나를_불러와야_한다() throws Exception {
       seminarTestHelper.builder()
           .openTime(LocalDateTime.now().minusDays(2))
           .latenessCloseTime(LocalDateTime.now().minusDays(2))
