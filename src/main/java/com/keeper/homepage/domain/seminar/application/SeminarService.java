@@ -57,6 +57,7 @@ public class SeminarService {
               .seminar(seminar)
               .member(member)
               .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
+              .attendTime(openDate.atStartOfDay())
               .build());
     });
     return new SeminarIdResponse(seminar.getId());
