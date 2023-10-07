@@ -1,8 +1,10 @@
 package com.keeper.homepage.domain.seminar.application;
 
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.BEFORE_ATTENDANCE;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.LATENESS;
 import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType.PERSONAL;
+import static com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.getSeminarAttendanceStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE;
 import static com.keeper.homepage.global.error.ErrorCode.SEMINAR_ATTENDANCE_DUPLICATE;
@@ -47,8 +49,8 @@ public class SeminarAttendanceService {
   @Transactional
   public SeminarAttendanceResponse attendance(Long seminarId, Member member, String attendanceCode) {
     Seminar seminar = validSeminarFindService.findById(seminarId);
-    SeminarAttendance seminarAttendance = attendanceRepository.findBySeminarAndMember(seminar, member)
-        .orElseThrow(() -> new BusinessException(member.getRealName(), "member", SEMINAR_ATTENDANCE_UNABLE));
+
+    SeminarAttendance seminarAttendance = getSeminarAttendance(seminar, member);
 
     String key = "seminar:" + seminar.getId() + ":memberId:" + member.getId();
     checkAttemptNumberLimit(key);
@@ -58,6 +60,18 @@ public class SeminarAttendanceService {
     SeminarAttendanceStatusType type = seminar.getStatus().getType();
     seminarAttendance.changeStatus(type);
     return SeminarAttendanceResponse.of(seminarAttendance);
+  }
+
+  private SeminarAttendance getSeminarAttendance(Seminar seminar, Member member) {
+    if (!attendanceRepository.existsBySeminarAndMember(seminar, member) && member.isType(정회원)) {
+      return attendanceRepository.save(SeminarAttendance.builder()
+          .seminar(seminar)
+          .member(member)
+          .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
+          .build());
+    }
+    return attendanceRepository.findBySeminarAndMember(seminar, member)
+        .orElseThrow(() -> new BusinessException(member.getRealName(), "member", SEMINAR_ATTENDANCE_UNABLE));
   }
 
   private void checkAttemptNumberLimit(String key) {

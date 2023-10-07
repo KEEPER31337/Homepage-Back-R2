@@ -7,6 +7,7 @@ import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REA
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.LAZY;
@@ -37,6 +38,7 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.member.entity.post.MemberReadPost;
 import com.keeper.homepage.domain.member.entity.rank.MemberRank;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
+import com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum;
 import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
@@ -197,7 +199,7 @@ public class Member {
     this.point = point;
     this.level = level;
     this.totalAttendance = totalAttendance;
-    this.memberType = MemberType.getMemberTypeBy(정회원);
+    this.memberType = getMemberTypeBy(정회원);
     this.memberRank = MemberRank.getMemberRankBy(일반회원);
     this.assignJob(MemberJobType.ROLE_회원);
   }
@@ -436,5 +438,9 @@ public class Member {
   public boolean hasAnyBorrowBooks() {
     return this.bookBorrowInfos.stream()
         .anyMatch(BookBorrowInfo::isInBorrowing);
+  }
+
+  public boolean isType(MemberTypeEnum memberTypeEnum) {
+    return this.memberType.getType() == memberTypeEnum;
   }
 }
