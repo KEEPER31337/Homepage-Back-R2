@@ -239,7 +239,7 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
           field("seminarList[].openTime", "세미나 생성 시간"),
           field("seminarList[].attendanceCloseTime", "출석 마감 시간").optional(),
           field("seminarList[].latenessCloseTime", "지각 마감 시간").optional(),
-          field("seminarList[].attendanceCode", "출석 코드"),
+          field("seminarList[].attendanceCode", "출석 코드").optional(),
           field("seminarList[].name", "세미나명"),
           field("seminarList[].registerTime", "DB 생성 시간"),
           field("seminarList[].updateTime", "DB 업데이트 시간")

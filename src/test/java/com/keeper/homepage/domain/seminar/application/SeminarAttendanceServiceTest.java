@@ -34,8 +34,10 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
     @Test
     @DisplayName("출석코드 5회 초과 입력 시 출석이 불가능해야 한다.")
     public void 출석코드_5회_초과_입력_시_출석이_불가능해야_한다() throws Exception {
+      Member starter = memberTestHelper.generate();
       Member member = memberTestHelper.generate();
       long seminarId = seminarService.save(LocalDate.now()).id();
+      seminarService.start(starter, seminarId, LocalDateTime.now().plusMinutes(5), LocalDateTime.now().plusMinutes(10));
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
 
       String invalidAttendanceCode = "12345";

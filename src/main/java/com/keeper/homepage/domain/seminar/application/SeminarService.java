@@ -47,7 +47,6 @@ public class SeminarService {
     checkDuplicateSeminar(openDate);
     Seminar seminar = seminarRepository.save(Seminar.builder()
         .openTime(openDate.atStartOfDay())
-        .attendanceCode(randomAttendanceCode())
         .build());
 
     List<Member> regularMembers = memberFindService.findAllRegular();
@@ -83,6 +82,7 @@ public class SeminarService {
     checkValidCloseTime(attendanceCloseTime, latenessCloseTime);
 
     Seminar seminar = validSeminarFindService.findById(seminarId);
+    seminar.setAttendanceCode(randomAttendanceCode());
     attendanceStarter(seminar, starter);
     seminar.setStarter(starter);
     seminar.changeCloseTime(attendanceCloseTime, latenessCloseTime);

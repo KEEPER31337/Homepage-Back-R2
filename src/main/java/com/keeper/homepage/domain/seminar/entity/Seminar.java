@@ -93,4 +93,8 @@ public class Seminar extends BaseEntity {
   public void setStarter(Member starter) {
     this.starter = starter;
   }
+
+  public void setAttendanceCode(String attendanceCode) {
+    this.attendanceCode = attendanceCode;
+  }
 }

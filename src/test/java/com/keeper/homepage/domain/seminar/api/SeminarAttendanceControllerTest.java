@@ -77,14 +77,13 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       String securedValue = getSecuredValue(SeminarAttendanceController.class, "attendanceSeminar");
 
       Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
+
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
-
       SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
           .attendanceCode(attendanceCode)
           .build();
-
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
 
       MvcResult mvcResult = attendanceSeminarUsingApi(userToken, seminarId, request)
           .andExpect(status().isCreated())
@@ -114,14 +113,14 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @DisplayName("세미나 중복 출석을 실패한다.")
     public void should_fail_attendanceSeminarDuplicate() throws Exception {
       Long seminarId = createSeminarAndGetId(adminToken, LocalDate.now());
+
+      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
           .getAttendanceCode();
 
       SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
           .attendanceCode(attendanceCode)
           .build();
-
-      startSeminarUsingApi(adminToken, seminarId, seminarStartRequest).andExpect(status().isOk());
       attendanceSeminarUsingApi(userToken, seminarId, request).andExpect(status().isCreated());
       em.flush();
       em.clear();
@@ -149,9 +148,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       long seminarId = seminarService.save(LocalDate.now()).id();
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
       seminar.changeCloseTime(now.plusMinutes(-2), now.plusMinutes(3));
-
-      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
-          .getAttendanceCode();
+      String attendanceCode = "1234";
+      seminar.setAttendanceCode(attendanceCode);
 
       SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
           .attendanceCode(attendanceCode)
@@ -173,9 +171,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       long seminarId = seminarService.save(LocalDate.now()).id();
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
       seminar.changeCloseTime(now.plusMinutes(-2), now.plusMinutes(-1));
-
-      String attendanceCode = seminarRepository.findById(seminarId).orElseThrow()
-          .getAttendanceCode();
+      String attendanceCode = "1234";
+      seminar.setAttendanceCode(attendanceCode);
 
       SeminarAttendanceCodeRequest request = SeminarAttendanceCodeRequest.builder()
           .attendanceCode(attendanceCode)
