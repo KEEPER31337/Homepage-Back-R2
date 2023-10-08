@@ -23,6 +23,7 @@ public class MemberJobController {
 
   private final MemberJobService memberJobService;
 
+  @Secured("ROLE_회원")
   @GetMapping("/executives")
   public ResponseEntity<List<MemberJobResponse>> getExecutives() {
     return ResponseEntity.ok(memberJobService.getExecutives());
