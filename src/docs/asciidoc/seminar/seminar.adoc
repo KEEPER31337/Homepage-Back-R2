@@ -187,9 +187,9 @@ include::{snippets}/delete-seminar/request-cookies.adoc[]
 
 include::{snippets}/delete-seminar/http-response.adoc[]
 
-== *가장 최근에 마감된 세미나 조회*
+== *지난 세미나 중 가장 최근의 세미나 조회*
 
-NOTE: 어제까지의 세미나 중, 가장 현재와 가깝고 마감된 세미나를 조회합니다.
+NOTE: 어제까지의 세미나 중, 가장 현재와 가까운 세미나 1개를 조회합니다.
 
 === 요청
 
