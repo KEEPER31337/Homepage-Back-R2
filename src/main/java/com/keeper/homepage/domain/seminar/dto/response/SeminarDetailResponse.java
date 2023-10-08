@@ -31,7 +31,7 @@ public class SeminarDetailResponse {
         .latenessCloseTime(seminar.getLatenessCloseTime())
         .statusType(seminarAttendanceStatusType.toString())
         .attendanceCode(seminar.getAttendanceCode())
-        .starterId(seminar.getStarter().getId())
+        .starterId(seminar.getStarter() != null ? seminar.getStarter().getId() : null)
         .build();
   }
 }
