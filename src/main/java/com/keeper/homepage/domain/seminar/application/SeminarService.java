@@ -82,9 +82,8 @@ public class SeminarService {
     checkValidCloseTime(attendanceCloseTime, latenessCloseTime);
 
     Seminar seminar = validSeminarFindService.findById(seminarId);
-    seminar.setAttendanceCode(randomAttendanceCode());
     attendanceStarter(seminar, starter);
-    seminar.setStarter(starter);
+    seminar.start(starter, randomAttendanceCode());
     seminar.changeCloseTime(attendanceCloseTime, latenessCloseTime);
     return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }

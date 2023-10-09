@@ -294,6 +294,7 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
         var responseSeminarDescriptors = new FieldDescriptor[]{
             field("id", "세미나 ID"),
             field("openTime", "세미나 생성 시간"),
+            field("attendanceStartTime", "출석 시작 시간").optional(),
             field("attendanceCloseTime", "출석 마감 시간").optional(),
             field("latenessCloseTime", "지각 마감 시간").optional(),
             field("name", "세미나명"),

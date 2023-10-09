@@ -16,6 +16,7 @@ public class SeminarDetailResponse {
   private Long id;
   private String name;
   private LocalDateTime openTime;
+  private LocalDateTime attendanceStartTime;
   private LocalDateTime attendanceCloseTime;
   private LocalDateTime latenessCloseTime;
   private String statusType;
@@ -27,6 +28,7 @@ public class SeminarDetailResponse {
         .id(seminar.getId())
         .name(seminar.getName())
         .openTime(seminar.getOpenTime())
+        .attendanceStartTime(seminar.getAttendanceStartTime())
         .attendanceCloseTime(seminar.getAttendanceCloseTime())
         .latenessCloseTime(seminar.getLatenessCloseTime())
         .statusType(seminarAttendanceStatusType.toString())

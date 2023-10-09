@@ -43,6 +43,9 @@ public class Seminar extends BaseEntity {
   @Column(name = "open_time", nullable = false, updatable = false)
   private LocalDateTime openTime;
 
+  @Column(name = "attendance_start_time")
+  private LocalDateTime attendanceStartTime;
+
   @Column(name = "attendance_close_time")
   private LocalDateTime attendanceCloseTime;
 
@@ -96,5 +99,11 @@ public class Seminar extends BaseEntity {
 
   public void setAttendanceCode(String attendanceCode) {
     this.attendanceCode = attendanceCode;
+  }
+
+  public void start(Member starter, String attendanceCode) {
+    this.starter = starter;
+    this.attendanceCode = attendanceCode;
+    this.attendanceStartTime = LocalDateTime.now();
   }
 }
