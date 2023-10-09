@@ -6,7 +6,6 @@ import com.keeper.homepage.domain.merit.application.MeritTypeService;
 import com.keeper.homepage.domain.merit.dao.MeritLogRepository;
 import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
-import com.keeper.homepage.domain.merit.dto.request.SearchMeritLogListRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse;
 import com.keeper.homepage.domain.merit.dto.response.MeritTypeResponse;
@@ -55,7 +54,7 @@ public class MeritController {
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity
-        .ok(meritLogService.findAllByMeritType(PageRequest.of(page, size, Sort.by("time").ascending()), meritType)
+        .ok(meritLogService.findAllByMeritType(PageRequest.of(page, size, Sort.by("time").descending()), meritType)
             .map(SearchMeritLogListResponse::from));
   }
 
