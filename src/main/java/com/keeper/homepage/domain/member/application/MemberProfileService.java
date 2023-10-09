@@ -1,14 +1,11 @@
 package com.keeper.homepage.domain.member.application;
 
-import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
-
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Profile;
-import com.keeper.homepage.domain.member.entity.embedded.StudentId;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
-import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
@@ -48,17 +45,8 @@ public class MemberProfileService {
 
   @Transactional
   public void updateProfile(Member member, Profile newProfile) {
-    if (!member.getProfile().getStudentId().get().equals(newProfile.getStudentId().get())) {
-      checkIsDuplicateStudentId(newProfile.getStudentId());
-    }
     Profile profile = member.getProfile();
     profile.update(newProfile);
-  }
-
-  private void checkIsDuplicateStudentId(StudentId studentId) {
-    if (memberRepository.existsByProfileStudentId(studentId)) {
-      throw new BusinessException(studentId, "studentId", MEMBER_STUDENT_ID_DUPLICATE);
-    }
   }
 
   @Transactional

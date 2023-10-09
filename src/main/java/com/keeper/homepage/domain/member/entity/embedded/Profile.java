@@ -59,7 +59,6 @@ public class Profile {
 
   public void update(Profile newProfile) {
     this.realName = newProfile.realName;
-    this.studentId = newProfile.studentId;
     this.birthday = newProfile.birthday;
   }
 

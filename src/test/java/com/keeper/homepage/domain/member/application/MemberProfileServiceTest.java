@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.member.application;
 
 import static com.keeper.homepage.domain.member.entity.embedded.Profile.builder;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_EMAIL_DUPLICATE;
-import static com.keeper.homepage.global.error.ErrorCode.MEMBER_STUDENT_ID_DUPLICATE;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_WRONG_PASSWORD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -148,7 +147,6 @@ class MemberProfileServiceTest extends IntegrationTest {
       //given
       Profile profile = builder()
           .realName(RealName.from("손현경"))
-          .studentId(StudentId.from("1234"))
           .build();
 
       //when
@@ -159,23 +157,7 @@ class MemberProfileServiceTest extends IntegrationTest {
       //then
       Member findMember = memberRepository.findById(memberId).orElseThrow();
       assertThat(findMember.getProfile().getRealName()).isEqualTo(profile.getRealName());
-      assertThat(findMember.getProfile().getStudentId()).isEqualTo(profile.getStudentId());
       assertThat(findMember.getProfile().getBirthday()).isNull();
-    }
-
-    @Test
-    @DisplayName("존재하는 학번으로는 프로필 수정을 할 수 없다.")
-    public void 존재하는_학번으로는_프로필_수정을_할_수_없다() throws Exception {
-      //given
-      Profile profile = builder()
-          .realName(RealName.from("손현경"))
-          .studentId(other.getProfile().getStudentId())
-          .build();
-
-      //when & then
-      assertThrows(BusinessException.class, () -> {
-        memberProfileService.updateProfile(member, profile);
-      }, MEMBER_STUDENT_ID_DUPLICATE.getMessage());
     }
 
     @Test

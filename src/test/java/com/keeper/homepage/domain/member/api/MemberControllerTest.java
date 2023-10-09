@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.member.api;
 
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_INVALID;
-import static com.keeper.homepage.domain.member.entity.embedded.StudentId.STUDENT_ID_INVALID;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
@@ -254,7 +253,6 @@ class MemberControllerTest extends MemberApiTestHelper {
 
       ProfileUpdateRequest request = ProfileUpdateRequest.builder()
           .realName("바뀐이름")
-          .studentId("202055589")
           .birthday(LocalDate.of(1970, 1, 1))
           .build();
 
@@ -267,8 +265,6 @@ class MemberControllerTest extends MemberApiTestHelper {
               ),
               requestFields(
                   fieldWithPath("realName").description("실명을 입력해주세요. (" + REAL_NAME_INVALID + ")"),
-                  fieldWithPath("studentId").description(
-                      "학번을 입력해주세요. (" + STUDENT_ID_INVALID + ")"),
                   fieldWithPath("birthday").description("생년월일을 입력해주세요.").optional()
               )));
     }
