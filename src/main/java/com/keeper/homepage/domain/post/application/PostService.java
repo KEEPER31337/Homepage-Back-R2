@@ -151,6 +151,9 @@ public class PostService {
   }
 
   private void checkAccessibleExamPost(Member member, Post post) {
+    if (post.isMine(member)) {
+      return;
+    }
     if (post.isNotice()) {
       return;
     }
