@@ -58,7 +58,7 @@ class BorrowManageService(
             throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_STATUS_IS_NOT_REQUESTS)
         }
 
-        borrowInfo.changeBorrowStatus(대출반려)
+        borrowInfoRepository.delete(borrowInfo)
         borrowLogRepository.save(BookBorrowLog.of(borrowInfo, LogType.대출반려))
     }
 

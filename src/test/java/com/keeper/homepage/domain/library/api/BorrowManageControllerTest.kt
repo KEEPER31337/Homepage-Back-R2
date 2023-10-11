@@ -424,7 +424,6 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                         )
                     )
                 )
-            borrowInfo.borrowStatus.type shouldBe 대출반려
         }
 
         @Test
