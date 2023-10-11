@@ -16,6 +16,7 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.member.entity.type.MemberType;
 import com.keeper.homepage.global.error.BusinessException;
+import com.keeper.homepage.global.error.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,10 @@ public class MemberService {
 
 
   @Transactional
-  public void changePassword(Member me, String newPassword) {
+  public void changePassword(Member me, String oldPassword, String newPassword) {
+    if (me.getProfile().getPassword().isWrongPassword(oldPassword)) {
+      throw new BusinessException(oldPassword, "oldPassword", ErrorCode.MEMBER_WRONG_PASSWORD);
+    }
     me.getProfile().changePassword(newPassword);
   }
 

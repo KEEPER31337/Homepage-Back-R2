@@ -65,19 +65,22 @@ class MemberControllerTest extends MemberApiTestHelper {
   @Nested
   class ChangePassword {
 
+    private final String oldPassword = "oldPassword123!";
     private Member member;
     private Cookie[] tokenCookies;
 
     @BeforeEach
     void setup() {
-      member = memberTestHelper.generate();
+      member = memberTestHelper.builder()
+          .password(Password.from(oldPassword))
+          .build();
       tokenCookies = memberTestHelper.getTokenCookies(member);
     }
 
     @Test
     @DisplayName("유효한 비밀번호로 변경을 요청했을 때 204 NO CONTENT를 반환해야 한다.")
     void should_responseNoContent_when_validPassword() throws Exception {
-      ChangePasswordRequest request = ChangePasswordRequest.from("password123!@#");
+      ChangePasswordRequest request = ChangePasswordRequest.from(oldPassword, "password123!@#");
 
       mockMvc.perform(patch("/members/change-password")
               .cookie(tokenCookies)
@@ -90,9 +93,22 @@ class MemberControllerTest extends MemberApiTestHelper {
                   cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
                   cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")),
               requestFields(
+                  fieldWithPath("oldPassword").description("현재 패스워드"),
                   fieldWithPath("newPassword").description("새로운 패스워드")),
               responseHeaders(
                   headerWithName(HttpHeaders.LOCATION).description("비밀번호 변경한 리소스의 위치입니다."))));
+    }
+
+    @Test
+    @DisplayName("원래 비밀번호가 아니면 400 Bad Request를 반환해야 한다.")
+    void should_responseBadRequest_when_wrongPassword() throws Exception {
+      ChangePasswordRequest request = ChangePasswordRequest.from("wrongPassword", "password123!@#");
+
+      mockMvc.perform(patch("/members/change-password")
+              .cookie(tokenCookies)
+              .contentType(APPLICATION_JSON)
+              .content(asJsonString(request)))
+          .andExpect(status().isBadRequest());
     }
   }
 
@@ -331,7 +347,6 @@ class MemberControllerTest extends MemberApiTestHelper {
       memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
       memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
       memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-
 
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 

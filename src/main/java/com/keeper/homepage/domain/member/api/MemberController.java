@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.member.api;
 
 import static com.keeper.homepage.domain.auth.application.EmailAuthService.EMAIL_EXPIRED_SECONDS;
 
-import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.dto.request.EmailAuthRequest;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.member.application.MemberProfileService;
@@ -49,13 +48,12 @@ public class MemberController {
 
   private final MemberService memberService;
   private final MemberProfileService memberProfileService;
-  private final EmailAuthService emailAuthService;
 
   @PatchMapping("/change-password")
   public ResponseEntity<Void> changePassword(
       @LoginMember Member me,
       @RequestBody @Valid ChangePasswordRequest request) {
-    memberService.changePassword(me, request.getNewPassword());
+    memberService.changePassword(me, request.getOldPassword(), request.getNewPassword());
     return ResponseEntity.noContent()
         .location(URI.create("/members/me"))
         .build();
