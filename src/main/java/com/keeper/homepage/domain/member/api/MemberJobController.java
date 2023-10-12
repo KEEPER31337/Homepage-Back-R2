@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
-@Secured("ROLE_회장")
+@Secured({"ROLE_회장", "ROLE_부회장"})
 public class MemberJobController {
 
   private final MemberJobService memberJobService;

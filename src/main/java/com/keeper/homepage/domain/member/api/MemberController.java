@@ -127,7 +127,7 @@ public class MemberController {
     return ResponseEntity.ok(memberService.getMemberProfile(me, memberId));
   }
 
-  @Secured({"ROLE_회장", "ROLE_서기"})
+  @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
   @PatchMapping("/types/{typeId}")
   public ResponseEntity<Void> updateMemberType(
       @PathVariable long typeId,
@@ -163,7 +163,7 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
-  @Secured({"ROLE_회장", "ROLE_서기"})
+  @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
   @DeleteMapping("/admin")
   public ResponseEntity<Void> deleteMemberByAdmin(
       @RequestBody @Valid AdminDeleteMemberRequest request
