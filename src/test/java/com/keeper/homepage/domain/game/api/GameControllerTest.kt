@@ -61,7 +61,7 @@ class GameControllerTest : GameApiTestHelper() {
                             fieldWithPath("[].realName").description("실명"),
                             fieldWithPath("[].generation").description("기수"),
                             fieldWithPath("[].todayEarnedPoint").description("오늘 얻은 포인트"),
-                            fieldWithPath("[].profileImageUrl").description("프로필 이미지 url (상대경로)"),
+                            fieldWithPath("[].thumbnailPath").description("프로필 이미지 url (상대경로)"),
                             fieldWithPath("[].memberId").description("회원 id")
                         )
                     )

@@ -7,7 +7,7 @@ data class GameRankResponse(
     val realName: String,
     val generation: String,
     val todayEarnedPoint: Int,
-    val profileImageUrl: String?,
+    val thumbnailPath: String?,
     val memberId: Long,
 ) {
     constructor(rank: Int, member: Member, todayEarnedPoint: Int) : this(
@@ -15,7 +15,7 @@ data class GameRankResponse(
         realName = member.realName,
         generation = member.generation.toString(),
         todayEarnedPoint = todayEarnedPoint,
-        profileImageUrl = member.thumbnailPath,
+        thumbnailPath = member.thumbnailPath,
         memberId = member.id,
     )
 }
