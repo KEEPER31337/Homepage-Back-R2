@@ -26,7 +26,8 @@ public class MemberApiTestHelper extends IntegrationTest {
     return new FieldDescriptor[]{
         fieldWithPath("realName").description("회원의 실명"),
         fieldWithPath("generation").description("회원의 기수"),
-        fieldWithPath("point").description("회원의 포인트")
+        fieldWithPath("point").description("회원의 포인트"),
+        fieldWithPath("thumbnailPath").description("회원의 썸네일 주소")
     };
   }
 

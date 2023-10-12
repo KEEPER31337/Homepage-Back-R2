@@ -15,12 +15,14 @@ public class MemberPointRankResponse {
   private String realName;
   private String generation;
   private Integer point;
+  private String thumbnailPath;
 
   public static MemberPointRankResponse from(Member member) {
     return MemberPointRankResponse.builder()
         .realName(member.getRealName())
         .generation(member.getGeneration())
         .point(member.getPoint())
+        .thumbnailPath(member.getThumbnailPath())
         .build();
   }
 }
