@@ -58,12 +58,14 @@ class BookManageControllerTest : BookManageApiTestHelper() {
 
         @BeforeEach
         fun setUp() {
-            bookList = (0..3).map { bookTestHelper.builder().totalQuantity(2).build() }
-            borrowList = (0..3).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출중, book = bookList[it]) }
-            bookBorrowInfoTestHelper.generate(borrowStatus = 반납대기, book = bookList[0])
-            bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기, book = bookList[0])
-            bookBorrowInfoTestHelper.generate(borrowStatus = 대출반려, book = bookList[0])
-            bookBorrowInfoTestHelper.generate(borrowStatus = 반납완료, book = bookList[0])
+            val bookCount = 4
+            val borrowCount = 4
+            bookList = (1..bookCount).map { bookTestHelper.builder().totalQuantity(2).build() }
+            borrowList = (1..borrowCount).map { bookBorrowInfoTestHelper.generate(borrowStatus = 대출중, book = bookList[it - 1]) }
+            bookBorrowInfoTestHelper.generate(borrowStatus = 반납대기, book = bookList[bookCount - 1])
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출대기, book = bookList[bookCount - 1])
+            bookBorrowInfoTestHelper.generate(borrowStatus = 대출반려, book = bookList[bookCount - 1])
+            bookBorrowInfoTestHelper.generate(borrowStatus = 반납완료, book = bookList[bookCount - 1])
             validParams = multiValueMapOf(
                 "search" to "",
                 "page" to "0",
@@ -77,16 +79,16 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val securedValue = getSecuredValue(BookManageController::class.java, "getBooks")
             callGetBooksApi(validParams).andDo(MockMvcResultHandlers.print())
                 .andExpect(status().isOk)
-                .andExpect(jsonPath("$.content[0].bookId").value(bookList[0].id))
-                .andExpect(jsonPath("$.content[0].title").value(bookList[0].title))
-                .andExpect(jsonPath("$.content[0].author").value(bookList[0].author))
-                .andExpect(jsonPath("$.content[0].totalQuantity").value(bookList[0].totalQuantity))
-                .andExpect(jsonPath("$.content[0].currentQuantity").value(bookList[0].currentQuantity))
-                .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[0].bookDepartment.type.name))
-                .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[0].thumbnailPath))
-                .andExpect(jsonPath("$.content[0].borrowInfos[0].borrowInfoId").value(borrowList[0].id))
-                .andExpect(jsonPath("$.content[1].borrowInfos[0].borrowInfoId").value(borrowList[1].id))
-                .andExpect(jsonPath("$.content[2].borrowInfos[0].borrowInfoId").value(borrowList[2].id))
+                .andExpect(jsonPath("$.content[0].bookId").value(bookList[3].id))
+                .andExpect(jsonPath("$.content[0].title").value(bookList[3].title))
+                .andExpect(jsonPath("$.content[0].author").value(bookList[3].author))
+                .andExpect(jsonPath("$.content[0].totalQuantity").value(bookList[3].totalQuantity))
+                .andExpect(jsonPath("$.content[0].currentQuantity").value(bookList[3].currentQuantity))
+                .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[3].bookDepartment.type.name))
+                .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[3].thumbnailPath))
+                .andExpect(jsonPath("$.content[0].borrowInfos[0].borrowInfoId").value(borrowList[3].id))
+                .andExpect(jsonPath("$.content[1].borrowInfos[0].borrowInfoId").value(borrowList[2].id))
+                .andExpect(jsonPath("$.content[2].borrowInfos[0].borrowInfoId").value(borrowList[1].id))
                 .andExpect(jsonPath("$.content[0].borrowInfos.length()").value(2))
                 .andExpect(jsonPath("$.content[1].borrowInfos.length()").value(1))
                 .andExpect(jsonPath("$.content[2].borrowInfos.length()").value(1))

@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+// TODO: BookDepartment는 사용하지 않기로 결정. 누군가가 DB column이랑 코드 작업을 해주길...
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_department")
