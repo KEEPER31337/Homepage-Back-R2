@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class GitLink {
 
   public static final String GIT_LINK_INVALID = "https://github.com 로 시작하는 깃허브 주소를 입력해주세요.";
-  public static final String GIT_LINK_REGEX = "^https://github.com/\\S+$";
+  public static final String GIT_LINK_REGEX = "^https://github.com.*";
 
   private static final Pattern GIT_LINK_FORMAT = Pattern.compile(GIT_LINK_REGEX);
 
