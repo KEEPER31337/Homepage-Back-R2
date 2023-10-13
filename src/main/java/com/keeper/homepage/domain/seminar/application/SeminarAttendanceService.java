@@ -109,7 +109,8 @@ public class SeminarAttendanceService {
     seminarAttendance.removeExcuse();
   }
 
-  @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul") // 매일 자정에 실행
+  @Scheduled(cron = "0 50 23 * * ?", zone = "Asia/Seoul") // 매일 23시 50분에 실행
+  @Transactional
   public void changeAllBeforeAttendanceToAbsence() {
     attendanceRepository.updateAllBeforeAttendanceToAbsence();
   }
