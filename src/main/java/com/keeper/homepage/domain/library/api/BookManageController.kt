@@ -86,11 +86,11 @@ class BookManageController(
     @PatchMapping("/{bookId}/thumbnail")
     fun modifyBookThumbnail(
         @PathVariable bookId: Long,
-        @ModelAttribute newThumbnail: MultipartFile?
+        @ModelAttribute thumbnail: MultipartFile?
     ): ResponseEntity<Void> {
         bookManageService.modifyBookThumbnail(
             bookId,
-            newThumbnail
+            thumbnail
         )
         return ResponseEntity.noContent().build()
     }
