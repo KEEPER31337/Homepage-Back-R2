@@ -74,6 +74,7 @@ public enum ErrorCode {
   STUDY_NOT_FOUND("존재하지 않는 스터디입니다.", HttpStatus.NOT_FOUND),
   STUDY_INACCESSIBLE("스터디장만 접근할 수 있습니다.", HttpStatus.BAD_REQUEST),
   STUDY_LINK_NEED("스터디 링크는 하나 이상 필수입니다.", HttpStatus.BAD_REQUEST),
+  STUDY_ETC_LINK_INVALID("스터디 ETC의 종류와 링크를 입력해주세요.", HttpStatus.BAD_REQUEST),
   STUDY_HEAD_MEMBER_CANNOT_LEAVE("스터디장은 스터디 탈퇴 할 수 없습니다.", HttpStatus.BAD_REQUEST),
   // GAME
   IS_ALREADY_PLAYED("이미 게임 플레이 가능 횟수만큼 플레이 하였습니다.", HttpStatus.BAD_REQUEST),

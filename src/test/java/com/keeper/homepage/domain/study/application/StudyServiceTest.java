@@ -110,7 +110,8 @@ public class StudyServiceTest extends IntegrationTest {
           .year(2023)
           .season(2)
           .link(Link.builder()
-              .etcLink("etc.com")
+              .etcTitle("ETC")
+              .etcLink("https://etc.com")
               .build())
           .build();
       Member afterMember = memberTestHelper.generate();

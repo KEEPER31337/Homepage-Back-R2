@@ -33,4 +33,8 @@ public class Link {
   public boolean isEmpty() {
     return gitLink == null && notionLink == null && etcLink == null;
   }
+
+  public boolean isInValidEtc() {
+    return (etcTitle != null && etcLink == null) || (etcTitle == null && etcLink != null);
+  }
 }

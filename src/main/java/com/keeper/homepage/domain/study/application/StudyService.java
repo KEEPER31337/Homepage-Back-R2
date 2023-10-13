@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.study.application;
 
+import static com.keeper.homepage.global.error.ErrorCode.STUDY_ETC_LINK_INVALID;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.STUDY_LINK_NEED;
 
@@ -48,6 +49,9 @@ public class StudyService {
   private void checkLink(Study study) {
     if (study.getLink().isEmpty()) {
       throw new BusinessException(study.getId(), "studyId", STUDY_LINK_NEED);
+    }
+    if (study.getLink().isInValidEtc()) {
+      throw new BusinessException(study.getId(), "studyId", STUDY_ETC_LINK_INVALID);
     }
   }
 

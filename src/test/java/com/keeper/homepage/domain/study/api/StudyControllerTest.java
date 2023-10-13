@@ -71,7 +71,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .season(1)
           .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
           .notionLink("https://www.notion.so/Java-Spring")
-          .etcLink("etc.com")
+          .etcTitle("ETC")
+          .etcLink("https://etc.com")
           .memberIds(List.of(other.getId()))
           .build();
 
