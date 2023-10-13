@@ -131,6 +131,8 @@ public class AttendanceControllerTest extends IntegrationTest {
     public void 유효한_요청일_경우_오늘_출석_포인트_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AttendanceController.class, "getTodayAttendancePoint");
 
+      attendanceTestHelper.builder().member(member).build();
+
       mockMvc.perform(get("/attendances/point")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isOk())
@@ -151,6 +153,8 @@ public class AttendanceControllerTest extends IntegrationTest {
     @DisplayName("유효한 요청일 경우 출석 정보 조회는 성공한다.")
     public void 유효한_요청일_경우_출석_정보_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AttendanceController.class, "getAttendanceInfo");
+
+      attendanceTestHelper.builder().member(member).build();
 
       mockMvc.perform(get("/attendances/members/{memberId}/info", member.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
@@ -177,6 +181,7 @@ public class AttendanceControllerTest extends IntegrationTest {
     public void 유효한_요청일_경우_출석_정보_목록_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(AttendanceController.class, "getTotalAttendance");
 
+      attendanceTestHelper.builder().member(member).build();
       LocalDate now = LocalDate.now();
 
       mockMvc.perform(get("/attendances/members/{memberId}/total", member.getId())

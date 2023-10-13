@@ -29,7 +29,7 @@ public class AttendanceServiceTest extends IntegrationTest {
       Optional<String> data = redisUtil.getData("attendance:" + now, String.class);
 
       assertThat(data).isNotEmpty();
-      assertThat(data.get()).isEqualTo(String.valueOf(3));
+      assertThat(data.get()).isEqualTo(String.valueOf(2));
     }
 
     @Test

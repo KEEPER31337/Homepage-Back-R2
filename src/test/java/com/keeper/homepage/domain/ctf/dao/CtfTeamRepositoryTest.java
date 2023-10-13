@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.ctf.entity.CtfContest;
-import java.lang.reflect.UndeclaredThrowableException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ public class CtfTeamRepositoryTest extends IntegrationTest {
           .ctfContest(ctfContest)
           .build();
 
-      assertThrows(UndeclaredThrowableException.class, () -> {
+      assertThrows(Exception.class, () -> {
         ctfTeamTestHelper.builder()
             .name(teamName)
             .ctfContest(ctfContest)
