@@ -45,12 +45,14 @@ public class StudyUpdateRequest {
   private String gitLink;
 
   @Nullable
+  @Pattern(regexp = "^https://.*", message = "https://로 시작하는 링크를 입력해주세요.")
   private String notionLink;
 
   @Nullable
   private String etcTitle;
 
   @Nullable
+  @Pattern(regexp = "^https://.*", message = "https://로 시작하는 링크를 입력해주세요.")
   private String etcLink;
 
   @NotNull(message = "회원의 ID 리스트를 입력해주세요.")
@@ -63,7 +65,7 @@ public class StudyUpdateRequest {
         .year(year)
         .season(season)
         .link(Link.builder()
-            .gitLink(gitLink == null ? null : GitLink.from(gitLink))
+            .gitLink(gitLink != null ? GitLink.from(gitLink) : null)
             .notionLink(notionLink)
             .etcTitle(etcTitle)
             .etcLink(etcLink)
