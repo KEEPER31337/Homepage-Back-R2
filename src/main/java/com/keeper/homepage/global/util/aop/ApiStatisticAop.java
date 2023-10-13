@@ -1,6 +1,5 @@
 package com.keeper.homepage.global.util.aop;
 
-import java.lang.reflect.Proxy;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,7 @@ public class ApiStatisticAop {
 
   private final ApiStatistic apiStatistic;
 
+  /* TODO: Spring 스케줄러 메서드 실행이 안되서 주석 처리.
   @Around("execution(* javax.sql.DataSource.getConnection())")
   public Object getConnection(ProceedingJoinPoint joinPoint) throws Throwable {
     Object connection = joinPoint.proceed();
@@ -27,7 +27,7 @@ public class ApiStatisticAop {
         connection.getClass().getInterfaces(),
         new ConnectionProxyHandler(connection, apiStatistic)
     );
-  }
+  }*/
 
   @Around("within(@org.springframework.web.bind.annotation.RestController *)")
   public Object calculateExecutionTime(final ProceedingJoinPoint joinPoint) throws Throwable {
