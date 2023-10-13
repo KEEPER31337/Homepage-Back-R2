@@ -17,14 +17,9 @@ import com.keeper.homepage.global.util.web.WebUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +30,6 @@ public class AttendanceService {
 
   private final AttendanceRepository attendanceRepository;
   private final RedisUtil redisUtil;
-  private final StringRedisTemplate redisTemplate;
   private final MemberFindService memberFindService;
 
   private static final String ATTENDANCE_MESSAGE = "자동 출석입니다.";
@@ -48,43 +42,35 @@ public class AttendanceService {
   public void create(long memberId) {
     Member member = memberFindService.findById(memberId);
     LocalDateTime now = LocalDateTime.now();
+    if (attendanceRepository.existsByMemberAndDate(member, now.toLocalDate())) {
+      return;
+    }
 
     String rankKey = "attendance:" + now.toLocalDate();
     String memberKey = "attendance:member:" + memberId;
 
-    Optional<String> todayRank = redisUtil.getData(rankKey, String.class);
-    final int rank = todayRank.map(Integer::parseInt).orElse(1);
+    int rank = redisUtil.increaseAndGetWithExpire(rankKey, RedisUtil.toMidNight()).intValue();
+    redisUtil.setDataExpire(memberKey, rank, RedisUtil.toMidNight());
 
-    redisTemplate.execute(new SessionCallback() {
-      @Override
-      public Object execute(RedisOperations operations) throws DataAccessException {
-        operations.multi(); // transaction start
-        redisUtil.setDataExpire(memberKey, rank, RedisUtil.toMidNight());
-
-        int randomPoint = getRandomPoint();
-        int rankPoint = getRankPoint(rank);
-        int continuousDay = getContinuousDay(member, now.toLocalDate());
-        int continuousPoint = getContinuousPoint(continuousDay);
-        Attendance attendance = Attendance.builder()
-            .time(now)
-            .date(now.toLocalDate())
-            .point(DAILY_POINT)
-            .randomPoint(randomPoint)
-            .rank(rank)
-            .rankPoint(rankPoint)
-            .continuousDay(continuousDay)
-            .continuousPoint(continuousPoint)
-            .ipAddress(WebUtil.getUserIP())
-            .greetings(ATTENDANCE_MESSAGE)
-            .member(member)
-            .build();
-        attendanceRepository.save(attendance);
-        member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
-
-        redisUtil.setDataExpire(rankKey, rank + 1, RedisUtil.toMidNight());
-        return operations.exec(); // transaction end
-      }
-    });
+    int randomPoint = getRandomPoint();
+    int rankPoint = getRankPoint(rank);
+    int continuousDay = getContinuousDay(member, now.toLocalDate());
+    int continuousPoint = getContinuousPoint(continuousDay);
+    Attendance attendance = Attendance.builder()
+        .time(now)
+        .date(now.toLocalDate())
+        .point(DAILY_POINT)
+        .randomPoint(randomPoint)
+        .rank(rank)
+        .rankPoint(rankPoint)
+        .continuousDay(continuousDay)
+        .continuousPoint(continuousPoint)
+        .ipAddress(WebUtil.getUserIP())
+        .greetings(ATTENDANCE_MESSAGE)
+        .member(member)
+        .build();
+    attendanceRepository.save(attendance);
+    member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
   }
 
   private int getRandomPoint() {

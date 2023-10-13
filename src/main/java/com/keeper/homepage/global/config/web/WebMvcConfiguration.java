@@ -25,7 +25,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
   private final LoginMemberArgumentResolver loginMemberArgumentResolver;
   private final AttendanceInterceptor attendanceInterceptor;
 
-  private static final String[] ATTENDANCE_PATH = {"/about/**", "/members/**", "/attendances/**"};
+  private static final String[] ATTENDANCE_PATH = {"/posts/trend", "/members/point-rank", "/members/point"};
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
