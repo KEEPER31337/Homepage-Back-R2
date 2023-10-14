@@ -56,9 +56,9 @@ public class BookService {
     return switch (searchType) {
       case ALL -> bookRepository.findAllByTitleOrAuthor(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
-      case TITLE -> bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
+      case TITLE -> bookRepository.findAllByTitleIgnoreCaseContainingOrderByIdDesc(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
-      case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
+      case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContainingOrderByIdDesc(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       default -> throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
     };

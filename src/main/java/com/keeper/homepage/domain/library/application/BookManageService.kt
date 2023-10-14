@@ -28,8 +28,8 @@ class BookManageService(
     fun getBooks(search: String, searchType: BookSearchType, pageable: PageRequest): Page<Book> {
         return when (searchType) {
             BookSearchType.ALL -> bookRepository.findAllByTitleOrAuthor(search, pageable)
-            BookSearchType.TITLE -> bookRepository.findAllByTitleIgnoreCaseContaining(search, pageable)
-            BookSearchType.AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContaining(search, pageable)
+            BookSearchType.TITLE -> bookRepository.findAllByTitleIgnoreCaseContainingOrderByIdDesc(search, pageable)
+            BookSearchType.AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContainingOrderByIdDesc(search, pageable)
         }
     }
 
