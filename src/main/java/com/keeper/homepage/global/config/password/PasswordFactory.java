@@ -27,9 +27,17 @@ public class PasswordFactory {
 
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-      return createDelegatingPasswordEncoder().matches(rawPassword, encodedPassword)
+      return isMatchInDelegatingPasswordEncoder(rawPassword, encodedPassword)
           || matchesWithPBKDF2SHA256(rawPassword.toString(), encodedPassword)
           || matchesWithMD5(rawPassword.toString(), encodedPassword);
+    }
+
+    private boolean isMatchInDelegatingPasswordEncoder(CharSequence rawPassword, String encodedPassword) {
+      try {
+        return createDelegatingPasswordEncoder().matches(rawPassword, encodedPassword);
+      } catch (Exception ignore) {
+      }
+      return false;
     }
   };
 
