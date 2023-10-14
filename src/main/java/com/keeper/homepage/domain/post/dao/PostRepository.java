@@ -35,7 +35,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.isTemp = false "
       + "AND p.id <> 1 " // virtual post
       + "ORDER BY p.registerTime DESC")
-  List<Post> findAllRecent();
+  List<Post> findAllRecent(Pageable pageable);
 
   /**
    * 카테고리 + 공지글 제외 + 임시글 제외 + 등록시간 최신순 정렬

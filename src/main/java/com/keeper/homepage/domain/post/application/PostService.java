@@ -69,6 +69,7 @@ public class PostService {
   private static final int EXAM_ACCESSIBLE_POINT = 30000;
   private static final int EXAM_READ_DEDUCTION_POINT = 10000;
   private static final String EXAM_READ_POINT_MESSAGE = "족보 열람";
+  private static final int RECENT_POSTING_COUNT = 10;
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
@@ -361,9 +362,10 @@ public class PostService {
   }
 
   public List<MainPostResponse> getRecentPosts() {
-    return postRepository.findAllRecent().stream()
+    return postRepository.findAllRecent(PageRequest.of(0, RECENT_POSTING_COUNT))
+        .stream()
         .map(this::getMainPostResponse)
-        .limit(10)
+        .limit(RECENT_POSTING_COUNT)
         .toList();
   }
 
