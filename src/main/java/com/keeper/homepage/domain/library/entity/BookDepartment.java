@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 // TODO: BookDepartment는 사용하지 않기로 결정. 누군가가 DB column이랑 코드 작업을 해주길...
+// TODO: 일반 도서 / 스터디용 도서 구분해야 하면 이 컬럼을 수정해서 사용해도 좋을 듯
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "book_department")
