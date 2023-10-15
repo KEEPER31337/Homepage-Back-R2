@@ -21,6 +21,7 @@ import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
+import com.keeper.homepage.global.util.semester.SemesterUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -153,7 +154,12 @@ public class SeminarService {
   }
 
   public SeminarListResponse findAll() {
-    return new SeminarListResponse(validSeminarFindService.findAll());
+    LocalDate now = LocalDate.now();
+    LocalDate semesterFirstDate = SemesterUtil.getSemesterFirstDate(now);
+    return new SeminarListResponse(seminarRepository.findAllRecent(semesterFirstDate)
+        .stream()
+        .map(SeminarResponse::from)
+        .toList());
   }
 
   public SeminarIdResponse getRecentlyDoneSeminar() {

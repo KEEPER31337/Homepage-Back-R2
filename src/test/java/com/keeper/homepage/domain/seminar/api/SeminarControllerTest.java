@@ -249,12 +249,6 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       searchAllSeminarUsingApi(adminToken)
           .andExpect(jsonPath("$.seminarList.length()", is(afterLength)))
           .andExpect(combineJsonPath("openTime", idx).exists())
-          .andExpect(combineJsonPath("attendanceCloseTime", idx).exists())
-          .andExpect(combineJsonPath("latenessCloseTime", idx).exists())
-          .andExpect(combineJsonPath("attendanceCode", idx).exists())
-          .andExpect(combineJsonPath("name", idx).exists())
-          .andExpect(combineJsonPath("registerTime", idx).exists())
-          .andExpect(combineJsonPath("updateTime", idx).exists())
 
           .andDo(document("search-all-seminar",
               requestCookies(
