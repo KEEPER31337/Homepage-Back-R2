@@ -55,7 +55,8 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
   void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
   @Query("SELECT s FROM Seminar s "
-      + "WHERE DATE(s.openTime) >= :localDate")
+      + "WHERE DATE(s.openTime) >= :localDate "
+      + "ORDER BY s.openTime DESC")
   List<Seminar> findAllRecent(@Param("localDate") LocalDate localDate);
 
 }
