@@ -1,22 +1,17 @@
-name: Deploy Keeper Development Server
+name: Deploy Keeper Production Server
 
 on:
   push:
-    branches: [develop]
+    branches: [main]
 
 jobs:
-  deploy_development:
+  deploy_production:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set timezone
-        uses: szenius/set-timezone@v1.2
-        with:
-          timezoneLinux: "Asia/Seoul"
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -28,8 +23,6 @@ jobs:
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          mask-password: 'true'
 
       - name: Setup JDK
         uses: actions/setup-java@v3
@@ -119,19 +112,19 @@ jobs:
         run: |
           aws s3 mv --region ${{ secrets.AWS_REGION }} \
           ${GITHUB_SHA::8}.tar.gz \
-          ${{ secrets.S3_DEV_BACK_LOCATION }}/${GITHUB_SHA::8}.tar.gz
+          ${{ secrets.S3_PROD_BACK_LOCATION }}/${GITHUB_SHA::8}.tar.gz
 
       - name: Deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.SSH_HOST_DEV }}
-          username: ${{ secrets.SSH_USERNAME_DEV }}
-          port: ${{ secrets.SSH_PORT_DEV }}
-          key: ${{ secrets.SSH_KEY_DEV }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
           envs: GITHUB_SHA
           script: |
             cd ~/keeper/renewal/deploy
-            ./deploy_server.sh ${GITHUB_SHA::8} dev
+            ./deploy_server.sh ${GITHUB_SHA::8} prod
 
       - name: Delete Previous Gradle Cache
         run: |
@@ -155,5 +148,5 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
           status: ${{ job.status }}
-          author_name: Keeper Devlopment Backend CICD
+          author_name: Keeper Production Backend CICD
           fields: repo, commit, message, author, action, took
