@@ -26,4 +26,13 @@ public class AttendanceInfoResponse {
         .todayPoint(attendance.getTotalPoint())
         .build();
   }
+
+  public static AttendanceInfoResponse recent(Member member, Attendance attendance) {
+    return AttendanceInfoResponse.builder()
+        .totalAttendance(member.getTotalAttendance())
+        .continuousDay(attendance.getContinuousDay())
+        .todayRank(null)
+        .todayPoint(0)
+        .build();
+  }
 }

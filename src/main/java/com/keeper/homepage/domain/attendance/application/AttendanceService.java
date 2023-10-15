@@ -17,6 +17,7 @@ import com.keeper.homepage.global.util.web.WebUtil;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -121,9 +122,13 @@ public class AttendanceService {
   public AttendanceInfoResponse getAttendanceInfo(long memberId) {
     Member member = memberFindService.findById(memberId);
     LocalDate now = LocalDate.now();
-    return attendanceRepository.findByMemberAndDate(member, now)
-        .map(attendance -> AttendanceInfoResponse.of(member, attendance))
-        .orElseThrow(() -> new BusinessException(member.getId(), "memberId", ATTENDANCE_NOT_FOUND));
+    Optional<Attendance> todayAttendance = attendanceRepository.findByMemberAndDate(member, now);
+    if (todayAttendance.isPresent()) {
+      return AttendanceInfoResponse.of(member, todayAttendance.get());
+    }
+    Attendance recentAttendance = attendanceRepository.findTopByMemberOrderByDateDesc(member)
+        .orElse(Attendance.builder().build());
+    return AttendanceInfoResponse.recent(member, recentAttendance);
   }
 
   public List<AttendanceResponse> getTotalAttendance(long memberId, LocalDate localDate) {

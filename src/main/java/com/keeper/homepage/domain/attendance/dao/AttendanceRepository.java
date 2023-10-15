@@ -17,6 +17,8 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
   Optional<Attendance> findByMemberAndDate(Member member, LocalDate date);
 
+  Optional<Attendance> findTopByMemberOrderByDateDesc(Member member);
+
   Page<Attendance> findAllByDateOrderByRankAsc(LocalDate date, Pageable pageable);
 
   List<Attendance> findAllByDateOrderByContinuousDayDesc(LocalDate date);
