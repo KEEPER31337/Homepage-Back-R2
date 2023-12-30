@@ -12,6 +12,6 @@ public class SignOutService {
   private final AuthCookieService authCookieService;
 
   public void signOut(Member me, HttpServletResponse response) {
-    authCookieService.setCookieExpired(String.valueOf(me.getId()), response);
+    authCookieService.setCookieExpiredWithRedis(String.valueOf(me.getId()), response);
   }
 }
