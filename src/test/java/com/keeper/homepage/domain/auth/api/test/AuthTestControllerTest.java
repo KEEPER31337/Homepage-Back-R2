@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
+import com.keeper.homepage.global.config.security.data.JwtType;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import java.util.Objects;
@@ -20,6 +21,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -181,10 +184,14 @@ class AuthTestControllerTest extends IntegrationTest {
       @Test
       @DisplayName("AT가 만료되었으면 200 OK를 응답한다.")
       void should_200OK_when_accessTokenExpired() throws Exception {
-        String expiredToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDQ1MjM1NSwiZXhwIjoxNjc0NDUyMzU1fQ.FoRbgOGlzLwizp9jQNmM6pET4zA8TPXa56zZlsl6Al8";
-        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredToken);
+        JwtType MOCKED_ACCESS_TOKEN = Mockito.spy(ACCESS_TOKEN);
+        Mockito.doReturn(0L).when(MOCKED_ACCESS_TOKEN).getExpiredMillis();
+
+        String expiredAccessToken = jwtTokenProvider.createAccessToken(MOCKED_ACCESS_TOKEN, 0L, ROLE_회원);
+
+        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredAccessToken);
         expiredCookie.setHttpOnly(true);
-        assertThatThrownBy(() -> jwtTokenProvider.getAuthId(expiredToken))
+        assertThatThrownBy(() -> jwtTokenProvider.getAuthId(expiredAccessToken))
             .isInstanceOf(ExpiredJwtException.class);
 
         MvcResult result = callRefreshApi(refreshCookie, expiredCookie)
