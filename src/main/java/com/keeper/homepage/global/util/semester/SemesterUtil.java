@@ -26,6 +26,9 @@ public class SemesterUtil {
     if (FIRST_SEMESTER.contains(now.getMonth())) {
       return LocalDate.of(now.getYear(), MARCH, 1);
     }
+    if (now.getMonth() == JANUARY || now.getMonth() == FEBRUARY) {
+      return LocalDate.of(now.getYear() - 1, SEPTEMBER, 1);
+    }
     return LocalDate.of(now.getYear(), SEPTEMBER, 1);
   }
 }
