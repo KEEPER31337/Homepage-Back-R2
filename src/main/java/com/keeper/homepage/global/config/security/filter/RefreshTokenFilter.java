@@ -56,7 +56,7 @@ public class RefreshTokenFilter extends GenericFilterBean {
     } else if (accessTokenDto.getResultType() == JwtValidationType.UNKNOWN && refreshTokenDto.getResultType() == JwtValidationType.UNKNOWN) {
       filterChain.doFilter(request, response);
       return;
-    } else {
+    } else if (accessTokenDto.getResultType() == EXPIRED && refreshTokenDto.getResultType() == EXPIRED) {
       authCookieService.setCookieExpired((HttpServletResponse) response);
     }
 
