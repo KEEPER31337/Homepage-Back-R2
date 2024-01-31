@@ -53,6 +53,8 @@ public class RefreshTokenFilter extends GenericFilterBean {
       HttpServletResponse httpResponse = (HttpServletResponse) response;
 
       authCookieService.setNewCookieInResponse(authId, roles, httpRequest.getHeader(USER_AGENT), httpResponse);
+    } else if (accessTokenDto.getResultType() == JwtValidationType.EMPTY && refreshTokenDto.getResultType() == JwtValidationType.EMPTY) {
+      filterChain.doFilter(request, response);
     } else {
       authCookieService.setCookieExpired((HttpServletResponse) response);
     }
