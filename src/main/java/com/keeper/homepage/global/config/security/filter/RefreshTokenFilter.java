@@ -55,6 +55,7 @@ public class RefreshTokenFilter extends GenericFilterBean {
       authCookieService.setNewCookieInResponse(authId, roles, httpRequest.getHeader(USER_AGENT), httpResponse);
     } else if (accessTokenDto.getResultType() == JwtValidationType.UNKNOWN && refreshTokenDto.getResultType() == JwtValidationType.UNKNOWN) {
       filterChain.doFilter(request, response);
+      return;
     } else {
       authCookieService.setCookieExpired((HttpServletResponse) response);
     }
