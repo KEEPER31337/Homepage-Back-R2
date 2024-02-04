@@ -17,15 +17,15 @@ KEEPER 홈페이지 백엔드 서버입니다.
 
 # 📝 링크
 
-| 이름                   | 링크 |
-|----------------------|---|
-| 운영 홈페이지              | [https://keeper.or.kr](https://keeper.or.kr) |
-| 개발 홈페이지              | [https://dev.keeper.or.kr](https://dev.keeper.or.kr) |
-| API 문서               | [https://api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html) |
-| Notion               | [https://chip-force-ed0.notion.site/KEEPER](https://chip-force-ed0.notion.site/KEEPER-0dbccc3c2374465b8be715cd9d872103?pvs=4) |
-| 프론트 Repository       | [https://github.com/KEEPER31337/Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2) |
-| 인프라 코드 Repository    | [https://github.com/KEEPER31337/Homepage-Infrastructure](https://github.com/KEEPER31337/Homepage-Infrastructure) |
-| 데이터베이스 코드 Repository | [https://github.com/KEEPER31337/Homepage-Database](https://github.com/KEEPER31337/Homepage-Database) |
+| 이름                   | 링크                                                                                                               |
+|----------------------|------------------------------------------------------------------------------------------------------------------|
+| 운영 홈페이지              | [keeper.or.kr](https://keeper.or.kr)                                                                             |
+| 개발 홈페이지              | [dev.keeper.or.kr](https://dev.keeper.or.kr)                                                                     |
+| API 문서               | [api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html)                                   |
+| Notion               | [Notion Link](https://chip-force-ed0.notion.site/KEEPER-0dbccc3c2374465b8be715cd9d872103?pvs=4)                  |
+| 프론트 Repository       | [Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2)             |
+| 인프라 코드 Repository    | [Homepage-Infrastructure](https://github.com/KEEPER31337/Homepage-Infrastructure) |
+| 데이터베이스 코드 Repository | [Homepage-Database](https://github.com/KEEPER31337/Homepage-Database)             |
 
 # ✨ 도메인
 
@@ -96,7 +96,9 @@ KEEPER 홈페이지 백엔드 서버입니다.
   <img src="./images/ERD.png" width="600" alt="keeper db erd"/>
 </div>
 
-# ⚡️ 퀵 스타트
+# ⚡️ 퀵 스타트 가이드
+
+아래의 절차를 통해 로컬에서 키퍼 홈페이지를 띄워 보실 수 있습니다.
 
 ### STEP 1) 프로젝트 클론
 
