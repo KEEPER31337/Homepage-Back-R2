@@ -15,6 +15,17 @@ KEEPER 홈페이지 백엔드 서버입니다.
 - 꼼꼼한 코드 리뷰를 통해 코드의 품질을 높이고, 서로의 작업물을 이해합니다.
 - Controller, Service, Repoistory Layer에 대해 테스트 코드를 작성하여 사전에 버그를 방지합니다.
 
+# 📝 링크
+
+| 이름                   | 링크                                                                                                               |
+|----------------------|------------------------------------------------------------------------------------------------------------------|
+| 운영 홈페이지              | [https://keeper.or.kr](https://keeper.or.kr)                                                                     |
+| 개발 홈페이지              | [https://dev.keeper.or.kr](https://dev.keeper.or.kr)                                                             |
+| API 문서               | [https://api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html)                           |
+| 프론트 Repository       | [https://github.com/KEEPER31337/Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2)             |
+| 인프라 코드 Repository    | [https://github.com/KEEPER31337/Homepage-Infrastructure](https://github.com/KEEPER31337/Homepage-Infrastructure) |
+| 데이터베이스 코드 Repository | [https://github.com/KEEPER31337/Homepage-Database](https://github.com/KEEPER31337/Homepage-Database) |
+
 # ✨ 도메인
 
 ```
@@ -85,16 +96,6 @@ KEEPER 홈페이지 백엔드 서버입니다.
 </div>
 
 # ⚡️ 퀵 스타트
-
-# 📝 링크
-
-| 이름               | 링크                                                                                                               |
-|------------------|------------------------------------------------------------------------------------------------------------------|
-| 운영 홈페이지          | [https://keeper.or.kr](https://keeper.or.kr)                                                                     |
-| 개발 홈페이지       | [https://dev.keeper.or.kr](https://dev.keeper.or.kr)                                                             |
-| API 문서           | [https://api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html)                           |
-| 프론트 Repository   | [https://github.com/KEEPER31337/Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2)             |
-| 인프라 코드 Repository | [https://github.com/KEEPER31337/Homepage-Infrastructure](https://github.com/KEEPER31337/Homepage-Infrastructure) |
 
 # 🧑🏻‍💻 코드 유지 관리자
 
