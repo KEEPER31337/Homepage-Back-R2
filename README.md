@@ -17,12 +17,13 @@ KEEPER 홈페이지 백엔드 서버입니다.
 
 # 📝 링크
 
-| 이름                   | 링크                                                                                                               |
-|----------------------|------------------------------------------------------------------------------------------------------------------|
-| 운영 홈페이지              | [https://keeper.or.kr](https://keeper.or.kr)                                                                     |
-| 개발 홈페이지              | [https://dev.keeper.or.kr](https://dev.keeper.or.kr)                                                             |
-| API 문서               | [https://api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html)                           |
-| 프론트 Repository       | [https://github.com/KEEPER31337/Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2)             |
+| 이름                   | 링크 |
+|----------------------|---|
+| 운영 홈페이지              | [https://keeper.or.kr](https://keeper.or.kr) |
+| 개발 홈페이지              | [https://dev.keeper.or.kr](https://dev.keeper.or.kr) |
+| API 문서               | [https://api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html) |
+| Notion               | [https://chip-force-ed0.notion.site/KEEPER](https://chip-force-ed0.notion.site/KEEPER-0dbccc3c2374465b8be715cd9d872103?pvs=4) |
+| 프론트 Repository       | [https://github.com/KEEPER31337/Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2) |
 | 인프라 코드 Repository    | [https://github.com/KEEPER31337/Homepage-Infrastructure](https://github.com/KEEPER31337/Homepage-Infrastructure) |
 | 데이터베이스 코드 Repository | [https://github.com/KEEPER31337/Homepage-Database](https://github.com/KEEPER31337/Homepage-Database) |
 
@@ -97,24 +98,39 @@ KEEPER 홈페이지 백엔드 서버입니다.
 
 # ⚡️ 퀵 스타트
 
-~~~md
+### STEP 1) 프로젝트 클론
 
-STEP1
+```
 git clone https://github.com/02ggang9/Keeper_start_guide.git
+```
 
-STEP2
-quick_start > build > .env 파일 생성(env.example 파일 참고)
+### STEP 2) .env 파일 생성
 
-STEP3
+quick_start > build > .env 파일 생성 (env.example 파일 참고)
+
+### STEP 3) mail 환경 변수 설정
+
 quick_start > build > docker > data > application.yml 파일 이동 후 mail 환경 변수 설정
 
-STEP4 (쉘 스크립트 실행)
-sh ./run_keeper.sh (맥 환경) or sudo ./run_keeper.sh (우분투 환경)
+### STEP 4) 쉘 스크립트 실행
 
-STEP5
-localhost:8080 접속
+MAC 환경
 
-~~~
+```
+sh ./run_keeper.sh
+```
+
+Ubuntu 환경
+
+```
+sudo ./run_keeper.sh
+```
+
+### STEP 5) 접속
+
+```
+localhost:8080
+```
 
 # 🧑🏻‍💻 코드 유지 관리자
 
