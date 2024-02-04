@@ -125,4 +125,4 @@ KEEPER 홈페이지 백엔드 서버입니다.
 
 ### 기여하기
 
-[CONTRIBUTING.md](/CONTRIBUTING.md) 파일을 참고해주세요.
+[CONTRIBUTING.md](./CONTRIBUTING.md) 파일을 참고해주세요.
