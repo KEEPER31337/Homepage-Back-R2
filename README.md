@@ -39,13 +39,13 @@ KEEPER 홈페이지 백엔드 서버입니다.
 
 <div align="center">
 
-Language
+**Language**
 
 ![Jdk 17](https://img.shields.io/badge/-Jdk%2017-437291?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Java](https://img.shields.io/badge/-Java-8D6748?style=for-the-badge)
 ![Kotlin](https://img.shields.io/badge/-kotlin-7F52FF?style=for-the-badge)
 
-Dependancy
+**Dependancy**
 
 ![Spring Boot 3.0.2](https://img.shields.io/badge/Spring%20boot%203.0.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring%20security-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
@@ -59,12 +59,12 @@ Dependancy
 ![JUnit5](https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=white)
 ![Mockito](https://img.shields.io/badge/-Mockito-6DB33F?style=for-the-badge)
 
-Database
+**Database**
 
 ![Mysql 8.0](https://img.shields.io/badge/MySQL%208.0-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=Redis&logoColor=white)
 
-Tool
+**Tool**
 
 ![Gradle](https://img.shields.io/badge/Gradle%207.6-02303A?style=for-the-badge&logo=gradle&logoColor=white)
 ![IntelliJ](https://img.shields.io/badge/IntelliJ-000000?style=for-the-badge&logo=intellij&logoColor=white)
@@ -88,10 +88,13 @@ Tool
 
 # 📝 링크
 
-- [개발 서버 링크](https://dev.keeper.or.kr/)
-- [운영 서버 링크](https://keeper.or.kr/)
-- [API 문서 링크](http://13.209.6.87:8081/docs/keeper.html)
-- [노션 링크](https://www.notion.so/KEEPER-0dbccc3c2374465b8be715cd9d872103?pvs=4)
+| 이름               | 링크                                                                                                               |
+|------------------|------------------------------------------------------------------------------------------------------------------|
+| 운영 홈페이지          | [https://keeper.or.kr](https://keeper.or.kr)                                                                     |
+| 개발 홈페이지       | [https://dev.keeper.or.kr](https://dev.keeper.or.kr)                                                             |
+| API 문서           | [https://api.keeper.or.kr/docs/keeper.html](https://api.keeper.or.kr/docs/keeper.html)                           |
+| 프론트 Repository   | [https://github.com/KEEPER31337/Homepage-Front-R2](https://github.com/KEEPER31337/Homepage-Front-R2)             |
+| 인프라 코드 Repository | [https://github.com/KEEPER31337/Homepage-Infrastructure](https://github.com/KEEPER31337/Homepage-Infrastructure) |
 
 # 🧑🏻‍💻 코드 유지 관리자
 
