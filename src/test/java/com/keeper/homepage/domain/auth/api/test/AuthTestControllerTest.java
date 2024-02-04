@@ -183,35 +183,34 @@ class AuthTestControllerTest extends IntegrationTest {
         redisUtil.setDataExpire(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null), refreshToken, REFRESH_TOKEN.getExpiredMillis());
       }
 
-      @Test
-      @Disabled
-      @DisplayName("AT가 만료되었으면 200 OK를 응답한다.")
-      void should_200OK_when_accessTokenExpired() throws Exception {
-        JwtType MOCKED_ACCESS_TOKEN = Mockito.spy(ACCESS_TOKEN);
-        Mockito.doReturn(0L).when(MOCKED_ACCESS_TOKEN).getExpiredMillis();
-
-        String expiredAccessToken = jwtTokenProvider.createAccessToken(MOCKED_ACCESS_TOKEN, 0L, ROLE_회원);
-
-        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredAccessToken);
-        expiredCookie.setHttpOnly(true);
-        assertThatThrownBy(() -> jwtTokenProvider.getAuthId(expiredAccessToken))
-            .isInstanceOf(ExpiredJwtException.class);
-
-        MvcResult result = callRefreshApi(refreshCookie, expiredCookie)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        String newAccessToken = Objects.requireNonNull(
-                result.getResponse().getCookie(ACCESS_TOKEN.getTokenName()))
-            .getValue();
-        String newRefreshToken = Objects.requireNonNull(
-                result.getResponse().getCookie(REFRESH_TOKEN.getTokenName()))
-            .getValue();
-
-        jwtTokenProvider.getAuthId(newAccessToken);
-        assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
-        assertThat(redisUtil.getData(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null), String.class)).isNotEmpty();
-      }
+//      @Test
+//      @DisplayName("AT가 만료되었으면 200 OK를 응답한다.")
+//      void should_200OK_when_accessTokenExpired() throws Exception {
+//        JwtType MOCKED_ACCESS_TOKEN = Mockito.spy(ACCESS_TOKEN);
+//        Mockito.doReturn(0L).when(MOCKED_ACCESS_TOKEN).getExpiredMillis();
+//
+//        String expiredAccessToken = jwtTokenProvider.createAccessToken(MOCKED_ACCESS_TOKEN, 0L, ROLE_회원);
+//
+//        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredAccessToken);
+//        expiredCookie.setHttpOnly(true);
+//        assertThatThrownBy(() -> jwtTokenProvider.getAuthId(expiredAccessToken))
+//            .isInstanceOf(ExpiredJwtException.class);
+//
+//        MvcResult result = callRefreshApi(refreshCookie, expiredCookie)
+//            .andExpect(status().isOk())
+//            .andReturn();
+//
+//        String newAccessToken = Objects.requireNonNull(
+//                result.getResponse().getCookie(ACCESS_TOKEN.getTokenName()))
+//            .getValue();
+//        String newRefreshToken = Objects.requireNonNull(
+//                result.getResponse().getCookie(REFRESH_TOKEN.getTokenName()))
+//            .getValue();
+//
+//        jwtTokenProvider.getAuthId(newAccessToken);
+//        assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
+//        assertThat(redisUtil.getData(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null), String.class)).isNotEmpty();
+//      }
 
       @Test
       @DisplayName("AT도 있으면 200 OK를 응답한다.")

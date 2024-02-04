@@ -106,6 +106,4 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions-spring:${kotestVersion}")
     testImplementation("io.mockk:mockk:1.13.4")
     testImplementation("com.ninja-squad:springmockk:4.0.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 }
