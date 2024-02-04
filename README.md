@@ -97,6 +97,25 @@ KEEPER 홈페이지 백엔드 서버입니다.
 
 # ⚡️ 퀵 스타트
 
+~~~md
+
+STEP1
+git clone https://github.com/02ggang9/Keeper_start_guide.git
+
+STEP2
+quick_start > build > .env 파일 생성(env.example 파일 참고)
+
+STEP3
+quick_start > build > docker > data > application.yml 파일 이동 후 mail 환경 변수 설정
+
+STEP4 (쉘 스크립트 실행)
+sh ./run_keeper.sh (맥 환경) or sudo ./run_keeper.sh (우분투 환경)
+
+STEP5
+localhost:8080 접속
+
+~~~
+
 # 🧑🏻‍💻 코드 유지 관리자
 
 <table>
