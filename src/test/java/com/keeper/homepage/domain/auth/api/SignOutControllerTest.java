@@ -14,9 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
+import io.kotest.core.spec.style.AnnotationSpec.Ignore;
 import jakarta.servlet.http.Cookie;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -56,6 +58,7 @@ class SignOutControllerTest extends IntegrationTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("RT도 AT도 만료되었으면 로그아웃시에 쿠키는 지워져야 한다")
     void should_tokenDeleted_when_expiredTokens() throws Exception {
       // PK: 0

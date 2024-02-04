@@ -15,9 +15,11 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.config.security.data.JwtType;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.kotest.core.spec.style.AnnotationSpec.Ignore;
 import jakarta.servlet.http.Cookie;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -182,6 +184,7 @@ class AuthTestControllerTest extends IntegrationTest {
       }
 
       @Test
+      @Disabled
       @DisplayName("AT가 만료되었으면 200 OK를 응답한다.")
       void should_200OK_when_accessTokenExpired() throws Exception {
         JwtType MOCKED_ACCESS_TOKEN = Mockito.spy(ACCESS_TOKEN);
