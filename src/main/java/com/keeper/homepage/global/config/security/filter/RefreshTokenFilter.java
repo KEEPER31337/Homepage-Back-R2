@@ -2,8 +2,8 @@ package com.keeper.homepage.global.config.security.filter;
 
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
-import com.keeper.homepage.global.config.security.filter.tokencondition.JwtTokenCondition;
-import com.keeper.homepage.global.config.security.filter.tokencondition.JwtTokenConditionFactory;
+import com.keeper.homepage.global.config.security.filter.token_condition.JwtTokenCondition;
+import com.keeper.homepage.global.config.security.filter.token_condition.JwtTokenConditionFactory;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;

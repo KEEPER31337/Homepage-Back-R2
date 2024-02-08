@@ -1,4 +1,4 @@
-package com.keeper.homepage.global.config.security.filter.tokencondition;
+package com.keeper.homepage.global.config.security.filter.token_condition;
 
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.VALID;
 

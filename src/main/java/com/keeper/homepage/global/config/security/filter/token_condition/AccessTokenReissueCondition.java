@@ -1,4 +1,4 @@
-package com.keeper.homepage.global.config.security.filter.tokencondition;
+package com.keeper.homepage.global.config.security.filter.token_condition;
 
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
