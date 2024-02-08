@@ -2,7 +2,6 @@ package com.keeper.homepage.global.config.security.filter.token_condition;
 
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
-import com.keeper.homepage.global.config.security.data.JwtValidationType;
 import com.keeper.homepage.global.config.security.data.TokenValidationResultDto;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.keeper.homepage.global.config.security.data.JwtValidationType.EXPIRED;
 import static org.springframework.http.HttpHeaders.USER_AGENT;
 
 @Component
@@ -29,8 +27,8 @@ public class AccessTokenReissueCondition implements JwtTokenCondition {
     public boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto,
                                  TokenValidationResultDto refreshTokenDto,
                                  HttpServletRequest httpRequest) {
-        return isAccessTokenExpired(accessTokenDto.getResultType()) &&
-                isRefreshTokenValid(refreshTokenDto) &&
+        return isTokenExpired(accessTokenDto) &&
+                isTokenValid(refreshTokenDto) &&
                 isTokenInRedis(refreshTokenDto, httpRequest.getHeader(USER_AGENT));
     }
 
@@ -50,13 +48,5 @@ public class AccessTokenReissueCondition implements JwtTokenCondition {
         String refreshTokenKey = JwtTokenProvider.getRefreshTokenKeyForRedis(String.valueOf(authId), userAgent);
         Optional<String> tokenInRedis = redisUtil.getData(refreshTokenKey, String.class);
         return tokenInRedis.isPresent() && tokenInRedis.get().equals(refreshTokenDto.getToken());
-    }
-
-    private static boolean isAccessTokenExpired(JwtValidationType resultType) {
-        return resultType == EXPIRED;
-    }
-
-    private boolean isRefreshTokenValid(TokenValidationResultDto refreshTokenDto) {
-        return refreshTokenDto.isValid();
     }
 }
