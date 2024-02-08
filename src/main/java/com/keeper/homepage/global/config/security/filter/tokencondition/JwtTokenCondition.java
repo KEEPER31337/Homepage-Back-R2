@@ -11,6 +11,6 @@ public interface JwtTokenCondition {
                           HttpServletRequest httpRequest);
 
     void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
-            HttpServletRequest request, HttpServletResponse response);
+                     HttpServletRequest request, HttpServletResponse response);
 
 }
