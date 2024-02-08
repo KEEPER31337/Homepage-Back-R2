@@ -33,7 +33,7 @@ public class AccessTokenReissueCondition implements JwtTokenCondition {
     @Override
     public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        setAuthentication(jwtTokenProvider, accessTokenDto);
+        setAuthentication(jwtTokenProvider, refreshTokenDto);
 
         String authId = String.valueOf(jwtTokenProvider.getAuthId(refreshTokenDto.getToken()));
         String[] roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());

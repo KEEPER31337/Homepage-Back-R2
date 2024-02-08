@@ -22,6 +22,6 @@ public class JwtTokenValidCondition implements JwtTokenCondition {
     @Override
     public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                             HttpServletRequest request, HttpServletResponse response) {
-        setAuthentication(jwtTokenProvider, accessTokenDto);
+        setAuthentication(jwtTokenProvider, refreshTokenDto);
     }
 }
