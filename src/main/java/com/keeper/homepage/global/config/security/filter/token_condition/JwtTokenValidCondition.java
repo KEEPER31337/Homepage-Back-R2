@@ -16,12 +16,12 @@ public class JwtTokenValidCondition implements JwtTokenCondition {
     @Override
     public boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                                  HttpServletRequest httpRequest) {
-        return isTokenValid(accessTokenDto) && isTokenValid(refreshTokenDto);
+        return accessTokenDto.isValid();
     }
 
     @Override
     public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                             HttpServletRequest request, HttpServletResponse response) {
-        setAuthentication(jwtTokenProvider, refreshTokenDto);
+        setAuthentication(jwtTokenProvider, accessTokenDto);
     }
 }

@@ -19,9 +19,9 @@ public interface JwtTokenCondition {
                      HttpServletRequest request, HttpServletResponse response);
 
     default void setAuthentication(JwtTokenProvider jwtTokenProvider,
-                                   TokenValidationResultDto refreshTokenDto) {
+                                   TokenValidationResultDto jwtTokenDto) {
         SecurityContextHolder.getContext()
-                .setAuthentication(jwtTokenProvider.getAuthentication(refreshTokenDto.getToken()));
+                .setAuthentication(jwtTokenProvider.getAuthentication(jwtTokenDto.getToken()));
     }
 
     default boolean isTokenValid(TokenValidationResultDto jwtTokenDto) {
