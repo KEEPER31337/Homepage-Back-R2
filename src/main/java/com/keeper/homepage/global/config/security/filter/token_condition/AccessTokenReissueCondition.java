@@ -7,8 +7,6 @@ import com.keeper.homepage.global.util.redis.RedisUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -35,8 +33,7 @@ public class AccessTokenReissueCondition implements JwtTokenCondition {
     @Override
     public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        Authentication auth = jwtTokenProvider.getAuthentication(refreshTokenDto.getToken());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        setAuthentication(jwtTokenProvider, accessTokenDto);
 
         String authId = String.valueOf(jwtTokenProvider.getAuthId(refreshTokenDto.getToken()));
         String[] roles = jwtTokenProvider.getRoles(refreshTokenDto.getToken());

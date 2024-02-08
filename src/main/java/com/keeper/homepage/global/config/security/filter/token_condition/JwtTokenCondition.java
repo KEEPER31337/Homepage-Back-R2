@@ -1,8 +1,10 @@
 package com.keeper.homepage.global.config.security.filter.token_condition;
 
+import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.config.security.data.TokenValidationResultDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.EXPIRED;
 import static com.keeper.homepage.global.config.security.data.JwtValidationType.VALID;
@@ -15,6 +17,12 @@ public interface JwtTokenCondition {
 
     void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                      HttpServletRequest request, HttpServletResponse response);
+
+    default void setAuthentication(JwtTokenProvider jwtTokenProvider,
+                                   TokenValidationResultDto accessTokenDto) {
+        SecurityContextHolder.getContext()
+                .setAuthentication(jwtTokenProvider.getAuthentication(accessTokenDto.getToken()));
+    }
 
     default boolean isTokenValid(TokenValidationResultDto jwtTokenDto) {
         return jwtTokenDto.getResultType() == VALID;

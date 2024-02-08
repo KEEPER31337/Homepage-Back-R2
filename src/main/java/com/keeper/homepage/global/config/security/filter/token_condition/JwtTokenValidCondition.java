@@ -5,8 +5,6 @@ import com.keeper.homepage.global.config.security.data.TokenValidationResultDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,7 +22,6 @@ public class JwtTokenValidCondition implements JwtTokenCondition {
     @Override
     public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
                             HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = jwtTokenProvider.getAuthentication(accessTokenDto.getToken());
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        setAuthentication(jwtTokenProvider, accessTokenDto);
     }
 }
