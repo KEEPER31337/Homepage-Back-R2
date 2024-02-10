@@ -1,6 +1,5 @@
 package com.keeper.homepage.global.config.security;
 
-import com.keeper.homepage.global.config.security.filter.JwtAuthenticationFilter;
 import com.keeper.homepage.global.config.security.filter.RefreshTokenFilter;
 import com.keeper.homepage.global.config.security.handler.CustomAccessDeniedHandler;
 import com.keeper.homepage.global.config.security.handler.CustomAuthenticationEntryPoint;
@@ -23,10 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-  private final JwtTokenProvider jwtTokenProvider;
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-  private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final RefreshTokenFilter refreshTokenFilter;
 
   @Bean
@@ -48,8 +45,7 @@ public class SecurityConfiguration {
         .and()
         .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
         .and()
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .addFilterBefore(refreshTokenFilter, JwtAuthenticationFilter.class);
+        .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
