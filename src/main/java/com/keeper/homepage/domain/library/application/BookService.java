@@ -3,12 +3,14 @@ package com.keeper.homepage.domain.library.application;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
+import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납완료;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_CANCEL_REQUEST_DENY;
+import static com.keeper.homepage.global.error.ErrorCode.BORROW_RENEWAL_ELIGIBILITY_NOT_MET;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_RETURN_DENY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_STATUS_IS_NOT_BORROW_APPROVAL;
@@ -25,9 +27,12 @@ import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowLog;
 import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +53,7 @@ public class BookService {
   private final BookBorrowInfoFindService bookBorrowInfoFindService;
 
   public static final long MAX_BORROWING_COUNT = 2;
+  public static final long RENEWAL_WAITING_PERIOD = 3;
 
   public Page<BookResponse> getBooks(Member member, @NotNull BookSearchType searchType, String search,
       PageRequest pageable) {
@@ -81,6 +87,7 @@ public class BookService {
         .orElseThrow(() -> new BusinessException(bookId, "bookId", BOOK_NOT_FOUND));
     checkCurrentQuantity(book);
     checkBorrowRequestAlready(member, book);
+    checkEligibilityForRenewal(member, book);
     member.borrow(book, getBookBorrowStatusBy(대출대기));
   }
 
@@ -103,6 +110,22 @@ public class BookService {
         .findByMemberAndBookAndInBorrowingOrWait(member, book);
     if (borrowInfo.isPresent()) {
       throw new BusinessException(borrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
+    }
+  }
+
+  private void checkEligibilityForRenewal(Member member, Book book) {
+    Optional<BookBorrowLog> borrowLog = borrowLogRepository
+        .findByMemberAndBookAndReturned(member.getId(), book.getId());
+
+    if (borrowLog.isPresent()) {
+      LocalDate returnedDate = borrowLog.get().getReturnDate().toLocalDate();
+      LocalDate currentDate = LocalDate.now();
+
+      long daysBetween = ChronoUnit.DAYS.between(returnedDate, currentDate);
+
+      if (daysBetween <= RENEWAL_WAITING_PERIOD) {
+        throw new BusinessException(returnedDate, "checkEligibilityForRenewal", BORROW_RENEWAL_ELIGIBILITY_NOT_MET);
+      }
     }
   }
 
