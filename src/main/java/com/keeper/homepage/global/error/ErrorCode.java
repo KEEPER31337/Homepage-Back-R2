@@ -62,6 +62,7 @@ public enum ErrorCode {
   BOOK_BORROWING_COUNT_OVER("대출 신청 가능 수량을 초과했습니다.", HttpStatus.BAD_REQUEST),
   BOOK_CURRENT_QUANTITY_IS_ZERO("현재 수량이 없는 책은 대출 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
   BORROW_REQUEST_ALREADY("이미 대출 신청을 한 책은 대출 신청이 불가합니다.", HttpStatus.BAD_REQUEST),
+  BORROW_RENEWAL_ELIGIBILITY_NOT_MET("아직 대출할 수 없습니다.", HttpStatus.BAD_REQUEST),
   BORROW_NOT_FOUND("존재하지 않는 대출 기록입니다.", HttpStatus.NOT_FOUND),
   BORROW_STATUS_IS_NOT_REQUESTS("대출 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
   BORROW_STATUS_IS_NOT_WAITING_RETURN("반납 대기중이 아닙니다.", HttpStatus.BAD_REQUEST),
