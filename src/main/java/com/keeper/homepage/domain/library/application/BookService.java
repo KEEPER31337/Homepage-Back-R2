@@ -47,7 +47,7 @@ public class BookService {
 
   private final BookBorrowInfoFindService bookBorrowInfoFindService;
 
-  public static final long MAX_BORROWING_COUNT = 5;
+  public static final long MAX_BORROWING_COUNT = 2;
 
   public Page<BookResponse> getBooks(Member member, @NotNull BookSearchType searchType, String search,
       PageRequest pageable) {
