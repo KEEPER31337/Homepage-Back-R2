@@ -1,7 +1,11 @@
 package com.keeper.homepage.domain.library.dao;
 
+import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowLog;
+import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
+import com.keeper.homepage.domain.member.entity.Member;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +34,12 @@ public interface BookBorrowLogRepository extends JpaRepository<BookBorrowLog, Lo
   Page<BookBorrowLog> findAllByStatus(@Param("borrowStatus") String borrowStatus,
       @Param("search") String search, Pageable pageable);
 
+  @Query(value = "select borrowLog "
+      + "from BookBorrowLog  borrowLog "
+      + "where borrowLog.bookId = :bookId "
+      + "AND borrowLog.memberId = :memberId "
+      + "AND borrowLog.returnDate is not null "
+      + "order by borrowLog.id desc")
+  Optional<BookBorrowLog> findByMemberAndBookAndReturned(@Param("memberId") Long memberId,
+      @Param("bookId") Long bookId);
 }
