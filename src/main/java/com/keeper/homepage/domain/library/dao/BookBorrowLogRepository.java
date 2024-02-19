@@ -1,10 +1,6 @@
 package com.keeper.homepage.domain.library.dao;
 
-import com.keeper.homepage.domain.library.entity.Book;
-import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowLog;
-import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
-import com.keeper.homepage.domain.member.entity.Member;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
