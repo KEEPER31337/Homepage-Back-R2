@@ -3,7 +3,6 @@ package com.keeper.homepage.domain.library.application;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.대출중;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
-import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납완료;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
@@ -27,7 +26,6 @@ import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.library.entity.BookBorrowInfo;
 import com.keeper.homepage.domain.library.entity.BookBorrowLog;
 import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType;
-import com.keeper.homepage.domain.library.entity.BookBorrowStatus;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDate;
@@ -114,18 +112,19 @@ public class BookService {
   }
 
   private void checkEligibilityForRenewal(Member member, Book book) {
-    Optional<BookBorrowLog> borrowLog = borrowLogRepository
-        .findByMemberAndBookAndReturned(member.getId(), book.getId());
+    borrowLogRepository
+        .findByMemberAndBookAndReturned(member.getId(), book.getId())
+        .ifPresent(this::validateRenewalByReturnedDate);
+  }
 
-    if (borrowLog.isPresent()) {
-      LocalDate returnedDate = borrowLog.get().getReturnDate().toLocalDate();
-      LocalDate currentDate = LocalDate.now();
+  private void validateRenewalByReturnedDate(BookBorrowLog borrowLog) {
+    LocalDate returnedDate = borrowLog.getReturnDate().toLocalDate();
+    LocalDate currentDate = LocalDate.now();
 
-      long daysBetween = ChronoUnit.DAYS.between(returnedDate, currentDate);
+    long daysBetween = ChronoUnit.DAYS.between(returnedDate, currentDate);
 
-      if (daysBetween <= RENEWAL_WAITING_PERIOD) {
-        throw new BusinessException(returnedDate, "checkEligibilityForRenewal", BORROW_RENEWAL_ELIGIBILITY_NOT_MET);
-      }
+    if (daysBetween <= RENEWAL_WAITING_PERIOD) {
+      throw new BusinessException(returnedDate, "checkEligibilityForRenewal", BORROW_RENEWAL_ELIGIBILITY_NOT_MET);
     }
   }
 
