@@ -35,6 +35,7 @@ public interface BookBorrowLogRepository extends JpaRepository<BookBorrowLog, Lo
       + "where borrowLog.bookId = :bookId "
       + "AND borrowLog.memberId = :memberId "
       + "AND borrowLog.returnDate is not null "
+      + "AND borrowLog.borrowStatus = '반납완료' "
       + "order by borrowLog.id desc")
   Optional<BookBorrowLog> findByMemberAndBookAndReturned(@Param("memberId") Long memberId,
       @Param("bookId") Long bookId);
