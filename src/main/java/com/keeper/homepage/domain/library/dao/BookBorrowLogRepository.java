@@ -31,7 +31,7 @@ public interface BookBorrowLogRepository extends JpaRepository<BookBorrowLog, Lo
       @Param("search") String search, Pageable pageable);
 
   @Query(value = "select borrowLog "
-      + "from BookBorrowLog  borrowLog "
+      + "from BookBorrowLog borrowLog "
       + "where borrowLog.bookId = :bookId "
       + "AND borrowLog.memberId = :memberId "
       + "AND borrowLog.returnDate is not null "
