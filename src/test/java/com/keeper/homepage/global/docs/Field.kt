@@ -1,4 +1,4 @@
-package com.keeper.homepage.global.restdocs
+package com.keeper.homepage.global.docs
 
 open class Field(
         val fieldName: String,

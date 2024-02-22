@@ -1,8 +1,13 @@
-package com.keeper.homepage.global.restdocs
+package com.keeper.homepage.global.docs
 
-import com.keeper.homepage.domain.member.entity.Member
+import com.keeper.homepage.IntegrationTest
 import org.springframework.http.HttpMethod
-import org.springframework.http.MediaType
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
+import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
+import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 
 fun main() {
     val memberId: String = "10"
@@ -35,7 +40,7 @@ class RestDocs(
         private val method: HttpMethod,
         private val uri: String,
         private val pathParams: List<String>?
-) {
+) : IntegrationTest() {
     private val pathVariables = mutableListOf<Field>()
     private val requestFields = mutableListOf<Field>()
     private val responseFields = mutableListOf<Field>()
@@ -53,11 +58,17 @@ class RestDocs(
     }
 
     fun generateDocumentation() {
-        println("Method: ${method}, URI: $uri")
+        println("Method: $method, URI: $uri")
         pathParams?.let { println("Path paramters: ${it}") }
         pathVariables.forEach { println("Path variable: ${it.fieldName} - ${it.description}") }
         requestFields.forEach { println("Request body: ${it.fieldName} - ${it.description}") }
         requestFields.forEach { println("Response body: ${it.fieldName} - ${it.description}") }
+
+        val pathParametersSnippet = pathParameters(*pathVariables.map { parameterWithName(it.fieldName).description(it.description) }.toTypedArray())
+        val responseFieldsSnippet = responseFields(*responseFields.map { fieldWithPath(it.fieldName).description(it.description) }.toTypedArray())
+
+        mockMvc.perform(get(uri, *pathVariables.map { it.fieldName }.toTypedArray()))
+                .andDo(document("dsl Test", pathParametersSnippet, responseFieldsSnippet))
     }
 }
 
