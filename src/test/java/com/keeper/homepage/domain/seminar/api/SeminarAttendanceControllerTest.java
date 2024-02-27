@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.RealName;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceCodeRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarAttendanceStatusRequest;
 import com.keeper.homepage.domain.seminar.dto.request.SeminarStartRequest;
@@ -56,8 +57,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
 
   @BeforeEach
   void setUp() {
-    adminId = memberTestHelper.builder().build().getId();
-    userId = memberTestHelper.builder().build().getId();
+    adminId = memberTestHelper.builder().realName(RealName.from("김영환")).build().getId();
+    userId = memberTestHelper.builder().realName(RealName.from("김기철")).build().getId();
     adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
     userToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userId, ROLE_회원);
 
@@ -268,17 +269,17 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       mockMvc.perform(get("/seminars/attendances")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$.content[0].memberId").value(adminId))
-          .andExpect(jsonPath("$.content[0].memberName").value(admin.getRealName()))
-          .andExpect(jsonPath("$.content[0].generation").value(admin.getGeneration()))
-          .andExpect(jsonPath("$.content[0].attendances[0].attendanceStatus").value(ATTENDANCE.toString()))
+          .andExpect(jsonPath("$.content[0].memberId").value(userId))
+          .andExpect(jsonPath("$.content[0].memberName").value(user.getRealName()))
+          .andExpect(jsonPath("$.content[0].generation").value(user.getGeneration()))
+          .andExpect(jsonPath("$.content[0].attendances[0].attendanceId").value(attendanceId))
+          .andExpect(jsonPath("$.content[0].attendances[0].attendanceStatus").value(LATENESS.toString()))
           .andExpect(jsonPath("$.content[0].attendances[0].excuse").isEmpty())
           .andExpect(jsonPath("$.content[0].attendances[0].attendDate").value(LocalDate.now().toString()))
-          .andExpect(jsonPath("$.content[1].memberId").value(userId))
-          .andExpect(jsonPath("$.content[1].memberName").value(user.getRealName()))
-          .andExpect(jsonPath("$.content[1].generation").value(user.getGeneration()))
-          .andExpect(jsonPath("$.content[1].attendances[0].attendanceId").value(attendanceId))
-          .andExpect(jsonPath("$.content[1].attendances[0].attendanceStatus").value(LATENESS.toString()))
+          .andExpect(jsonPath("$.content[1].memberId").value(adminId))
+          .andExpect(jsonPath("$.content[1].memberName").value(admin.getRealName()))
+          .andExpect(jsonPath("$.content[1].generation").value(admin.getGeneration()))
+          .andExpect(jsonPath("$.content[1].attendances[0].attendanceStatus").value(ATTENDANCE.toString()))
           .andExpect(jsonPath("$.content[1].attendances[0].excuse").isEmpty())
           .andExpect(jsonPath("$.content[1].attendances[0].attendDate").value(LocalDate.now().toString()))
           .andDo(document("get-seminar-attendances",

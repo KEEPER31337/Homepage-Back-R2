@@ -12,6 +12,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -49,7 +50,7 @@ public class SeminarAttendanceController {
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
     Page<SeminarAttendanceManageResponse> responses = seminarAttendanceService.getAttendances(
-        PageRequest.of(page, size));
+        PageRequest.of(page, size, Sort.by(Sort.DEFAULT_DIRECTION, "generation.generation").and(Sort.by(Sort.DEFAULT_DIRECTION,"profile.realName"))));
     return ResponseEntity.ok(responses);
   }
 
