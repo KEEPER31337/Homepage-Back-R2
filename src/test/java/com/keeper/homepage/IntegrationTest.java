@@ -25,16 +25,6 @@ import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
-import com.keeper.homepage.domain.ctf.CtfChallengeTestHelper;
-import com.keeper.homepage.domain.ctf.CtfContestTestHelper;
-import com.keeper.homepage.domain.ctf.CtfFlagTestHelper;
-import com.keeper.homepage.domain.ctf.CtfTeamTestHelper;
-import com.keeper.homepage.domain.ctf.application.CtfTeamService;
-import com.keeper.homepage.domain.ctf.dao.CtfContestRepository;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeCategoryRepository;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeTypeRepository;
-import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
 import com.keeper.homepage.domain.election.ElectionCandidateTestHelper;
 import com.keeper.homepage.domain.election.ElectionTestHelper;
 import com.keeper.homepage.domain.election.ElectionVoterTestHelper;
@@ -280,21 +270,6 @@ public class IntegrationTest {
   @Autowired
   protected MeritTypeRepository meritTypeRepository;
 
-  @Autowired
-  protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
-
-  @Autowired
-  protected CtfChallengeTypeRepository ctfChallengeTypeRepository;
-
-  @Autowired
-  protected CtfChallengeRepository ctfChallengeRepository;
-
-  @Autowired
-  protected CtfTeamRepository ctfTeamRepository;
-
-  @Autowired
-  protected CtfContestRepository ctfContestRepository;
-
   /******* Service *******/
   @SpyBean
   protected MemberService memberService;
@@ -361,9 +336,6 @@ public class IntegrationTest {
 
   @SpyBean
   protected SeminarAttendanceService seminarAttendanceService;
-
-  @SpyBean
-  protected CtfTeamService ctfTeamService;
 
   @SpyBean
   protected MeritTypeService meritTypeService;
@@ -439,22 +411,10 @@ public class IntegrationTest {
   protected ElectionCandidateTestHelper electionCandidateTestHelper;
 
   @Autowired
-  protected CtfTeamTestHelper ctfTeamTestHelper;
-
-  @Autowired
-  protected CtfContestTestHelper ctfContestTestHelper;
-
-  @Autowired
   protected MeritLogTestHelper meritLogTestHelper;
 
   @Autowired
   protected MeritTypeHelper meritTypeHelper;
-
-  @Autowired
-  protected CtfChallengeTestHelper ctfChallengeTestHelper;
-
-  @Autowired
-  protected CtfFlagTestHelper ctfFlagTestHelper;
 
   @Autowired
   protected PointLogTestHelper pointLogTestHelper;

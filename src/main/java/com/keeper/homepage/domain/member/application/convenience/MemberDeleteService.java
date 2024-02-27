@@ -3,9 +3,6 @@ package com.keeper.homepage.domain.member.application.convenience;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
-import com.keeper.homepage.domain.ctf.dao.CtfContestRepository;
-import com.keeper.homepage.domain.ctf.dao.challenge.CtfChallengeRepository;
-import com.keeper.homepage.domain.ctf.dao.team.CtfTeamRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.game.dao.GameRepository;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -41,9 +38,6 @@ public class MemberDeleteService {
   private final MemberReadPostRepository readPostRepository;
   private final StudyRepository studyRepository;
   private final SeminarRepository seminarRepository;
-  private final CtfChallengeRepository ctfChallengeRepository;
-  private final CtfTeamRepository ctfTeamRepository;
-  private final CtfContestRepository ctfContestRepository;
   private final ElectionRepository electionRepository;
   private final GameRepository gameRepository;
   private final FriendRepository friendRepository;
@@ -54,9 +48,6 @@ public class MemberDeleteService {
     commentRepository.updateVirtualMember(member, virtualMember);
     studyRepository.updateVirtualMember(member, virtualMember);
     seminarRepository.updateVirtualMember(member, virtualMember);
-    ctfChallengeRepository.updateVirtualMember(member, virtualMember);
-    ctfTeamRepository.updateVirtualMember(member, virtualMember);
-    ctfContestRepository.updateVirtualMember(member, virtualMember);
     electionRepository.updateVirtualMember(member, virtualMember);
 
     friendRepository.deleteAllByFollowee(member);
