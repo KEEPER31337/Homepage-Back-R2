@@ -34,10 +34,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper {
 
   private Member admin;

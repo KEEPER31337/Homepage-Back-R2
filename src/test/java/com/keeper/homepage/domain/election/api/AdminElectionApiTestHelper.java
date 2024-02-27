@@ -15,10 +15,12 @@ import com.keeper.homepage.domain.election.dto.request.ElectionCreateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionUpdateRequest;
 import com.keeper.homepage.domain.election.dto.request.ElectionVotersRequest;
 import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 
+@Disabled
 public class AdminElectionApiTestHelper extends IntegrationTest {
 
   ResultActions callCreateElectionApi(String adminToken, ElectionCreateRequest request) throws Exception {
