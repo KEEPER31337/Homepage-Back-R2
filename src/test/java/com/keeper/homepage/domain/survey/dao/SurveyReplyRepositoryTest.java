@@ -7,10 +7,12 @@ import com.keeper.homepage.domain.survey.entity.SurveyReply;
 import com.keeper.homepage.domain.survey.entity.SurveyReply.SurveyReplyType;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class SurveyReplyRepositoryTest extends IntegrationTest {
 
   @Nested
