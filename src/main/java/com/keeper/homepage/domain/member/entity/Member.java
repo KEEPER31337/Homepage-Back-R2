@@ -15,10 +15,6 @@ import static java.time.LocalDate.now;
 
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.comment.entity.Comment;
-import com.keeper.homepage.domain.ctf.entity.CtfContest;
-import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallenge;
-import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
-import com.keeper.homepage.domain.ctf.entity.team.CtfTeamHasMember;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.election.entity.ElectionVoter;
@@ -162,23 +158,11 @@ public class Member {
   @OneToMany(mappedBy = "starter")
   private final List<Seminar> seminars = new ArrayList<>();
 
-  @OneToMany(mappedBy = "creator")
-  private final List<CtfChallenge> ctfChallenges = new ArrayList<>();
-
-  @OneToMany(mappedBy = "creator")
-  private final List<CtfTeam> ctfTeams = new ArrayList<>();
-
-  @OneToMany(mappedBy = "creator")
-  private final List<CtfContest> ctfContests = new ArrayList<>();
-
   @OneToMany(mappedBy = "member")
   private final List<Election> elections = new ArrayList<>();
 
   @OneToMany(mappedBy = "member", cascade = ALL)
   private final List<PointLog> pointLogs = new ArrayList<>();
-
-  @OneToMany(mappedBy = "member", cascade = ALL, orphanRemoval = true)
-  private final Set<CtfTeamHasMember> ctfTeamHasMembers = new HashSet<>();
 
   @OneToMany(mappedBy = "member", cascade = REMOVE)
   private final List<SeminarAttendance> seminarAttendances = new ArrayList<>();
@@ -327,17 +311,6 @@ public class Member {
     studyMembers.add(studyMember);
   }
 
-  public void join(CtfTeam ctfTeam) {
-    ctfTeamHasMembers.add(CtfTeamHasMember.builder()
-        .ctfTeam(ctfTeam)
-        .member(this)
-        .build());
-  }
-
-  public void leave(CtfTeam ctfTeam) {
-    ctfTeamHasMembers.removeIf(ctfTeamMember -> ctfTeamMember.getCtfTeam().equals(ctfTeam));
-  }
-
   public Long getId() {
     return this.id;
   }
@@ -395,20 +368,6 @@ public class Member {
     return this.bookBorrowInfos.stream()
         .filter(BookBorrowInfo::isWaitOrInBorrowing)
         .count();
-  }
-
-  public boolean hasTeam(CtfContest contest) {
-    return ctfTeamHasMembers.stream()
-        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().getCtfContest().equals(contest));
-  }
-
-  public boolean isJoin(CtfTeam ctfTeam) {
-    return ctfTeamHasMembers.stream()
-        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().equals(ctfTeam));
-  }
-
-  public boolean isCreator(CtfTeam ctfTeam) {
-    return this.equals(ctfTeam.getCreator());
   }
 
   public boolean isDualLateness() {

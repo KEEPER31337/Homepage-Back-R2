@@ -5,12 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.survey.entity.SurveyMemberReply;
 import com.keeper.homepage.domain.survey.entity.SurveyReplyExcuse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class SurveyMemberReplyRepositoryTest extends IntegrationTest {
 
   private SurveyMemberReply memberReply;

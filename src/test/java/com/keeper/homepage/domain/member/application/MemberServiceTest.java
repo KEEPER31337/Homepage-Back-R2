@@ -18,9 +18,6 @@ import static org.mockito.Mockito.doNothing;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.comment.entity.Comment;
-import com.keeper.homepage.domain.ctf.entity.CtfContest;
-import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallenge;
-import com.keeper.homepage.domain.ctf.entity.team.CtfTeam;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.election.entity.ElectionChartLog;
@@ -194,9 +191,6 @@ public class MemberServiceTest extends IntegrationTest {
       Study study = studyTestHelper.builder().headMember(member).build();
       Seminar seminar = seminarTestHelper.builder().build();
       seminar.setStarter(member);
-      CtfChallenge challenge = ctfChallengeTestHelper.builder().creator(member).build();
-      CtfTeam team = ctfTeamTestHelper.builder().creator(member).build();
-      CtfContest contest = ctfContestTestHelper.builder().creator(member).build();
       Election election = electionTestHelper.builder().member(member).build();
       em.flush();
       em.clear();
@@ -212,9 +206,6 @@ public class MemberServiceTest extends IntegrationTest {
       comment = commentRepository.findById(comment.getId()).orElseThrow();
       study = studyRepository.findById(study.getId()).orElseThrow();
       seminar = seminarRepository.findById(seminar.getId()).orElseThrow();
-      challenge = ctfChallengeRepository.findById(challenge.getId()).orElseThrow();
-      team = ctfTeamRepository.findById(team.getId()).orElseThrow();
-      contest = ctfContestRepository.findById(contest.getId()).orElseThrow();
       election = electionRepository.findById(election.getId()).orElseThrow();
 
       Member virtualMember = memberFindService.getVirtualMember();
@@ -222,9 +213,6 @@ public class MemberServiceTest extends IntegrationTest {
       assertThat(comment.getMember()).isEqualTo(virtualMember);
       assertThat(study.getHeadMember()).isEqualTo(virtualMember);
       assertThat(seminar.getStarter()).isEqualTo(virtualMember);
-      assertThat(challenge.getCreator()).isEqualTo(virtualMember);
-      assertThat(team.getCreator()).isEqualTo(virtualMember);
-      assertThat(contest.getCreator()).isEqualTo(virtualMember);
       assertThat(election.getMember()).isEqualTo(virtualMember);
     }
 
@@ -244,8 +232,6 @@ public class MemberServiceTest extends IntegrationTest {
       member.read(post); // O
       Study study = studyTestHelper.generate();
       member.join(study); // O
-      CtfTeam ctfTeam = ctfTeamTestHelper.generate();
-      member.join(ctfTeam); // O
       Seminar seminar = seminarTestHelper.generate();
       Long seminarAttendanceId = seminarAttendanceRepository.save(SeminarAttendance.builder()
           .seminar(seminar)
