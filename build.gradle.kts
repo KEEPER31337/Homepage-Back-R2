@@ -72,6 +72,26 @@ tasks {
 }
 /******* End Spring Rest Docs *******/
 
+/******* Start Query DSL Build Options *******/
+
+val querydslDir = "src/main/generated"
+
+sourceSets {
+    getByName("main").java.srcDirs(querydslDir)
+}
+
+tasks.withType<JavaCompile> {
+    options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
+
+tasks.named("clean") {
+    doLast {
+        file(querydslDir).deleteRecursively()
+    }
+}
+
+/******* End Query DSL Build Options *******/
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
@@ -87,6 +107,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+    val queryDslVersion = "5.0.0"
+    implementation("com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta")
+
+    annotationProcessor("com.querydsl:querydsl-apt:${queryDslVersion}:jakarta")
+    annotationProcessor("jakarta.annotation:jakarta.annotation-api")
+    annotationProcessor("jakarta.persistence:jakarta.persistence-api")
 
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
