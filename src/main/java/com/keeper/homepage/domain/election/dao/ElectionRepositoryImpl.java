@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import static com.keeper.homepage.domain.election.entity.QElection.*;
 
 @RequiredArgsConstructor
-public class ElectionRepositoryImpl implements ElectionRepositoryCustom{
+public class ElectionRepositoryImpl implements ElectionRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
