@@ -130,9 +130,9 @@ public class PostRepositoryTest extends IntegrationTest {
 
       assertThat(findPost.getVisitCount()).isEqualTo(0);
       assertThat(findPost.getAllowComment()).isEqualTo(true);
-      assertThat(findPost.getIsNotice()).isEqualTo(false);
-      assertThat(findPost.getIsSecret()).isEqualTo(false);
-      assertThat(findPost.getIsTemp()).isEqualTo(false);
+      assertThat(findPost.isNotice()).isEqualTo(false);
+      assertThat(findPost.isSecret()).isEqualTo(false);
+      assertThat(findPost.isTemp()).isEqualTo(false);
     }
   }
 }

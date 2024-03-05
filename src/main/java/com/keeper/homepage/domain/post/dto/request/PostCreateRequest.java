@@ -4,6 +4,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -57,9 +58,11 @@ public class PostCreateRequest {
         .member(member)
         .ipAddress(ipAddress)
         .allowComment(allowComment)
-        .isNotice(isNotice)
-        .isSecret(isSecret)
-        .isTemp(isTemp)
+        .postStatus(PostStatus.builder()
+            .isNotice(isNotice)
+            .isSecret(isSecret)
+            .isTemp(isTemp)
+            .build())
         .password(password)
         .build();
   }

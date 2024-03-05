@@ -19,6 +19,7 @@ import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.web.WebUtil;
@@ -72,9 +73,9 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.getVisitCount()).isEqualTo(0);
       assertThat(findPost.getIpAddress()).isEqualTo(WebUtil.getUserIP());
       assertThat(findPost.getAllowComment()).isEqualTo(true);
-      assertThat(findPost.getIsNotice()).isEqualTo(false);
-      assertThat(findPost.getIsSecret()).isEqualTo(false);
-      assertThat(findPost.getIsTemp()).isEqualTo(false);
+      assertThat(findPost.isNotice()).isEqualTo(false);
+      assertThat(findPost.isSecret()).isEqualTo(false);
+      assertThat(findPost.isTemp()).isEqualTo(false);
       assertThat(findPost.getCategory().getId()).isEqualTo(category.getId());
       assertThat(findPost.getThumbnail()).isNotNull();
       assertThat(findPost.getPostHasFiles()).isNotEmpty();
@@ -347,9 +348,11 @@ public class PostServiceTest extends IntegrationTest {
           .title("수정 제목")
           .content("수정 내용")
           .allowComment(true)
-          .isNotice(false)
-          .isSecret(false)
-          .isTemp(false)
+          .postStatus(PostStatus.builder()
+              .isNotice(false)
+              .isSecret(false)
+              .isTemp(false)
+              .build())
           .build();
 
       assertDoesNotThrow(() -> {
@@ -402,7 +405,7 @@ public class PostServiceTest extends IntegrationTest {
       Post newPost = Post.builder()
           .title("수정 제목")
           .content("수정 내용")
-          .isSecret(true)
+          .postStatus(PostStatus.builder().isSecret(true).build())
           .build();
 
       assertThrows(BusinessException.class, () -> {

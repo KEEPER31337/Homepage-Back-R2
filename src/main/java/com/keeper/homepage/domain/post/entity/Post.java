@@ -14,9 +14,11 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -79,14 +81,8 @@ public class Post extends BaseEntity {
   @Column(name = "allow_comment", nullable = false)
   private Boolean allowComment;
 
-  @Column(name = "is_notice", nullable = false)
-  private Boolean isNotice;
-
-  @Column(name = "is_secret", nullable = false)
-  private Boolean isSecret;
-
-  @Column(name = "is_temp", nullable = false)
-  private Boolean isTemp;
+  @Embedded
+  private PostStatus postStatus;
 
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
@@ -108,16 +104,14 @@ public class Post extends BaseEntity {
 
   @Builder
   private Post(String title, String content, Member member, Integer visitCount, String ipAddress, Boolean allowComment,
-      Boolean isNotice, Boolean isSecret, Boolean isTemp, String password, Category category, Thumbnail thumbnail) {
+      PostStatus postStatus, String password, Category category, Thumbnail thumbnail) {
     this.title = title;
     this.content = content;
     this.member = member;
     this.visitCount = visitCount;
     this.ipAddress = ipAddress;
     this.allowComment = allowComment;
-    this.isNotice = isNotice;
-    this.isSecret = isSecret;
-    this.isTemp = isTemp;
+    this.postStatus = postStatus;
     this.password = password;
     this.category = category;
     this.thumbnail = thumbnail;
@@ -155,15 +149,15 @@ public class Post extends BaseEntity {
   }
 
   public Boolean isNotice() {
-    return isNotice;
+    return postStatus.getIsNotice();
   }
 
   public Boolean isTemp() {
-    return isTemp;
+    return postStatus.getIsTemp();
   }
 
   public Boolean isSecret() {
-    return isSecret;
+    return postStatus.getIsSecret();
   }
 
   public Boolean allowComment() {
@@ -179,13 +173,12 @@ public class Post extends BaseEntity {
   }
 
   public void update(Post post) {
+    this.postStatus.update(post.getPostStatus());
     this.title = post.getTitle();
     this.content = post.getContent();
     this.ipAddress = post.getIpAddress();
     this.allowComment = post.allowComment();
-    this.isNotice = post.isNotice();
-    this.isSecret = post.isSecret();
-    this.isTemp = post.isTemp();
+    this.postStatus = post.getPostStatus();
     this.password = post.getPassword();
   }
 

@@ -42,6 +42,7 @@ import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.servlet.http.Cookie;
 import java.io.FileInputStream;
@@ -1006,9 +1007,11 @@ public class PostControllerTest extends PostApiTestHelper {
           .member(member)
           .ipAddress(WebUtil.getUserIP())
           .allowComment(false)
-          .isNotice(false)
-          .isSecret(false)
-          .isTemp(false)
+          .postStatus(PostStatus.builder()
+              .isNotice(false)
+              .isSecret(false)
+              .isTemp(false)
+              .build())
           .password("password")
           .build();
       postService.create(otherPost, 자유게시판.getId(), thumbnail, List.of(file));

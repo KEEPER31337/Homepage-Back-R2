@@ -24,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
-      + "AND p.isNotice = true "
+      + "AND p.postStatus.isNotice = true "
       + "ORDER BY p.registerTime DESC")
   List<Post> findAllNoticeByCategory(@Param("category") Category category);
 
@@ -32,7 +32,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    * 임시 저장글 제외 + 등록 시간 최신순 정렬
    */
   @Query("SELECT p FROM Post p "
-      + "WHERE p.isTemp = false "
+      + "WHERE p.postStatus.isTemp = false "
       + "AND p.id <> 1 " // virtual post
       + "ORDER BY p.registerTime DESC")
   List<Post> findAllRecent(Pageable pageable);
@@ -45,8 +45,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
-      + "AND p.isNotice = false "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isNotice = false "
+      + "AND p.postStatus.isTemp = false "
       + "AND p.id <> 1 " // virtual post
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategory(@Param("category") Category category, Pageable pageable);
@@ -60,8 +60,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
-      + "AND p.isNotice = false "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isNotice = false "
+      + "AND p.postStatus.isTemp = false "
       + "AND LOWER(p.title) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndTitle(@Param("category") Category category, @Param("search") String search,
@@ -76,8 +76,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
-      + "AND p.isNotice = false "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isNotice = false "
+      + "AND p.postStatus.isTemp = false "
       + "AND LOWER(p.content) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndContent(@Param("category") Category category, @Param("search") String search,
@@ -92,8 +92,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
-      + "AND p.isNotice = false "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isNotice = false "
+      + "AND p.postStatus.isTemp = false "
       + "AND (LOWER(p.title) LIKE LOWER(concat('%', :search, '%')) "
       + "OR LOWER(p.content) LIKE LOWER(concat('%', :search, '%'))) "
       + "ORDER BY p.registerTime DESC")
@@ -109,8 +109,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
-      + "AND p.isNotice = false "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isNotice = false "
+      + "AND p.postStatus.isTemp = false "
       + "AND LOWER(p.member.profile.realName) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndWriter(@Param("category") Category category, @Param("search") String search,
@@ -123,7 +123,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    * @param endDate   가져올 끝 시간
    */
   @Query("SELECT p FROM Post p " +
-      "WHERE p.isTemp = false " +
+      "WHERE p.postStatus.isTemp = false " +
       "AND p.registerTime BETWEEN :startDate AND :endDate")
   List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
@@ -131,7 +131,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("SELECT p FROM Post p "
       + "WHERE p.id > :postId "
       + "AND p.category = :category "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isTemp = false "
       + "ORDER BY p.id ASC "
       + "LIMIT 1")
   Optional<Post> findNextPost(@Param("postId") Long postId, @Param("category") Category category);
@@ -139,20 +139,30 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("SELECT p FROM Post p "
       + "WHERE p.id < :postId "
       + "AND p.category = :category "
-      + "AND p.isTemp = false "
+      + "AND p.postStatus.isTemp = false "
       + "ORDER BY p.id DESC "
       + "LIMIT 1")
   Optional<Post> findPreviousPost(@Param("postId") Long postId, @Param("category") Category category);
 
-  Page<Post> findAllByMemberAndIsTempFalse(Member member, Pageable pageable);
+  @Query("SELECT p FROM Post p "
+      + "WHERE p.member = :member "
+      + "AND p.postStatus.isTemp = false ")
+  Page<Post> findAllByMemberAndIsTempFalse(@Param("member")Member member, Pageable pageable);
 
-  Page<Post> findAllByMemberAndIsTempTrue(Member member, Pageable pageable);
+  @Query("SELECT p FROM Post p "
+      + "WHERE p.member = :member "
+      + "AND p.postStatus.isTemp = true")
+  Page<Post> findAllByMemberAndIsTempTrue(@Param("member")Member member, Pageable pageable);
 
   @Modifying
   @Query("UPDATE Post p "
       + "SET p.member = :virtualMember "
-      + "WHERE p.member = :member AND p.isTemp = false ")
+      + "WHERE p.member = :member AND p.postStatus.isTemp = false ")
   void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
-  void deleteAllByMemberAndIsTempTrue(Member member);
+  @Modifying
+  @Query("DELETE FROM Post p "
+      + "WHERE p.member = :member "
+      + "AND p.postStatus.isTemp = true")
+  void deleteAllByMemberAndIsTempTrue(@Param("member") Member member);
 }
