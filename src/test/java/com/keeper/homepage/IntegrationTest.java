@@ -497,7 +497,9 @@ public class IntegrationTest {
         .apply(documentationConfiguration(restDocumentationContextProvider)
             .operationPreprocessors()
             .withRequestDefaults(
-                modifyUris().scheme("https").host("docs.api.com").removePort(), prettyPrint())
+                modifyUris().scheme("https")
+                    .host("docs.api.com")
+                    .removePort(), prettyPrint())
             .withResponseDefaults(prettyPrint())
         )
         .build();

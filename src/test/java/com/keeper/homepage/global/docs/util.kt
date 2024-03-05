@@ -1,25 +1,21 @@
 package com.keeper.homepage.global.docs
 
 import com.keeper.homepage.IntegrationTest
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpMethod
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
+import org.springframework.http.HttpStatus
+import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
-import org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath
-import org.springframework.restdocs.payload.PayloadDocumentation.responseFields
+import org.springframework.restdocs.operation.preprocess.Preprocessors
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
-import org.springframework.restdocs.request.RequestDocumentation.pathParameters
-
-fun main() {
-    val memberId: String = "10"
-    restDocs(HttpMethod.GET, "/merits/members/{memberId}", memberId) {
-        pathVariable(
-                "memberId" means "회원의 ID 값",
-                "memberRank" means "회원의 랭크"
-        )
-        requestBody("awarderId" means "수여자의 ID")
-        responseBody("memberId" means "회원의 ID 값")
-    }
-}
+import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
+import org.springframework.stereotype.Component
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.filter.CharacterEncodingFilter
 
 fun restDocs(
         method: HttpMethod,
@@ -33,7 +29,7 @@ fun restDocs(
             if (pathParams.isNotEmpty()) pathParams.toList() else null
     )
     restDocs.init()
-    return restDocs.generateDocumentation()
+    restDocs.generateDocumentation()
 }
 
 class RestDocs(
@@ -41,6 +37,8 @@ class RestDocs(
         private val uri: String,
         private val pathParams: List<String>?
 ) : IntegrationTest() {
+
+
     private val pathVariables = mutableListOf<Field>()
     private val requestFields = mutableListOf<Field>()
     private val responseFields = mutableListOf<Field>()
@@ -64,11 +62,19 @@ class RestDocs(
         requestFields.forEach { println("Request body: ${it.fieldName} - ${it.description}") }
         requestFields.forEach { println("Response body: ${it.fieldName} - ${it.description}") }
 
-        val pathParametersSnippet = pathParameters(*pathVariables.map { parameterWithName(it.fieldName).description(it.description) }.toTypedArray())
-        val responseFieldsSnippet = responseFields(*responseFields.map { fieldWithPath(it.fieldName).description(it.description) }.toTypedArray())
+        val pathParameterDescriptors = pathVariables.map { parameterWithName(it.fieldName).description(it.description) }
+        val responseFieldDescriptors = responseFields.map { parameterWithName(it.fieldName).description(it.description) }
 
-        mockMvc.perform(get(uri, *pathVariables.map { it.fieldName }.toTypedArray()))
-                .andDo(document("dsl Test", pathParametersSnippet, responseFieldsSnippet))
+        val pathParametersSnippet = queryParameters(pathParameterDescriptors)
+        val responseFieldsSnippet = queryParameters(responseFieldDescriptors)
+        val path = pathVariables.map { it.fieldName }.toTypedArray()
+
+        println(pathParametersSnippet.toString())
+        println(responseFieldsSnippet.toString())
+        println(path)
+
+        mockMvc.perform(get("/merit/type"))
+                .andExpect(MockMvcResultMatchers.status().isOk)
     }
 }
 
