@@ -4,6 +4,7 @@ import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST
 import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
 import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -43,9 +44,12 @@ public class PostUpdateRequest {
   private String password;
 
   public Post toEntity(String ipAddress) {
-    return Post.builder()
+    PostContent postContent = PostContent.builder()
         .title(title)
         .content(content)
+        .build();
+    return Post.builder()
+        .postContent(postContent)
         .ipAddress(ipAddress)
         .allowComment(allowComment)
         .postStatus(PostStatus.builder()

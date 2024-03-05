@@ -5,6 +5,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 import com.keeper.homepage.domain.file.application.FileService;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.application.PostContentService;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
@@ -56,6 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostController {
 
   private final PostService postService;
+  private final PostContentService postInfoService;
   private final FileService fileService;
 
   @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -112,7 +114,7 @@ public class PostController {
       @PathVariable long postId,
       @ModelAttribute MultipartFile thumbnail
   ) {
-    postService.updatePostThumbnail(member, postId, thumbnail);
+    postInfoService.updatePostThumbnail(member, postId, thumbnail);
     return ResponseEntity.noContent().build();
   }
 
@@ -121,7 +123,7 @@ public class PostController {
       @LoginMember Member member,
       @PathVariable long postId
   ) {
-    postService.deletePostThumbnail(member, postId);
+    postInfoService.deletePostThumbnail(member, postId);
     return ResponseEntity.noContent().build();
   }
 

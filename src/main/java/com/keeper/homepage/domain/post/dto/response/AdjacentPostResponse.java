@@ -14,6 +14,6 @@ public class AdjacentPostResponse {
   private String title;
 
   public static AdjacentPostResponse from(Post post) {
-    return new AdjacentPostResponse(post.getId(), post.getTitle());
+    return new AdjacentPostResponse(post.getId(), post.getPostContent().getTitle());
   }
 }

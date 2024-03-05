@@ -42,6 +42,7 @@ import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
 import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.global.util.web.WebUtil;
 import jakarta.servlet.http.Cookie;
@@ -1001,9 +1002,12 @@ public class PostControllerTest extends PostApiTestHelper {
     @DisplayName("해당 게시글의 파일이 아닐 경우 파일 다운로드는 실패한다.")
     public void 해당_게시글의_파일이_아닐_경우_파일_다운로드는_실패한다() throws Exception {
       postService.create(post, 자유게시판.getId(), thumbnail, List.of(file));
-      Post otherPost = Post.builder()
+      PostContent postContent = PostContent.builder()
           .title("title")
           .content("content")
+          .build();
+      Post otherPost = Post.builder()
+          .postContent(postContent)
           .member(member)
           .ipAddress(WebUtil.getUserIP())
           .allowComment(false)

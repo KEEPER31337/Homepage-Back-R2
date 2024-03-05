@@ -19,6 +19,7 @@ import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
 import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.error.BusinessException;
@@ -66,9 +67,10 @@ public class PostServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
       Post findPost = postRepository.findById(postId).orElseThrow();
+      PostContent postContent = findPost.getPostContent();
 
-      assertThat(findPost.getTitle()).isEqualTo("게시글 제목");
-      assertThat(findPost.getContent()).isEqualTo("게시글 내용");
+      assertThat(postContent.getTitle()).isEqualTo("게시글 제목");
+      assertThat(postContent.getContent()).isEqualTo("게시글 내용");
       assertThat(findPost.getMember()).isEqualTo(member);
       assertThat(findPost.getVisitCount()).isEqualTo(0);
       assertThat(findPost.getIpAddress()).isEqualTo(WebUtil.getUserIP());
@@ -77,7 +79,7 @@ public class PostServiceTest extends IntegrationTest {
       assertThat(findPost.isSecret()).isEqualTo(false);
       assertThat(findPost.isTemp()).isEqualTo(false);
       assertThat(findPost.getCategory().getId()).isEqualTo(category.getId());
-      assertThat(findPost.getThumbnail()).isNotNull();
+      assertThat(postContent.getThumbnail()).isNotNull();
       assertThat(findPost.getPostHasFiles()).isNotEmpty();
     }
 
@@ -132,11 +134,11 @@ public class PostServiceTest extends IntegrationTest {
       post = postRepository.findById(post.getId()).orElseThrow();
       PostDetailResponse response = postService.find(bestMember, post.getId(), "비밀비밀");
 
-      assertThat(response.getTitle()).isEqualTo(post.getTitle());
+      assertThat(response.getTitle()).isEqualTo(post.getPostContent().getTitle());
       assertThat(response.getWriterName()).isEqualTo(bestMember.getProfile().getRealName().get());
       assertThat(response.getRegisterTime()).isEqualTo(post.getRegisterTime());
       assertThat(response.getVisitCount()).isEqualTo(post.getVisitCount());
-      assertThat(response.getContent()).isEqualTo(post.getContent());
+      assertThat(response.getContent()).isEqualTo(post.getPostContent().getContent());
     }
 
     @Test
@@ -343,10 +345,12 @@ public class PostServiceTest extends IntegrationTest {
     @DisplayName("내가 작성한 게시글인 경우 게시글 수정은 성공한다.")
     public void should_success_when_writerIsMe() throws Exception {
       postId = postTestHelper.builder().member(member).build().getId();
-
-      Post newPost = Post.builder()
+      PostContent postContent = PostContent.builder()
           .title("수정 제목")
           .content("수정 내용")
+          .build();
+      Post newPost = Post.builder()
+          .postContent(postContent)
           .allowComment(true)
           .postStatus(PostStatus.builder()
               .isNotice(false)
@@ -365,11 +369,11 @@ public class PostServiceTest extends IntegrationTest {
     public void should_success_when_updateThumbnail() throws Exception {
       post = postTestHelper.builder().member(member).build();
       postId = postService.create(post, category.getId(), thumbnail, null);
-      Thumbnail oldThumbnail = post.getThumbnail();
+      Thumbnail oldThumbnail = post.getPostContent().getThumbnail();
 
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
-      postService.updatePostThumbnail(member, postId, newThumbnailFile);
-      Thumbnail newThumbnail = post.getThumbnail();
+      postInfoService.updatePostThumbnail(member, postId, newThumbnailFile);
+      Thumbnail newThumbnail = post.getPostContent().getThumbnail();
 
       checkDoesNotExist(oldThumbnail);
       checkExist(newThumbnail);
@@ -387,7 +391,7 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     private void checkExist(Thumbnail thumbnail) {
-      long thumbnailId = post.getThumbnail().getId();
+      long thumbnailId = post.getPostContent().getThumbnail().getId();
       String filePath = thumbnail.getFileEntity().getFilePath();
       Path fileFullPath = Path.of(ROOT_PATH + separator + filePath);
       Path thumbnailFullPath = Path.of(ROOT_PATH + separator + thumbnail.getPath());
@@ -401,10 +405,13 @@ public class PostServiceTest extends IntegrationTest {
     @DisplayName("비밀 게시글로 설정한 경우 패스워드가 없으면 게시글 수정은 실패한다.")
     public void should_fail_when_secretPostWithoutPassword() throws Exception {
       postId = postTestHelper.builder().member(member).build().getId();
-
-      Post newPost = Post.builder()
+      PostContent postContent = PostContent.builder()
           .title("수정 제목")
           .content("수정 내용")
+          .build();
+
+      Post newPost = Post.builder()
+          .postContent(postContent)
           .postStatus(PostStatus.builder().isSecret(true).build())
           .build();
 

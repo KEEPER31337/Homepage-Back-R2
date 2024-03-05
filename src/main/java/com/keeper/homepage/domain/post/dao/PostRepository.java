@@ -62,7 +62,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.postStatus.isNotice = false "
       + "AND p.postStatus.isTemp = false "
-      + "AND LOWER(p.title) LIKE LOWER(concat('%', :search, '%')) "
+      + "AND LOWER(p.postContent.title) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndTitle(@Param("category") Category category, @Param("search") String search,
       Pageable pageable);
@@ -78,7 +78,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.postStatus.isNotice = false "
       + "AND p.postStatus.isTemp = false "
-      + "AND LOWER(p.content) LIKE LOWER(concat('%', :search, '%')) "
+      + "AND LOWER(p.postContent.content) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndContent(@Param("category") Category category, @Param("search") String search,
       Pageable pageable);
@@ -94,8 +94,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.postStatus.isNotice = false "
       + "AND p.postStatus.isTemp = false "
-      + "AND (LOWER(p.title) LIKE LOWER(concat('%', :search, '%')) "
-      + "OR LOWER(p.content) LIKE LOWER(concat('%', :search, '%'))) "
+      + "AND (LOWER(p.postContent.title) LIKE LOWER(concat('%', :search, '%')) "
+      + "OR LOWER(p.postContent.content) LIKE LOWER(concat('%', :search, '%'))) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndTitleOrContent(@Param("category") Category category,
       @Param("search") String search, Pageable pageable);
