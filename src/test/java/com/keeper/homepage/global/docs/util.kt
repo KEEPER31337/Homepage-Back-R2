@@ -1,52 +1,39 @@
 package com.keeper.homepage.global.docs
 
-import com.keeper.homepage.IntegrationTest
-import com.keeper.homepage.domain.library.api.field
 import jakarta.servlet.http.Cookie
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.restdocs.RestDocumentationContextProvider
-import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
 import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
-import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler
-import org.springframework.restdocs.operation.preprocess.Preprocessors
-import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
-import org.springframework.stereotype.Component
-import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.StatusResultMatchers
-import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
-import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.filter.CharacterEncodingFilter
 
 fun restDocs(
         mockMvc: MockMvc,
-        documentName: String,
-        method: HttpMethod,
+        httpMethod: HttpMethod,
         uri: String,
         vararg pathParams: String,
         init: RestDocs.() -> Unit
 ) {
+
+    val currentStackTraceElement = Thread.currentThread().stackTrace.firstOrNull { it.fileName?.endsWith("Test.kt") == true }
+    val className = currentStackTraceElement?.className
+    val methodName = currentStackTraceElement?.methodName
+
+    val method = Class.forName(className).methods.firstOrNull { it.name == methodName }
+    val documentName = method?.getAnnotation(Documentation::class.java)?.documentName
+
     val restDocs = RestDocs(
             mockMvc,
             documentName,
-            method,
+            httpMethod,
             uri,
             if (pathParams.isNotEmpty()) pathParams.toList() else null,
     )
@@ -56,7 +43,7 @@ fun restDocs(
 
 class RestDocs(
         private val mockMvc: MockMvc,
-        private val documentName: String,
+        private val documentName: String?,
         private val method: HttpMethod,
         private val uri: String,
         private val pathParams: List<String>?,
@@ -76,6 +63,7 @@ class RestDocs(
             HttpStatus.CREATED -> MockMvcResultMatchers.status().isCreated()
             else -> throw IllegalArgumentException()
         }
+
         this.contentType = when (contentType) { // 추가와 구조 변경
             MediaType.APPLICATION_JSON -> MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON)
             MediaType.APPLICATION_JSON_UTF8 -> MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8)
