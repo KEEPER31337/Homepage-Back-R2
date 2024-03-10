@@ -1,9 +1,13 @@
 package com.keeper.homepage.global.docs
 
 import com.keeper.homepage.IntegrationTest
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
+import org.springframework.restdocs.RestDocumentationContextProvider
+import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
 import org.springframework.restdocs.operation.preprocess.Preprocessors
@@ -11,33 +15,38 @@ import org.springframework.restdocs.request.RequestDocumentation.parameterWithNa
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers
 import org.springframework.stereotype.Component
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.filter.CharacterEncodingFilter
 
 fun restDocs(
+        mockMvc: MockMvc,
         method: HttpMethod,
         uri: String,
         vararg pathParams: String,
         init: RestDocs.() -> Unit
 ) {
     val restDocs = RestDocs(
+            mockMvc,
             method,
             uri,
-            if (pathParams.isNotEmpty()) pathParams.toList() else null
+            if (pathParams.isNotEmpty()) pathParams.toList() else null,
     )
     restDocs.init()
     restDocs.generateDocumentation()
 }
 
+@ExtendWith(SpringExtension::class, RestDocumentationExtension::class)
+@SpringBootTest
 class RestDocs(
+        private val mockMvc: MockMvc,
         private val method: HttpMethod,
         private val uri: String,
-        private val pathParams: List<String>?
-) : IntegrationTest() {
-
+        private val pathParams: List<String>?,
+) {
 
     private val pathVariables = mutableListOf<Field>()
     private val requestFields = mutableListOf<Field>()
@@ -68,10 +77,6 @@ class RestDocs(
         val pathParametersSnippet = queryParameters(pathParameterDescriptors)
         val responseFieldsSnippet = queryParameters(responseFieldDescriptors)
         val path = pathVariables.map { it.fieldName }.toTypedArray()
-
-        println(pathParametersSnippet.toString())
-        println(responseFieldsSnippet.toString())
-        println(path)
 
         mockMvc.perform(get("/merit/type"))
                 .andExpect(MockMvcResultMatchers.status().isOk)

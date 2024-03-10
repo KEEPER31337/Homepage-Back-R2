@@ -16,7 +16,7 @@ class keeperRestDocsTest : IntegrationTest() {
         @Test
         fun `test`() {
             val memberId = "10"
-            restDocs(HttpMethod.GET, "/") {
+            restDocs(mockMvc, HttpMethod.GET, "/") {
                 pathVariable(
                         "memberId" means "회원의 ID 값",
                 )
@@ -24,9 +24,6 @@ class keeperRestDocsTest : IntegrationTest() {
                 responseBody("memberId" means "회원의 ID 값")
             }
 
-            val mock = mockMvc.perform(get("/merit/type1"))
-                    .andExpect(MockMvcResultMatchers.status().isOk)
-            println(mock)
         }
 
     }
