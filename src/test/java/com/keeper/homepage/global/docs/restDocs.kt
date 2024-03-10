@@ -1,6 +1,8 @@
 package com.keeper.homepage.global.docs
 
 import com.keeper.homepage.IntegrationTest
+import com.keeper.homepage.domain.member.entity.job.MemberJob
+import com.keeper.homepage.global.config.security.data.JwtType
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -15,13 +17,22 @@ class keeperRestDocsTest : IntegrationTest() {
     inner class `레스트 독스` {
         @Test
         fun `test`() {
-            val memberId = "10"
-            restDocs(mockMvc, HttpMethod.GET, "/") {
-                pathVariable(
-                        "memberId" means "회원의 ID 값",
+            val member = memberTestHelper.generate()
+            member.assignJob(MemberJob.MemberJobType.ROLE_서기)
+            val memberCookies = memberTestHelper.getTokenCookies(member)
+
+            restDocs(mockMvc, HttpMethod.GET, "/merits/types") {
+                cookie(*memberCookies)
+                cookieVariable(
+                        JwtType.ACCESS_TOKEN.tokenName means "Access Token",
+                        JwtType.REFRESH_TOKEN.tokenName means "Refresh Token",
                 )
-                requestBody("awarderId" means "수여자의 ID")
-                responseBody("memberId" means "회원의 ID 값")
+                responseBodyWithPaging(
+                        "content[].id" means "상벌점 타입의 ID",
+                        "content[].score" means "상벌점 점수",
+                        "content[].detail" means "상벌점 사유",
+                        "content[].isMerit" means "상벌점 타입",
+                )
             }
 
         }

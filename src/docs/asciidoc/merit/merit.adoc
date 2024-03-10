@@ -188,3 +188,25 @@ include::{snippets}/find-total-merit-logs/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/find-total-merit-logs/response-fields.adoc[]
+
+== *REST DOCS 테스트*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/merit/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/merit/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/merit/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/merit/response-fields.adoc[]
