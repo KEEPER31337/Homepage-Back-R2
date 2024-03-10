@@ -8,6 +8,8 @@ import org.mockito.InjectMocks
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.restdocs.RestDocumentationContextProvider
 import org.springframework.restdocs.RestDocumentationExtension
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
@@ -25,14 +27,17 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.stereotype.Component
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.test.web.servlet.result.StatusResultMatchers
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.filter.CharacterEncodingFilter
 
 fun restDocs(
         mockMvc: MockMvc,
+        documentName: String,
         method: HttpMethod,
         uri: String,
         vararg pathParams: String,
@@ -40,6 +45,7 @@ fun restDocs(
 ) {
     val restDocs = RestDocs(
             mockMvc,
+            documentName,
             method,
             uri,
             if (pathParams.isNotEmpty()) pathParams.toList() else null,
@@ -50,15 +56,32 @@ fun restDocs(
 
 class RestDocs(
         private val mockMvc: MockMvc,
+        private val documentName: String,
         private val method: HttpMethod,
         private val uri: String,
         private val pathParams: List<String>?,
 ) {
+    private lateinit var httpStatus: ResultMatcher
+    private lateinit var contentType: ResultMatcher
     private val pathVariables = mutableListOf<Field>()
     private val cookieVariables = mutableListOf<Cookie>()
     private val cookieFields = mutableListOf<Field>()
     private val requestFields = mutableListOf<Field>()
     private val responseFields = mutableListOf<Field>()
+
+    fun expect(httpStatus: HttpStatus, contentType: MediaType) {
+        this.httpStatus = when (httpStatus) { // 추가와 구조 변경
+            HttpStatus.OK -> MockMvcResultMatchers.status().isOk()
+            HttpStatus.FORBIDDEN -> MockMvcResultMatchers.status().isForbidden()
+            HttpStatus.CREATED -> MockMvcResultMatchers.status().isCreated()
+            else -> throw IllegalArgumentException()
+        }
+        this.contentType = when (contentType) { // 추가와 구조 변경
+            MediaType.APPLICATION_JSON -> MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON)
+            MediaType.APPLICATION_JSON_UTF8 -> MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8)
+            else -> throw IllegalArgumentException()
+        }
+    }
 
     fun pathVariable(vararg fields: Field) {
         pathVariables.addAll(fields)
@@ -108,10 +131,11 @@ class RestDocs(
 
         mockMvc.perform(MockMvcRequestBuilders.request(method, uri)
                 .apply { cookieVariables.forEach { cookie -> this.cookie(cookie) } })
-                .andExpect(MockMvcResultMatchers.status().isOk)
+                .andExpect(httpStatus)
+                .andExpect(contentType)
                 .andDo(
                         document(
-                                "merit",
+                                documentName,
                                 cookieFieldsSnippet,
                                 pathParametersSnippet,
                                 responseFieldsSnippet,

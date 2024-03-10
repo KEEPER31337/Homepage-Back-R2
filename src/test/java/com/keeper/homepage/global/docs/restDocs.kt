@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.http.HttpMethod
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 
 class keeperRestDocsTest : IntegrationTest() {
 
@@ -21,7 +21,8 @@ class keeperRestDocsTest : IntegrationTest() {
             member.assignJob(MemberJob.MemberJobType.ROLE_서기)
             val memberCookies = memberTestHelper.getTokenCookies(member)
 
-            restDocs(mockMvc, HttpMethod.GET, "/merits/types") {
+            restDocs(mockMvc, "merit", HttpMethod.GET, "/merits/types") {
+                expect(HttpStatus.OK, MediaType.APPLICATION_JSON_UTF8)
                 cookie(*memberCookies)
                 cookieVariable(
                         JwtType.ACCESS_TOKEN.tokenName means "Access Token",
