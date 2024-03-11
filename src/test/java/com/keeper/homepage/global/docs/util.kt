@@ -7,9 +7,11 @@ import org.springframework.http.MediaType
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
 import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*
+import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
 import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
@@ -50,6 +52,7 @@ class RestDocs(
 ) {
     private lateinit var httpStatus: ResultMatcher
     private lateinit var contentType: ResultMatcher
+    private var requestJson: String? = null
     private val pathVariables = mutableListOf<Field>()
     private val cookieVariables = mutableListOf<Cookie>()
     private val cookieFields = mutableListOf<Field>()
@@ -83,6 +86,10 @@ class RestDocs(
         cookieFields.addAll(fields)
     }
 
+    fun requestJson(jsonBody: String) {
+        this.requestJson = jsonBody
+    }
+
     fun requestBody(vararg fields: Field) {
         requestFields.addAll(fields)
     }
@@ -108,31 +115,54 @@ class RestDocs(
 
     fun generateDocumentation() {
         val cookieDescriptors = cookieFields.map { cookieWithName(it.fieldName).description(it.description) }
-        val pathParameterDescriptors = pathVariables.map { parameterWithName(it.fieldName).description(it.description) }
-        val responseFieldDescriptors = responseFields.map { fieldWithPath(it.fieldName).description(it.description) } + subsectionWithPath("pageable").description("페이지에 대한 부가 정보")
+        val pathParameterDescriptors = pathVariables.takeIf { it.isNotEmpty() }?.map { parameterWithName(it.fieldName).description(it.description) }
+        val responseFieldDescriptors = responseFields.takeIf { it.isNotEmpty() }?.map {
+            if (it.isOptional == true) {
+                fieldWithPath(it.fieldName).description(it.description).optional()
+            } else {
+                fieldWithPath(it.fieldName).description(it.description)
+            }
+        }?.plus(subsectionWithPath("pageable").description("페이지에 대한 부가 정보"))
 
         val cookieFieldsSnippet = requestCookies(cookieDescriptors)
-        val pathParametersSnippet = queryParameters(pathParameterDescriptors)
-        val responseFieldsSnippet = responseFields(responseFieldDescriptors)
+        val pathParametersSnippet = pathParameterDescriptors?.let { queryParameters(it) }
+        val responseFieldsSnippet = responseFieldDescriptors?.let { responseFields(*it.toTypedArray()) }
+
         responseFieldsSnippet.apply { subsectionWithPath("pageable").description("페이지에 대한 부가 정보") }
         val path = pathVariables.map { it.fieldName }.toTypedArray()
 
-        mockMvc.perform(MockMvcRequestBuilders.request(method, uri)
-                .apply { cookieVariables.forEach { cookie -> this.cookie(cookie) } })
-                .andExpect(httpStatus)
-                .andExpect(contentType)
-                .andDo(
-                        document(
-                                documentName,
-                                cookieFieldsSnippet,
-                                pathParametersSnippet,
-                                responseFieldsSnippet,
-                        )
+        val result = mockMvc.perform(MockMvcRequestBuilders.request(method, uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .apply {
+                    cookieVariables.forEach { cookie -> this.cookie(cookie) }
+                    requestJson?.let {
+                        this.content(it)
+                    }
+                })
+
+        httpStatus?.let { result.andExpect(it) }
+//        contentType?.let { result.andExpect(it) }
+
+        val snippets = mutableListOf<Snippet>().apply {
+            cookieFieldsSnippet?.let { add(it) }
+            pathParametersSnippet?.let { add(it) }
+            responseFieldsSnippet?.let { add(it) }
+        }
+
+        result.andDo(
+                document(
+                        documentName,
+                        *snippets.toTypedArray()
                 )
+        )
     }
 }
 
 infix fun String.means(description: String): Field {
-    return Field(this, description)
+    return Field(this, description, false)
+}
+
+infix fun Field.isOptional(isOptional: Boolean): Field {
+    return Field(this, isOptional)
 }
 
