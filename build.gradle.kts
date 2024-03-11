@@ -11,6 +11,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
+    kotlin("kapt") version "1.8.22"
 }
 
 group = "com.example"
@@ -87,6 +88,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
 
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
@@ -106,4 +108,6 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions-spring:${kotestVersion}")
     testImplementation("io.mockk:mockk:1.13.4")
     testImplementation("com.ninja-squad:springmockk:4.0.0")
+
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
 }
