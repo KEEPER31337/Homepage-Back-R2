@@ -224,8 +224,8 @@ public class MeritControllerTest extends MeritApiTestHelper {
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())
                   .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
-//          .andExpect(status().isOk())
-//          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andExpect(status().isOk())
+          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-member-meritLog",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())

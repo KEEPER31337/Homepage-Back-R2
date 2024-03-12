@@ -1,5 +1,6 @@
 package com.keeper.homepage.global.docs
 
+import io.mockk.InternalPlatformDsl.toArray
 import jakarta.servlet.http.Cookie
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -7,10 +8,9 @@ import org.springframework.http.MediaType
 import org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName
 import org.springframework.restdocs.cookies.CookieDocumentation.requestCookies
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*
-import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders
 import org.springframework.restdocs.payload.PayloadDocumentation.*
-import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
-import org.springframework.restdocs.request.RequestDocumentation.queryParameters
+import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
@@ -37,7 +37,7 @@ fun restDocs(
             documentName,
             httpMethod,
             uri,
-            if (pathParams.isNotEmpty()) pathParams.toList() else null,
+            pathParams,
     )
     restDocs.init()
     restDocs.generateDocumentation()
@@ -48,7 +48,7 @@ class RestDocs(
         private val documentName: String?,
         private val method: HttpMethod,
         private val uri: String,
-        private val pathParams: List<String>?,
+        private val pathParams: Array<*>?,
 ) {
     private lateinit var httpStatus: ResultMatcher
     private lateinit var contentType: ResultMatcher
@@ -125,13 +125,15 @@ class RestDocs(
         }?.plus(subsectionWithPath("pageable").description("페이지에 대한 부가 정보"))
 
         val cookieFieldsSnippet = requestCookies(cookieDescriptors)
-        val pathParametersSnippet = pathParameterDescriptors?.let { queryParameters(it) }
+        val pathParametersSnippet = pathParameterDescriptors?.let { pathParameters(it) }
         val responseFieldsSnippet = responseFieldDescriptors?.let { responseFields(*it.toTypedArray()) }
 
         responseFieldsSnippet.apply { subsectionWithPath("pageable").description("페이지에 대한 부가 정보") }
         val path = pathVariables.map { it.fieldName }.toTypedArray()
 
-        val result = mockMvc.perform(MockMvcRequestBuilders.request(method, uri)
+        println("======${pathParams?.joinToString(", ")}=======")
+
+        val result = mockMvc.perform(RestDocumentationRequestBuilders.request(method, uri, pathParams?.joinToString(", "))
                 .contentType(MediaType.APPLICATION_JSON)
                 .apply {
                     cookieVariables.forEach { cookie -> this.cookie(cookie) }
