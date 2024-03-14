@@ -1,4 +1,4 @@
-package com.keeper.homepage.global.docs
+package com.keeper.homepage.global.dsl
 
 import com.keeper.homepage.IntegrationTest
 import com.keeper.homepage.domain.member.entity.job.MemberJob

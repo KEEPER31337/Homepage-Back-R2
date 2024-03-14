@@ -1,6 +1,5 @@
-package com.keeper.homepage.global.docs
+package com.keeper.homepage.global.dsl
 
-import io.mockk.InternalPlatformDsl.toArray
 import jakarta.servlet.http.Cookie
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
@@ -14,7 +13,6 @@ import org.springframework.restdocs.request.RequestDocumentation.*
 import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultMatcher
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 
 fun restDocs(

@@ -65,6 +65,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 타입 조회를 성공해야 한다.")
+      // o
     void 상벌점_조회는_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritType");
       mockMvc.perform(get("/merits/types")
@@ -92,6 +93,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 타입 생성을 성공해야 한다.")
+      // o
     void 상벌점_타입_생성을_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "registerMeritType");
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
@@ -136,6 +138,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 타입 수정을 성공해야 한다.")
+      // o
     void 상벌점_부여_로그_수정을_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "updateMeritType");
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
@@ -191,6 +194,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("회원별 상벌점 목록 조회를 성공해야 한다.")
+      // o
     void 회원별_상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "findMeritLogByMemberId");
       meritLogTestHelper.builder()
@@ -257,6 +261,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 목록 조회를 성공해야 한다.")
+      // o
     void 상벌점_목록_조회를_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
 

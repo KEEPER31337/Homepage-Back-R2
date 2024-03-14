@@ -5,9 +5,9 @@ import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType
 import com.keeper.homepage.domain.merit.entity.MeritType
 import com.keeper.homepage.global.config.security.data.JwtType.*
-import com.keeper.homepage.global.docs.means
-import com.keeper.homepage.global.docs.restDocs
-import com.keeper.homepage.global.docs.Documentation
+import com.keeper.homepage.global.dsl.means
+import com.keeper.homepage.global.dsl.restDocs
+import com.keeper.homepage.global.dsl.Documentation
 import io.jsonwebtoken.io.IOException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
