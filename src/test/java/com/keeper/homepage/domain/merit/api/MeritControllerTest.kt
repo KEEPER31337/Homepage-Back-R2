@@ -143,7 +143,7 @@ class MeritControllerTest1 : IntegrationTest() {
             }
         }
 
-        @Documentation("update-meritType")
+        @Documentation("update-meritType-kt")
         fun `상벌점 부여 로그 수정을 성공해야 한다`() {
             val request = UpdateMeritTypeRequest.builder()
                     .score(-5)
@@ -151,21 +151,49 @@ class MeritControllerTest1 : IntegrationTest() {
                     .isMerit(false)
                     .build()
 
-            restDocs(mockMvc, PUT, "/merits/types/{meritTypeId}", "${meritType!!.id}") {
-                cookie(*memberTestHelper.getTokenCookies(admin))
-                requestJson(asJsonString(request))
-                expect(HttpStatus.CREATED, MediaType.APPLICATION_JSON)
-                pathVariable("meritTypeId" means "수정하고자 하는 상벌점 타입의 ID")
-                cookieVariable(
-                        ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
-                        REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
-                )
-                requestBody(
-                        "score" means "상벌점 점수",
-                        "reason" means "상벌점 사유",
-                        "isMerit" means "상벌점 타입",
-                )
+//            restDocs(mockMvc, PUT, "/merits/types/{meritTypeId}", "${meritType!!.id}") {
+//                cookie(*memberTestHelper.getTokenCookies(admin))
+//                requestJson(asJsonString(request))
+//                expect(HttpStatus.CREATED, MediaType.APPLICATION_JSON)
+//                pathVariable("meritTypeId" means "수정하고자 하는 상벌점 타입의 ID")
+//                cookieVariable(
+//                        ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
+//                        REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+//                )
+//                requestBody(
+//                        "score" means "상벌점 점수",
+//                        "reason" means "상벌점 사유",
+//                        "isMerit" means "상벌점 타입",
+//                )
+//            }
+
+            docs(mockMvc, DocsMethod.PUT, "/merits/types/{meritTypeId}", "${meritType!!.id}") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(admin))
+                    content(asJsonString(request))
+                    contentType(MediaType.APPLICATION_JSON)
+                }
+
+                result {
+                    expect(MockMvcResultMatchers.status().isCreated())
+                }
+
+                response {
+                    path("meritTypeId" means "수정하고자 하는 상벌점 타입의 ID")
+
+                    cookie(
+                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
+                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                    )
+
+                    requestBody(
+                            "score" means "상벌점 점수를 입력해주세요.",
+                            "reason" means "상벌점 사유를 입력해주세요.",
+                            "isMerit" means "상벌점 타입를 입력해주세요.",
+                    )
+                }
             }
+
         }
     }
 

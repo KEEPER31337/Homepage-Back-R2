@@ -24,12 +24,12 @@ class RestDocsRequestBuilder {
 
     fun build(): MockHttpServletRequestBuilder? {
         val mockRequestBuilder = when (method) {
-            DocsMethod.GET -> RestDocumentationRequestBuilders.get(url, pathParams)
-            DocsMethod.PUT -> RestDocumentationRequestBuilders.put(url, pathParams)
-            DocsMethod.POST -> RestDocumentationRequestBuilders.post(url, pathParams)
-            DocsMethod.DELETE -> RestDocumentationRequestBuilders.delete(url, pathParams)
-            DocsMethod.PATCH -> RestDocumentationRequestBuilders.patch(url, pathParams)
-            DocsMethod.MULTIPART -> RestDocumentationRequestBuilders.multipart(url, pathParams)
+            DocsMethod.GET -> RestDocumentationRequestBuilders.get(url, pathParams?.joinToString(", "))
+            DocsMethod.PUT -> RestDocumentationRequestBuilders.put(url, pathParams?.joinToString(", "))
+            DocsMethod.POST -> RestDocumentationRequestBuilders.post(url, pathParams?.joinToString(", "))
+            DocsMethod.DELETE -> RestDocumentationRequestBuilders.delete(url, pathParams?.joinToString(", "))
+            DocsMethod.PATCH -> RestDocumentationRequestBuilders.patch(url, pathParams?.joinToString(", "))
+            DocsMethod.MULTIPART -> RestDocumentationRequestBuilders.multipart(url, pathParams?.joinToString(", "))
         }
 
         return mockRequestBuilder
