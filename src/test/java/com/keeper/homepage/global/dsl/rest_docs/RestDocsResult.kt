@@ -1,110 +1,61 @@
 package com.keeper.homepage.global.dsl.rest_docs
 
+import com.keeper.homepage.global.dsl.Documentation
 import com.keeper.homepage.global.dsl.Field
 import com.keeper.homepage.global.dsl.means
 import jakarta.servlet.http.Cookie
 import org.springframework.restdocs.cookies.CookieDocumentation
 import org.springframework.restdocs.cookies.CookieDocumentation.*
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
-import org.springframework.restdocs.payload.PayloadDocumentation
 import org.springframework.restdocs.payload.PayloadDocumentation.*
 import org.springframework.restdocs.request.RequestDocumentation
+import org.springframework.restdocs.request.RequestDocumentation.parameterWithName
+import org.springframework.restdocs.request.RequestDocumentation.pathParameters
 import org.springframework.restdocs.snippet.Snippet
+import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.ResultMatcher
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.util.Assert
 
 class RestDocsResult(
-        private val resultActions: ResultActions,
+        private val mockMvc: MockMvc,
+        private val resultActions: MockHttpServletRequestBuilder,
 ) {
-    private val requests = mutableListOf<DocsRequestBuilder>()
-    private val results = mutableListOf<DocsResultBuilder>()
-    private val responses = mutableListOf<DocsResponseBuilder>()
+    private lateinit var request: DocsRequestBuilder
+    private lateinit var results : DocsResultBuilder
+    private var responses : DocsResponseBuilder? = null
     private var documentName: String? = null
-    private var requestJson: String? = null
-//    private val results: MutableList<ResultMatcher> = mutableListOf()
-    private val pathVariables: MutableList<Field> = mutableListOf()
-    private val cookieVariables: MutableList<Cookie> = mutableListOf()
-    private val cookieFields: MutableList<Field> = mutableListOf()
-    private val snippets: MutableList<Snippet> = mutableListOf()
-    private val responseBodyFields: MutableList<Field> = mutableListOf()
-    private val requestBodyFields: MutableList<Field> = mutableListOf()
 
     fun request(init: DocsRequestBuilder.() -> Unit) {
-        val docsRequestBuilder = DocsRequestBuilder(resultActions)
+        val docsRequestBuilder = DocsRequestBuilder()
         docsRequestBuilder.init()
-        requests.add(docsRequestBuilder)
+        this.request = docsRequestBuilder
     }
 
     fun result(init: DocsResultBuilder.() -> Unit) {
         val docsResultBuilder = DocsResultBuilder()
         docsResultBuilder.init()
-        results.add(docsResultBuilder)
+        results = docsResultBuilder
     }
 
     fun response(init: DocsResponseBuilder.() -> Unit) {
         val docsResponseBuilder = DocsResponseBuilder()
         docsResponseBuilder.init()
-        responses.add(docsResponseBuilder)
+        this.responses = docsResponseBuilder
     }
 
-//    fun pathVariable(vararg field: Field) {
-//        pathVariables.addAll(field)
-//    }
-//
-//    fun cookie(vararg cookies: Cookie) {
-//        cookieVariables.addAll(cookies)
-//    }
-//
-//    fun cookieVariable(vararg fields: Field) {
-//        cookieFields.addAll(fields)
-//    }
-//
-//    fun requestJson(jsonBody: String) {
-//        this.requestJson = jsonBody
-//    }
-//
-//    fun responseBody(vararg field: Field) {
-//        requestBodyFields.addAll(field)
-//    }
-//
-//    fun requestBody(vararg field: Field) {
-//        requestBodyFields.addAll(field)
-//    }
-
-    fun generateDocs(): List<ResultMatcher> {
-        val cookieDescriptors = cookieFields.map { cookieWithName(it.fieldName).description(it.description) }
-        val pathParameterDescriptors = pathVariables.takeIf { it.isNotEmpty() }?.map { RequestDocumentation.parameterWithName(it.fieldName).description(it.description) }
-        val responseFieldDescriptors = responseBodyFields.takeIf { it.isNotEmpty() }?.map {
-            fieldWithPath(it.fieldName).description(it.description)
-        }?.plus(subsectionWithPath("pageable").description("페이지에 대한 부가 정보"))
-
-        val cookieFieldsSnippet = requestCookies(cookieDescriptors)
-        val pathParametersSnippet = pathParameterDescriptors?.let { RequestDocumentation.pathParameters(it) }
-        val responseFieldsSnippet = responseFieldDescriptors?.let { responseFields(*it.toTypedArray()) }
-        responseFieldsSnippet.apply { subsectionWithPath("pageable").description("페이지에 대한 부가 정보") }
-
-        val snippets = mutableListOf<Snippet>().apply {
-            cookieFieldsSnippet?.let { add(it) }
-            pathParametersSnippet?.let { add(it) }
-            responseFieldsSnippet?.let { add(it) }
-        }
-
-//        results.forEach { resultActions.andExpect(it) }
-
-        resultActions.andDo(
-                document(
-                        "",
-                        *snippets.toTypedArray(),
-                )
-        )
-
-//        return results
+    fun generateDocs() {
+        val mock = request.build(mockMvc, resultActions)
+        val build = results.build(mock)
+        responses?.let { it.build(build) }
     }
 
 }
 
-class DocsResponseBuilder() {
+class DocsResponseBuilder {
 
     private val responseFields: MutableList<Field> = mutableListOf()
     private val requestFields: MutableList<Field> = mutableListOf()
@@ -142,6 +93,33 @@ class DocsResponseBuilder() {
         responseFields.add("size" means "가져오는 페이지가 비어 있는 지")
     }
 
+    fun build(mockMvc: ResultActions) {
+        val currentStackTraceElement = Thread.currentThread().stackTrace.firstOrNull { it.fileName?.endsWith("Test.kt") == true }
+        val className = currentStackTraceElement?.className
+        val methodName = currentStackTraceElement?.methodName
+
+        val method = Class.forName(className).methods.firstOrNull { it.name == methodName }
+        val documentName = method?.getAnnotation(Documentation::class.java)?.documentName
+
+        val cookieDescriptors = cookieFields.map { cookieWithName(it.fieldName).description(it.description) }
+        val pathParameterDescriptors = pathFields.map { parameterWithName(it.fieldName).description(it.description) }
+        val responseFieldDescriptors = responseFields.map { fieldWithPath(it.fieldName).description(it.description) }
+
+        val cookieFieldsSnippet = requestCookies(cookieDescriptors)
+        val pathParametersSnippet = pathParameterDescriptors?.let { pathParameters(it) }
+        val responseFieldsSnippet = responseFieldDescriptors?.let { responseFields(*it.toTypedArray()) }
+
+        val snippets = mutableListOf<Snippet>().apply {
+            cookieFieldsSnippet?.let { add(it) }
+            pathParametersSnippet?.let { add(it) }
+            responseFieldsSnippet?.let { add(it) }
+        }
+
+        mockMvc.andDo(
+                document(documentName, *snippets.toTypedArray())
+        )
+
+    }
 
 }
 
@@ -153,11 +131,14 @@ class DocsResultBuilder() {
         resultMatcher.add(result)
     }
 
+    fun build(mockMvc: ResultActions): ResultActions {
+        resultMatcher.forEach { mockMvc.andExpect(it) }
+        return mockMvc
+    }
+
 }
 
-class DocsRequestBuilder(
-        private val resultActions: ResultActions,
-) {
+class DocsRequestBuilder {
 
     private val cookies: MutableList<Cookie> = mutableListOf()
     private var content: String? = null
@@ -174,6 +155,13 @@ class DocsRequestBuilder(
     fun cookie(vararg cookies: Cookie?) {
         Assert.notNull(cookies, "Cookies must not be null")
         cookies.filterNotNull().forEach { this.cookies.add(it) }
+    }
+
+    fun build(mockMvc: MockMvc, resultActions: MockHttpServletRequestBuilder): ResultActions {
+        cookies.forEach { resultActions.cookie(it) }
+        content?.let { resultActions.content(it) }
+        contentType?.let { resultActions.contentType(it) }
+        return mockMvc.perform(resultActions)
     }
 
 }

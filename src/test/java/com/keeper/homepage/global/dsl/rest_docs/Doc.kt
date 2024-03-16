@@ -1,6 +1,5 @@
 package com.keeper.homepage.global.dsl.rest_docs
 
-import com.keeper.homepage.global.dsl.RestDocs
 import org.springframework.test.web.servlet.MockMvc
 
 fun docs(
@@ -10,9 +9,10 @@ fun docs(
         init: RestDocsResult.() -> Unit
 ): RestDocsRequestBuilder {
     val restDocsRequestBuilder = RestDocsRequestBuilder(mockMvc, method, url)
-    val requestBuilder = restDocsRequestBuilder.build()
+    val requestBuilder = restDocsRequestBuilder.build()!!
 
-    val restDocsResult = RestDocsResult(requestBuilder)
+    val restDocsResult = RestDocsResult(mockMvc, requestBuilder)
+    restDocsResult.init()
     restDocsResult.generateDocs()
 
     return restDocsRequestBuilder
