@@ -198,7 +198,27 @@ class MeritControllerTest1 : IntegrationTest() {
             }
 
             docs(mockMvc, DocsMethod.GET, "/merits") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(admin))
+                }
+
+                result {
+
+                }
+
                 expect(MockMvcResultMatchers.status().isOk())
+                expect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
+
+                responseBodyWithPaging(
+                        "content[].id" to "상벌점 로그의 ID",
+                        "content[].giveTime" to "상벌점 로그의 생성시간",
+                        "content[].score" to "상벌점 점수",
+                        "content[].meritTypeId" to "상벌점 타입의 ID",
+                        "content[].reason" to "상벌점 사유",
+                        "content[].isMerit" to "상벌점 타입",
+                        "content[].awarderName" to "수상자의 이름",
+                        "content[].awarderGeneration" to "수상자의 학번",
+                )
 
             }
         }
