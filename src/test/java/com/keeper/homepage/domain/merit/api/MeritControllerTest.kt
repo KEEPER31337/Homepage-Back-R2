@@ -8,7 +8,7 @@ import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest
 import com.keeper.homepage.domain.merit.entity.MeritType
 import com.keeper.homepage.global.config.security.data.JwtType.*
-import com.keeper.homepage.global.dsl.Documentation
+import com.keeper.homepage.global.dsl.rest_docs.Documentation
 import com.keeper.homepage.global.dsl.means
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod.*

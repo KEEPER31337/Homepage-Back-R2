@@ -1,4 +1,4 @@
-package com.keeper.homepage.global.dsl
+package com.keeper.homepage.global.dsl.rest_docs
 
 import org.junit.jupiter.api.Test
 

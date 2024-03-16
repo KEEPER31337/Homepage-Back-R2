@@ -1,5 +1,7 @@
 package com.keeper.homepage.global.dsl
 
+import com.keeper.homepage.global.dsl.rest_docs.Documentation
+import com.keeper.homepage.global.dsl.rest_docs.Field
 import jakarta.servlet.http.Cookie
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus

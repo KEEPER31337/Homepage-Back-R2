@@ -1,5 +1,6 @@
 package com.keeper.homepage.global.dsl.rest_docs
 
+import com.keeper.homepage.global.dsl.rest_docs.builder.RestDocsResult
 import org.springframework.test.web.servlet.MockMvc
 
 fun docs(
