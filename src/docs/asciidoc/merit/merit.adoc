@@ -210,3 +210,25 @@ include::{snippets}/search-meritType-kt/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/search-meritType-kt/response-fields.adoc[]
+
+== *상벌점 로그 조회 - 코틀린 테스트*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/search-meritLog-kt/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/search-meritLog-kt/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/search-meritLog-kt/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/search-meritLog-kt/response-fields.adoc[]

@@ -4,6 +4,7 @@ import com.keeper.homepage.global.dsl.Documentation
 import com.keeper.homepage.global.dsl.Field
 import com.keeper.homepage.global.dsl.means
 import jakarta.servlet.http.Cookie
+import org.springframework.http.MediaType
 import org.springframework.restdocs.cookies.CookieDocumentation
 import org.springframework.restdocs.cookies.CookieDocumentation.*
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document
@@ -61,6 +62,7 @@ class DocsResponseBuilder {
     private val requestFields: MutableList<Field> = mutableListOf()
     private val cookieFields: MutableList<Field> = mutableListOf()
     private val pathFields: MutableList<Field> = mutableListOf()
+    private var pageable: Boolean = false
 
     fun path(vararg fields: Field) {
         pathFields.addAll(fields)
@@ -79,6 +81,7 @@ class DocsResponseBuilder {
     }
 
     fun responseBodyWithPaging(vararg fields: Field) {
+        pageable = true
         responseFields.addAll(fields)
         responseFields.add("empty" means "가져오는 페이지가 비어 있는 지")
         responseFields.add("first" means "가져오는 페이지가 비어 있는 지")
@@ -101,18 +104,29 @@ class DocsResponseBuilder {
         val method = Class.forName(className).methods.firstOrNull { it.name == methodName }
         val documentName = method?.getAnnotation(Documentation::class.java)?.documentName
 
-        val cookieDescriptors = cookieFields.map { cookieWithName(it.fieldName).description(it.description) }
+        val cookieFieldDescriptors = cookieFields.map { cookieWithName(it.fieldName).description(it.description) }
         val pathParameterDescriptors = pathFields.map { parameterWithName(it.fieldName).description(it.description) }
-        val responseFieldDescriptors = responseFields.map { fieldWithPath(it.fieldName).description(it.description) }
+        val requestFieldDescriptors = requestFields.map { fieldWithPath(it.fieldName).description(it.description) }
+        val responseFieldDescriptors = responseFields.map { fieldWithPath(it.fieldName).description(it.description) }.toMutableList()
 
-        val cookieFieldsSnippet = requestCookies(cookieDescriptors)
-        val pathParametersSnippet = pathParameterDescriptors?.let { pathParameters(it) }
-        val responseFieldsSnippet = responseFieldDescriptors?.let { responseFields(*it.toTypedArray()) }
+        if (pageable) {
+            responseFieldDescriptors.add(subsectionWithPath("pageable").description("페이지에 대한 부가 정보"))
+        }
+
+        val cookieFieldsSnippet = requestCookies(*cookieFieldDescriptors.toTypedArray())
+        val pathParametersSnippet = pathParameters(*pathParameterDescriptors.toTypedArray())
+        val requestFieldsSnippet = requestFields(*requestFieldDescriptors.toTypedArray())
+        val responseFieldsSnippet = responseFields(*responseFieldDescriptors.toTypedArray())
+
+        if (pageable) {
+            responseFieldsSnippet.apply { subsectionWithPath("pageable").description("페이지에 대한 부가 정보") }
+        }
 
         val snippets = mutableListOf<Snippet>().apply {
-            cookieFieldsSnippet?.let { add(it) }
-            pathParametersSnippet?.let { add(it) }
-            responseFieldsSnippet?.let { add(it) }
+            if (pathParameterDescriptors.isNotEmpty()) { add(pathParametersSnippet) }
+            if (cookieFieldDescriptors.isNotEmpty()) { add(cookieFieldsSnippet) }
+            if (requestFieldDescriptors.isNotEmpty()) { add(requestFieldsSnippet) }
+            if (responseFieldDescriptors.isNotEmpty()) { add(responseFieldsSnippet) }
         }
 
         mockMvc.andDo(
@@ -123,7 +137,7 @@ class DocsResponseBuilder {
 
 }
 
-class DocsResultBuilder() {
+class DocsResultBuilder {
 
     private val resultMatcher: MutableList<ResultMatcher> = mutableListOf()
 
@@ -148,8 +162,8 @@ class DocsRequestBuilder {
         this.content = content
     }
 
-    fun contentType(contentType: String) {
-        this.contentType = contentType
+    fun contentType(contentType: MediaType) {
+        this.contentType = contentType.toString()
     }
 
     fun cookie(vararg cookies: Cookie?) {
