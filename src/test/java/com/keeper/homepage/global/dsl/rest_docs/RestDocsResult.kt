@@ -28,7 +28,6 @@ class RestDocsResult(
     private lateinit var request: DocsRequestBuilder
     private lateinit var results : DocsResultBuilder
     private var responses : DocsResponseBuilder? = null
-    private var documentName: String? = null
 
     fun request(init: DocsRequestBuilder.() -> Unit) {
         val docsRequestBuilder = DocsRequestBuilder()
@@ -157,6 +156,7 @@ class DocsRequestBuilder {
     private val cookies: MutableList<Cookie> = mutableListOf()
     private var content: String? = null
     private var contentType: String? = null
+    private var paramMap: MutableMap<String, String> = mutableMapOf()
 
     fun content(content: String) {
         this.content = content
@@ -171,8 +171,13 @@ class DocsRequestBuilder {
         cookies.filterNotNull().forEach { this.cookies.add(it) }
     }
 
+    fun param(name: String, value: String) {
+        paramMap[name] = value
+    }
+
     fun build(mockMvc: MockMvc, resultActions: MockHttpServletRequestBuilder): ResultActions {
         cookies.forEach { resultActions.cookie(it) }
+        paramMap.forEach { (name, value) -> resultActions.param(name, value) }
         content?.let { resultActions.content(it) }
         contentType?.let { resultActions.contentType(it) }
         return mockMvc.perform(resultActions)

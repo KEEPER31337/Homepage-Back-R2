@@ -9,19 +9,17 @@ import com.keeper.homepage.domain.merit.entity.MeritType
 import com.keeper.homepage.global.config.security.data.JwtType.*
 import com.keeper.homepage.global.dsl.Documentation
 import com.keeper.homepage.global.dsl.means
-import com.keeper.homepage.global.dsl.restDocs
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod.*
 import com.keeper.homepage.global.dsl.rest_docs.docs
 import io.jsonwebtoken.io.IOException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.http.HttpMethod.*
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import org.springframework.test.web.servlet.result.StatusResultMatchers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 class MeritControllerTest1 : IntegrationTest() {
 
@@ -73,8 +71,8 @@ class MeritControllerTest1 : IntegrationTest() {
                 }
 
                 result {
-                    expect(MockMvcResultMatchers.status().isOk())
-                    expect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    expect(status().isOk())
+                    expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 }
 
                 response {
@@ -93,6 +91,21 @@ class MeritControllerTest1 : IntegrationTest() {
 
             }
         }
+
+        @Test
+        fun `일반 회원은 조회할 수 없다`() {
+            docs(mockMvc, DocsMethod.GET, "/merits/types") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                }
+
+                result {
+                    expect(status().isForbidden())
+                    expect(jsonPath("$.message").exists())
+                }
+            }
+        }
+
 
         @Documentation("create-meritType-kt")
         fun `상벌점 타입 생성을 성공해야 한다`() {
@@ -125,7 +138,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 }
 
                 result {
-                    expect(MockMvcResultMatchers.status().isCreated())
+                    expect(status().isCreated())
                 }
 
                 response {
@@ -139,6 +152,28 @@ class MeritControllerTest1 : IntegrationTest() {
                             "reason" means "상벌점 사유를 입력해주세요.",
                             "isMerit" means "상벌점 타입를 입력해주세요.",
                     )
+                }
+            }
+        }
+
+        @Test
+        fun `일반 회원은 상벌점 타입을 생성할 수 없다`() {
+            val request = AddMeritTypeRequest.builder()
+                    .score(3)
+                    .reason("우수기술문서 작성")
+                    .isMerit(true)
+                    .build()
+
+            docs(mockMvc, DocsMethod.POST, "/merits/types") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                    content(asJsonString(request))
+                    contentType(MediaType.APPLICATION_JSON)
+                }
+
+                result {
+                    expect(status().isForbidden())
+                    expect(jsonPath("$.message").exists())
                 }
             }
         }
@@ -175,7 +210,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 }
 
                 result {
-                    expect(MockMvcResultMatchers.status().isCreated())
+                    expect(status().isCreated())
                 }
 
                 response {
@@ -193,7 +228,28 @@ class MeritControllerTest1 : IntegrationTest() {
                     )
                 }
             }
+        }
 
+        @Test
+        fun `일반회원은 상벌점 타입 수정을 성공할 수 없다`() {
+            val request = UpdateMeritTypeRequest.builder()
+                    .score(-5)
+                    .reason("거짓 스터디")
+                    .isMerit(false)
+                    .build()
+
+            docs(mockMvc, DocsMethod.PUT, "/merits/types/{meritTypeId}", "${meritType!!.id}") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                    content(asJsonString(request))
+                    contentType(MediaType.APPLICATION_JSON)
+                }
+
+                result {
+                    expect(status().isForbidden())
+                    expect(jsonPath("$.message").exists())
+                }
+            }
         }
     }
 
@@ -237,22 +293,69 @@ class MeritControllerTest1 : IntegrationTest() {
                             .build())
                     .build()
 
-            restDocs(mockMvc, GET, "/merits/members/{memberId}", "${member!!.id}") {
-                cookie(*memberTestHelper.getTokenCookies(admin))
-                expect(HttpStatus.OK, MediaType.APPLICATION_JSON_UTF8)
-                cookieVariable(
-                        ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
-                        REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
-                )
-                pathVariable("memberId" means "조회하고자 하는 멤버의 ID 값")
-                responseBodyWithPaging(
-                        "content[].id" means "상벌점 로그의 ID",
-                        "content[].giveTime" means "상벌점 로그의 생성시간",
-                        "content[].score" means "상벌점 점수",
-                        "content[].meritTypeId" means "상벌점 타입의 ID",
-                        "content[].reason" means "상벌점 사유",
-                        "content[].isMerit" means "상벌점 타입",
-                )
+//            restDocs(mockMvc, GET, "/merits/members/{memberId}", "${member!!.id}") {
+//                cookie(*memberTestHelper.getTokenCookies(admin))
+//                expect(HttpStatus.OK, MediaType.APPLICATION_JSON_UTF8)
+//                cookieVariable(
+//                        ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
+//                        REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+//                )
+//                pathVariable("memberId" means "조회하고자 하는 멤버의 ID 값")
+//                responseBodyWithPaging(
+//                        "content[].id" means "상벌점 로그의 ID",
+//                        "content[].giveTime" means "상벌점 로그의 생성시간",
+//                        "content[].score" means "상벌점 점수",
+//                        "content[].meritTypeId" means "상벌점 타입의 ID",
+//                        "content[].reason" means "상벌점 사유",
+//                        "content[].isMerit" means "상벌점 타입",
+//                )
+//            }
+
+            docs(mockMvc, DocsMethod.GET, "/merits/members/{memberId}", "${member!!.id}") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(admin))
+                }
+
+                result {
+                    expect(status().isOk())
+                    expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                }
+
+                response {
+                    cookie(
+                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
+                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                    )
+
+                    path("memberId" means "조회하고자 하는 멤버의 ID 값")
+
+                    responseBodyWithPaging(
+                            "content[].id" means "상벌점 로그의 ID",
+                            "content[].giveTime" means "상벌점 로그의 생성시간",
+                            "content[].score" means "상벌점 점수",
+                            "content[].meritTypeId" means "상벌점 타입의 ID",
+                            "content[].reason" means "상벌점 사유",
+                            "content[].isMerit" means "상벌점 타입",
+                    )
+                }
+            }
+        }
+
+        @Test
+        fun `일반회원은 회원별 상벌점 목록 조회를 할 수 없다`() {
+            meritLogTestHelper.builder()
+                    .memberId(member!!.id)
+                    .build()
+
+            docs(mockMvc, DocsMethod.GET, "/merits/members/{memberId}", "${member!!.id}") {
+                request {
+                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                }
+
+                result {
+                    expect(status().isForbidden())
+                    expect(jsonPath("$.message").exists())
+                }
             }
         }
 
@@ -283,8 +386,8 @@ class MeritControllerTest1 : IntegrationTest() {
                 }
 
                 result {
-                    expect(MockMvcResultMatchers.status().isOk())
-                    expect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    expect(status().isOk())
+                    expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 }
 
                 response {
@@ -306,6 +409,37 @@ class MeritControllerTest1 : IntegrationTest() {
                 }
 
 
+            }
+        }
+
+        @Test
+        fun `벌점 목록 조회를 성공해야 한다`() {
+            meritLogTestHelper.builder()
+                    .memberId(member!!.id)
+                    .meritType(meritTypeHelper.builder()
+                            .merit(3)
+                            .isMerit(true)
+                            .build())
+                    .build()
+
+            meritLogTestHelper.builder()
+                    .memberId(member!!.id)
+                    .meritType(meritTypeHelper.builder()
+                            .merit(-3)
+                            .isMerit(false)
+                            .build())
+                    .build()
+
+            docs(mockMvc, DocsMethod.GET, "/merits") {
+                request {
+                    param("meritType", "DEMERIT")
+                    cookie(*memberTestHelper.getTokenCookies(admin!!))
+                }
+
+                result {
+                    expect(status().isOk())
+                    expect(jsonPath("$.content[0].isMerit").value("false"))
+                }
             }
         }
 
