@@ -13,21 +13,23 @@ class RestDocsRequestBuilder {
     private val mockMvc: MockMvc
     private val method: DocsMethod
     private val url: String
+    private val pathParams: Array<*>?
 
-    constructor(mockMvc: MockMvc, method: DocsMethod, url: String) {
+    constructor(mockMvc: MockMvc, method: DocsMethod, url: String, pathParams: Array<*>? = null) {
         this.method = method
         this.url = url
         this.mockMvc = mockMvc
+        this.pathParams = pathParams
     }
 
     fun build(): MockHttpServletRequestBuilder? {
         val mockRequestBuilder = when (method) {
-            DocsMethod.GET -> RestDocumentationRequestBuilders.get(URI.create(url))
-            DocsMethod.PUT -> RestDocumentationRequestBuilders.put(URI.create(url))
-            DocsMethod.POST -> RestDocumentationRequestBuilders.post(URI.create(url))
-            DocsMethod.DELETE -> RestDocumentationRequestBuilders.delete(URI.create(url))
-            DocsMethod.PATCH -> RestDocumentationRequestBuilders.patch(URI.create(url))
-            DocsMethod.MULTIPART -> RestDocumentationRequestBuilders.multipart(URI.create(url))
+            DocsMethod.GET -> RestDocumentationRequestBuilders.get(url, pathParams)
+            DocsMethod.PUT -> RestDocumentationRequestBuilders.put(url, pathParams)
+            DocsMethod.POST -> RestDocumentationRequestBuilders.post(url, pathParams)
+            DocsMethod.DELETE -> RestDocumentationRequestBuilders.delete(url, pathParams)
+            DocsMethod.PATCH -> RestDocumentationRequestBuilders.patch(url, pathParams)
+            DocsMethod.MULTIPART -> RestDocumentationRequestBuilders.multipart(url, pathParams)
         }
 
         return mockRequestBuilder

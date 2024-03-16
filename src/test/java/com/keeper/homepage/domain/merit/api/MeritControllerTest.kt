@@ -178,24 +178,24 @@ class MeritControllerTest1 : IntegrationTest() {
 
         @Documentation("search-meritLog")
         fun `상벌점 목록 조회를 성공해야 한다`() {
-            restDocs(mockMvc, GET, "/merits") {
-                cookie(*memberTestHelper.getTokenCookies(admin))
-                expect(HttpStatus.OK, MediaType.APPLICATION_JSON_UTF8)
-                cookieVariable(
-                        ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
-                        REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
-                )
-                responseBodyWithPaging(
-                        "content[].id" means "상벌점 로그의 ID",
-                        "content[].giveTime" means "상벌점 로그의 생성시간",
-                        "content[].score" means "상벌점 점수",
-                        "content[].meritTypeId" means "상벌점 타입의 ID",
-                        "content[].reason" means "상벌점 사유",
-                        "content[].isMerit" means "상벌점 타입",
-                        "content[].awarderName" means "수상자의 이름",
-                        "content[].awarderGeneration" means "수상자의 학번",
-                )
-            }
+//            restDocs(mockMvc, GET, "/merits") {
+//                cookie(*memberTestHelper.getTokenCookies(admin))
+//                expect(HttpStatus.OK, MediaType.APPLICATION_JSON_UTF8)
+//                cookieVariable(
+//                        ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
+//                        REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+//                )
+//                responseBodyWithPaging(
+//                        "content[].id" means "상벌점 로그의 ID",
+//                        "content[].giveTime" means "상벌점 로그의 생성시간",
+//                        "content[].score" means "상벌점 점수",
+//                        "content[].meritTypeId" means "상벌점 타입의 ID",
+//                        "content[].reason" means "상벌점 사유",
+//                        "content[].isMerit" means "상벌점 타입",
+//                        "content[].awarderName" means "수상자의 이름",
+//                        "content[].awarderGeneration" means "수상자의 학번",
+//                )
+//            }
 
             docs(mockMvc, DocsMethod.GET, "/merits") {
                 request {
