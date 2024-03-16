@@ -1,6 +1,7 @@
 package com.keeper.homepage.global.dsl.rest_docs
 
 import com.keeper.homepage.global.dsl.Field
+import com.keeper.homepage.global.dsl.means
 import jakarta.servlet.http.Cookie
 import org.springframework.restdocs.cookies.CookieDocumentation
 import org.springframework.restdocs.cookies.CookieDocumentation.*
@@ -17,6 +18,8 @@ class RestDocsResult(
         private val resultActions: ResultActions,
 ) {
     private val requests = mutableListOf<DocsRequestBuilder>()
+    private val results = mutableListOf<DocsResultBuilder>()
+    private val responses = mutableListOf<DocsResponseBuilder>()
     private var documentName: String? = null
     private var requestJson: String? = null
 //    private val results: MutableList<ResultMatcher> = mutableListOf()
@@ -33,37 +36,41 @@ class RestDocsResult(
         requests.add(docsRequestBuilder)
     }
 
-    fun result(init: RestDocsResult.() -> Unit) {
-        init()
+    fun result(init: DocsResultBuilder.() -> Unit) {
+        val docsResultBuilder = DocsResultBuilder()
+        docsResultBuilder.init()
+        results.add(docsResultBuilder)
     }
 
-    fun expect(result: ResultMatcher) {
-        results.add(result)
+    fun response(init: DocsResponseBuilder.() -> Unit) {
+        val docsResponseBuilder = DocsResponseBuilder()
+        docsResponseBuilder.init()
+        responses.add(docsResponseBuilder)
     }
 
-    fun pathVariable(vararg field: Field) {
-        pathVariables.addAll(field)
-    }
-
-    fun cookie(vararg cookies: Cookie) {
-        cookieVariables.addAll(cookies)
-    }
-
-    fun cookieVariable(vararg fields: Field) {
-        cookieFields.addAll(fields)
-    }
-
-    fun requestJson(jsonBody: String) {
-        this.requestJson = jsonBody
-    }
-
-    fun responseBody(vararg field: Field) {
-        requestBodyFields.addAll(field)
-    }
-
-    fun requestBody(vararg field: Field) {
-        requestBodyFields.addAll(field)
-    }
+//    fun pathVariable(vararg field: Field) {
+//        pathVariables.addAll(field)
+//    }
+//
+//    fun cookie(vararg cookies: Cookie) {
+//        cookieVariables.addAll(cookies)
+//    }
+//
+//    fun cookieVariable(vararg fields: Field) {
+//        cookieFields.addAll(fields)
+//    }
+//
+//    fun requestJson(jsonBody: String) {
+//        this.requestJson = jsonBody
+//    }
+//
+//    fun responseBody(vararg field: Field) {
+//        requestBodyFields.addAll(field)
+//    }
+//
+//    fun requestBody(vararg field: Field) {
+//        requestBodyFields.addAll(field)
+//    }
 
     fun generateDocs(): List<ResultMatcher> {
         val cookieDescriptors = cookieFields.map { cookieWithName(it.fieldName).description(it.description) }
@@ -83,7 +90,7 @@ class RestDocsResult(
             responseFieldsSnippet?.let { add(it) }
         }
 
-        results.forEach { resultActions.andExpect(it) }
+//        results.forEach { resultActions.andExpect(it) }
 
         resultActions.andDo(
                 document(
@@ -92,12 +99,59 @@ class RestDocsResult(
                 )
         )
 
-        return results
+//        return results
     }
 
 }
 
+class DocsResponseBuilder() {
+
+    private val responseFields: MutableList<Field> = mutableListOf()
+    private val requestFields: MutableList<Field> = mutableListOf()
+    private val cookieFields: MutableList<Field> = mutableListOf()
+    private val pathFields: MutableList<Field> = mutableListOf()
+
+    fun path(vararg fields: Field) {
+        pathFields.addAll(fields)
+    }
+
+    fun cookie(vararg cookies: Field) {
+        cookieFields.addAll(cookies)
+    }
+
+    fun requestBody(vararg fields: Field) {
+        requestFields.addAll(fields)
+    }
+
+    fun responseBody(vararg fields: Field) {
+        responseFields.addAll(fields)
+    }
+
+    fun responseBodyWithPaging(vararg fields: Field) {
+        responseFields.addAll(fields)
+        responseFields.add("empty" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("first" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("last" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("number" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("numberOfElements" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("sort.empty" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("sort.sorted" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("sort.unsorted" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("totalPages" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("totalElements" means "가져오는 페이지가 비어 있는 지")
+        responseFields.add("size" means "가져오는 페이지가 비어 있는 지")
+    }
+
+
+}
+
 class DocsResultBuilder() {
+
+    private val resultMatcher: MutableList<ResultMatcher> = mutableListOf()
+
+    fun expect(result: ResultMatcher) {
+        resultMatcher.add(result)
+    }
 
 }
 

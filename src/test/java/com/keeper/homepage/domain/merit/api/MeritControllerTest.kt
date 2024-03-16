@@ -203,22 +203,28 @@ class MeritControllerTest1 : IntegrationTest() {
                 }
 
                 result {
-
+                    expect(MockMvcResultMatchers.status().isOk())
+                    expect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 }
 
-                expect(MockMvcResultMatchers.status().isOk())
-                expect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                response {
+                    cookie(
+                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN",
+                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                    )
 
-                responseBodyWithPaging(
-                        "content[].id" to "상벌점 로그의 ID",
-                        "content[].giveTime" to "상벌점 로그의 생성시간",
-                        "content[].score" to "상벌점 점수",
-                        "content[].meritTypeId" to "상벌점 타입의 ID",
-                        "content[].reason" to "상벌점 사유",
-                        "content[].isMerit" to "상벌점 타입",
-                        "content[].awarderName" to "수상자의 이름",
-                        "content[].awarderGeneration" to "수상자의 학번",
-                )
+                    responseBodyWithPaging(
+                            "content[].id" means "상벌점 로그의 ID",
+                            "content[].giveTime" means "상벌점 로그의 생성시간",
+                            "content[].score" means "상벌점 점수",
+                            "content[].meritTypeId" means "상벌점 타입의 ID",
+                            "content[].reason" means "상벌점 사유",
+                            "content[].isMerit" means "상벌점 타입",
+                            "content[].awarderName" means "수상자의 이름",
+                            "content[].awarderGeneration" means "수상자의 학번",
+                    )
+                }
+
 
             }
         }
