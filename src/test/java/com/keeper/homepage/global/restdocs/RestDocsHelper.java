@@ -46,7 +46,8 @@ public class RestDocsHelper {
   }
 
   public static FieldDescriptor[] pageHelper(FieldDescriptor... fieldDescriptors) {
-    List<FieldDescriptor> descriptorList = new ArrayList<>(List.of(listHelper("content", fieldDescriptors)));
+    List<FieldDescriptor> descriptorList = new ArrayList<>(
+        List.of(listHelper("content", fieldDescriptors)));
     descriptorList.add(field("empty", "가져오는 페이지가 비어 있는 지"));
     descriptorList.add(field("first", "첫 페이지인지"));
     descriptorList.add(field("last", "마지막 페이지인지"));
@@ -62,11 +63,13 @@ public class RestDocsHelper {
     return descriptorList.toArray(new FieldDescriptor[0]);
   }
 
-  public static FieldDescriptor[] listHelper(String objectName, FieldDescriptor... fieldDescriptors) {
+  public static FieldDescriptor[] listHelper(String objectName,
+      FieldDescriptor... fieldDescriptors) {
     List<FieldDescriptor> descriptorList = new ArrayList<>();
     for (FieldDescriptor descriptor : fieldDescriptors) {
-      descriptorList.add(field(objectName + "[]." + descriptor.getPath(), descriptor.getDescription().toString(),
-          descriptor.isOptional()));
+      descriptorList.add(
+          field(objectName + "[]." + descriptor.getPath(), descriptor.getDescription().toString(),
+              descriptor.isOptional()));
     }
     return descriptorList.toArray(new FieldDescriptor[0]);
   }

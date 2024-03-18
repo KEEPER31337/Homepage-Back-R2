@@ -78,7 +78,8 @@ public class SeminarService {
   }
 
   @Transactional
-  public SeminarAttendanceCodeResponse start(Member starter, Long seminarId, LocalDateTime attendanceCloseTime,
+  public SeminarAttendanceCodeResponse start(Member starter, Long seminarId,
+      LocalDateTime attendanceCloseTime,
       LocalDateTime latenessCloseTime) {
     checkValidCloseTime(attendanceCloseTime, latenessCloseTime);
 
@@ -89,7 +90,8 @@ public class SeminarService {
     return new SeminarAttendanceCodeResponse(seminar.getAttendanceCode());
   }
 
-  private void checkValidCloseTime(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime) {
+  private void checkValidCloseTime(LocalDateTime attendanceCloseTime,
+      LocalDateTime latenessCloseTime) {
     if (attendanceCloseTime == null && latenessCloseTime == null) {
       return;
     }
@@ -110,7 +112,8 @@ public class SeminarService {
   }
 
   private void attendanceStarter(Seminar seminar, Member member) {
-    Optional<SeminarAttendance> seminarAttendance = seminarAttendanceRepository.findBySeminarAndMember(seminar,
+    Optional<SeminarAttendance> seminarAttendance = seminarAttendanceRepository.findBySeminarAndMember(
+        seminar,
         member);
     if (seminarAttendance.isPresent()) {
       SeminarAttendance attendance = seminarAttendance.get();
@@ -133,7 +136,8 @@ public class SeminarService {
   public SeminarDetailResponse findById(Member member, long seminarId) {
     Seminar seminar = validSeminarFindService.findById(seminarId);
 
-    var seminarAttendanceStatusType = seminarAttendanceRepository.findBySeminarAndMember(seminar, member)
+    var seminarAttendanceStatusType = seminarAttendanceRepository.findBySeminarAndMember(seminar,
+            member)
         .orElse(SeminarAttendance.builder()
             .seminarAttendanceStatus(getSeminarAttendanceStatusBy(BEFORE_ATTENDANCE))
             .build())

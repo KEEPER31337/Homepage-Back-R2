@@ -4,6 +4,7 @@ import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeHasFile;
 import com.keeper.homepage.domain.ctf.entity.challenge.CtfChallengeHasFilePK;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CtfChallengeHasFileRepository extends JpaRepository<CtfChallengeHasFile, CtfChallengeHasFilePK> {
+public interface CtfChallengeHasFileRepository extends
+    JpaRepository<CtfChallengeHasFile, CtfChallengeHasFilePK> {
 
 }

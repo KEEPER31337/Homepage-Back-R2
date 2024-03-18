@@ -67,7 +67,8 @@ public class CtfTeam extends BaseEntity {
   private final Set<CtfTeamHasMember> ctfTeamHasMembers = new HashSet<>();
 
   @Builder
-  private CtfTeam(String name, String description, Member creator, Integer score, CtfContest ctfContest,
+  private CtfTeam(String name, String description, Member creator, Integer score,
+      CtfContest ctfContest,
       LocalDateTime lastSolveTime) {
     this.name = name;
     this.description = description;

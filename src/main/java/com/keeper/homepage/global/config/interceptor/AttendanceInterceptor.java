@@ -20,7 +20,8 @@ public class AttendanceInterceptor implements HandlerInterceptor {
   private final RedisUtil redisUtil;
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+      throws Exception {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
     if (!(authentication instanceof AnonymousAuthenticationToken)) {

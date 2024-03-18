@@ -52,7 +52,8 @@ public class PointController {
       @LoginMember Member member
   ) {
     return ResponseEntity.ok(
-        pointLogService.findAllPointLogs(PageRequest.of(page, size, Sort.by(DESC, "time")), member.getId())
+        pointLogService.findAllPointLogs(PageRequest.of(page, size, Sort.by(DESC, "time")),
+                member.getId())
             .map(FindAllPointLogResponse::from)
     );
   }

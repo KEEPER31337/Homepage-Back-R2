@@ -49,7 +49,8 @@ public class SurveyMemberReply {
   private SurveyReplyExcuse replyExcuse;
 
   @Builder
-  private SurveyMemberReply(Member member, Survey survey, SurveyReply reply, LocalDateTime replyTime) {
+  private SurveyMemberReply(Member member, Survey survey, SurveyReply reply,
+      LocalDateTime replyTime) {
     this.member = member;
     this.survey = survey;
     this.reply = reply;

@@ -31,7 +31,8 @@ public class ExceptionAdvice {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<ErrorResponse> constraintViolationException(ConstraintViolationException e) {
+  public ResponseEntity<ErrorResponse> constraintViolationException(
+      ConstraintViolationException e) {
     return ResponseEntity.badRequest()
         .body(ErrorResponse.from(e.getMessage()));
   }

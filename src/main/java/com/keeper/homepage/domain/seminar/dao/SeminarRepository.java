@@ -28,7 +28,8 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
       + "AND DATE(s.openTime) >= :localDate "
       + "ORDER BY s.openTime ASC "
       + "LIMIT 1")
-  Optional<Seminar> findByAvailable(@Param("dateTime") LocalDateTime dateTime, @Param("localDate") LocalDate localDate);
+  Optional<Seminar> findByAvailable(@Param("dateTime") LocalDateTime dateTime,
+      @Param("localDate") LocalDate localDate);
 
   @Query("SELECT s FROM Seminar s "
       + "WHERE s.id <> 1 " // virtual seminar data 제외
@@ -52,7 +53,8 @@ public interface SeminarRepository extends JpaRepository<Seminar, Long> {
   @Query("UPDATE Seminar s "
       + "SET s.starter = :virtualMember "
       + "WHERE s.starter = :member")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member,
+      @Param("virtualMember") Member virtualMember);
 
   @Query("SELECT s FROM Seminar s "
       + "WHERE DATE(s.openTime) >= :localDate "

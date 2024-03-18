@@ -51,7 +51,8 @@ public class PointLog {
   private Boolean isSpent;
 
   @Builder
-  private PointLog(LocalDateTime time, Member member, Integer point, String detail, Member presented, Boolean isSpent) {
+  private PointLog(LocalDateTime time, Member member, Integer point, String detail,
+      Member presented, Boolean isSpent) {
     this.time = time;
     this.member = member;
     this.point = point;

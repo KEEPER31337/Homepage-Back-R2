@@ -254,7 +254,8 @@ public class MemberServiceTest extends IntegrationTest {
           .attendTime(LocalDateTime.now())
           .build()).getId();// O
       Long replyId = surveyMemberReplyTestHelper.builder().member(member).build().getId();// O
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(getMemberJobBy(ROLE_회장)).member(member)
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(
+              getMemberJobBy(ROLE_회장)).member(member)
           .build(); // O
       electionVoterTestHelper.builder().member(member).build(); // O
       electionChartLogRepository.save(ElectionChartLog.builder()

@@ -84,7 +84,8 @@ public class AttendanceService {
   }
 
   private int getContinuousDay(Member member, LocalDate now) {
-    Attendance yesterdayAttendance = attendanceRepository.findByMemberAndDate(member, now.minusDays(1))
+    Attendance yesterdayAttendance = attendanceRepository.findByMemberAndDate(member,
+            now.minusDays(1))
         .orElse(null);
     if (yesterdayAttendance == null) {
       return 1;

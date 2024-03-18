@@ -6,7 +6,8 @@ import com.keeper.homepage.domain.member.entity.comment.MemberHasCommentDislike;
 import com.keeper.homepage.domain.post.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MemberHasCommentDislikeRepository extends JpaRepository<MemberHasCommentDislike, Long> {
+public interface MemberHasCommentDislikeRepository extends
+    JpaRepository<MemberHasCommentDislike, Long> {
 
   void deleteAllByComment(Comment comment);
 

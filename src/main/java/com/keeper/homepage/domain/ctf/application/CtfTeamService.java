@@ -71,7 +71,8 @@ public class CtfTeamService {
 
   public Page<CtfTeamResponse> getTeams(long contestId, String search, Pageable pageable) {
     CtfContest contest = ctfContestFindService.findJoinableById(contestId);
-    return ctfTeamRepository.findAllByCtfContestAndNameIgnoreCaseContaining(contest, search, pageable)
+    return ctfTeamRepository.findAllByCtfContestAndNameIgnoreCaseContaining(contest, search,
+            pageable)
         .map(CtfTeamResponse::from);
   }
 

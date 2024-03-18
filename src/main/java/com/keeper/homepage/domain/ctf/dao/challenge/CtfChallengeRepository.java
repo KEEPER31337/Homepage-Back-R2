@@ -13,6 +13,7 @@ public interface CtfChallengeRepository extends JpaRepository<CtfChallenge, Long
   @Query("UPDATE CtfChallenge c "
       + "SET c.creator = :virtualMember "
       + "WHERE c.creator = :member")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member,
+      @Param("virtualMember") Member virtualMember);
 
 }

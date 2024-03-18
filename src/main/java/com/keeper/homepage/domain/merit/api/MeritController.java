@@ -54,7 +54,8 @@ public class MeritController {
       @RequestParam(defaultValue = "10") @PositiveOrZero @Max(30) int size
   ) {
     return ResponseEntity
-        .ok(meritLogService.findAllByMeritType(PageRequest.of(page, size, Sort.by("time").descending()), meritType)
+        .ok(meritLogService.findAllByMeritType(
+                PageRequest.of(page, size, Sort.by("time").descending()), meritType)
             .map(SearchMeritLogListResponse::from));
   }
 

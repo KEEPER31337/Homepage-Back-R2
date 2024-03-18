@@ -84,8 +84,9 @@ public class MemberJobControllerTest extends IntegrationTest {
   public void 유효한_요청일_경우_임원_직책_추가는_성공해야_한다() throws Exception {
     String securedValue = getSecuredValue(MemberJobController.class, "addMemberExecutiveJob");
 
-    mockMvc.perform(post("/members/{memberId}/executive-jobs/{jobId}", member.getId(), ROLE_부회장.getId())
-            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+    mockMvc.perform(
+            post("/members/{memberId}/executive-jobs/{jobId}", member.getId(), ROLE_부회장.getId())
+                .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
         .andExpect(status().isCreated())
         .andDo(document("add-member-executive-job",
             requestCookies(
@@ -103,8 +104,9 @@ public class MemberJobControllerTest extends IntegrationTest {
   public void 유효한_요청일_경우_임원_직책_삭제는_성공해야_한다() throws Exception {
     String securedValue = getSecuredValue(MemberJobController.class, "deleteMemberExecutiveJob");
 
-    mockMvc.perform(delete("/members/{memberId}/executive-jobs/{jobId}", member.getId(), ROLE_부회장.getId())
-            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
+    mockMvc.perform(
+            delete("/members/{memberId}/executive-jobs/{jobId}", member.getId(), ROLE_부회장.getId())
+                .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)))
         .andExpect(status().isNoContent())
         .andDo(document("delete-member-executive-job",
             requestCookies(

@@ -53,7 +53,8 @@ public class BookService {
   public static final long MAX_BORROWING_COUNT = 2;
   public static final long RENEWAL_WAITING_PERIOD = 3;
 
-  public Page<BookResponse> getBooks(Member member, @NotNull BookSearchType searchType, String search,
+  public Page<BookResponse> getBooks(Member member, @NotNull BookSearchType searchType,
+      String search,
       PageRequest pageable) {
     boolean isUnderLimit = member.getCountWaitOrInBorrowing() < MAX_BORROWING_COUNT;
 
@@ -62,8 +63,9 @@ public class BookService {
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       case TITLE -> bookRepository.findAllByTitleIgnoreCaseContainingOrderByIdDesc(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
-      case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContainingOrderByIdDesc(search, pageable)
-          .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
+      case AUTHOR ->
+          bookRepository.findAllByAuthorIgnoreCaseContainingOrderByIdDesc(search, pageable)
+              .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       default -> throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
     };
   }
@@ -92,14 +94,16 @@ public class BookService {
   private void checkCountInBorrowing(Member member) {
     long countWaitOrInBorrowing = member.getCountWaitOrInBorrowing();
     if (countWaitOrInBorrowing >= MAX_BORROWING_COUNT) {
-      throw new BusinessException(countWaitOrInBorrowing, "countWaitOrInBorrowing", BOOK_BORROWING_COUNT_OVER);
+      throw new BusinessException(countWaitOrInBorrowing, "countWaitOrInBorrowing",
+          BOOK_BORROWING_COUNT_OVER);
     }
   }
 
   private void checkCurrentQuantity(Book book) {
     Long currentQuantity = book.getCurrentQuantity();
     if (currentQuantity == 0L) {
-      throw new BusinessException(currentQuantity, "currentQuantity", BOOK_CURRENT_QUANTITY_IS_ZERO);
+      throw new BusinessException(currentQuantity, "currentQuantity",
+          BOOK_CURRENT_QUANTITY_IS_ZERO);
     }
   }
 
@@ -107,7 +111,8 @@ public class BookService {
     Optional<BookBorrowInfo> borrowInfo = bookBorrowInfoRepository
         .findByMemberAndBookAndInBorrowingOrWait(member, book);
     if (borrowInfo.isPresent()) {
-      throw new BusinessException(borrowInfo.get().getId(), "bookBorrowInfoId", BORROW_REQUEST_ALREADY);
+      throw new BusinessException(borrowInfo.get().getId(), "bookBorrowInfoId",
+          BORROW_REQUEST_ALREADY);
     }
   }
 
@@ -124,7 +129,8 @@ public class BookService {
     long daysBetween = ChronoUnit.DAYS.between(returnedDate, currentDate);
 
     if (daysBetween <= RENEWAL_WAITING_PERIOD) {
-      throw new BusinessException(returnedDate, "checkEligibilityForRenewal", BORROW_RENEWAL_ELIGIBILITY_NOT_MET);
+      throw new BusinessException(returnedDate, "checkEligibilityForRenewal",
+          BORROW_RENEWAL_ELIGIBILITY_NOT_MET);
     }
   }
 

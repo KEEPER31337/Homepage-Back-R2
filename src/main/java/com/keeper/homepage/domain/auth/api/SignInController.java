@@ -50,14 +50,17 @@ public class SignInController {
   @PostMapping("/send-password-change-auth-code")
   public ResponseEntity<EmailAuthResponse> sendPasswordChangeAuthCode(
       @RequestBody @Valid MemberIdAndEmailRequest request) {
-    int expiredSeconds = signInService.sendPasswordChangeAuthCode(EmailAddress.from(request.getEmail()),
+    int expiredSeconds = signInService.sendPasswordChangeAuthCode(
+        EmailAddress.from(request.getEmail()),
         LoginId.from(request.getLoginId()));
     return ResponseEntity.ok(EmailAuthResponse.from(expiredSeconds));
   }
 
   @GetMapping("/check-auth-code")
-  public ResponseEntity<CheckAuthCodeResponse> checkAuthCode(String email, String loginId, String authCode) {
-    boolean isAuth = signInService.isAuthenticated(EmailAddress.from(email), LoginId.from(loginId), authCode);
+  public ResponseEntity<CheckAuthCodeResponse> checkAuthCode(String email, String loginId,
+      String authCode) {
+    boolean isAuth = signInService.isAuthenticated(EmailAddress.from(email), LoginId.from(loginId),
+        authCode);
     return ResponseEntity.ok(CheckAuthCodeResponse.from(isAuth));
   }
 
@@ -65,7 +68,8 @@ public class SignInController {
   public ResponseEntity<Void> changePassword(
       @RequestBody @Valid ChangePasswordForMissingRequest request) {
     signInService.changePassword(request.getAuthCode(),
-        LoginId.from(request.getLoginId()), EmailAddress.from(request.getEmail()), request.getRawPassword());
+        LoginId.from(request.getLoginId()), EmailAddress.from(request.getEmail()),
+        request.getRawPassword());
     return ResponseEntity.noContent().build();
   }
 }

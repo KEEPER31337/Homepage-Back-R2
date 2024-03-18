@@ -45,7 +45,8 @@ public class SeminarAttendanceStatusRepositoryTest extends IntegrationTest {
           .toList();
     }
 
-    private static List<SeminarAttendanceStatusType> getType(List<SeminarAttendanceStatus> typesList) {
+    private static List<SeminarAttendanceStatusType> getType(
+        List<SeminarAttendanceStatus> typesList) {
       return typesList.stream()
           .map(SeminarAttendanceStatus::getType)
           .toList();

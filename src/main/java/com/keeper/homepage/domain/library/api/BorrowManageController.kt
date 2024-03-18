@@ -25,14 +25,14 @@ const val DEFAULT_SIZE = 10
 @RestController
 @Secured("ROLE_회장", "ROLE_부회장", "ROLE_사서")
 class BorrowManageController(
-    private val borrowManageService: BorrowManageService
+        private val borrowManageService: BorrowManageService
 ) {
     @GetMapping
     fun getBorrowRequests(
-        @RequestParam(defaultValue = "") search: String,
-        @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
-        @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
-        @RequestParam status: BorrowStatusDto?
+            @RequestParam(defaultValue = "") search: String,
+            @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
+            @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
+            @RequestParam status: BorrowStatusDto?
     ): ResponseEntity<Page<BorrowDetailResponse>> {
         val borrowRequests = borrowManageService.getBorrow(search, PageRequest.of(page, size), status)
         return ResponseEntity.ok(borrowRequests)
@@ -64,10 +64,10 @@ class BorrowManageController(
 
     @GetMapping("/logs")
     fun getBorrowLogs(
-        @RequestParam(defaultValue = "") search: String,
-        @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
-        @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
-        @RequestParam searchType: BookBorrowLog.LogType?,
+            @RequestParam(defaultValue = "") search: String,
+            @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
+            @RequestParam(defaultValue = DEFAULT_SIZE.toString()) @Min(MIN_SIZE) @Max(MAX_SIZE) @NotNull size: Int,
+            @RequestParam searchType: BookBorrowLog.LogType?,
     ): ResponseEntity<Page<BorrowLogResponse>> {
         val borrowLogs = borrowManageService.getBorrowLogs(search, PageRequest.of(page, size), searchType)
         return ResponseEntity.ok(borrowLogs)

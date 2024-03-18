@@ -13,14 +13,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 fun GameTestHelper.generate(
-    member: Member,
-    baseballDayPoint: Int,
-    lastPlayTime: LocalDateTime = LocalDateTime.now()
+        member: Member,
+        baseballDayPoint: Int,
+        lastPlayTime: LocalDateTime = LocalDateTime.now()
 ): Game {
     return this.builder().member(member)
-        .baseball(Baseball.from(1, baseballDayPoint))
-        .lastPlayTime(lastPlayTime)
-        .build()
+            .baseball(Baseball.from(1, baseballDayPoint))
+            .lastPlayTime(lastPlayTime)
+            .build()
 }
 
 class GameServiceTest : IntegrationTest() {
@@ -36,16 +36,16 @@ class GameServiceTest : IntegrationTest() {
         val game5 = gameTestHelper.generate(members[4], 500, now)
         val game6 = gameTestHelper.generate(members[5], 0, now)
         given(gameFindService.findAllByPlayDate(LocalDate.now()))
-            .willReturn(listOf(game1, game2, game3, game4, game5, game6))
+                .willReturn(listOf(game1, game2, game3, game4, game5, game6))
 
         val gameRanks = gameService.getGameRanks()
 
         assertThat(gameRanks).hasSize(4)
         assertThat(gameRanks).containsExactly(
-            GameRankResponse(1, members[3], 2000),
-            GameRankResponse(2, members[1], 1500),
-            GameRankResponse(3, members[2], 1500),
-            GameRankResponse(4, members[0], 1000),
+                GameRankResponse(1, members[3], 2000),
+                GameRankResponse(2, members[1], 1500),
+                GameRankResponse(3, members[2], 1500),
+                GameRankResponse(4, members[0], 1000),
         )
     }
 }

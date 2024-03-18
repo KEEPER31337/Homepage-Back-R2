@@ -34,65 +34,65 @@ class GameApiTestHelper : IntegrationTest() {
     }
 
     fun callGetGameRank(
-        accessCookies: Array<Cookie> = playerCookies
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            get("$GAME_URL/rank")
-                .cookie(*accessCookies)
+                get("$GAME_URL/rank")
+                        .cookie(*accessCookies)
         )
     }
 
     fun callGetMyGameInfo(
-        accessCookies: Array<Cookie> = playerCookies
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            get("$GAME_URL/my-info")
-                .cookie(*accessCookies)
+                get("$GAME_URL/my-info")
+                        .cookie(*accessCookies)
         )
     }
 
     fun callBaseballGameInfo(
-        accessCookies: Array<Cookie> = playerCookies
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            get("$GAME_URL/baseball/game-info")
-                .cookie(*accessCookies)
+                get("$GAME_URL/baseball/game-info")
+                        .cookie(*accessCookies)
         )
     }
 
     fun callBaseballGetStatus(
-        accessCookies: Array<Cookie> = playerCookies
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            get("$GAME_URL/baseball/status")
-                .cookie(*accessCookies)
+                get("$GAME_URL/baseball/status")
+                        .cookie(*accessCookies)
         )
     }
 
     fun callBaseballStart(
-        bettingPoint: Int,
-        accessCookies: Array<Cookie> = playerCookies
+            bettingPoint: Int,
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         return mockMvc.perform(
-            post("$GAME_URL/baseball/start")
-                .content(asJsonString(BaseballStartRequest(bettingPoint)))
-                .contentType(APPLICATION_JSON)
-                .cookie(*accessCookies)
+                post("$GAME_URL/baseball/start")
+                        .content(asJsonString(BaseballStartRequest(bettingPoint)))
+                        .contentType(APPLICATION_JSON)
+                        .cookie(*accessCookies)
         )
     }
 
     fun callBaseballGuess(
-        guessNumbers: List<String>,
-        correctNumber: String,
-        bettingPoint: Int,
-        results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
-        earnablePoint: Int = 1000,
-        accessCookies: Array<Cookie> = playerCookies
+            guessNumbers: List<String>,
+            correctNumber: String,
+            bettingPoint: Int,
+            results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
+            earnablePoint: Int = 1000,
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         baseballService.saveBaseballResultInRedis(
-            player.id,
-            BaseballResultEntity(correctNumber, bettingPoint, results, earnablePoint),
-            0,
+                player.id,
+                BaseballResultEntity(correctNumber, bettingPoint, results, earnablePoint),
+                0,
         )
         for (guessNumber in guessNumbers.subList(0, guessNumbers.size - 1)) {
             callBaseballGuess(guessNumber, accessCookies)
@@ -102,31 +102,31 @@ class GameApiTestHelper : IntegrationTest() {
 
     private fun callBaseballGuess(guessNumber: String, accessCookies: Array<Cookie>): ResultActions {
         return mockMvc.perform(
-            post("$GAME_URL/baseball/guess")
-                .content(asJsonString(BaseballGuessRequest(guessNumber)))
-                .contentType(APPLICATION_JSON)
-                .cookie(*accessCookies))
+                post("$GAME_URL/baseball/guess")
+                        .content(asJsonString(BaseballGuessRequest(guessNumber)))
+                        .contentType(APPLICATION_JSON)
+                        .cookie(*accessCookies))
     }
 
     fun callGetBaseballResult(
-        results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
-        earnablePoint: Int = 1000,
-        accessCookies: Array<Cookie> = playerCookies
+            results: MutableList<BaseballResultEntity.GuessResultEntity?> = mutableListOf(),
+            earnablePoint: Int = 1000,
+            accessCookies: Array<Cookie> = playerCookies
     ): ResultActions {
         baseballService.saveBaseballResultInRedis(
-            player.id,
-            BaseballResultEntity("1234", 1000, results, earnablePoint),
-            1,
+                player.id,
+                BaseballResultEntity("1234", 1000, results, earnablePoint),
+                1,
         )
         return mockMvc.perform(
-            get("$GAME_URL/baseball/result")
-                .cookie(*accessCookies)
+                get("$GAME_URL/baseball/result")
+                        .cookie(*accessCookies)
         )
     }
 
     fun gameStart() {
         gameFindService.findByMemberOrInit(player)
-            .baseball
-            .increaseBaseballTimes()
+                .baseball
+                .increaseBaseballTimes()
     }
 }

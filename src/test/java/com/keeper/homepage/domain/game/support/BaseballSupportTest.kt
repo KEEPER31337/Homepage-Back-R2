@@ -80,10 +80,10 @@ class BaseballSupportTest {
         @ParameterizedTest
         @MethodSource
         fun `같은 숫자면 ball, 같은 위치이면 strike를 올려야 한다`(
-            correctNumber: String,
-            guessNumber: String,
-            expectedStrike: Int,
-            expectedBall: Int
+                correctNumber: String,
+                guessNumber: String,
+                expectedStrike: Int,
+                expectedBall: Int
         ) {
             val result = BaseballSupport.guessAndGetResult(correctNumber, guessNumber)
             assertThat(result.strike).isEqualTo(expectedStrike)
@@ -91,14 +91,14 @@ class BaseballSupportTest {
         }
 
         fun `같은 숫자면 ball, 같은 위치이면 strike를 올려야 한다`() = Stream.of(
-            Arguments.arguments("1234", "1234", 4, 0),
-            Arguments.arguments("1234", "1256", 2, 0),
-            Arguments.arguments("1234", "4321", 0, 4),
-            Arguments.arguments("1234", "1432", 2, 2),
-            Arguments.arguments("1234", "9328", 0, 2),
-            Arguments.arguments("1234", "1423", 1, 3),
-            Arguments.arguments("1234", "5678", 0, 0),
-            Arguments.arguments("1234", "1567", 1, 0),
+                Arguments.arguments("1234", "1234", 4, 0),
+                Arguments.arguments("1234", "1256", 2, 0),
+                Arguments.arguments("1234", "4321", 0, 4),
+                Arguments.arguments("1234", "1432", 2, 2),
+                Arguments.arguments("1234", "9328", 0, 2),
+                Arguments.arguments("1234", "1423", 1, 3),
+                Arguments.arguments("1234", "5678", 0, 0),
+                Arguments.arguments("1234", "1567", 1, 0),
         )
 
         @Test

@@ -27,7 +27,8 @@ public class StaticWriteController {
   }
 
   @GetMapping("/titles/types/{type}")
-  public ResponseEntity<StaticWriteTitleResponse> getTitleByType(@PathVariable @NotNull String type) {
+  public ResponseEntity<StaticWriteTitleResponse> getTitleByType(
+      @PathVariable @NotNull String type) {
     StaticWriteTitleResponse response = staticWriteService.getTitleByType(type);
     return ResponseEntity.status(HttpStatus.OK)
         .body(response);

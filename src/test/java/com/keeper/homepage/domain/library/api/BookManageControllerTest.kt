@@ -42,10 +42,10 @@ import java.util.stream.Stream
 const val HALF_NANOSECOND = 500000000
 
 fun LocalDateTime.formatting(format: String) =
-    if (this.nano > HALF_NANOSECOND)
-        this.plusSeconds(1).format(DateTimeFormatter.ofPattern(format))
-    else
-        this.format(DateTimeFormatter.ofPattern(format))
+        if (this.nano > HALF_NANOSECOND)
+            this.plusSeconds(1).format(DateTimeFormatter.ofPattern(format))
+        else
+            this.format(DateTimeFormatter.ofPattern(format))
 
 class BookManageControllerTest : BookManageApiTestHelper() {
 
@@ -67,10 +67,10 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             bookBorrowInfoTestHelper.generate(borrowStatus = 대출반려, book = bookList[bookCount - 1])
             bookBorrowInfoTestHelper.generate(borrowStatus = 반납완료, book = bookList[bookCount - 1])
             validParams = multiValueMapOf(
-                "search" to "",
-                "page" to "0",
-                "size" to "3",
-                "searchType" to "all",
+                    "search" to "",
+                    "page" to "0",
+                    "size" to "3",
+                    "searchType" to "all",
             )
         }
 
@@ -78,51 +78,51 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         fun `유효한 요청이면 관리자 책 목록 가져오기는 성공해야 한다`() {
             val securedValue = getSecuredValue(BookManageController::class.java, "getBooks")
             callGetBooksApi(validParams).andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.content[0].bookId").value(bookList[3].id))
-                .andExpect(jsonPath("$.content[0].title").value(bookList[3].title))
-                .andExpect(jsonPath("$.content[0].author").value(bookList[3].author))
-                .andExpect(jsonPath("$.content[0].totalQuantity").value(bookList[3].totalQuantity))
-                .andExpect(jsonPath("$.content[0].currentQuantity").value(bookList[3].currentQuantity))
-                .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[3].bookDepartment.type.name))
-                .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[3].thumbnailPath))
-                .andExpect(jsonPath("$.content[0].borrowInfos[0].borrowInfoId").value(borrowList[3].id))
-                .andExpect(jsonPath("$.content[1].borrowInfos[0].borrowInfoId").value(borrowList[2].id))
-                .andExpect(jsonPath("$.content[2].borrowInfos[0].borrowInfoId").value(borrowList[1].id))
-                .andExpect(jsonPath("$.content[0].borrowInfos.length()").value(2))
-                .andExpect(jsonPath("$.content[1].borrowInfos.length()").value(1))
-                .andExpect(jsonPath("$.content[2].borrowInfos.length()").value(1))
-                .andExpect(jsonPath("$.number").value("0"))
-                .andExpect(jsonPath("$.size").value("3"))
-                .andExpect(jsonPath("$.totalPages").value("2"))
-                .andDo(
-                    document(
-                        "manager-get-books",
-                        requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
-                        ),
-                        queryParameters(
-                            parameterWithName("page").description("페이지 (양수여야 합니다.)")
-                                .optional(),
-                            parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
-                                .optional(),
-                            parameterWithName("search").description("책의 제목이나 저자를 검색합니다. (만약 빈 값으로 보낼 경우 책 관련 정보를 모두 가져옵니다.)")
-                                .optional(),
-                            parameterWithName("searchType").description("검색 타입")
-                                .attributes(
-                                    Attributes.Attribute(
-                                        "format",
-                                        "title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회"
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.content[0].bookId").value(bookList[3].id))
+                    .andExpect(jsonPath("$.content[0].title").value(bookList[3].title))
+                    .andExpect(jsonPath("$.content[0].author").value(bookList[3].author))
+                    .andExpect(jsonPath("$.content[0].totalQuantity").value(bookList[3].totalQuantity))
+                    .andExpect(jsonPath("$.content[0].currentQuantity").value(bookList[3].currentQuantity))
+                    .andExpect(jsonPath("$.content[0].bookDepartment").value(bookList[3].bookDepartment.type.name))
+                    .andExpect(jsonPath("$.content[0].thumbnailPath").value(bookList[3].thumbnailPath))
+                    .andExpect(jsonPath("$.content[0].borrowInfos[0].borrowInfoId").value(borrowList[3].id))
+                    .andExpect(jsonPath("$.content[1].borrowInfos[0].borrowInfoId").value(borrowList[2].id))
+                    .andExpect(jsonPath("$.content[2].borrowInfos[0].borrowInfoId").value(borrowList[1].id))
+                    .andExpect(jsonPath("$.content[0].borrowInfos.length()").value(2))
+                    .andExpect(jsonPath("$.content[1].borrowInfos.length()").value(1))
+                    .andExpect(jsonPath("$.content[2].borrowInfos.length()").value(1))
+                    .andExpect(jsonPath("$.number").value("0"))
+                    .andExpect(jsonPath("$.size").value("3"))
+                    .andExpect(jsonPath("$.totalPages").value("2"))
+                    .andDo(
+                            document(
+                                    "manager-get-books",
+                                    requestCookies(
+                                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                                    ),
+                                    queryParameters(
+                                            parameterWithName("page").description("페이지 (양수여야 합니다.)")
+                                                    .optional(),
+                                            parameterWithName("size").description("한 페이지당 불러올 개수 (default: ${DEFAULT_SIZE}) 최대: ${MAX_SIZE} 최소: ${MIN_SIZE}")
+                                                    .optional(),
+                                            parameterWithName("search").description("책의 제목이나 저자를 검색합니다. (만약 빈 값으로 보낼 경우 책 관련 정보를 모두 가져옵니다.)")
+                                                    .optional(),
+                                            parameterWithName("searchType").description("검색 타입")
+                                                    .attributes(
+                                                            Attributes.Attribute(
+                                                                    "format",
+                                                                    "title: 제목, author: 저자, all: 제목 + 저자, null : 전체 도서 목록 조회"
+                                                            )
+                                                    )
+                                                    .optional(),
+                                    ),
+                                    responseFields(
+                                            *pageHelper(*getBookDetailResponseDocs())
                                     )
-                                )
-                                .optional(),
-                        ),
-                        responseFields(
-                            *pageHelper(*getBookDetailResponseDocs())
-                        )
+                            )
                     )
-                )
         }
     }
 
@@ -131,53 +131,53 @@ class BookManageControllerTest : BookManageApiTestHelper() {
     inner class `책 추가` {
 
         private val validRequest = BookRequest(
-            title = "삶의 목적을 찾는 45가지 방법",
-            author = "ChatGPT",
-            totalQuantity = 10,
-            bookDepartment = BookDepartmentType.DOCUMENT
+                title = "삶의 목적을 찾는 45가지 방법",
+                author = "ChatGPT",
+                totalQuantity = 10,
+                bookDepartment = BookDepartmentType.DOCUMENT
         )
 
         @Test
         fun `유효한 요청이면 책 등록은 성공해야 한다`() {
             val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
             callAddBookApi(hasThumbnail = true)
-                .andExpect(status().isCreated)
-                .andDo(
-                    document(
-                        "assign-book",
-                        requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
-                        ),
-                        requestPartFields(
-                            "bookMetaData",
-                            fieldWithPath("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
-                            fieldWithPath("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
-                            fieldWithPath("bookDepartment")
-                                .attributes(
-                                    key("format")
-                                        .value(
-                                            BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
-                                        )
-                                ).description("책 카테고리"),
-                            fieldWithPath("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
-                        ),
-                        requestParts(
-                            partWithName("bookMetaData").description("책 정보"),
-                            partWithName("thumbnail").description("책의 썸네일")
-                                .optional(),
-                        ),
-                        responseHeaders(
-                            headerWithName(HttpHeaders.LOCATION).description("생성된 책의 URI")
-                        )
+                    .andExpect(status().isCreated)
+                    .andDo(
+                            document(
+                                    "assign-book",
+                                    requestCookies(
+                                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                                    ),
+                                    requestPartFields(
+                                            "bookMetaData",
+                                            fieldWithPath("title").description("책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
+                                            fieldWithPath("author").description("저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
+                                            fieldWithPath("bookDepartment")
+                                                    .attributes(
+                                                            key("format")
+                                                                    .value(
+                                                                            BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
+                                                                    )
+                                                    ).description("책 카테고리"),
+                                            fieldWithPath("totalQuantity").description("책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
+                                    ),
+                                    requestParts(
+                                            partWithName("bookMetaData").description("책 정보"),
+                                            partWithName("thumbnail").description("책의 썸네일")
+                                                    .optional(),
+                                    ),
+                                    responseHeaders(
+                                            headerWithName(HttpHeaders.LOCATION).description("생성된 책의 URI")
+                                    )
+                            )
                     )
-                )
         }
 
         @Test
         fun `썸네일이 없어도 책 등록은 성공해야 한다`() {
             callAddBookApi()
-                .andExpect(status().isCreated)
+                    .andExpect(status().isCreated)
         }
 
         @ParameterizedTest
@@ -188,19 +188,19 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             property.isAccessible = true
             property.set(invalidRequest, invalidValue)
             callAddBookApi(request = invalidRequest)
-                .andExpect(status().isBadRequest)
+                    .andExpect(status().isBadRequest)
         }
 
         fun `유효하지 않은 요청의 책 등록은 실패해야 한다`(): Stream<Arguments> {
             return Stream.of(
-                Arguments.arguments("title", ""),
-                Arguments.arguments("title", null),
-                Arguments.arguments("author", ""),
-                Arguments.arguments("author", null),
-                Arguments.arguments("totalQuantity", -1L),
-                Arguments.arguments("totalQuantity", 0L),
-                Arguments.arguments("totalQuantity", 21L),
-                Arguments.arguments("bookDepartment", null),
+                    Arguments.arguments("title", ""),
+                    Arguments.arguments("title", null),
+                    Arguments.arguments("author", ""),
+                    Arguments.arguments("author", null),
+                    Arguments.arguments("totalQuantity", -1L),
+                    Arguments.arguments("totalQuantity", 0L),
+                    Arguments.arguments("totalQuantity", 21L),
+                    Arguments.arguments("bookDepartment", null),
             )
         }
 
@@ -210,7 +210,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
             callAddBookApi(accessCookies = memberTestHelper.getTokenCookies(member))
-                .andExpect(status().isForbidden)
+                    .andExpect(status().isForbidden)
         }
     }
 
@@ -222,19 +222,19 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         fun `유효한 요청이면 책 삭제는 성공해야 한다`() {
             val securedValue = getSecuredValue(BookManageController::class.java, "deleteBook")
             callDeleteBookApi()
-                .andExpect(status().isNoContent)
-                .andDo(
-                    document(
-                        "delete-book",
-                        requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
-                        ),
-                        pathParameters(
-                            parameterWithName("bookId").description("책 id")
-                        )
+                    .andExpect(status().isNoContent)
+                    .andDo(
+                            document(
+                                    "delete-book",
+                                    requestCookies(
+                                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("bookId").description("책 id")
+                                    )
+                            )
                     )
-                )
         }
 
         @Test
@@ -243,7 +243,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
             callDeleteBookApi(accessCookies = memberTestHelper.getTokenCookies(member))
-                .andExpect(status().isForbidden)
+                    .andExpect(status().isForbidden)
         }
     }
 
@@ -256,62 +256,62 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         @BeforeEach
         fun generateNewBook() {
             book = bookTestHelper.builder()
-                .thumbnail(thumbnailTestHelper.generateThumbnail())
-                .build()
+                    .thumbnail(thumbnailTestHelper.generateThumbnail())
+                    .build()
         }
 
         @Test
         fun `유효한 요청이면 책 수정은 성공해야 한다`() {
             val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
             callModifyBookApi(bookId = book.id)
-                .andExpect(status().isNoContent)
-                .andDo(
-                    document(
-                        "modify-book",
-                        requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
-                        ),
-                        pathParameters(
-                            parameterWithName("bookId").description("책 id")
-                        ),
-                        requestFields(
-                            field("title", "책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
-                            field("author", "저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
-                            field("bookDepartment", "책 카테고리")
-                                .attributes(
-                                    key("format")
-                                        .value(
-                                            BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
-                                        )
-                                ),
-                            field("totalQuantity", "책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
-                        ),
+                    .andExpect(status().isNoContent)
+                    .andDo(
+                            document(
+                                    "modify-book",
+                                    requestCookies(
+                                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("bookId").description("책 id")
+                                    ),
+                                    requestFields(
+                                            field("title", "책 제목 (최대 ${MAX_TITLE_LENGTH}자)"),
+                                            field("author", "저자 (최대 ${MAX_AUTHOR_LENGTH}자)"),
+                                            field("bookDepartment", "책 카테고리")
+                                                    .attributes(
+                                                            key("format")
+                                                                    .value(
+                                                                            BookDepartmentType.values().map(BookDepartmentType::getName).joinToString()
+                                                                    )
+                                                    ),
+                                            field("totalQuantity", "책 수량 (1권 이상 ${MAX_TOTAL_QUANTITY_LENGTH}권 이하)"),
+                                    ),
+                            )
                     )
-                )
         }
 
         @Test
         fun `유효한 요청이면 책 썸네일 수정은 성공해야 한다`() {
             val securedValue = getSecuredValue(BookManageController::class.java, "addBook")
             callModifyBookThumbnailApi(bookId = book.id)
-                .andExpect(status().isNoContent)
-                .andDo(
-                    document(
-                        "modify-book-thumbnail",
-                        requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
-                        ),
-                        pathParameters(
-                            parameterWithName("bookId").description("책 id")
-                        ),
-                        requestParts(
-                            partWithName("thumbnail").description("책의 썸네일 (null 값으로 보낼 경우 기본 썸네일로 지정됩니다.)")
-                                .optional(),
-                        )
+                    .andExpect(status().isNoContent)
+                    .andDo(
+                            document(
+                                    "modify-book-thumbnail",
+                                    requestCookies(
+                                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("bookId").description("책 id")
+                                    ),
+                                    requestParts(
+                                            partWithName("thumbnail").description("책의 썸네일 (null 값으로 보낼 경우 기본 썸네일로 지정됩니다.)")
+                                                    .optional(),
+                                    )
+                            )
                     )
-                )
         }
 
         @Test
@@ -320,7 +320,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
             callModifyBookApi(bookId = book.id, accessCookies = memberTestHelper.getTokenCookies(member))
-                .andExpect(status().isForbidden)
+                    .andExpect(status().isForbidden)
         }
     }
 
@@ -335,23 +335,23 @@ class BookManageControllerTest : BookManageApiTestHelper() {
         @BeforeEach
         fun generateNewBook() {
             book = bookTestHelper.builder()
-                .totalQuantity(3)
-                .currentQuantity(3)
-                .thumbnail(thumbnailTestHelper.generateThumbnail())
-                .build()
+                    .totalQuantity(3)
+                    .currentQuantity(3)
+                    .thumbnail(thumbnailTestHelper.generateThumbnail())
+                    .build()
             borrowList = listOf(
-                bookBorrowInfoTestHelper.builder()
-                    .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(대출중))
-                    .build(),
-                bookBorrowInfoTestHelper.builder()
-                    .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(반납대기))
-                    .build(),
-                bookBorrowInfoTestHelper.builder()
-                    .book(book)
-                    .borrowStatus(getBookBorrowStatusBy(반납완료))
-                    .build(),
+                    bookBorrowInfoTestHelper.builder()
+                            .book(book)
+                            .borrowStatus(getBookBorrowStatusBy(대출중))
+                            .build(),
+                    bookBorrowInfoTestHelper.builder()
+                            .book(book)
+                            .borrowStatus(getBookBorrowStatusBy(반납대기))
+                            .build(),
+                    bookBorrowInfoTestHelper.builder()
+                            .book(book)
+                            .borrowStatus(getBookBorrowStatusBy(반납완료))
+                            .build(),
             )
         }
 
@@ -361,40 +361,40 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             em.clear()
             val securedValue = getSecuredValue(BookManageController::class.java, "getBookDetail")
             callGetBookDetailApi(bookId = book.id)
-                .andExpect(status().isOk)
-                .andExpect(jsonPath("$.bookId").value(book.id))
-                .andExpect(jsonPath("$.title").value(book.title))
-                .andExpect(jsonPath("$.author").value(book.author))
-                .andExpect(jsonPath("$.totalQuantity").value(book.totalQuantity))
-                .andExpect(jsonPath("$.currentQuantity").value(book.currentQuantity))
-                .andExpect(jsonPath("$.bookDepartment").value(book.bookDepartment.type.name))
-                .andExpect(jsonPath("$.totalQuantity").value(3))
-                .andExpect(jsonPath("$.currentQuantity").value(1))
-                .andExpect(jsonPath("$.thumbnailPath").value(book.thumbnail.path))
-                .andExpect(jsonPath("$.borrowInfos[0].borrowInfoId").value(borrowList[0].id))
-                .andExpect(jsonPath("$.borrowInfos[0].bookId").value(borrowList[0].book.id))
-                .andExpect(jsonPath("$.borrowInfos[0].bookTitle").value(borrowList[0].book.title))
-                .andExpect(jsonPath("$.borrowInfos[0].author").value(borrowList[0].book.author))
-                .andExpect(jsonPath("$.borrowInfos[0].borrowerId").value(borrowList[0].member.id))
-                .andExpect(
-                    jsonPath("$.borrowInfos[0].borrowerRealName")
-                        .value(borrowList[0].member.realName)
-                )
-                .andDo(
-                    document(
-                        "get-book-detail",
-                        requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
-                        ),
-                        pathParameters(
-                            parameterWithName("bookId").description("책 id")
-                        ),
-                        responseFields(
-                            *getBookDetailResponseDocs()
-                        ),
+                    .andExpect(status().isOk)
+                    .andExpect(jsonPath("$.bookId").value(book.id))
+                    .andExpect(jsonPath("$.title").value(book.title))
+                    .andExpect(jsonPath("$.author").value(book.author))
+                    .andExpect(jsonPath("$.totalQuantity").value(book.totalQuantity))
+                    .andExpect(jsonPath("$.currentQuantity").value(book.currentQuantity))
+                    .andExpect(jsonPath("$.bookDepartment").value(book.bookDepartment.type.name))
+                    .andExpect(jsonPath("$.totalQuantity").value(3))
+                    .andExpect(jsonPath("$.currentQuantity").value(1))
+                    .andExpect(jsonPath("$.thumbnailPath").value(book.thumbnail.path))
+                    .andExpect(jsonPath("$.borrowInfos[0].borrowInfoId").value(borrowList[0].id))
+                    .andExpect(jsonPath("$.borrowInfos[0].bookId").value(borrowList[0].book.id))
+                    .andExpect(jsonPath("$.borrowInfos[0].bookTitle").value(borrowList[0].book.title))
+                    .andExpect(jsonPath("$.borrowInfos[0].author").value(borrowList[0].book.author))
+                    .andExpect(jsonPath("$.borrowInfos[0].borrowerId").value(borrowList[0].member.id))
+                    .andExpect(
+                            jsonPath("$.borrowInfos[0].borrowerRealName")
+                                    .value(borrowList[0].member.realName)
                     )
-                )
+                    .andDo(
+                            document(
+                                    "get-book-detail",
+                                    requestCookies(
+                                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
+                                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                                    ),
+                                    pathParameters(
+                                            parameterWithName("bookId").description("책 id")
+                                    ),
+                                    responseFields(
+                                            *getBookDetailResponseDocs()
+                                    ),
+                            )
+                    )
         }
     }
 }

@@ -23,7 +23,8 @@ public class SeminarDetailResponse {
   private String attendanceCode;
   private Long starterId;
 
-  public static SeminarDetailResponse from(Seminar seminar, SeminarAttendanceStatusType seminarAttendanceStatusType) {
+  public static SeminarDetailResponse from(Seminar seminar,
+      SeminarAttendanceStatusType seminarAttendanceStatusType) {
     return SeminarDetailResponse.builder()
         .id(seminar.getId())
         .name(seminar.getName())

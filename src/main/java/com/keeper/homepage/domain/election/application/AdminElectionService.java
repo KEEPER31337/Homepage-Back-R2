@@ -64,7 +64,8 @@ public class AdminElectionService {
   }
 
   @Transactional
-  public void updateElection(long electionId, String name, String description, Boolean isAvailable) {
+  public void updateElection(long electionId, String name, String description,
+      Boolean isAvailable) {
     Election election = validElectionFindService.findById(electionId);
 
     election.update(name, description, isAvailable);
@@ -77,7 +78,8 @@ public class AdminElectionService {
   }
 
   @Transactional
-  public void registerCandidate(String description, Long memberJobId, long electionId, long candidateId) {
+  public void registerCandidate(String description, Long memberJobId, long electionId,
+      long candidateId) {
     Election election = validElectionFindService.findById(electionId);
     Member member = memberFindService.findById(candidateId);
     MemberJob memberJob = validCandidateService.findJobById(memberJobId);
@@ -92,7 +94,8 @@ public class AdminElectionService {
   }
 
   @Transactional
-  public void registerCandidates(List<Long> candidateIds, String description, Long memberJobId, long electionId) {
+  public void registerCandidates(List<Long> candidateIds, String description, Long memberJobId,
+      long electionId) {
     for (Long candidateId : candidateIds) {
       registerCandidate(description, memberJobId, electionId, candidateId);
     }
@@ -103,7 +106,8 @@ public class AdminElectionService {
     ElectionCandidate electionCandidate = validCandidateService.findById(candidateId);
     Election election = validElectionFindService.findById(electionId);
     if (election.isAvailable()) {
-      throw new BusinessException(electionId, "electionId", ErrorCode.ELECTION_CANDIDATE_CANNOT_DELETE);
+      throw new BusinessException(electionId, "electionId",
+          ErrorCode.ELECTION_CANDIDATE_CANNOT_DELETE);
     }
 
     electionCandidateRepository.delete(electionCandidate);

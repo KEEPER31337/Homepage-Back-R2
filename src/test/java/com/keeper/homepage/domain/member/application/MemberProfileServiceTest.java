@@ -109,7 +109,8 @@ class MemberProfileServiceTest extends IntegrationTest {
       em.clear();
 
       Member updatedMember = memberFindService.findById(memberId);
-      assertThat(updatedMember.getProfile().getEmailAddress().get()).isEqualTo(EmailAddress.from(randomEmail).get());
+      assertThat(updatedMember.getProfile().getEmailAddress().get()).isEqualTo(
+          EmailAddress.from(randomEmail).get());
     }
 
     @Test

@@ -72,7 +72,8 @@ public class PostService {
   private static final int RECENT_POSTING_COUNT = 10;
 
   @Transactional
-  public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
+  public Long create(Post post, Long categoryId, MultipartFile thumbnail,
+      List<MultipartFile> multipartFiles) {
     if (post.isSecret()) {
       checkPassword(post.getPassword());
     }
@@ -322,7 +323,8 @@ public class PostService {
     });
   }
 
-  public Page<PostResponse> getPosts(long categoryId, String searchType, String search, PageRequest pageable) {
+  public Page<PostResponse> getPosts(long categoryId, String searchType, String search,
+      PageRequest pageable) {
     Category category = categoryFindService.findById(categoryId);
     if (searchType == null) {
       return postRepository.findAllRecentByCategory(category, pageable)

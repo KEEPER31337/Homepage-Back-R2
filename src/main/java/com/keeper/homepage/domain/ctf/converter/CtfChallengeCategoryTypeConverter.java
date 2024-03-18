@@ -7,7 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Converter
 @Slf4j
-public class CtfChallengeCategoryTypeConverter implements AttributeConverter<CtfChallengeCategoryType, String> {
+public class CtfChallengeCategoryTypeConverter implements
+    AttributeConverter<CtfChallengeCategoryType, String> {
 
   @Override
   public String convertToDatabaseColumn(CtfChallengeCategoryType type) {

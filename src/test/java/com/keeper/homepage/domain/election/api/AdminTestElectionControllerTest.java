@@ -262,7 +262,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .memberJobId(memberJobId)
           .build();
 
-      Set<ConstraintViolation<ElectionCandidatesRegisterRequest>> violations = validator.validate(request);
+      Set<ConstraintViolation<ElectionCandidatesRegisterRequest>> violations = validator.validate(
+          request);
 
       assertEquals(1, violations.size());
     }
@@ -275,7 +276,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       long memberJobId = ROLE_회장.getId();
       MemberJob memberJob = memberJobRepository.findById(memberJobId).orElseThrow();
       Election election = electionTestHelper.builder().isAvailable(false).build();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob).election(election).build();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob)
+          .election(election).build();
 
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getId();
@@ -337,7 +339,8 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
     Election election = electionTestHelper.builder().isAvailable(false).build();
     long electionId = election.getId();
     List<Long> voterIds = IntStream.range(0, 5)
-        .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build().getMember().getId())
+        .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build()
+            .getMember().getId())
         .collect(toList());
 
     ElectionVotersRequest request = ElectionVotersRequest.builder()

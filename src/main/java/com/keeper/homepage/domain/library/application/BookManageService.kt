@@ -17,13 +17,13 @@ import org.springframework.web.multipart.MultipartFile
 import java.util.function.Function
 
 fun BookRepository.getBookById(bookId: Long) = this.findById(bookId)
-    .orElseThrow { throw BusinessException(bookId, "bookId", ErrorCode.BOOK_NOT_FOUND) }
+        .orElseThrow { throw BusinessException(bookId, "bookId", ErrorCode.BOOK_NOT_FOUND) }
 
 @Service
 @Transactional(readOnly = true)
 class BookManageService(
-    val bookRepository: BookRepository,
-    val thumbnailUtil: ThumbnailUtil
+        val bookRepository: BookRepository,
+        val thumbnailUtil: ThumbnailUtil
 ) {
     fun getBooks(search: String, searchType: BookSearchType, pageable: PageRequest): Page<Book> {
         return when (searchType) {
@@ -35,20 +35,20 @@ class BookManageService(
 
     @Transactional
     fun addBook(
-        title: String,
-        author: String,
-        totalQuantity: Long,
-        bookDepartment: BookDepartment.BookDepartmentType,
-        thumbnail: MultipartFile?
+            title: String,
+            author: String,
+            totalQuantity: Long,
+            bookDepartment: BookDepartment.BookDepartmentType,
+            thumbnail: MultipartFile?
     ): Long = bookRepository.save(
-        Book(
-            title,
-            author,
-            BookDepartment.getBookDepartmentBy(bookDepartment),
-            totalQuantity,
-            thumbnailUtil.saveThumbnail(thumbnail)
-                .orElse(null)
-        )
+            Book(
+                    title,
+                    author,
+                    BookDepartment.getBookDepartmentBy(bookDepartment),
+                    totalQuantity,
+                    thumbnailUtil.saveThumbnail(thumbnail)
+                            .orElse(null)
+            )
     ).id
 
     @Transactional
@@ -64,25 +64,25 @@ class BookManageService(
 
     @Transactional
     fun modifyBook(
-        bookId: Long,
-        title: String,
-        author: String,
-        totalQuantity: Long,
-        bookDepartment: BookDepartment.BookDepartmentType,
+            bookId: Long,
+            title: String,
+            author: String,
+            totalQuantity: Long,
+            bookDepartment: BookDepartment.BookDepartmentType,
     ) = bookRepository.getBookById(bookId)
-        .updateBook(
-            title,
-            author,
-            BookDepartment.getBookDepartmentBy(bookDepartment),
-            totalQuantity
-        )
+            .updateBook(
+                    title,
+                    author,
+                    BookDepartment.getBookDepartmentBy(bookDepartment),
+                    totalQuantity
+            )
 
     @Transactional
     fun modifyBookThumbnail(bookId: Long, thumbnail: MultipartFile?) {
         bookRepository.getBookById(bookId).thumbnail = thumbnailUtil.saveThumbnail(thumbnail)
-            .orElse(null)
+                .orElse(null)
     }
 
     fun getBookDetail(bookId: Long): BookDetailResponse =
-        BookDetailResponse(bookRepository.getBookById(bookId))
+            BookDetailResponse(bookRepository.getBookById(bookId))
 }

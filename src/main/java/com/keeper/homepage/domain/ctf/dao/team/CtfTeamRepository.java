@@ -15,12 +15,14 @@ public interface CtfTeamRepository extends JpaRepository<CtfTeam, Long> {
 
   Optional<CtfTeam> findByIdAndIdNot(long teamId, long virtualId);
 
-  Page<CtfTeam> findAllByCtfContestAndNameIgnoreCaseContaining(CtfContest ctfContest, String search, Pageable pageable);
+  Page<CtfTeam> findAllByCtfContestAndNameIgnoreCaseContaining(CtfContest ctfContest, String search,
+      Pageable pageable);
 
   @Modifying
   @Query("UPDATE CtfTeam c "
       + "SET c.creator = :virtualMember "
       + "WHERE c.creator = :member")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member,
+      @Param("virtualMember") Member virtualMember);
 
 }

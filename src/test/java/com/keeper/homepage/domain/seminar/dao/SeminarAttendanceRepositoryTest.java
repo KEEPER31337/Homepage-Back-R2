@@ -56,7 +56,8 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
       assertThat(seminarAttendance.getMember().getProfile().getStudentId()).isEqualTo(
           member.getProfile().getStudentId());
       assertThat(seminarAttendance.getSeminar().getId()).isEqualTo(seminar.getId());
-      assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(seminar.getAttendanceCode());
+      assertThat(seminarAttendance.getSeminar().getAttendanceCode()).isEqualTo(
+          seminar.getAttendanceCode());
       assertThat(seminarAttendance.getSeminar().getName()).isNotNull();
       assertThat(seminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(statusType);
       assertThat(seminarAttendance.getAttendTime()).isAfter(now.minusDays(2));
@@ -77,8 +78,10 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
 
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       Long statusId = seminarAttendance.getSeminarAttendanceStatus().getId();
-      SeminarAttendanceStatus attendanceStatus = seminarAttendanceStatusRepository.findById(statusId).orElseThrow();
-      SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
+      SeminarAttendanceStatus attendanceStatus = seminarAttendanceStatusRepository.findById(
+          statusId).orElseThrow();
+      SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(
+              seminarAttendanceId)
           .orElseThrow();
 
       assertThat(seminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(LATENESS);
@@ -103,7 +106,8 @@ public class SeminarAttendanceRepositoryTest extends IntegrationTest {
 
       seminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
       seminarAttendance.changeStatus(LATENESS, excuse);
-      SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(seminarAttendanceId)
+      SeminarAttendanceExcuse attendanceExcuse = seminarAttendanceExcuseRepository.findById(
+              seminarAttendanceId)
           .orElseThrow();
 
       assertThat(attendanceExcuse.getAbsenceExcuse()).isEqualTo(excuse);

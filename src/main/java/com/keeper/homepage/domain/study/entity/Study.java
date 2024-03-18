@@ -78,7 +78,8 @@ public class Study extends BaseEntity {
   private final Set<StudyHasMember> studyMembers = new HashSet<>();
 
   @Builder
-  private Study(String title, String information, Integer year, Integer season, Link link, Thumbnail thumbnail,
+  private Study(String title, String information, Integer year, Integer season, Link link,
+      Thumbnail thumbnail,
       Member headMember) {
     this.title = title;
     this.information = information;

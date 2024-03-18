@@ -22,6 +22,7 @@ public interface CtfContestRepository extends JpaRepository<CtfContest, Long> {
   @Query("UPDATE CtfContest c "
       + "SET c.creator = :virtualMember "
       + "WHERE c.creator = :member")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member,
+      @Param("virtualMember") Member virtualMember);
 
 }

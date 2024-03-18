@@ -20,7 +20,8 @@ import org.springframework.util.MultiValueMap;
 
 public class StudyApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreateStudyApiWithThumbnail(String accessToken, MockMultipartFile thumbnail, MockPart mockPart)
+  ResultActions callCreateStudyApiWithThumbnail(String accessToken, MockMultipartFile thumbnail,
+      MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart(POST, "/studies")
         .file(thumbnail)
@@ -65,16 +66,18 @@ public class StudyApiTestHelper extends IntegrationTest {
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callUpdateStudyThumbnailApi(String accessToken, long studyId, MockMultipartFile thumbnail)
+  ResultActions callUpdateStudyThumbnailApi(String accessToken, long studyId,
+      MockMultipartFile thumbnail)
       throws Exception {
-    return mockMvc.perform(RestDocumentationRequestBuilders.multipart("/studies/{studyId}/thumbnail", studyId)
-        .file(thumbnail)
-        .with(request -> {
-          request.setMethod("PATCH");
-          return request;
-        })
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
-        .contentType(MediaType.MULTIPART_FORM_DATA));
+    return mockMvc.perform(
+        RestDocumentationRequestBuilders.multipart("/studies/{studyId}/thumbnail", studyId)
+            .file(thumbnail)
+            .with(request -> {
+              request.setMethod("PATCH");
+              return request;
+            })
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+            .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
   ResultActions callJoinStudyApi(String accessToken, long studyId, long memberId)

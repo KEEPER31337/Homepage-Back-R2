@@ -277,40 +277,40 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("벌점 목록 조회를 성공해야 한다.")
     void 벌점_목록_조회를_성공해야_한다() throws Exception {
       meritLogTestHelper.builder()
-              .memberId(member.getId())
-              .meritType(meritTypeHelper.builder().merit(3).isMerit(true).build())
-              .build();
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(3).isMerit(true).build())
+          .build();
 
       meritLogTestHelper.builder()
-              .memberId(member.getId())
-              .meritType(meritTypeHelper.builder().merit(-3).isMerit(false).build())
-              .build();
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(-3).isMerit(false).build())
+          .build();
 
       mockMvc.perform(get("/merits")
-                      .param("meritType", "DEMERIT")
-                      .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
-              .andExpect(status().isOk())
-              .andExpect(jsonPath("$.content[0].isMerit").value("false"));
+              .param("meritType", "DEMERIT")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content[0].isMerit").value("false"));
     }
 
     @Test
     @DisplayName("상점 목록 조회를 성공해야 한다.")
     void 상점_목록_조회를_성공해야_한다() throws Exception {
       meritLogTestHelper.builder()
-              .memberId(member.getId())
-              .meritType(meritTypeHelper.builder().merit(-3).isMerit(false).build())
-              .build();
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(-3).isMerit(false).build())
+          .build();
 
       meritLogTestHelper.builder()
-              .memberId(member.getId())
-              .meritType(meritTypeHelper.builder().merit(3).isMerit(true).build())
-              .build();
+          .memberId(member.getId())
+          .meritType(meritTypeHelper.builder().merit(3).isMerit(true).build())
+          .build();
 
       mockMvc.perform(get("/merits")
-                      .param("meritType", "MERIT")
-                      .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
-              .andExpect(status().isOk())
-              .andExpect(jsonPath("$.content[0].isMerit").value("true"));
+              .param("meritType", "MERIT")
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content[0].isMerit").value("true"));
     }
 
     @Test

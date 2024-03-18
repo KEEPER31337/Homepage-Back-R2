@@ -2,7 +2,7 @@ name: Deploy Keeper Development Server
 
 on:
   push:
-    branches: [develop]
+    branches: [ develop ]
 
 jobs:
   deploy_development:

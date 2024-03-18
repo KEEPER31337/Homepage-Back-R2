@@ -13,7 +13,7 @@ public class PreparedStatementProxyHandler implements
 
   private static final List<String> JDBC_QUERY_METHOD =
       List.of("executeQuery", "execute", "executeUpdate");
-  
+
   private final Object preparedStatement;
   private final ApiStatistic apiStatistic;
 

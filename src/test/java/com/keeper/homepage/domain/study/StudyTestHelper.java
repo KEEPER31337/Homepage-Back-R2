@@ -90,7 +90,8 @@ public class StudyTestHelper {
           .year(year)
           .season(season)
           .link(Link.builder()
-              .gitLink(gitLink != null ? gitLink : GitLink.from("https://github.com/KEEPER31337/Homepage-Back-R2"))
+              .gitLink(gitLink != null ? gitLink
+                  : GitLink.from("https://github.com/KEEPER31337/Homepage-Back-R2"))
               .notionLink(notionLink != null ? notionLink : "https://www.notion.so/Java-Spring")
               .etcLink(etcLink != null ? etcLink : "etc.com")
               .build())

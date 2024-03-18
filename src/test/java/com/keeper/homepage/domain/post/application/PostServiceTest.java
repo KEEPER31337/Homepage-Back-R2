@@ -544,10 +544,13 @@ public class PostServiceTest extends IntegrationTest {
       Long postId1 = postTestHelper.builder().category(category).isTemp(true).build().getId();
       Long postId2 = postTestHelper.builder().category(category).isNotice(true).build().getId();
 
-      Page<PostResponse> posts = postService.getPosts(category.getId(), null, null, PageRequest.of(0, 10));
+      Page<PostResponse> posts = postService.getPosts(category.getId(), null, null,
+          PageRequest.of(0, 10));
 
-      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(postId1);
-      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(postId2);
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(
+          postId1);
+      assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).doesNotContain(
+          postId2);
     }
 
     @Test
@@ -555,7 +558,8 @@ public class PostServiceTest extends IntegrationTest {
     public void 제목_검색은_대소문자_구분_없이_조회되어야_한다() throws Exception {
       postTestHelper.builder().category(category).title("ABCD").build();
 
-      Page<PostResponse> posts = postService.getPosts(category.getId(), "title", "abc", PageRequest.of(0, 10));
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "title", "abc",
+          PageRequest.of(0, 10));
 
       assertThat(posts.getContent().stream().map(PostResponse::getTitle).toList()).contains("ABCD");
     }
@@ -565,7 +569,8 @@ public class PostServiceTest extends IntegrationTest {
     public void 내용_검색은_대소문자_구분_없이_조회되어야_한다() throws Exception {
       Long postId = postTestHelper.builder().category(category).content("ABCD").build().getId();
 
-      Page<PostResponse> posts = postService.getPosts(category.getId(), "content", "abc", PageRequest.of(0, 10));
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "content", "abc",
+          PageRequest.of(0, 10));
 
       assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId);
     }
@@ -576,7 +581,8 @@ public class PostServiceTest extends IntegrationTest {
       Long postId1 = postTestHelper.builder().category(category).title("ABCD").build().getId();
       Long postId2 = postTestHelper.builder().category(category).content("BCD").build().getId();
 
-      Page<PostResponse> posts = postService.getPosts(category.getId(), "title+content", "bc", PageRequest.of(0, 10));
+      Page<PostResponse> posts = postService.getPosts(category.getId(), "title+content", "bc",
+          PageRequest.of(0, 10));
 
       assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId1);
       assertThat(posts.getContent().stream().map(PostResponse::getId).toList()).contains(postId2);

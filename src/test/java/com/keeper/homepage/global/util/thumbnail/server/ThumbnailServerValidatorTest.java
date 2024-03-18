@@ -23,7 +23,8 @@ class ThumbnailServerValidatorTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     FileCopyUtils.copy(fakeImageFile.getInputStream(), outputStream);
 
-    assertThatThrownBy(() -> checkInvalidImageFile(outputStream.toByteArray(), fakeImageFile.getOriginalFilename()))
+    assertThatThrownBy(() -> checkInvalidImageFile(outputStream.toByteArray(),
+        fakeImageFile.getOriginalFilename()))
         .isInstanceOf(IllegalArgumentException.class);
   }
 }

@@ -98,7 +98,8 @@ public class BookRepositoryTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      BookBorrowInfo findBorrowInfo = bookBorrowInfoRepository.findById(borrowInfo.getId()).orElseThrow();
+      BookBorrowInfo findBorrowInfo = bookBorrowInfoRepository.findById(borrowInfo.getId())
+          .orElseThrow();
 
       assertThat(findBorrowInfo.getBorrowDate()).isBefore(LocalDateTime.now());
     }

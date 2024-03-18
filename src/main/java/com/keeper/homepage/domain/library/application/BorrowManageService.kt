@@ -18,21 +18,21 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 
 fun BookBorrowInfoRepository.getBorrowById(borrowId: Long) = this.findById(borrowId)
-    .orElseThrow { throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_NOT_FOUND) }
+        .orElseThrow { throw BusinessException(borrowId, "borrowId", ErrorCode.BORROW_NOT_FOUND) }
 
 @Service
 @Transactional(readOnly = true)
 class BorrowManageService(
-    val borrowInfoRepository: BookBorrowInfoRepository,
-    val borrowLogRepository: BookBorrowLogRepository,
+        val borrowInfoRepository: BookBorrowInfoRepository,
+        val borrowLogRepository: BookBorrowLogRepository,
 ) {
     fun getBorrow(search: String, pageable: Pageable, borrowStatusDto: BorrowStatusDto?): Page<BorrowDetailResponse> {
         if (borrowStatusDto == null) {
             return borrowInfoRepository.findAll(pageable)
-                .map(::BorrowDetailResponse)
+                    .map(::BorrowDetailResponse)
         }
         return borrowStatusDto.getBorrowInfo(search, borrowInfoRepository, pageable)
-            .map(::BorrowDetailResponse)
+                .map(::BorrowDetailResponse)
     }
 
     @Transactional
@@ -82,9 +82,9 @@ class BorrowManageService(
     }
 
     fun getBorrowLogs(
-        search: String,
-        pageable: PageRequest,
-        searchType: LogType?
+            search: String,
+            pageable: PageRequest,
+            searchType: LogType?
     ): Page<BorrowLogResponse> {
         return when (searchType) {
             null, LogType.전체 -> borrowLogRepository.findAll(search, pageable)
@@ -92,9 +92,9 @@ class BorrowManageService(
             LogType.반납대기,
             LogType.반납완료,
             LogType.대출반려 -> borrowLogRepository.findAllByStatus(
-                searchType.name,
-                search,
-                pageable
+                    searchType.name,
+                    search,
+                    pageable
             )
         }.map(::BorrowLogResponse)
     }

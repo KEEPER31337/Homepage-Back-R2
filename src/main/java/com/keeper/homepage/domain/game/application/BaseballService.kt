@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 const val REDIS_KEY_PREFIX = "baseball_"
 const val GUESS_NUMBER_LENGTH = 4
 const val TRY_COUNT = 9
-const val MAX_BETTING_POINT = 5000L
+const val MAX_BETTING_POINT = 3000L
 const val MIN_BETTING_POINT = 1000L
 const val BETTING_POINT_MESSAGE = "야구 게임 베팅"
 const val EARN_POINT_MESSAGE = "야구 게임 획득"
@@ -27,17 +27,17 @@ const val EARN_POINT_MESSAGE = "야구 게임 획득"
 @Service
 @Transactional(readOnly = true)
 class BaseballService(
-    val redisUtil: RedisUtil,
-    val gameFindService: GameFindService
+        val redisUtil: RedisUtil,
+        val gameFindService: GameFindService
 ) {
     fun getBaseballGameInfoByMember(): BaseballInfoByMemberResponse =
-        BaseballInfoByMemberResponse(
-            guessNumberLength = GUESS_NUMBER_LENGTH,
-            tryCount = TRY_COUNT,
-            maxBettingPoint = MAX_BETTING_POINT,
-            minBettingPoint = MIN_BETTING_POINT,
-            maxPlayTime = BASEBALL_MAX_PLAYTIME,
-        )
+            BaseballInfoByMemberResponse(
+                    guessNumberLength = GUESS_NUMBER_LENGTH,
+                    tryCount = TRY_COUNT,
+                    maxBettingPoint = MAX_BETTING_POINT,
+                    minBettingPoint = MIN_BETTING_POINT,
+                    maxPlayTime = BASEBALL_MAX_PLAYTIME,
+            )
 
     @Transactional
     fun getStatus(requestMember: Member): Pair<BaseballStatus, Int> {
@@ -75,9 +75,9 @@ class BaseballService(
         game.baseball.increaseBaseballTimes()
 
         val baseballResultEntity = BaseballResultEntity(
-            correctNumber = generateDistinctRandomNumber(GUESS_NUMBER_LENGTH),
-            bettingPoint = bettingPoint,
-            earnablePoint = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
+                correctNumber = generateDistinctRandomNumber(GUESS_NUMBER_LENGTH),
+                bettingPoint = bettingPoint,
+                earnablePoint = bettingPoint * 2 // TODO: 포인트 획득 전략 정해지면 다시 구현 (우선 처음엔 베팅포인트 * 2)
         )
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, game.baseball.baseballPerDay)
         return BaseballResponse(emptyList(), bettingPoint, baseballResultEntity.earnablePoint, SECOND_PER_GAME)
@@ -85,42 +85,42 @@ class BaseballService(
 
     private fun isAlreadyPlayedAllOfThem(member: Member): Boolean {
         return gameFindService.findByMemberOrInit(member)
-            .baseball
-            .isAlreadyPlayedAllOfThem
+                .baseball
+                .isAlreadyPlayedAllOfThem
     }
 
     private fun generateDistinctRandomNumber(length: Int): String {
         return (0..9).shuffled()
-            .take(length)
-            .joinToString(separator = "")
+                .take(length)
+                .joinToString(separator = "")
     }
 
     fun saveBaseballResultInRedis(
-        requestMemberId: Long,
-        baseballResultEntity: BaseballResultEntity,
-        baseballPerDay: Int
+            requestMemberId: Long,
+            baseballResultEntity: BaseballResultEntity,
+            baseballPerDay: Int
     ) {
         redisUtil.setDataExpire(
-            REDIS_KEY_PREFIX + requestMemberId.toString() + "_" + baseballPerDay,
-            baseballResultEntity,
-            RedisUtil.toMidNight()
+                REDIS_KEY_PREFIX + requestMemberId.toString() + "_" + baseballPerDay,
+                baseballResultEntity,
+                RedisUtil.toMidNight()
         ) // 다음날 자정에 redis data expired
     }
 
     @Transactional
     fun guess(
-        requestMember: Member,
-        guessNumber: String
+            requestMember: Member,
+            guessNumber: String
     ): BaseballResponse {
         val gameEntity = gameFindService.findByMemberOrInit(requestMember)
         val baseballResultEntity = getBaseballResultInRedis(requestMember, gameEntity)
 
         if (baseballResultEntity.isEnd()) {
             return BaseballResponse(
-                convertBaseballResult(baseballResultEntity.results),
-                baseballResultEntity.bettingPoint,
-                gameEntity.baseball.baseballDayPoint,
-                0
+                    convertBaseballResult(baseballResultEntity.results),
+                    baseballResultEntity.bettingPoint,
+                    gameEntity.baseball.baseballDayPoint,
+                    0
             )
         }
 
@@ -130,15 +130,15 @@ class BaseballService(
         val earnablePoint = baseballResultEntity.earnablePoint
 
         if (baseballResultEntity.isEnd()) {
-            requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
-            gameEntity.baseball.baseballDayPoint = earnablePoint
+            requestMember.addPoint(earnablePoint*2, EARN_POINT_MESSAGE)
+            gameEntity.baseball.baseballDayPoint = earnablePoint*2
         }
 
         return BaseballResponse(
-            convertBaseballResult(baseballResultEntity.results),
-            baseballResultEntity.bettingPoint,
-            earnablePoint,
-            0
+                convertBaseballResult(baseballResultEntity.results),
+                baseballResultEntity.bettingPoint,
+                earnablePoint,
+                0
         )
     }
 
@@ -152,10 +152,10 @@ class BaseballService(
 
         if (baseballResultEntity.isEnd()) {
             return BaseballResponse(
-                convertBaseballResult(baseballResultEntity.results),
-                baseballResultEntity.bettingPoint,
-                baseballResultEntity.earnablePoint,
-                0
+                    convertBaseballResult(baseballResultEntity.results),
+                    baseballResultEntity.bettingPoint,
+                    baseballResultEntity.earnablePoint,
+                    0
             )
         }
 
@@ -163,10 +163,10 @@ class BaseballService(
         saveBaseballResultInRedis(requestMember.id, baseballResultEntity, gameEntity.baseball.baseballPerDay)
 
         return BaseballResponse(
-            convertBaseballResult(baseballResultEntity.results),
-            baseballResultEntity.bettingPoint,
-            baseballResultEntity.earnablePoint,
-            remainedSeconds
+                convertBaseballResult(baseballResultEntity.results),
+                baseballResultEntity.bettingPoint,
+                baseballResultEntity.earnablePoint,
+                remainedSeconds
         )
     }
 
@@ -176,8 +176,8 @@ class BaseballService(
 
     private fun getBaseballResultInRedis(requestMember: Member, gameEntity: Game): BaseballResultEntity {
         return redisUtil.getData(
-            REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
-            BaseballResultEntity::class.java
+                REDIS_KEY_PREFIX + requestMember.id.toString() + "_" + gameEntity.baseball.baseballPerDay,
+                BaseballResultEntity::class.java
         ).orElseThrow { throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_PLAYED_YET) }
     }
 

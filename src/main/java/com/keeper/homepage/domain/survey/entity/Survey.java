@@ -52,7 +52,8 @@ public class Survey extends BaseEntity {
   }
 
   @Builder
-  private Survey(LocalDateTime openTime, LocalDateTime closeTime, String name, String description, Boolean isVisible) {
+  private Survey(LocalDateTime openTime, LocalDateTime closeTime, String name, String description,
+      Boolean isVisible) {
     this.openTime = openTime;
     this.closeTime = closeTime;
     this.name = name;

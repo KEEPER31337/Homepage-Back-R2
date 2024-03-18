@@ -180,7 +180,8 @@ class AuthTestControllerTest extends IntegrationTest {
 
       @BeforeEach
       void setupRefreshToken() {
-        redisUtil.setDataExpire(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null), refreshToken, REFRESH_TOKEN.getExpiredMillis());
+        redisUtil.setDataExpire(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null),
+            refreshToken, REFRESH_TOKEN.getExpiredMillis());
       }
 
 //      @Test

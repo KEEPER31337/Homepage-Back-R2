@@ -42,7 +42,8 @@ public class CommentResponse {
         .build();
   }
 
-  public static CommentResponse of(Comment comment, String writerName, String writerThumbnailPath, boolean isLike,
+  public static CommentResponse of(Comment comment, String writerName, String writerThumbnailPath,
+      boolean isLike,
       boolean isDislike) {
     return CommentResponse.builder()
         .commentId(comment.getId())

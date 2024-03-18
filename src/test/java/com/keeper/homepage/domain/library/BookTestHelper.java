@@ -69,7 +69,8 @@ public class BookTestHelper {
       return bookRepository.save(Book.builder()
           .title(title != null ? title : "도서 제목")
           .author(author != null ? author : "도서 저자")
-          .bookDepartment(bookDepartment != null ? bookDepartment : BookDepartment.getBookDepartmentBy(ETC))
+          .bookDepartment(
+              bookDepartment != null ? bookDepartment : BookDepartment.getBookDepartmentBy(ETC))
           .totalQuantity(totalQuantity != null ? totalQuantity : 1)
           .thumbnail(thumbnail)
           .build());

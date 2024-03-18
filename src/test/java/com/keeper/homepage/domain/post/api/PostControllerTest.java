@@ -127,7 +127,8 @@ public class PostControllerTest extends PostApiTestHelper {
               ),
               requestPartFields(
                   "request",
-                  fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
+                  fieldWithPath("title").description(
+                      "게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
                   fieldWithPath("content").description("게시글 내용을 입력해주세요. (임시 저장글이 아닐 경우 필수입니다.)")
                       .optional(),
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
@@ -135,7 +136,8 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("isSecret").description("비밀글 여부"),
                   fieldWithPath("isTemp").description("임시 저장글 여부"),
                   fieldWithPath("password")
-                      .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH + ", 비밀글일 경우 필수값입니다.)")
+                      .description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
+                          + ", 비밀글일 경우 필수값입니다.)")
                       .optional(),
                   fieldWithPath("categoryId").description("게시글 카테고리를 입력해주세요.")
               ),
@@ -195,7 +197,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .isSecret(false)
           .categoryId(category.getId())
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -215,7 +218,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .isSecret(true)
           .categoryId(category.getId())
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -234,7 +238,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .isSecret(false)
           .categoryId(category.getId())
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -253,7 +258,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .isSecret(false)
           .categoryId(category.getId())
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -272,7 +278,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .isSecret(false)
           .categoryId(category.getId())
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -292,7 +299,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .password("a".repeat(POST_PASSWORD_LENGTH + 1))
           .categoryId(category.getId())
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -311,7 +319,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .isSecret(false)
           .password("게시글 비밀번호")
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -331,7 +340,8 @@ public class PostControllerTest extends PostApiTestHelper {
           .password("게시글 비밀번호")
           .categoryId(-1L)
           .build();
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreatePostApi(memberToken, mockPart)
@@ -379,7 +389,8 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("title").description("게시글의 타이틀"),
                   fieldWithPath("writerId").description("게시글 작성자의 ID(익명 게시판일 경우 \"1\")"),
                   fieldWithPath("writerName").description("게시글 작성자의 이름(익명 게시판일 경우 \"익명\")"),
-                  fieldWithPath("writerThumbnailPath").description("게시글 작성자의 썸네일 경로(익명 게시판일 경우 null)"),
+                  fieldWithPath("writerThumbnailPath").description(
+                      "게시글 작성자의 썸네일 경로(익명 게시판일 경우 null)"),
                   fieldWithPath("registerTime").description("게시글 등록 시간"),
                   fieldWithPath("updateTime").description("게시글 수정 시간"),
                   fieldWithPath("visitCount").description("게시글 조회수"),
@@ -480,15 +491,17 @@ public class PostControllerTest extends PostApiTestHelper {
                       .description("수정하고자 하는 게시글의 ID")
               ),
               requestFields(
-                  fieldWithPath("title").description("게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
+                  fieldWithPath("title").description(
+                      "게시글 제목을 입력해주세요. (최대 가능 길이 : " + POST_TITLE_LENGTH + ")"),
                   fieldWithPath("content").description("게시글 내용을 입력해주세요. (임시 저장글이 아닐 경우 필수입니다.)")
                       .optional(),
                   fieldWithPath("allowComment").description("댓글 허용 여부"),
                   fieldWithPath("isNotice").description("공지글 여부"),
                   fieldWithPath("isSecret").description("비밀글 여부"),
                   fieldWithPath("isTemp").description("임시 저장글 여부"),
-                  fieldWithPath("password").description("게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
-                          + ", 비밀글일 경우 필수값입니다.)")
+                  fieldWithPath("password").description(
+                          "게시글 비밀번호를 입력해주세요. (최대 가능 길이 : " + POST_PASSWORD_LENGTH
+                              + ", 비밀글일 경우 필수값입니다.)")
                       .optional()
               ),
               responseHeaders(
@@ -646,7 +659,8 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("posts[].title").description("게시글 제목"),
                   fieldWithPath("posts[].writerId").description("게시글 작성자 ID"),
                   fieldWithPath("posts[].writerName").description("게시글 작성자 실명"),
-                  fieldWithPath("posts[].writerThumbnailPath").description("게시글 작성자 썸네일 주소").optional(),
+                  fieldWithPath("posts[].writerThumbnailPath").description("게시글 작성자 썸네일 주소")
+                      .optional(),
                   fieldWithPath("posts[].visitCount").description("게시글 조회수"),
                   fieldWithPath("posts[].commentCount").description("게시글 댓글 개수"),
                   fieldWithPath("posts[].isSecret").description("게시글 비밀글 여부"),
@@ -949,7 +963,8 @@ public class PostControllerTest extends PostApiTestHelper {
       mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
           .andExpect(status().isOk())
-          .andExpect(header().string(CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\""))
+          .andExpect(header().string(CONTENT_DISPOSITION,
+              "attachment; filename=\"" + file.getFileName() + "\""))
           .andDo(document("download-post-file",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
@@ -973,8 +988,9 @@ public class PostControllerTest extends PostApiTestHelper {
       em.clear();
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
-      MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+      MvcResult mvcResult = mockMvc.perform(
+              get("/posts/{postId}/files/{fileId}", postId, file.getId())
+                  .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
           .andExpect(status().isBadRequest())
           .andReturn();
 
@@ -1018,8 +1034,9 @@ public class PostControllerTest extends PostApiTestHelper {
       em.clear();
       FileEntity file = postHasFileRepository.findByPost(otherPost).get().getFile();
 
-      MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+      MvcResult mvcResult = mockMvc.perform(
+              get("/posts/{postId}/files/{fileId}", postId, file.getId())
+                  .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
           .andExpect(status().isBadRequest())
           .andReturn();
 

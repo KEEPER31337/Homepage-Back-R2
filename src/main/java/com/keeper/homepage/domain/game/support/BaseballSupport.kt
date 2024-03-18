@@ -10,8 +10,8 @@ import java.time.ZoneOffset.UTC
 class BaseballSupport {
     companion object {
         fun getPassedGameCount(
-            playedRoundCount: Int,
-            lastGuessTime: LocalDateTime,
+                playedRoundCount: Int,
+                lastGuessTime: LocalDateTime,
         ): Pair<Int, Int> {
             val now = LocalDateTime.now()
             val passedSecond = now.toEpochSecond(UTC) - lastGuessTime.toEpochSecond(UTC)
@@ -26,8 +26,8 @@ class BaseballSupport {
         }
 
         fun guessAndGetResult(
-            correctNumber: String,
-            guessNumber: String
+                correctNumber: String,
+                guessNumber: String
         ): BaseballResultEntity.GuessResultEntity {
             if (guessNumber.length != GUESS_NUMBER_LENGTH) {
                 return BaseballResultEntity.GuessResultEntity(guessNumber, 0, 0)

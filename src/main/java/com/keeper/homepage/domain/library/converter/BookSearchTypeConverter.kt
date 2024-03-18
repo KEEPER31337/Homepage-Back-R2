@@ -7,8 +7,8 @@ import java.util.*
 class BookSearchTypeConverter : Converter<String, BookSearchType> {
     override fun convert(source: String): BookSearchType {
         return Arrays.stream(BookSearchType.values())
-            .filter { bookSearchType: BookSearchType -> bookSearchType.type == source.lowercase() }
-            .findFirst()
-            .get()
+                .filter { bookSearchType: BookSearchType -> bookSearchType.type == source.lowercase() }
+                .findFirst()
+                .get()
     }
 }

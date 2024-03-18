@@ -24,7 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ValidCandidateService {
 
   private static final long VIRTUAL_ELECTION_CANDIDATE_ID = 1;
-  private static final List<Long> VALID_CANDIDATE_JOB_IDS = Arrays.asList(ROLE_회장.getId(), ROLE_부회장.getId(),
+  private static final List<Long> VALID_CANDIDATE_JOB_IDS = Arrays.asList(ROLE_회장.getId(),
+      ROLE_부회장.getId(),
       ROLE_총무.getId());
 
   private final ElectionCandidateRepository electionCandidateRepository;
@@ -32,7 +33,8 @@ public class ValidCandidateService {
 
   public ElectionCandidate findById(long candidateId) {
     return electionCandidateRepository.findByIdAndIdNot(candidateId, VIRTUAL_ELECTION_CANDIDATE_ID)
-        .orElseThrow(() -> new BusinessException(candidateId, "candidateId", ELECTION_CANDIDATE_NOT_FOUND));
+        .orElseThrow(
+            () -> new BusinessException(candidateId, "candidateId", ELECTION_CANDIDATE_NOT_FOUND));
   }
 
   public MemberJob findJobById(long memberJobId) {

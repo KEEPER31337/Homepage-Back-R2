@@ -71,10 +71,12 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
     @DisplayName("세미나 생성을 성공한다.")
     public void should_successCreateSeminar_when_admin() throws Exception {
       String securedValue = getSecuredValue(SeminarController.class, "createSeminar");
-      MvcResult mvcResult = createSeminarUsingApi(adminToken, LocalDate.now()).andExpect(status().isCreated())
+      MvcResult mvcResult = createSeminarUsingApi(adminToken, LocalDate.now()).andExpect(
+              status().isCreated())
           .andDo(document("create-seminar",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))),
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
+                      "ACCESS TOKEN %s".formatted(securedValue))),
               queryParameters(
                   parameterWithName("openDate").attributes(dateFormat())
                       .description("세미나 날짜")),
@@ -227,7 +229,8 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
       Long latestSeminarId = createSeminarAndGetId(adminToken, LocalDate.now().minusDays(5));
       Long recentSeminarId = createSeminarAndGetId(adminToken, LocalDate.now());
       Long midSeminarId = createSeminarAndGetId(adminToken, LocalDate.now().minusDays(2));
-      startSeminarUsingApi(adminToken, latestSeminarId, seminarStartRequest).andExpect(status().isOk());
+      startSeminarUsingApi(adminToken, latestSeminarId, seminarStartRequest).andExpect(
+          status().isOk());
       em.flush();
       em.clear();
 

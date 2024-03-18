@@ -32,8 +32,10 @@ public class SeminarRepositoryTest extends IntegrationTest {
 
       Seminar savedSeminar = seminarRepository.findById(seminarId).orElseThrow();
       assertThat(savedSeminar.getOpenTime()).isEqualTo(seminarBuild.getOpenTime());
-      assertThat(savedSeminar.getAttendanceCloseTime()).isEqualTo(seminarBuild.getAttendanceCloseTime());
-      assertThat(savedSeminar.getLatenessCloseTime()).isEqualTo(seminarBuild.getLatenessCloseTime());
+      assertThat(savedSeminar.getAttendanceCloseTime()).isEqualTo(
+          seminarBuild.getAttendanceCloseTime());
+      assertThat(savedSeminar.getLatenessCloseTime()).isEqualTo(
+          seminarBuild.getLatenessCloseTime());
       assertThat(savedSeminar.getAttendanceCode()).isEqualTo(seminarBuild.getAttendanceCode());
       assertThat(savedSeminar.getName()).isEqualTo(seminarBuild.getName());
     }
@@ -51,7 +53,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
       assertThat(savedSeminar.getRegisterTime()).isAfter(now.minusDays(2));
       assertThat(savedSeminar.getUpdateTime()).isAfter(now.minusDays(2));
     }
-    
+
     @Test
     @DisplayName("세미나 이름을 넣지 않았을 때 TRIGGER가 동작해야 한다.")
     void should_success_when_EmptySeminarName() {
@@ -73,7 +75,7 @@ public class SeminarRepositoryTest extends IntegrationTest {
       assertThat(afterSeminarLength).isEqualTo(beforeSeminarLength - 1);
     }
   }
-  
+
   @Nested
   @DisplayName("세미나 조회 테스트")
   class SeminarSearchTest {

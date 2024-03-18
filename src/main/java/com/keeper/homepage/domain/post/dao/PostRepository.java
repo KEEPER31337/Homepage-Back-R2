@@ -64,7 +64,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "AND p.isTemp = false "
       + "AND LOWER(p.title) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
-  Page<Post> findAllRecentByCategoryAndTitle(@Param("category") Category category, @Param("search") String search,
+  Page<Post> findAllRecentByCategoryAndTitle(@Param("category") Category category,
+      @Param("search") String search,
       Pageable pageable);
 
   /**
@@ -80,7 +81,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "AND p.isTemp = false "
       + "AND LOWER(p.content) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
-  Page<Post> findAllRecentByCategoryAndContent(@Param("category") Category category, @Param("search") String search,
+  Page<Post> findAllRecentByCategoryAndContent(@Param("category") Category category,
+      @Param("search") String search,
       Pageable pageable);
 
   /**
@@ -113,7 +115,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "AND p.isTemp = false "
       + "AND LOWER(p.member.profile.realName) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
-  Page<Post> findAllRecentByCategoryAndWriter(@Param("category") Category category, @Param("search") String search,
+  Page<Post> findAllRecentByCategoryAndWriter(@Param("category") Category category,
+      @Param("search") String search,
       Pageable pageable);
 
   /**
@@ -125,7 +128,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("SELECT p FROM Post p " +
       "WHERE p.isTemp = false " +
       "AND p.registerTime BETWEEN :startDate AND :endDate")
-  List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+  List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
 
 
   @Query("SELECT p FROM Post p "
@@ -142,7 +146,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "AND p.isTemp = false "
       + "ORDER BY p.id DESC "
       + "LIMIT 1")
-  Optional<Post> findPreviousPost(@Param("postId") Long postId, @Param("category") Category category);
+  Optional<Post> findPreviousPost(@Param("postId") Long postId,
+      @Param("category") Category category);
 
   Page<Post> findAllByMemberAndIsTempFalse(Member member, Pageable pageable);
 
@@ -152,7 +157,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   @Query("UPDATE Post p "
       + "SET p.member = :virtualMember "
       + "WHERE p.member = :member AND p.isTemp = false ")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member,
+      @Param("virtualMember") Member virtualMember);
 
   void deleteAllByMemberAndIsTempTrue(Member member);
 }

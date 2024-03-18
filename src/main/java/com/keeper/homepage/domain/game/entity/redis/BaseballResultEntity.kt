@@ -8,10 +8,10 @@ import java.time.LocalDateTime
 const val SECOND_PER_GAME = 30 // 시간제한: 30s
 
 class BaseballResultEntity(
-    val correctNumber: String,
-    val bettingPoint: Int,
-    val results: MutableList<GuessResultEntity?> = mutableListOf(),
-    var earnablePoint: Int,
+        val correctNumber: String,
+        val bettingPoint: Int,
+        val results: MutableList<GuessResultEntity?> = mutableListOf(),
+        var earnablePoint: Int,
 ) {
     var lastGuessTime: LocalDateTime = LocalDateTime.now()
 

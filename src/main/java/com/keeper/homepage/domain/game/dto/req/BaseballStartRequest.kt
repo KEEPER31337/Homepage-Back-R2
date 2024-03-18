@@ -7,8 +7,8 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Positive
 
 data class BaseballStartRequest(
-    @field:Positive
-    @field:Max(MAX_BETTING_POINT)
-    @field:Min(MIN_BETTING_POINT)
-    val bettingPoint: Int,
+        @field:Positive
+        @field:Max(MAX_BETTING_POINT)
+        @field:Min(MIN_BETTING_POINT)
+        val bettingPoint: Int,
 )

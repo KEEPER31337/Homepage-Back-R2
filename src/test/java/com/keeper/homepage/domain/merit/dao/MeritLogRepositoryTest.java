@@ -67,6 +67,7 @@ public class MeritLogRepositoryTest extends IntegrationTest {
 
     private MeritType meritType, demeritType;
     private Member member, otherMember;
+
     @BeforeEach
     void setUp() {
       meritType = meritTypeHelper.builder().merit(5).isMerit(true).build();

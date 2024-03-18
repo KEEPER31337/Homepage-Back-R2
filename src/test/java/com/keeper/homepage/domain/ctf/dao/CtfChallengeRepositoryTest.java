@@ -42,7 +42,8 @@ public class CtfChallengeRepositoryTest extends IntegrationTest {
       CtfChallenge findChallenge = ctfChallengeRepository.getReferenceById(ctfChallenge.getId());
 
       assertThat(findChallenge.getCtfDynamicChallengeInfo()).isNotNull();
-      assertThat(findChallenge.getCtfDynamicChallengeInfo().getCtfChallenge()).isEqualTo(findChallenge);
+      assertThat(findChallenge.getCtfDynamicChallengeInfo().getCtfChallenge()).isEqualTo(
+          findChallenge);
       assertThat(findChallenge.getCtfDynamicChallengeInfo().getMinScore()).isEqualTo(500);
       assertThat(findChallenge.getCtfDynamicChallengeInfo().getMaxScore()).isEqualTo(1000);
     }
@@ -54,7 +55,8 @@ public class CtfChallengeRepositoryTest extends IntegrationTest {
           .type(STANDARD)
           .build();
 
-      assertThatThrownBy(() -> ctfChallenge.setCtfDynamicChallengeInfo(CtfDynamicChallengeInfo.builder().build()))
+      assertThatThrownBy(
+          () -> ctfChallenge.setCtfDynamicChallengeInfo(CtfDynamicChallengeInfo.builder().build()))
           .isInstanceOf(IllegalStateException.class);
     }
   }

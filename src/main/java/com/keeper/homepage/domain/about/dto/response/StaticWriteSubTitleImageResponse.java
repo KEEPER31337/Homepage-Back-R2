@@ -25,7 +25,8 @@ public class StaticWriteSubTitleImageResponse {
     return StaticWriteSubTitleImageResponse.builder()
         .id(subtitleImage.getId())
         .subtitle(subtitleImage.getSubtitle())
-        .thumbnailPath(subtitleImage.getThumbnail() != null ? subtitleImage.getThumbnail().getPath() : null)
+        .thumbnailPath(
+            subtitleImage.getThumbnail() != null ? subtitleImage.getThumbnail().getPath() : null)
         .displayOrder(subtitleImage.getDisplayOrder())
         .staticWriteContents(subtitleImage.getStaticWriteContents().stream()
             .map(StaticWriteContentResponse::from)

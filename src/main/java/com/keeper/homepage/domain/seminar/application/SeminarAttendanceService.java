@@ -47,7 +47,8 @@ public class SeminarAttendanceService {
   private static final int ONE_HOUR = 60 * 60;
 
   @Transactional
-  public SeminarAttendanceResponse attendance(Long seminarId, Member member, String attendanceCode) {
+  public SeminarAttendanceResponse attendance(Long seminarId, Member member,
+      String attendanceCode) {
     Seminar seminar = validSeminarFindService.findById(seminarId);
 
     SeminarAttendance seminarAttendance = getSeminarAttendance(seminar, member);
@@ -71,13 +72,15 @@ public class SeminarAttendanceService {
           .build());
     }
     return attendanceRepository.findBySeminarAndMember(seminar, member)
-        .orElseThrow(() -> new BusinessException(member.getRealName(), "member", SEMINAR_ATTENDANCE_UNABLE));
+        .orElseThrow(
+            () -> new BusinessException(member.getRealName(), "member", SEMINAR_ATTENDANCE_UNABLE));
   }
 
   private void checkAttemptNumberLimit(String key) {
     int attemptNumber = redisUtil.increaseAndGetWithExpire(key, ONE_HOUR).intValue();
     if (attemptNumber > MAX_ATTEMPT_COUNT) {
-      throw new BusinessException(attemptNumber, "attemptNumber", SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE);
+      throw new BusinessException(attemptNumber, "attemptNumber",
+          SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE);
     }
   }
 
@@ -86,21 +89,25 @@ public class SeminarAttendanceService {
 
     if (!seminarAttendanceCode.equals(attendanceCode)) {
       String attemptNumber = redisUtil.getData(key, String.class).orElseThrow();
-      throw new BusinessException(attemptNumber, "attemptNumber", SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE);
+      throw new BusinessException(attemptNumber, "attemptNumber",
+          SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE);
     }
   }
 
   private void checkDuplicateAttendance(SeminarAttendance seminarAttendance) {
     if (seminarAttendance.getSeminarAttendanceStatus().getType() != BEFORE_ATTENDANCE) {
-      throw new BusinessException(seminarAttendance.getSeminarAttendanceStatus(), "attendanceStatus",
+      throw new BusinessException(seminarAttendance.getSeminarAttendanceStatus(),
+          "attendanceStatus",
           SEMINAR_ATTENDANCE_DUPLICATE);
     }
   }
 
   @Transactional
-  public void changeStatus(long attendanceId, SeminarAttendanceStatusType statusType, String excuse) {
+  public void changeStatus(long attendanceId, SeminarAttendanceStatusType statusType,
+      String excuse) {
     SeminarAttendance seminarAttendance = attendanceRepository.findById(attendanceId)
-        .orElseThrow(() -> new BusinessException(attendanceId, "attendanceId", SEMINAR_ATTENDANCE_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(attendanceId, "attendanceId",
+            SEMINAR_ATTENDANCE_NOT_FOUND));
     if (statusType == LATENESS || statusType == PERSONAL) {
       seminarAttendance.changeStatus(statusType, excuse);
       return;
@@ -121,7 +128,8 @@ public class SeminarAttendanceService {
     LocalDate semesterFirstDate = SemesterUtil.getSemesterFirstDate(now);
 
     return regulars.map(member -> {
-      var seminarAttendances = attendanceRepository.findAllRecentByMember(member.getId(), semesterFirstDate);
+      var seminarAttendances = attendanceRepository.findAllRecentByMember(member.getId(),
+          semesterFirstDate);
       return SeminarAttendanceManageResponse.of(member, seminarAttendances);
     });
   }

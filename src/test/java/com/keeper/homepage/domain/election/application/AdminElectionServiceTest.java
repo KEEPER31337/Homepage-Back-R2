@@ -91,7 +91,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      ElectionCandidate savedCandidate = electionCandidateRepository.findById(electionCandidate.getId()).orElseThrow();
+      ElectionCandidate savedCandidate = electionCandidateRepository.findById(
+          electionCandidate.getId()).orElseThrow();
 
       assertEquals(electionCandidate.getDescription(), savedCandidate.getDescription());
       assertThat(savedCandidate.getMemberJob().getType()).isEqualTo(ROLE_회장);
@@ -106,7 +107,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
       memberJob = memberJobRepository.findById(improperMemberJobType.getId()).orElseThrow();
 
       assertThrows(BusinessException.class,
-          () -> adminElectionService.registerCandidate(electionCandidate.getDescription(), memberJob.getId(),
+          () -> adminElectionService.registerCandidate(electionCandidate.getDescription(),
+              memberJob.getId(),
               electionId, candidateId), ELECTION_CANDIDATE_CANNOT_REGISTER.getMessage());
     }
 
@@ -121,7 +123,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
           .collect(toList());
 
       electionCandidateRepository.deleteAll();
-      adminElectionService.registerCandidates(candidateIds, electionCandidate.getDescription(), memberJob.getId(),
+      adminElectionService.registerCandidates(candidateIds, electionCandidate.getDescription(),
+          memberJob.getId(),
           electionId);
 
       em.flush();
@@ -136,7 +139,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
     @DisplayName("후보자 삭제에 성공한다.")
     public void 후보자_삭제에_성공한다() throws Exception {
       Election election = electionTestHelper.builder().isAvailable(false).build();
-      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob).election(election).build();
+      ElectionCandidate electionCandidate = electionCandidateTestHelper.builder(memberJob)
+          .election(election).build();
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getId();
       adminElectionService.deleteCandidate(electionId, candidateId);
@@ -153,7 +157,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
       long electionId = electionCandidate.getElection().getId();
       long notExistCandidateId = 10;
 
-      assertThrows(BusinessException.class, () -> adminElectionService.deleteCandidate(electionId, notExistCandidateId),
+      assertThrows(BusinessException.class,
+          () -> adminElectionService.deleteCandidate(electionId, notExistCandidateId),
           ELECTION_CANDIDATE_NOT_FOUND.getMessage());
     }
 
@@ -166,8 +171,9 @@ public class AdminElectionServiceTest extends IntegrationTest {
           .isAvailable(true)
           .build();
 
-      assertThrows(BusinessException.class, () -> adminElectionService.deleteCandidate(election.getId(),
-          electionCandidate.getId()), ELECTION_CANDIDATE_CANNOT_DELETE.getMessage());
+      assertThrows(BusinessException.class,
+          () -> adminElectionService.deleteCandidate(election.getId(),
+              electionCandidate.getId()), ELECTION_CANDIDATE_CANNOT_DELETE.getMessage());
     }
 
   }
@@ -199,7 +205,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
     public void 투표자_다중_삭제에_성공한다() throws Exception {
       Election election = electionTestHelper.builder().isAvailable(false).build();
       List<Long> voterIds = IntStream.range(0, 5)
-          .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build().getMember().getId())
+          .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build()
+              .getMember().getId())
           .collect(toList());
 
       adminElectionService.deleteVoters(voterIds, election.getId());
@@ -220,7 +227,8 @@ public class AdminElectionServiceTest extends IntegrationTest {
           .mapToObj(electionVoter -> memberTestHelper.generate().getId())
           .collect(toList());
 
-      assertThrows(BusinessException.class, () -> adminElectionService.deleteVoters(voterIds, election.getId()),
+      assertThrows(BusinessException.class,
+          () -> adminElectionService.deleteVoters(voterIds, election.getId()),
           ELECTION_VOTER_NOT_FOUND.getMessage());
     }
 
@@ -234,10 +242,12 @@ public class AdminElectionServiceTest extends IntegrationTest {
           .build();
 
       List<Long> voterIds = IntStream.range(0, 5)
-          .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build().getMember().getId())
+          .mapToObj(electionVoter -> electionVoterTestHelper.builder().election(election).build()
+              .getMember().getId())
           .collect(toList());
 
-      assertThrows(BusinessException.class, () -> adminElectionService.deleteVoters(voterIds, election.getId()),
+      assertThrows(BusinessException.class,
+          () -> adminElectionService.deleteVoters(voterIds, election.getId()),
           ELECTION_VOTER_CANNOT_DELETE.getMessage());
     }
 

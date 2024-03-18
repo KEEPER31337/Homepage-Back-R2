@@ -337,16 +337,21 @@ class MemberControllerTest extends MemberApiTestHelper {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-      otherMemberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, otherMember.getId(), ROLE_회원);
+      otherMemberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, otherMember.getId(),
+          ROLE_회원);
     }
 
     @Test
     @DisplayName("회원 프로필 조회를 성공해야 한다")
     void 회원_프로필_조회를_성공해야_한다() throws Exception {
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
-      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      memberService.follow(member,
+          memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(member,
+          memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(),
+          member.getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(),
+          member.getId());
 
       String securedValue = getSecuredValue(MemberController.class, "getMemberProfile");
 
@@ -376,8 +381,10 @@ class MemberControllerTest extends MemberApiTestHelper {
     @Test
     @DisplayName("다른 회원의 프로필을 조회할 때는 학번이 노출되면 안된다.")
     public void 다른_회원의_프로필_조회할_때는_학번이_노출되면_안된다() throws Exception {
-      memberService.follow(member, memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
-      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(), member.getId());
+      memberService.follow(member,
+          memberTestHelper.builder().realName(RealName.from("일일")).build().getId());
+      memberService.follow(memberTestHelper.builder().realName(RealName.from("삼삼")).build(),
+          member.getId());
 
       em.flush();
       em.clear();
@@ -406,7 +413,8 @@ class MemberControllerTest extends MemberApiTestHelper {
       otherMember = memberTestHelper.generate();
       admin = memberTestHelper.generate();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원, ROLE_회장);
+      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원,
+          ROLE_회장);
       typeId = 3L;
     }
 
@@ -553,7 +561,8 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
       memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
       admin = memberTestHelper.builder().build();
-      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원, ROLE_회장);
+      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원,
+          ROLE_회장);
     }
 
     @Test

@@ -51,7 +51,8 @@ public class MemberProfileResponse {
   }
 
   private static String getStudentIdIfMine(Member member, Member me) {
-    return Objects.equals(member.getId(), me.getId()) ? member.getProfile().getStudentId().get() : "default";
+    return Objects.equals(member.getId(), me.getId()) ? member.getProfile().getStudentId().get()
+        : "default";
   }
 
   private static List<MemberFriendResponse> getFollower(Member member) {

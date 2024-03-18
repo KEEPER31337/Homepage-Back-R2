@@ -13,5 +13,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
   @Query("UPDATE Comment c "
       + "SET c.member = :virtualMember "
       + "WHERE c.member = :member")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
+  void updateVirtualMember(@Param("member") Member member,
+      @Param("virtualMember") Member virtualMember);
 }

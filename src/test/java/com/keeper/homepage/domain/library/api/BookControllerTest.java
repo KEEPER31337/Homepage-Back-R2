@@ -131,7 +131,8 @@ public class BookControllerTest extends BookApiTestHelper {
           .andExpect(status().isNoContent())
           .andDo(document("cancel-book-borrow",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
+                      "ACCESS TOKEN %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("borrowId").description("대출 신청 취소하고자 하는 도서대여 ID")
@@ -234,7 +235,8 @@ public class BookControllerTest extends BookApiTestHelper {
           .andExpect(status().isNoContent())
           .andDo(document("cancel-book-return",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description(
+                      "ACCESS TOKEN %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("borrowId").description("도서 대출 내역 ID")

@@ -196,7 +196,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
     @Test
     @DisplayName("세미나 출석 상태를 변경한다.")
     public void should_success_when_changeSeminarAttendanceStatus() throws Exception {
-      String securedValue = getSecuredValue(SeminarAttendanceController.class, "changeAttendanceStatus");
+      String securedValue = getSecuredValue(SeminarAttendanceController.class,
+          "changeAttendanceStatus");
 
       SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.generate();
 
@@ -229,7 +230,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       String strJson = """
           {"excuse":%s, "statusType":"LATENESS"}""";
       SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.generate();
-      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(), strJson.formatted(excuse)).andExpect(
+      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(),
+          strJson.formatted(excuse)).andExpect(
           status().isNoContent());
     }
 
@@ -241,7 +243,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       String strJson = """
           {"excuse":"", "statusType": %s}""";
       SeminarAttendance seminarAttendance = seminarAttendanceTestHelper.generate();
-      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(), strJson.formatted(statusType)).andExpect(
+      changeAttendanceStatusUsingApi(adminToken, seminarAttendance.getId(),
+          strJson.formatted(statusType)).andExpect(
           status().isBadRequest());
     }
   }
@@ -257,10 +260,12 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
       // given
       Long seminarId = seminarService.save(LocalDate.now()).id();
       Member admin = memberRepository.findById(adminId).orElseThrow();
-      String attendanceCode = seminarService.start(admin, seminarId, LocalDateTime.now().minusMinutes(5),
+      String attendanceCode = seminarService.start(admin, seminarId,
+          LocalDateTime.now().minusMinutes(5),
           LocalDateTime.now().plusMinutes(5)).attendanceCode();
       Member user = memberRepository.findById(userId).orElseThrow();
-      Long attendanceId = seminarAttendanceService.attendance(seminarId, user, attendanceCode).getId();
+      Long attendanceId = seminarAttendanceService.attendance(seminarId, user, attendanceCode)
+          .getId();
 
       em.flush();
       em.clear();
@@ -271,16 +276,20 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
           .andExpect(jsonPath("$.content[0].memberId").value(adminId))
           .andExpect(jsonPath("$.content[0].memberName").value(admin.getRealName()))
           .andExpect(jsonPath("$.content[0].generation").value(admin.getGeneration()))
-          .andExpect(jsonPath("$.content[0].attendances[0].attendanceStatus").value(ATTENDANCE.toString()))
+          .andExpect(
+              jsonPath("$.content[0].attendances[0].attendanceStatus").value(ATTENDANCE.toString()))
           .andExpect(jsonPath("$.content[0].attendances[0].excuse").isEmpty())
-          .andExpect(jsonPath("$.content[0].attendances[0].attendDate").value(LocalDate.now().toString()))
+          .andExpect(
+              jsonPath("$.content[0].attendances[0].attendDate").value(LocalDate.now().toString()))
           .andExpect(jsonPath("$.content[1].memberId").value(userId))
           .andExpect(jsonPath("$.content[1].memberName").value(user.getRealName()))
           .andExpect(jsonPath("$.content[1].generation").value(user.getGeneration()))
           .andExpect(jsonPath("$.content[1].attendances[0].attendanceId").value(attendanceId))
-          .andExpect(jsonPath("$.content[1].attendances[0].attendanceStatus").value(LATENESS.toString()))
+          .andExpect(
+              jsonPath("$.content[1].attendances[0].attendanceStatus").value(LATENESS.toString()))
           .andExpect(jsonPath("$.content[1].attendances[0].excuse").isEmpty())
-          .andExpect(jsonPath("$.content[1].attendances[0].attendDate").value(LocalDate.now().toString()))
+          .andExpect(
+              jsonPath("$.content[1].attendances[0].attendDate").value(LocalDate.now().toString()))
           .andDo(document("get-seminar-attendances",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())

@@ -31,35 +31,35 @@ const val GET_BOOKS_DEFAULT_SIZE = 10
 @RestController
 @Secured("ROLE_회장", "ROLE_부회장", "ROLE_사서")
 class BookManageController(
-    private val bookManageService: BookManageService
+        private val bookManageService: BookManageService
 ) {
     @GetMapping
     fun getBooks(
-        @RequestParam(required = false, defaultValue = "") search: String,
-        @RequestParam(required = false, defaultValue = "ALL") searchType: BookSearchType,
-        @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
-        @RequestParam(defaultValue = GET_BOOKS_DEFAULT_SIZE.toString()) @Min(GET_BOOKS_MIN_SIZE) @Max(GET_BOOKS_MAX_SIZE) @NotNull size: Int,
+            @RequestParam(required = false, defaultValue = "") search: String,
+            @RequestParam(required = false, defaultValue = "ALL") searchType: BookSearchType,
+            @RequestParam(defaultValue = "0") @PositiveOrZero @NotNull page: Int,
+            @RequestParam(defaultValue = GET_BOOKS_DEFAULT_SIZE.toString()) @Min(GET_BOOKS_MIN_SIZE) @Max(GET_BOOKS_MAX_SIZE) @NotNull size: Int,
     ): ResponseEntity<Page<BookDetailResponse>> {
         return ResponseEntity.ok(
-            bookManageService.getBooks(search, searchType, PageRequest.of(page, size))
-                .map(::BookDetailResponse)
+                bookManageService.getBooks(search, searchType, PageRequest.of(page, size))
+                        .map(::BookDetailResponse)
         )
     }
 
     @PostMapping(consumes = [MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE])
     fun addBook(
-        @RequestPart @Valid bookMetaData: BookRequest,
-        @RequestPart thumbnail: MultipartFile?,
+            @RequestPart @Valid bookMetaData: BookRequest,
+            @RequestPart thumbnail: MultipartFile?,
     ): ResponseEntity<Void> {
         val addedBookId = bookManageService.addBook(
-            bookMetaData.title!!,
-            bookMetaData.author!!,
-            bookMetaData.totalQuantity!!,
-            bookMetaData.bookDepartment!!,
-            thumbnail,
+                bookMetaData.title!!,
+                bookMetaData.author!!,
+                bookMetaData.totalQuantity!!,
+                bookMetaData.bookDepartment!!,
+                thumbnail,
         )
         return ResponseEntity.created(URI.create("/books/${addedBookId}"))
-            .build()
+                .build()
     }
 
     @DeleteMapping("/{bookId}")
@@ -70,27 +70,27 @@ class BookManageController(
 
     @PutMapping("/{bookId}")
     fun modifyBook(
-        @PathVariable bookId: Long,
-        @RequestBody @Valid request: ModifyBookRequest
+            @PathVariable bookId: Long,
+            @RequestBody @Valid request: ModifyBookRequest
     ): ResponseEntity<Void> {
         bookManageService.modifyBook(
-            bookId,
-            request.title!!,
-            request.author!!,
-            request.totalQuantity!!,
-            request.bookDepartment!!,
+                bookId,
+                request.title!!,
+                request.author!!,
+                request.totalQuantity!!,
+                request.bookDepartment!!,
         )
         return ResponseEntity.noContent().build()
     }
 
     @PatchMapping("/{bookId}/thumbnail")
     fun modifyBookThumbnail(
-        @PathVariable bookId: Long,
-        @ModelAttribute thumbnail: MultipartFile?
+            @PathVariable bookId: Long,
+            @ModelAttribute thumbnail: MultipartFile?
     ): ResponseEntity<Void> {
         bookManageService.modifyBookThumbnail(
-            bookId,
-            thumbnail
+                bookId,
+                thumbnail
         )
         return ResponseEntity.noContent().build()
     }

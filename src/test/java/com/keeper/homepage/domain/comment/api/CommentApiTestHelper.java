@@ -14,7 +14,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class CommentApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreateCommentApi(String memberToken, CommentCreateRequest request) throws Exception {
+  ResultActions callCreateCommentApi(String memberToken, CommentCreateRequest request)
+      throws Exception {
     return mockMvc.perform(post("/comments")
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
         .content(asJsonString(request))

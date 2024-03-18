@@ -11,17 +11,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenValidCondition implements JwtTokenCondition {
 
-    private final JwtTokenProvider jwtTokenProvider;
+  private final JwtTokenProvider jwtTokenProvider;
 
-    @Override
-    public boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
-                                 HttpServletRequest httpRequest) {
-        return accessTokenDto.isValid();
-    }
+  @Override
+  public boolean isSatisfiedBy(TokenValidationResultDto accessTokenDto,
+      TokenValidationResultDto refreshTokenDto,
+      HttpServletRequest httpRequest) {
+    return accessTokenDto.isValid();
+  }
 
-    @Override
-    public void setJwtToken(TokenValidationResultDto accessTokenDto, TokenValidationResultDto refreshTokenDto,
-                            HttpServletRequest request, HttpServletResponse response) {
-        setAuthentication(jwtTokenProvider, accessTokenDto);
-    }
+  @Override
+  public void setJwtToken(TokenValidationResultDto accessTokenDto,
+      TokenValidationResultDto refreshTokenDto,
+      HttpServletRequest request, HttpServletResponse response) {
+    setAuthentication(jwtTokenProvider, accessTokenDto);
+  }
 }

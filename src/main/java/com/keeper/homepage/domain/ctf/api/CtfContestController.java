@@ -49,7 +49,8 @@ public class CtfContestController {
       @PathVariable long contestId,
       @RequestBody @Valid UpdateContestRequest request
   ) {
-    ctfContestService.updateContest(contestId, request.getName(), request.getDescription(), request.isJoinable());
+    ctfContestService.updateContest(contestId, request.getName(), request.getDescription(),
+        request.isJoinable());
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }

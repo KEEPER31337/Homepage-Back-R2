@@ -67,7 +67,8 @@ public class SurveyMemberReplyTestHelper {
       return surveyMemberReplyRepository.save(SurveyMemberReply.builder()
           .member(member != null ? member : memberTestHelper.generate())
           .survey(survey != null ? survey : surveyTestHelper.generate())
-          .reply(reply != null ? reply : surveyReplyRepository.findById(ACTIVITY.getId()).orElseThrow())
+          .reply(reply != null ? reply
+              : surveyReplyRepository.findById(ACTIVITY.getId()).orElseThrow())
           .replyTime(replyTime)
           .build());
     }

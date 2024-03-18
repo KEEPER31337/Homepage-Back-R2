@@ -37,7 +37,8 @@ public class StudyService {
   private final MemberFindService memberFindService;
 
   @Transactional
-  public void create(Member headMember, Study study, List<Long> memberIds, MultipartFile thumbnail) {
+  public void create(Member headMember, Study study, List<Long> memberIds,
+      MultipartFile thumbnail) {
     checkLink(study);
     saveStudyThumbnail(study, thumbnail);
 

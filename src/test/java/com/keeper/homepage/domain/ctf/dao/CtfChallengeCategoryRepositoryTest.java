@@ -21,7 +21,8 @@ public class CtfChallengeCategoryRepositoryTest extends IntegrationTest {
     @DisplayName("CtfChallengeCategoryType Enum에 DB의 모든 데이터가 있어야 한다.")
     public void CtfChallengeCategoryType_Enum에_DB의_모든_데이터가_있어야_한다() throws Exception {
       List<CtfChallengeCategory> ctfChallengeCategories = ctfChallengeCategoryRepository.findAll();
-      List<CtfChallengeCategory> ctfChallengeCategoryTypes = Arrays.stream(CtfChallengeCategoryType.values())
+      List<CtfChallengeCategory> ctfChallengeCategoryTypes = Arrays.stream(
+              CtfChallengeCategoryType.values())
           .map(CtfChallengeCategory::getCtfChallengeCategoryBy)
           .toList();
 

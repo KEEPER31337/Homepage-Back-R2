@@ -30,12 +30,14 @@ public class SeminarAttendanceManageResponse {
   private long totalAbsence;
   private long totalPersonal;
 
-  public static SeminarAttendanceManageResponse of(Member member, List<SeminarAttendance> seminarAttendances) {
+  public static SeminarAttendanceManageResponse of(Member member,
+      List<SeminarAttendance> seminarAttendances) {
     return SeminarAttendanceManageResponse.builder()
         .memberId(member.getId())
         .memberName(member.getRealName())
         .generation(member.getGeneration())
-        .attendances(seminarAttendances.stream().map(SeminarAttendanceDetailResponse::from).toList())
+        .attendances(
+            seminarAttendances.stream().map(SeminarAttendanceDetailResponse::from).toList())
         .totalAttendance(seminarAttendances.stream()
             .filter(seminarAttendance -> seminarAttendance.isStatus(ATTENDANCE))
             .count())

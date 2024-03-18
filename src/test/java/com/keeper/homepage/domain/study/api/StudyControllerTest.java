@@ -76,7 +76,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .memberIds(List.of(other.getId()))
           .build();
 
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
@@ -84,18 +85,22 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .andDo(document("create-study",
               requestCookies(
                   cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue) + " 스터디 생성자는 스터디장이 됩니다.")
+                      .description(
+                          "ACCESS TOKEN %s".formatted(securedValue) + " 스터디 생성자는 스터디장이 됩니다.")
               ),
               requestPartFields(
                   "request",
-                  fieldWithPath("title").description("스터디 이름을 입력해주세요. (최대 가능 길이 : " + STUDY_TITLE_LENGTH + ")"),
+                  fieldWithPath("title").description(
+                      "스터디 이름을 입력해주세요. (최대 가능 길이 : " + STUDY_TITLE_LENGTH + ")"),
                   fieldWithPath("information")
                       .description("스터디 설명을 입력해주세요. (최대 가능 길이 : " + STUDY_INFORMATION_LENGTH + ")")
                       .optional(),
                   fieldWithPath("year").description("스터디 년도를 입력해주세요."),
-                  fieldWithPath("season").attributes(new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기"))
+                  fieldWithPath("season").attributes(
+                          new Attribute("format", "1: 1학기 2: 여름학기 3: 2학기 4: 겨울학기"))
                       .description("스터디 학기를 입력해주세요."),
-                  fieldWithPath("gitLink").attributes(new Attribute("format", "\"https://github.com\"으로 시작"))
+                  fieldWithPath("gitLink").attributes(
+                          new Attribute("format", "\"https://github.com\"으로 시작"))
                       .description("스터디 깃허브 링크를 입력해주세요.").optional(),
                   fieldWithPath("notionLink")
                       .description("스터디 노션 링크를 입력해주세요.").optional(),
@@ -125,7 +130,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .memberIds(List.of(other.getId()))
           .build();
 
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
@@ -144,7 +150,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .memberIds(List.of())
           .build();
 
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
@@ -162,7 +169,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
           .build();
 
-      MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
+      MockPart mockPart = new MockPart("request",
+          asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
       callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
@@ -289,7 +297,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .year(2023)
           .season(2)
           .gitLink("https://github.com/KEEPER31337/Homepage-Back-R2")
-          .notionLink("https://www.notion.so/KEEPER-NEW-HOMEPAGE-PROJECT-c4fd631881d84e4daa6fa14404ac6173?pvs=4")
+          .notionLink(
+              "https://www.notion.so/KEEPER-NEW-HOMEPAGE-PROJECT-c4fd631881d84e4daa6fa14404ac6173?pvs=4")
           .etcLink("https://plato.pusan.ac.kr/")
           .etcTitle("plato")
           .memberIds(List.of(other.getId()))

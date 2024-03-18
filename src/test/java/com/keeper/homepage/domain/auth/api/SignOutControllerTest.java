@@ -26,36 +26,36 @@ import org.springframework.test.web.servlet.ResultActions;
 
 class SignOutControllerTest extends IntegrationTest {
 
-    @Nested
-    @DisplayName("로그아웃 테스트")
-    class SignOut {
+  @Nested
+  @DisplayName("로그아웃 테스트")
+  class SignOut {
 
-        private Member member;
+    private Member member;
 
-        @BeforeEach
-        void setupMember() {
-            member = memberTestHelper.generate();
-        }
+    @BeforeEach
+    void setupMember() {
+      member = memberTestHelper.generate();
+    }
 
-        @Test
-        @DisplayName("유효한 요청이면 로그아웃이 성공해야 한다.")
-        void should_successfullySignOut_when_validRequest() throws Exception {
-            Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN.getTokenName(),
-                    jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원));
-            Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN.getTokenName(),
-                    jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), ROLE_회원));
-            callSignOutApi(accessTokenCookie, refreshTokenCookie)
-                    .andExpect(status().isNoContent())
-                    .andExpect(cookie().maxAge(ACCESS_TOKEN.getTokenName(), 0))
-                    .andExpect(cookie().maxAge(REFRESH_TOKEN.getTokenName(), 0))
-                    .andDo(document("sign-out",
-                            requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
-                                    cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
-                            )));
+    @Test
+    @DisplayName("유효한 요청이면 로그아웃이 성공해야 한다.")
+    void should_successfullySignOut_when_validRequest() throws Exception {
+      Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN.getTokenName(),
+          jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원));
+      Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN.getTokenName(),
+          jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), ROLE_회원));
+      callSignOutApi(accessTokenCookie, refreshTokenCookie)
+          .andExpect(status().isNoContent())
+          .andExpect(cookie().maxAge(ACCESS_TOKEN.getTokenName(), 0))
+          .andExpect(cookie().maxAge(REFRESH_TOKEN.getTokenName(), 0))
+          .andDo(document("sign-out",
+              requestCookies(
+                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
+                  cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
+              )));
 
-            assertThat(redisUtil.getData(String.valueOf(member.getId()), String.class)).isEmpty();
-        }
+      assertThat(redisUtil.getData(String.valueOf(member.getId()), String.class)).isEmpty();
+    }
 
 //    @Test
 //    @Disabled
@@ -75,10 +75,11 @@ class SignOutControllerTest extends IntegrationTest {
 //              .andExpect(cookie().maxAge(REFRESH_TOKEN.getTokenName(), 0));
 //    }
 
-        @NotNull
-        private ResultActions callSignOutApi(Cookie accessTokenCookie, Cookie refreshTokenCookie) throws Exception {
-            return mockMvc.perform(post("/sign-out")
-                    .cookie(accessTokenCookie, refreshTokenCookie));
-        }
+    @NotNull
+    private ResultActions callSignOutApi(Cookie accessTokenCookie, Cookie refreshTokenCookie)
+        throws Exception {
+      return mockMvc.perform(post("/sign-out")
+          .cookie(accessTokenCookie, refreshTokenCookie));
     }
+  }
 }

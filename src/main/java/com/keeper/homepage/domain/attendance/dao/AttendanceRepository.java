@@ -26,6 +26,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
   @Query("SELECT a FROM Attendance a "
       + "WHERE a.member = :member "
       + "AND a.date >= :localDate")
-  List<Attendance> findAllRecent(@Param("member") Member member, @Param("localDate") LocalDate localDate);
+  List<Attendance> findAllRecent(@Param("member") Member member,
+      @Param("localDate") LocalDate localDate);
 
 }

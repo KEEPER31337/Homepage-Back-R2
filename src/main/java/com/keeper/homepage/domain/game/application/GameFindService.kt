@@ -13,7 +13,7 @@ class GameFindService(private val gameRepository: GameRepository) {
 
     fun findByMemberOrInit(member: Member): Game {
         return gameRepository.findByMemberAndPlayDate(member, LocalDate.now())
-            .orElseGet { initWhenNotExistGameMemberInfo(member) }
+                .orElseGet { initWhenNotExistGameMemberInfo(member) }
     }
 
     fun findAllByPlayDate(playDate: LocalDate): List<Game> {

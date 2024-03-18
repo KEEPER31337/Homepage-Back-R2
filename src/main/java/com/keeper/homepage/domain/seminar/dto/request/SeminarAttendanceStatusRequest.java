@@ -13,4 +13,5 @@ public record SeminarAttendanceStatusRequest(
     @NotNull(message = "출석 상태를 선택해주세요.")
     SeminarAttendanceStatusType statusType
 ) {
+
 }

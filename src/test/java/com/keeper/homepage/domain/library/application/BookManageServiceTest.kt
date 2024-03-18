@@ -20,18 +20,18 @@ import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 
 fun BookBorrowInfoTestHelper.generate(
-    member: Member,
-    book: Book,
-    bookBorrowStatusType: BookBorrowStatusType
+        member: Member,
+        book: Book,
+        bookBorrowStatusType: BookBorrowStatusType
 ): BookBorrowInfo {
     val now = LocalDateTime.now()
     return this.builder()
-        .book(book)
-        .member(member)
-        .borrowDate(now)
-        .expireDate(now.plusWeeks(2))
-        .borrowStatus(getBookBorrowStatusBy(bookBorrowStatusType))
-        .build()
+            .book(book)
+            .member(member)
+            .borrowDate(now)
+            .expireDate(now.plusWeeks(2))
+            .borrowStatus(getBookBorrowStatusBy(bookBorrowStatusType))
+            .build()
 }
 
 class BookManageServiceTest : IntegrationTest() {
@@ -113,27 +113,27 @@ class BookManageServiceTest : IntegrationTest() {
         fun `현재 대여중인 권 수 이하의 책 수량 수정은 실패해야 한다`() {
             val bookCount = 2L
             val book = bookTestHelper.builder()
-                .totalQuantity(bookCount)
-                .currentQuantity(bookCount)
-                .thumbnail(thumbnailTestHelper.generateThumbnail())
-                .build()
+                    .totalQuantity(bookCount)
+                    .currentQuantity(bookCount)
+                    .thumbnail(thumbnailTestHelper.generateThumbnail())
+                    .build()
             val member = memberTestHelper.generate()
 
             (1..bookCount).map { // 모든 책 대여
                 bookBorrowInfoTestHelper.builder()
-                    .book(book)
-                    .member(member)
-                    .borrowStatus(getBookBorrowStatusBy(BookBorrowStatusType.대출중))
-                    .build()
+                        .book(book)
+                        .member(member)
+                        .borrowStatus(getBookBorrowStatusBy(BookBorrowStatusType.대출중))
+                        .build()
             }
 
             val exception = shouldThrow<BusinessException> {
                 bookManageService.modifyBook(
-                    book.id,
-                    book.title + "_",
-                    book.author + "_",
-                    bookCount - 1,
-                    BookDepartment.BookDepartmentType.ETC,
+                        book.id,
+                        book.title + "_",
+                        book.author + "_",
+                        bookCount - 1,
+                        BookDepartment.BookDepartmentType.ETC,
                 )
             }
 

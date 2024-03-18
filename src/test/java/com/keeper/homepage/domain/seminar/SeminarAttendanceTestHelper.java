@@ -49,7 +49,8 @@ public class SeminarAttendanceTestHelper {
       return this;
     }
 
-    public SeminarAttendanceBuilder seminarAttendanceStatus(SeminarAttendanceStatus seminarAttendanceStatus) {
+    public SeminarAttendanceBuilder seminarAttendanceStatus(
+        SeminarAttendanceStatus seminarAttendanceStatus) {
       this.seminarAttendanceStatus = seminarAttendanceStatus;
       return this;
     }

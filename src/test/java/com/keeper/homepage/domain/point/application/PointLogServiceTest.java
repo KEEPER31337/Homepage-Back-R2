@@ -37,7 +37,8 @@ class PointLogServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<PointLog> findPointLogPages = pointLogService.findAllPointLogs(PageRequest.of(0, 10), giver.getId());
+      Page<PointLog> findPointLogPages = pointLogService.findAllPointLogs(PageRequest.of(0, 10),
+          giver.getId());
 
       assertThat(findPointLogPages
           .map(PointLog::getId)

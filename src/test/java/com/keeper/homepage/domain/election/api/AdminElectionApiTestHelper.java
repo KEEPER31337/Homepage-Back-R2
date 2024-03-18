@@ -21,7 +21,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class AdminElectionApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreateElectionApi(String adminToken, ElectionCreateRequest request) throws Exception {
+  ResultActions callCreateElectionApi(String adminToken, ElectionCreateRequest request)
+      throws Exception {
     return mockMvc.perform(post("/admin/elections")
         .content(asJsonString(request))
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
@@ -33,7 +34,8 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
   }
 
-  ResultActions callUpdateElectionApi(String adminToken, long electionId, ElectionUpdateRequest request)
+  ResultActions callUpdateElectionApi(String adminToken, long electionId,
+      ElectionUpdateRequest request)
       throws Exception {
     return mockMvc.perform(put("/admin/elections/{electionId}", electionId)
         .content(asJsonString(request))
@@ -56,15 +58,18 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
 
   }
 
-  ResultActions callRegisterCandidateApi(String adminToken, ElectionCandidateRegisterRequest request, long electionId,
+  ResultActions callRegisterCandidateApi(String adminToken,
+      ElectionCandidateRegisterRequest request, long electionId,
       long candidateId) throws Exception {
-    return mockMvc.perform(post("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
-        .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
-        .contentType(MediaType.APPLICATION_JSON));
+    return mockMvc.perform(
+        post("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
+            .content(asJsonString(request))
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+            .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callRegisterCandidatesApi(String adminToken, ElectionCandidatesRegisterRequest request, long electionId)
+  ResultActions callRegisterCandidatesApi(String adminToken,
+      ElectionCandidatesRegisterRequest request, long electionId)
       throws Exception {
     return mockMvc.perform(post("/admin/elections/{electionId}/candidates", electionId)
         .content(asJsonString(request))
@@ -72,12 +77,15 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callDeleteCandidateApi(String adminToken, long electionId, long candidateId) throws Exception {
-    return mockMvc.perform(delete("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+  ResultActions callDeleteCandidateApi(String adminToken, long electionId, long candidateId)
+      throws Exception {
+    return mockMvc.perform(
+        delete("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
   }
 
-  ResultActions callRegisterVotersApi(String adminToken, ElectionVotersRequest request, long electionId)
+  ResultActions callRegisterVotersApi(String adminToken, ElectionVotersRequest request,
+      long electionId)
       throws Exception {
     return mockMvc.perform(post("/admin/elections/{electionId}/voters", electionId)
         .content(asJsonString(request))
@@ -85,7 +93,8 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callDeleteVotersApi(String adminToken, ElectionVotersRequest request, long electionId)
+  ResultActions callDeleteVotersApi(String adminToken, ElectionVotersRequest request,
+      long electionId)
       throws Exception {
     return mockMvc.perform(delete("/admin/elections/{electionId}/voters", electionId)
         .content(asJsonString(request))

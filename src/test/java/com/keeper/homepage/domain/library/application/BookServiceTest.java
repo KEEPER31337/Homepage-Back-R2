@@ -45,7 +45,8 @@ public class BookServiceTest extends IntegrationTest {
     @Test
     @DisplayName("현재수량이 0이 아니고, 회원이 빌린 책의 개수가 5권 미만이면 도서 대여 가능 응답을 해야 한다.")
     public void 현재수량이_0이_아니고_회원이_빌린_책의_개수가_5권_미만이면_도서_대여_가능_응답을_해야_한다() {
-      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "",
+          PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isTrue();
     }
@@ -56,7 +57,8 @@ public class BookServiceTest extends IntegrationTest {
       bookBorrowInfoTestHelper.builder().book(book).borrowStatus(getBookBorrowStatusBy(대출중))
           .build();
 
-      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "",
+          PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
     }
@@ -74,7 +76,8 @@ public class BookServiceTest extends IntegrationTest {
       em.clear();
       member = memberRepository.findById(member.getId()).get();
 
-      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "",
+          PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
     }
@@ -99,7 +102,8 @@ public class BookServiceTest extends IntegrationTest {
       em.clear();
       member = memberRepository.findById(member.getId()).get();
 
-      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "", PageRequest.of(0, 5));
+      Page<BookResponse> books = bookService.getBooks(member, BookSearchType.ALL, "",
+          PageRequest.of(0, 5));
 
       assertThat(books.getContent().get(0).isCanBorrow()).isFalse();
       assertThat(books.getContent().get(1).isCanBorrow()).isFalse();
@@ -124,7 +128,8 @@ public class BookServiceTest extends IntegrationTest {
     @DisplayName("도서 대출중인 권수가 2권 이하면 도서 대출은 성공해야 한다.")
     public void 도서_대출중인_권수가_2권_이하면_도서_대출은_성공해야_한다() {
       assertDoesNotThrow(() -> bookService.requestBorrow(member, book.getId()));
-      assertThat(bookBorrowInfoRepository.findByMemberAndBookAndInBorrowingOrWait(member, book)).isNotEmpty();
+      assertThat(bookBorrowInfoRepository.findByMemberAndBookAndInBorrowingOrWait(member,
+          book)).isNotEmpty();
     }
 
     @Test
@@ -298,7 +303,8 @@ public class BookServiceTest extends IntegrationTest {
     public void 대출_내역이_없다면_도서_반납_요청이_실패해야_한다() {
       long notExistBorrowId = 5;
 
-      assertThrows(BusinessException.class, () -> bookService.requestReturn(member, notExistBorrowId));
+      assertThrows(BusinessException.class,
+          () -> bookService.requestReturn(member, notExistBorrowId));
     }
 
     @Test

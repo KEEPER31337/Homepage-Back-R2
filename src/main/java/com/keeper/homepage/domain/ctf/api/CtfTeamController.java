@@ -39,7 +39,8 @@ public class CtfTeamController {
       @LoginMember Member member,
       @RequestBody @Valid CreateTeamRequest request
   ) {
-    ctfTeamService.createTeam(member, request.getName(), request.getDescription(), request.getContestId());
+    ctfTeamService.createTeam(member, request.getName(), request.getDescription(),
+        request.getContestId());
     return ResponseEntity.status(HttpStatus.CREATED)
         .build();
   }
@@ -69,7 +70,8 @@ public class CtfTeamController {
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
-    return ResponseEntity.ok(ctfTeamService.getTeams(contestId, search, PageRequest.of(page, size)));
+    return ResponseEntity.ok(
+        ctfTeamService.getTeams(contestId, search, PageRequest.of(page, size)));
   }
 
   @PostMapping("/{teamId}/members/{memberId}")

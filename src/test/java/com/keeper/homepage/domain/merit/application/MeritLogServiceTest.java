@@ -71,8 +71,10 @@ class MeritLogServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      Page<MeritLog> meritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), MERIT_TYPE);
-      Page<MeritLog> demeritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), DEMERIT_TYPE);
+      Page<MeritLog> meritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10),
+          MERIT_TYPE);
+      Page<MeritLog> demeritLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10),
+          DEMERIT_TYPE);
       Page<MeritLog> allLogs = meritLogService.findAllByMeritType(PageRequest.of(0, 10), ALL_TYPE);
 
       assertThat(meritLogs

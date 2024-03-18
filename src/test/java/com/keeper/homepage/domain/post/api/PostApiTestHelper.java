@@ -21,7 +21,8 @@ import org.springframework.util.MultiValueMap;
 
 public class PostApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file, MockPart mockPart)
+  ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file,
+      MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart("/posts")
         .file(file)
@@ -70,7 +71,8 @@ public class PostApiTestHelper extends IntegrationTest {
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callUpdatePostThumbnail(String accessToken, long postId, MockMultipartFile thumbnail)
+  ResultActions callUpdatePostThumbnail(String accessToken, long postId,
+      MockMultipartFile thumbnail)
       throws Exception {
     return mockMvc.perform(multipart("/posts/{postId}/thumbnail", postId)
         .file(thumbnail)
@@ -130,7 +132,8 @@ public class PostApiTestHelper extends IntegrationTest {
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callDeletePostFileApi(String accessToken, long postId, PostFileDeleteRequest request)
+  ResultActions callDeletePostFileApi(String accessToken, long postId,
+      PostFileDeleteRequest request)
       throws Exception {
     return mockMvc.perform(delete("/posts/{postId}/files", postId)
         .content(asJsonString(request))
@@ -138,7 +141,8 @@ public class PostApiTestHelper extends IntegrationTest {
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callGetPostsApi(String memberToken, MultiValueMap<String, String> params) throws Exception {
+  ResultActions callGetPostsApi(String memberToken, MultiValueMap<String, String> params)
+      throws Exception {
     return mockMvc.perform(get("/posts")
         .params(params)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));

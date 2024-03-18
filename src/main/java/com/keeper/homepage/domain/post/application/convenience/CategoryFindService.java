@@ -19,6 +19,7 @@ public class CategoryFindService {
 
   public Category findById(long categoryId) {
     return categoryRepository.findByIdAndIdNot(categoryId, VIRTUAL_CATEGORY_ID)
-        .orElseThrow(() -> new BusinessException(categoryId, "categoryId", POST_CATEGORY_NOT_FOUND));
+        .orElseThrow(
+            () -> new BusinessException(categoryId, "categoryId", POST_CATEGORY_NOT_FOUND));
   }
 }

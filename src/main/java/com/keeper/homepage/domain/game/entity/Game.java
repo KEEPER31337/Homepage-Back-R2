@@ -58,7 +58,8 @@ public class Game {
   @Embedded
   private Baseball baseball;
 
-  public Game(Long id, Member member, LocalDate playDate, LocalDateTime lastPlayTime, Dice dice, Lotto lotto, Roulette roulette,
+  public Game(Long id, Member member, LocalDate playDate, LocalDateTime lastPlayTime, Dice dice,
+      Lotto lotto, Roulette roulette,
       Baseball baseball) {
     this.id = id;
     this.member = member;

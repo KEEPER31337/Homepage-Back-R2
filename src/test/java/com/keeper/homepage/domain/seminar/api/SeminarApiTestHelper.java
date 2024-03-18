@@ -77,7 +77,8 @@ public class SeminarApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
   }
 
-  ResultActions attendanceSeminarUsingApi(String token, Long seminarId, SeminarAttendanceCodeRequest request)
+  ResultActions attendanceSeminarUsingApi(String token, Long seminarId,
+      SeminarAttendanceCodeRequest request)
       throws Exception {
     return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
@@ -85,14 +86,16 @@ public class SeminarApiTestHelper extends IntegrationTest {
         .content(objectMapper.writeValueAsString(request)));
   }
 
-  ResultActions attendanceSeminarUsingApi(String token, Long seminarId, String strJson) throws Exception {
+  ResultActions attendanceSeminarUsingApi(String token, Long seminarId, String strJson)
+      throws Exception {
     return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
   }
 
-  ResultActions changeAttendanceStatusUsingApi(String token, long attendanceId, SeminarAttendanceStatusRequest request)
+  ResultActions changeAttendanceStatusUsingApi(String token, long attendanceId,
+      SeminarAttendanceStatusRequest request)
       throws Exception {
     return mockMvc.perform(patch("/seminars/attendances/{attendanceId}", attendanceId)
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))

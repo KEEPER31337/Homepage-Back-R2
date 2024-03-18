@@ -48,7 +48,8 @@ public class SeminarController {
       @PathVariable long seminarId,
       @Valid @RequestBody SeminarStartRequest request
   ) {
-    SeminarAttendanceCodeResponse response = seminarService.start(member, seminarId, request.attendanceCloseTime(),
+    SeminarAttendanceCodeResponse response = seminarService.start(member, seminarId,
+        request.attendanceCloseTime(),
         request.latenessCloseTime());
     return ResponseEntity.status(HttpStatus.OK).body(response);
   }

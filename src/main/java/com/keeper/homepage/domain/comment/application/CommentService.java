@@ -73,7 +73,8 @@ public class CommentService {
     List<CommentResponse> commentResponses = comments.stream()
         .map(comment -> {
           if (post.isCategory(익명게시판)) {
-            return CommentResponse.of(comment, ANONYMOUS_NAME, null, member.isLike(comment), member.isDislike(comment));
+            return CommentResponse.of(comment, ANONYMOUS_NAME, null, member.isLike(comment),
+                member.isDislike(comment));
           }
           return CommentResponse.from(comment, member.isLike(comment), member.isDislike(comment));
         })

@@ -76,7 +76,8 @@ public class MemberController {
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
-    Page<MemberPointRankResponse> response = memberService.getPointRanking(PageRequest.of(page, size));
+    Page<MemberPointRankResponse> response = memberService.getPointRanking(
+        PageRequest.of(page, size));
     return ResponseEntity.ok(response);
   }
 

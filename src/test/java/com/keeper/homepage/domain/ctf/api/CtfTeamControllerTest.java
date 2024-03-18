@@ -204,10 +204,11 @@ public class CtfTeamControllerTest extends IntegrationTest {
           .contestId(ctfContest.getId())
           .build();
 
-      mockMvc.perform(post("/ctf/teams/{teamId}/members/{memberId}", ctfTeam.getId(), member.getId())
-              .content(asJsonString(request))
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
-              .contentType(MediaType.APPLICATION_JSON))
+      mockMvc.perform(
+              post("/ctf/teams/{teamId}/members/{memberId}", ctfTeam.getId(), member.getId())
+                  .content(asJsonString(request))
+                  .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+                  .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isCreated())
           .andDo(document("join-ctf-team",
               requestCookies(
@@ -230,8 +231,9 @@ public class CtfTeamControllerTest extends IntegrationTest {
       CtfTeam ctfTeam = ctfTeamTestHelper.generate();
       member.join(ctfTeam);
 
-      mockMvc.perform(delete("/ctf/teams/{teamId}/members/{memberId}", ctfTeam.getId(), member.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+      mockMvc.perform(
+              delete("/ctf/teams/{teamId}/members/{memberId}", ctfTeam.getId(), member.getId())
+                  .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
           .andExpect(status().isNoContent())
           .andDo(document("leave-ctf-team",
               requestCookies(

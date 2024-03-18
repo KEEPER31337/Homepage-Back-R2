@@ -190,7 +190,8 @@ public class PostController {
       @RequestParam(defaultValue = "0") @PositiveOrZero int page,
       @RequestParam(defaultValue = "10") @PositiveOrZero int size
   ) {
-    return ResponseEntity.ok(postService.getPosts(categoryId, searchType, search, PageRequest.of(page, size)));
+    return ResponseEntity.ok(
+        postService.getPosts(categoryId, searchType, search, PageRequest.of(page, size)));
   }
 
   @GetMapping("/recent")

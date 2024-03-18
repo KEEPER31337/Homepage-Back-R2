@@ -20,7 +20,8 @@ import java.util.List;
 public class SemesterUtil {
 
   private static final List<Month> FIRST_SEMESTER = List.of(MARCH, APRIL, MAY, JUNE, JULY, AUGUST);
-  private static final List<Month> SECOND_SEMESTER = List.of(SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER, JANUARY, FEBRUARY);
+  private static final List<Month> SECOND_SEMESTER = List.of(SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER,
+      JANUARY, FEBRUARY);
 
   public static LocalDate getSemesterFirstDate(LocalDate now) {
     if (FIRST_SEMESTER.contains(now.getMonth())) {

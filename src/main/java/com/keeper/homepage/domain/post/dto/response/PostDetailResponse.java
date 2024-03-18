@@ -43,7 +43,8 @@ public class PostDetailResponse {
   private AdjacentPostResponse previousPost;
   private AdjacentPostResponse nextPost;
 
-  public static PostDetailResponse of(Post post, boolean isLike, boolean isDislike, Post previousPost, Post nextPost) {
+  public static PostDetailResponse of(Post post, boolean isLike, boolean isDislike,
+      Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().toString())
@@ -70,7 +71,8 @@ public class PostDetailResponse {
         .build();
   }
 
-  public static PostDetailResponse of(Post post, boolean isLike, boolean isDislike, boolean isRead, Post previousPost,
+  public static PostDetailResponse of(Post post, boolean isLike, boolean isDislike, boolean isRead,
+      Post previousPost,
       Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())
@@ -99,7 +101,8 @@ public class PostDetailResponse {
         .build();
   }
 
-  public static PostDetailResponse of(Post post, String writerName, boolean isLike, boolean isDislike,
+  public static PostDetailResponse of(Post post, String writerName, boolean isLike,
+      boolean isDislike,
       Post previousPost, Post nextPost) {
     return PostDetailResponse.builder()
         .categoryId(post.getCategory().getId())

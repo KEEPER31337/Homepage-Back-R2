@@ -65,7 +65,8 @@ public class CtfSubmitLog {
   private CtfContest ctfContest;
 
   @Builder
-  private CtfSubmitLog(LocalDateTime submitTime, String flagSubmitted, Boolean isCorrect, String teamName,
+  private CtfSubmitLog(LocalDateTime submitTime, String flagSubmitted, Boolean isCorrect,
+      String teamName,
       String submitterLoginId, String submitterRealName, String challengeName, String contestName,
       CtfContest ctfContest) {
     this.submitTime = submitTime;

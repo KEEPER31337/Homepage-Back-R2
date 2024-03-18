@@ -42,7 +42,8 @@ public class Profile {
   private Thumbnail thumbnail;
 
   @Builder
-  private Profile(LoginId loginId, EmailAddress emailAddress, Password password, RealName realName, LocalDate birthday,
+  private Profile(LoginId loginId, EmailAddress emailAddress, Password password, RealName realName,
+      LocalDate birthday,
       StudentId studentId, Thumbnail thumbnail) {
     this.loginId = loginId;
     this.emailAddress = emailAddress;

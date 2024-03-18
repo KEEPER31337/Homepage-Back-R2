@@ -44,7 +44,8 @@ public class JwtTokenProvider {
   final Key secretKey;
 
   public static String getRefreshTokenKeyForRedis(String authId, String userAgent) {
-    String encodedUserAgent = Base64.getEncoder().encodeToString((userAgent == null ? "" : userAgent).getBytes());
+    String encodedUserAgent = Base64.getEncoder()
+        .encodeToString((userAgent == null ? "" : userAgent).getBytes());
     return "refreshToken:" + authId + ":" + encodedUserAgent;
   }
 

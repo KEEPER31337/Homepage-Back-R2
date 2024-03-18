@@ -37,7 +37,8 @@ public class CtfChallengeHasCtfChallengeCategory {
   private CtfChallengeCategory ctfChallengeCategory;
 
   @Builder
-  private CtfChallengeHasCtfChallengeCategory(CtfChallenge ctfChallenge, CtfChallengeCategory ctfChallengeCategory) {
+  private CtfChallengeHasCtfChallengeCategory(CtfChallenge ctfChallenge,
+      CtfChallengeCategory ctfChallengeCategory) {
     this.ctfChallenge = ctfChallenge;
     this.ctfChallengeCategory = ctfChallengeCategory;
   }

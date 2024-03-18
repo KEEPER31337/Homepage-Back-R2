@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/game")
 @RestController
 class GameController(
-    private val baseballService: BaseballService,
-    private val gameService: GameService
+        private val baseballService: BaseballService,
+        private val gameService: GameService
 ) {
     @GetMapping("/rank")
     fun getGameRank(): ResponseEntity<List<GameRankResponse>> {
@@ -41,8 +41,8 @@ class GameController(
 
     @PostMapping("/baseball/start")
     fun baseballStart(
-        @LoginMember requestMember: Member,
-        @RequestBody @Valid request: BaseballStartRequest
+            @LoginMember requestMember: Member,
+            @RequestBody @Valid request: BaseballStartRequest
     ): ResponseEntity<BaseballResponse> {
         val baseballResponse = baseballService.start(requestMember, request.bettingPoint)
         return ResponseEntity.ok(baseballResponse)
@@ -50,8 +50,8 @@ class GameController(
 
     @PostMapping("/baseball/guess")
     fun baseballGuess(
-        @LoginMember requestMember: Member,
-        @RequestBody @Valid request: BaseballGuessRequest
+            @LoginMember requestMember: Member,
+            @RequestBody @Valid request: BaseballGuessRequest
     ): ResponseEntity<BaseballResponse> {
         val baseballResponse = baseballService.guess(requestMember, request.guessNumber)
         return ResponseEntity.ok(baseballResponse)
@@ -59,7 +59,7 @@ class GameController(
 
     @GetMapping("/baseball/result")
     fun getBaseballResult(
-        @LoginMember requestMember: Member
+            @LoginMember requestMember: Member
     ): ResponseEntity<BaseballResponse> {
         val baseballResponse = baseballService.getResult(requestMember)
         return ResponseEntity.ok(baseballResponse)

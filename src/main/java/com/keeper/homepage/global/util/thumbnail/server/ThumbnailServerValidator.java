@@ -7,7 +7,8 @@ import javax.imageio.ImageIO;
 
 class ThumbnailServerValidator {
 
-  public static void checkInvalidImageFile(byte[] fileData, String originalFilename) throws IOException {
+  public static void checkInvalidImageFile(byte[] fileData, String originalFilename)
+      throws IOException {
     if (isNotImageFile(fileData)) {
       throw new IllegalArgumentException("파일이 이미지가 아닙니다. 파일 이름: " + originalFilename);
     }

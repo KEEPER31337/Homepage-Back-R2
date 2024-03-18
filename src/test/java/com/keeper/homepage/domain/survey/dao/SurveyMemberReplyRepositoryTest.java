@@ -36,7 +36,8 @@ public class SurveyMemberReplyRepositoryTest extends IntegrationTest {
     public void 활동조사_기타_사유는_활동_조사_응답이_관리한다() throws Exception {
       em.flush();
       em.clear();
-      SurveyMemberReply memberReply = surveyMemberReplyRepository.findById(memberReplyId).orElseThrow();
+      SurveyMemberReply memberReply = surveyMemberReplyRepository.findById(memberReplyId)
+          .orElseThrow();
 
       assertThat(memberReply.getReplyExcuse().getRestExcuse()).isEqualTo(excuse.getRestExcuse());
       assertThat(surveyReplyExcuseRepository.findById(memberReplyId)).isNotEmpty();

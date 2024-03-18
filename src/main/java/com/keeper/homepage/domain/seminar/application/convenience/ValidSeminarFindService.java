@@ -21,7 +21,8 @@ public class ValidSeminarFindService {
   private final SeminarRepository seminarRepository;
 
   public List<SeminarResponse> findAll() {
-    return seminarRepository.findAllByIdIsNot(VIRTUAL_SEMINAR_ID, Sort.by(Sort.Direction.DESC, "openTime")).stream()
+    return seminarRepository.findAllByIdIsNot(VIRTUAL_SEMINAR_ID,
+            Sort.by(Sort.Direction.DESC, "openTime")).stream()
         .map(SeminarResponse::from)
         .toList();
   }

@@ -32,7 +32,8 @@ public class PasswordFactory {
           || matchesWithMD5(rawPassword.toString(), encodedPassword);
     }
 
-    private boolean isMatchInDelegatingPasswordEncoder(CharSequence rawPassword, String encodedPassword) {
+    private boolean isMatchInDelegatingPasswordEncoder(CharSequence rawPassword,
+        String encodedPassword) {
       try {
         return createDelegatingPasswordEncoder().matches(rawPassword, encodedPassword);
       } catch (Exception ignore) {

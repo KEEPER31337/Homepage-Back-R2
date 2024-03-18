@@ -37,19 +37,22 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       Member starter = memberTestHelper.generate();
       Member member = memberTestHelper.generate();
       long seminarId = seminarService.save(LocalDate.now()).id();
-      seminarService.start(starter, seminarId, LocalDateTime.now().plusMinutes(5), LocalDateTime.now().plusMinutes(10));
+      seminarService.start(starter, seminarId, LocalDateTime.now().plusMinutes(5),
+          LocalDateTime.now().plusMinutes(10));
       Seminar seminar = seminarRepository.findById(seminarId).orElseThrow();
 
       String invalidAttendanceCode = "12345";
 
       for (int i = 0; i < 5; i++) {
-        assertThatThrownBy(() -> seminarAttendanceService.attendance(seminar.getId(), member, invalidAttendanceCode))
+        assertThatThrownBy(() -> seminarAttendanceService.attendance(seminar.getId(), member,
+            invalidAttendanceCode))
             .isInstanceOf(BusinessException.class)
             .hasMessageContaining(SEMINAR_ATTENDANCE_CODE_NOT_AVAILABLE.getMessage());
       }
 
       assertThatThrownBy(
-          () -> seminarAttendanceService.attendance(seminar.getId(), member, seminar.getAttendanceCode()))
+          () -> seminarAttendanceService.attendance(seminar.getId(), member,
+              seminar.getAttendanceCode()))
           .isInstanceOf(BusinessException.class)
           .hasMessageContaining(SEMINAR_ATTENDANCE_ATTEMPT_NOT_AVAILABLE.getMessage());
     }
@@ -75,10 +78,12 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       em.clear();
 
       //then
-      SeminarAttendance findSeminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
+      SeminarAttendance findSeminarAttendance = seminarAttendanceRepository.findById(
+          seminarAttendanceId).orElseThrow();
       assertThat(findSeminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(LATENESS);
       assertThat(findSeminarAttendance.getSeminarAttendanceExcuse()).isNotNull();
-      assertThat(findSeminarAttendance.getSeminarAttendanceExcuse().getAbsenceExcuse()).isEqualTo(excuse);
+      assertThat(findSeminarAttendance.getSeminarAttendanceExcuse().getAbsenceExcuse()).isEqualTo(
+          excuse);
     }
 
     @Test
@@ -102,8 +107,10 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       em.clear();
 
       //then
-      SeminarAttendance findSeminarAttendance = seminarAttendanceRepository.findById(seminarAttendanceId).orElseThrow();
-      assertThat(findSeminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(BEFORE_ATTENDANCE);
+      SeminarAttendance findSeminarAttendance = seminarAttendanceRepository.findById(
+          seminarAttendanceId).orElseThrow();
+      assertThat(findSeminarAttendance.getSeminarAttendanceStatus().getType()).isEqualTo(
+          BEFORE_ATTENDANCE);
       assertThat(findSeminarAttendance.getSeminarAttendanceExcuse()).isNull();
     }
   }
@@ -126,7 +133,8 @@ class SeminarAttendanceServiceTest extends IntegrationTest {
       //given
       member.updateType(getMemberTypeBy(휴면회원));
       Long seminarId = seminarService.save(LocalDate.now()).id();
-      String attendanceCode = seminarService.start(admin, seminarId, LocalDateTime.now().plusMinutes(5),
+      String attendanceCode = seminarService.start(admin, seminarId,
+          LocalDateTime.now().plusMinutes(5),
           LocalDateTime.now().plusMinutes(10)).attendanceCode();
       em.flush();
       em.clear();

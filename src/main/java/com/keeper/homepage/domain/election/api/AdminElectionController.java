@@ -42,7 +42,8 @@ public class AdminElectionController {
   public ResponseEntity<Void> createElection(
       @LoginMember Member member,
       @RequestBody @Valid ElectionCreateRequest request) {
-    adminElectionService.createElection(member, request.getName(), request.getDescription(), request.getIsAvailable());
+    adminElectionService.createElection(member, request.getName(), request.getDescription(),
+        request.getIsAvailable());
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -75,7 +76,8 @@ public class AdminElectionController {
       @RequestBody @Valid ElectionCandidateRegisterRequest request,
       @PathVariable long electionId,
       @PathVariable long candidateId) {
-    adminElectionService.registerCandidate(request.getDescription(), request.getMemberJobId(), electionId, candidateId);
+    adminElectionService.registerCandidate(request.getDescription(), request.getMemberJobId(),
+        electionId, candidateId);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

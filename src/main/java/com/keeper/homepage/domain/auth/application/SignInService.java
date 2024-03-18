@@ -73,8 +73,10 @@ public class SignInService {
         .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
 
     String authCode = generateRandomAuthCode();
-    redisUtil.setDataExpire(PASSWORD_AUTH_CODE_KEY + member.getId(), authCode, AUTH_CODE_EXPIRE_MILLIS);
-    mailUtil.sendMail(List.of(email.get()), "KEEPER 비밀번호 변경 인증 코드입니다.", "회원님의 비밀번호 변경 인증 코드: " + authCode);
+    redisUtil.setDataExpire(PASSWORD_AUTH_CODE_KEY + member.getId(), authCode,
+        AUTH_CODE_EXPIRE_MILLIS);
+    mailUtil.sendMail(List.of(email.get()), "KEEPER 비밀번호 변경 인증 코드입니다.",
+        "회원님의 비밀번호 변경 인증 코드: " + authCode);
 
     return AUTH_CODE_EXPIRE_MILLIS / 1000;
   }
@@ -94,12 +96,14 @@ public class SignInService {
     Member member = memberRepository.findByProfileEmailAddressAndProfileLoginId(email, loginId)
         .orElseThrow(() -> new BusinessException(email.get(), "email", ErrorCode.MEMBER_NOT_FOUND));
 
-    Optional<String> data = redisUtil.getData(PASSWORD_AUTH_CODE_KEY + member.getId(), String.class);
+    Optional<String> data = redisUtil.getData(PASSWORD_AUTH_CODE_KEY + member.getId(),
+        String.class);
     return data.map(correctAuthCode -> correctAuthCode.equals(requestAuthCode)).orElse(false);
   }
 
   @Transactional
-  public void changePassword(String authCode, LoginId loginId, EmailAddress email, String rawPassword) {
+  public void changePassword(String authCode, LoginId loginId, EmailAddress email,
+      String rawPassword) {
     if (!isAuthenticated(email, loginId, authCode)) {
       throw new BusinessException(authCode, "authCode", ErrorCode.AUTH_CODE_MISMATCH);
     }

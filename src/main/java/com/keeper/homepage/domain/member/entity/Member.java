@@ -399,7 +399,8 @@ public class Member {
 
   public boolean hasTeam(CtfContest contest) {
     return ctfTeamHasMembers.stream()
-        .anyMatch(ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().getCtfContest().equals(contest));
+        .anyMatch(
+            ctfTeamHasMember -> ctfTeamHasMember.getCtfTeam().getCtfContest().equals(contest));
   }
 
   public boolean isJoin(CtfTeam ctfTeam) {

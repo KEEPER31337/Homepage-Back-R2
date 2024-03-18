@@ -49,6 +49,7 @@ public class MemberFindService {
   }
 
   public Page<Member> findAllRegular(Pageable pageable) {
-    return memberRepository.findAllByMemberTypeAndIdNot(getMemberTypeBy(정회원), VIRTUAL_MEMBER_ID, pageable);
+    return memberRepository.findAllByMemberTypeAndIdNot(getMemberTypeBy(정회원), VIRTUAL_MEMBER_ID,
+        pageable);
   }
 }
