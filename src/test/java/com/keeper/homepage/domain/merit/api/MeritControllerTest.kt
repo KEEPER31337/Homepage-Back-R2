@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.merit.entity.MeritType
 import com.keeper.homepage.global.config.security.data.JwtType.*
 import com.keeper.homepage.global.dsl.rest_docs.Documentation
 import com.keeper.homepage.global.dsl.means
+import com.keeper.homepage.global.dsl.restDocs
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod.*
 import com.keeper.homepage.global.dsl.rest_docs.docs
@@ -267,12 +268,12 @@ class MeritControllerTest1 : IntegrationTest() {
                     path("memberId" means "조회하고자 하는 멤버의 ID 값")
 
                     responseBodyWithPaging(
-                            "content[].id" means "상벌점 로그의 ID",
-                            "content[].giveTime" means "상벌점 로그의 생성시간",
-                            "content[].score" means "상벌점 점수",
-                            "content[].meritTypeId" means "상벌점 타입의 ID",
-                            "content[].reason" means "상벌점 사유",
-                            "content[].isMerit" means "상벌점 타입",
+                            "id" means "상벌점 로그의 ID",
+                            "giveTime" means "상벌점 로그의 생성시간",
+                            "score" means "상벌점 점수",
+                            "meritTypeId" means "상벌점 타입의 ID",
+                            "reason" means "상벌점 사유",
+                            "isMerit" means "상벌점 타입",
                     )
                 }
             }
@@ -315,14 +316,14 @@ class MeritControllerTest1 : IntegrationTest() {
                     )
 
                     responseBodyWithPaging(
-                            "content[].id" means "상벌점 로그의 ID",
-                            "content[].giveTime" means "상벌점 로그의 생성시간",
-                            "content[].score" means "상벌점 점수",
-                            "content[].meritTypeId" means "상벌점 타입의 ID",
-                            "content[].reason" means "상벌점 사유",
-                            "content[].isMerit" means "상벌점 타입",
-                            "content[].awarderName" means "수상자의 이름",
-                            "content[].awarderGeneration" means "수상자의 학번",
+                            "id" means "상벌점 로그의 ID",
+                            "giveTime" means "상벌점 로그의 생성시간",
+                            "score" means "상벌점 점수",
+                            "meritTypeId" means "상벌점 타입의 ID",
+                            "reason" means "상벌점 사유",
+                            "isMerit" means "상벌점 타입",
+                            "awarderName" means "수상자의 이름",
+                            "awarderGeneration" means "수상자의 학번",
                     )
                 }
             }

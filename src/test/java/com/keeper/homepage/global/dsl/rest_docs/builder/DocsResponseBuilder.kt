@@ -36,6 +36,8 @@ class DocsResponseBuilder {
 
     fun responseBodyWithPaging(vararg fields: Field) {
         pageable = true
+        fields.forEach { it.addContentString() }
+        fields.forEach { println(it.fieldName) }
         responseFields.addAll(fields)
         responseFields.add("empty" means "가져오는 페이지가 비어 있는 지")
         responseFields.add("first" means "가져오는 페이지가 비어 있는 지")
