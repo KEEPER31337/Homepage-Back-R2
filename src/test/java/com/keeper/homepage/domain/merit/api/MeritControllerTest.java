@@ -65,8 +65,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 타입 조회를 성공해야 한다.")
-      // o
-    void 상벌점_조회는_성공해야_한다() throws Exception {
+    void 상벌점_조회는_성공해야_한다() throws Exception { // o
       String securedValue = getSecuredValue(MeritController.class, "searchMeritType");
       mockMvc.perform(get("/merits/types")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
@@ -84,7 +83,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("일반 회원은 조회할 수 없다.")
-    void 일반_회원은_조회할_수_없다() throws Exception {
+    void 일반_회원은_조회할_수_없다() throws Exception { // o
       mockMvc.perform(get("/merits/types")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
           .andExpect(status().isForbidden())
@@ -93,8 +92,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 타입 생성을 성공해야 한다.")
-      // o
-    void 상벌점_타입_생성을_성공해야_한다() throws Exception {
+    void 상벌점_타입_생성을_성공해야_한다() throws Exception { // o
       String securedValue = getSecuredValue(MeritController.class, "registerMeritType");
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
           .score(3)
@@ -121,7 +119,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("일반 회원은 상벌점 타입을 생성할 수 없다.")
-    void 일반_회원은_상벌점_타입을_생성할_수_없다() throws Exception {
+    void 일반_회원은_상벌점_타입을_생성할_수_없다() throws Exception { // o
       AddMeritTypeRequest request = AddMeritTypeRequest.builder()
           .score(3)
           .reason("우수기술문서 작성")
@@ -138,8 +136,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 타입 수정을 성공해야 한다.")
-      // o
-    void 상벌점_부여_로그_수정을_성공해야_한다() throws Exception {
+    void 상벌점_부여_로그_수정을_성공해야_한다() throws Exception { // o
       String securedValue = getSecuredValue(MeritController.class, "updateMeritType");
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
           .score(-5)
@@ -166,7 +163,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("일반회원은 상벌점 타입 수정을 성공할 수 없다.")
-    void 일반회원은_상벌점_타입_수정을_성공할_수_없다() throws Exception {
+    void 일반회원은_상벌점_타입_수정을_성공할_수_없다() throws Exception { // o
       UpdateMeritTypeRequest request = UpdateMeritTypeRequest.builder()
           .score(-5)
           .reason("거짓 스터디")
@@ -194,8 +191,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("회원별 상벌점 목록 조회를 성공해야 한다.")
-      // o
-    void 회원별_상벌점_목록_조회를_성공해야_한다() throws Exception {
+    void 회원별_상벌점_목록_조회를_성공해야_한다() throws Exception { // o
       String securedValue = getSecuredValue(MeritController.class, "findMeritLogByMemberId");
       meritLogTestHelper.builder()
           .memberId(member.getId())
@@ -245,7 +241,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("일반회원은 회원별 상벌점 목록 조회를 할 수 없다.")
-    void 일반회원은_회원별_상벌점_목록_조회를_할_수_없다() throws Exception {
+    void 일반회원은_회원별_상벌점_목록_조회를_할_수_없다() throws Exception { // o
       meritLogTestHelper.builder()
           .memberId(member.getId())
           .build();
@@ -261,8 +257,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 목록 조회를 성공해야 한다.")
-      // o
-    void 상벌점_목록_조회를_성공해야_한다() throws Exception {
+    void 상벌점_목록_조회를_성공해야_한다() throws Exception { // o
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
 
       mockMvc.perform(get("/merits")
@@ -281,7 +276,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
-    void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
+    void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception { // o
       mockMvc.perform(get("/merits")
               .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
           .andExpect(status().isForbidden())
@@ -290,7 +285,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("벌점 목록 조회를 성공해야 한다.")
-    void 벌점_목록_조회를_성공해야_한다() throws Exception {
+    void 벌점_목록_조회를_성공해야_한다() throws Exception { // o
       meritLogTestHelper.builder()
           .memberId(member.getId())
           .meritType(meritTypeHelper.builder()
@@ -316,7 +311,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상점 목록 조회를 성공해야 한다.")
-    void 상점_목록_조회를_성공해야_한다() throws Exception {
+    void 상점_목록_조회를_성공해야_한다() throws Exception { // o
       meritLogTestHelper.builder()
           .memberId(member.getId())
           .meritType(meritTypeHelper.builder()
@@ -342,7 +337,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("상벌점 부여 로그 생성을 성공해야 한다.")
-    void 상벌점_부여_로그_생성을_성공해야_한다() throws Exception {
+    void 상벌점_부여_로그_생성을_성공해야_한다() throws Exception { // o
       String securedValue = getSecuredValue(MeritController.class, "registerMerit");
       GiveMeritPointRequest request = GiveMeritPointRequest.builder()
           .awarderId(member.getId())
@@ -367,7 +362,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
     @Test
     @DisplayName("일반회원은 상벌점 부여 로그를 생성할 수 없다.")
-    void 일반회원은_상벌점_부여_로그를_생성할_수_없다() throws Exception {
+    void 일반회원은_상벌점_부여_로그를_생성할_수_없다() throws Exception { // o
       GiveMeritPointRequest request = GiveMeritPointRequest.builder()
           .awarderId(member.getId())
           .meritTypeId(meritType.getId())

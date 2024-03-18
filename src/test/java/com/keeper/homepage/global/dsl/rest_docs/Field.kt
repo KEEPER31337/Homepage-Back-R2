@@ -14,3 +14,7 @@ open class Field(
     }
 
 }
+
+infix fun String.means(description: String): Field {
+    return Field(this, description, false)
+}

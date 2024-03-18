@@ -1,8 +1,8 @@
 package com.keeper.homepage.global.dsl.rest_docs.builder
 
-import com.keeper.homepage.global.dsl.means
 import com.keeper.homepage.global.dsl.rest_docs.Documentation
 import com.keeper.homepage.global.dsl.rest_docs.Field
+import com.keeper.homepage.global.dsl.rest_docs.means
 import org.springframework.restdocs.cookies.CookieDocumentation
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation
 import org.springframework.restdocs.payload.PayloadDocumentation

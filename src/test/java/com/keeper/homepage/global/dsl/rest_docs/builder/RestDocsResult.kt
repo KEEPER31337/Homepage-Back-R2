@@ -1,6 +1,5 @@
 package com.keeper.homepage.global.dsl.rest_docs.builder
 
-import com.keeper.homepage.global.dsl.means
 import com.keeper.homepage.global.dsl.rest_docs.Documentation
 import com.keeper.homepage.global.dsl.rest_docs.Field
 import jakarta.servlet.http.Cookie
