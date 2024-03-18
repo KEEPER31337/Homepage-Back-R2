@@ -322,7 +322,7 @@ public class PostService {
     });
   }
 
-  public Page<PostResponse> getPosts(long categoryId, String searchType, String search, PageRequest pageable) {
+  public Page<PostResponse> getPosts(long categoryId, String searchType, String search, Pageable pageable) {
     Category category = categoryFindService.findById(categoryId);
     if (searchType == null) {
       return postRepository.findAllRecentByCategory(category, pageable)
