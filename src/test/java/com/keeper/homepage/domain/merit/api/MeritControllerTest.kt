@@ -69,10 +69,10 @@ class MeritControllerTest1 : IntegrationTest() {
                     )
 
                     responseBodyWithPaging(
-                            "content[].id" means "상벌점 타입의 ID",
-                            "content[].score" means "상벌점 점수",
-                            "content[].detail" means "상벌점 사유",
-                            "content[].isMerit" means "상벌점 타입",
+                            "id" means "상벌점 타입의 ID",
+                            "score" means "상벌점 점수",
+                            "detail" means "상벌점 사유",
+                            "isMerit" means "상벌점 타입",
                     )
                 }
 
@@ -398,7 +398,7 @@ class MeritControllerTest1 : IntegrationTest() {
                     .meritTypeId(meritType!!.id)
                     .build()
 
-            docs(mockMvc, DocsMethod.MULTIPART, "/merits") {
+            docs(mockMvc, MULTIPART, "/merits") {
                 request {
                     cookie(*memberTestHelper.getTokenCookies(admin))
                     content(asJsonString(request))
@@ -430,7 +430,7 @@ class MeritControllerTest1 : IntegrationTest() {
                     .meritTypeId(meritType!!.id)
                     .build()
 
-            docs(mockMvc, DocsMethod.MULTIPART, "/merits") {
+            docs(mockMvc, MULTIPART, "/merits") {
                 request {
                     cookie(*memberTestHelper.getTokenCookies(member!!))
                     content(asJsonString(request))
