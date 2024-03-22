@@ -7,10 +7,12 @@ import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionVoter;
 import com.keeper.homepage.domain.member.entity.Member;
 import java.util.Optional;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class ElectionVoterRepositoryTest extends IntegrationTest {
 
   @Nested

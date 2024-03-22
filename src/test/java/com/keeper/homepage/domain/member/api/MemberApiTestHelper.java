@@ -24,6 +24,7 @@ public class MemberApiTestHelper extends IntegrationTest {
 
   FieldDescriptor[] getPointRankResponse() {
     return new FieldDescriptor[]{
+        fieldWithPath("memberId").description("회원의 ID"),
         fieldWithPath("realName").description("회원의 실명"),
         fieldWithPath("generation").description("회원의 기수"),
         fieldWithPath("point").description("회원의 포인트"),
