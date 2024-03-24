@@ -19,10 +19,10 @@ class Calendar(
     @Column(name = "end_datetime", nullable = false)
     val endDateTime: LocalDateTime,
 
-    @OneToMany(mappedBy = "calendar", cascade = [CascadeType.ALL])
-    val scheduleType: MutableList<ScheduleType> = mutableListOf(),
+    @OneToOne(mappedBy = "calendar", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
+    val scheduleType: ScheduleType,
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long?,
+    val id: Long? = null,
 )

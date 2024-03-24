@@ -15,7 +15,7 @@ class ScheduleType(
     @Column(name = "description", nullable = false)
     val description: String,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "calendar_id", nullable = false)
     val calendar: Calendar,
 
