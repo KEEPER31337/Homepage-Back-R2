@@ -21,7 +21,7 @@ class ScheduleService(
     fun saveSchedule(name: String, startTime: LocalDateTime,
         endTime: LocalDateTime, scheduleTypeId: Long,
     ): Long {
-        val findScheduleId = scheduleTypeRepository.findByIdOrNull(scheduleTypeId)
+        val findSchedule = scheduleTypeRepository.findByIdOrNull(scheduleTypeId)
             ?: throw IllegalArgumentException("ScheduleType not found")
 
         return scheduleRepository.save(
@@ -29,7 +29,7 @@ class ScheduleService(
                 name = name,
                 startTime = startTime,
                 endTime = endTime,
-                scheduleType = findScheduleId,
+                scheduleType = findSchedule,
             )
         ).id!!
     }

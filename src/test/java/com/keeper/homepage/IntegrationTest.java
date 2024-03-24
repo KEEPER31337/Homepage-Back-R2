@@ -23,6 +23,7 @@ import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
+import com.keeper.homepage.domain.calendar.application.ScheduleService;
 import com.keeper.homepage.domain.calendar.application.ScheduleTypeTestHelper;
 import com.keeper.homepage.domain.calendar.dao.ScheduleRepository;
 import com.keeper.homepage.domain.calendar.dao.ScheduleTypeRepository;
@@ -364,6 +365,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected MemberProfileService memberProfileService;
+
+  @SpyBean
+  protected ScheduleService scheduleService;
 
   /******* Helper *******/
   @SpyBean

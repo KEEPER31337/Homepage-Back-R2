@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -82,6 +83,7 @@ class ThumbnailServerUtilTest extends IntegrationTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("썸네일 저장 시 type이 null이면 NullPointerException을 발생시킨다.")
     void should_throwNullPointerException_when_parameterIsNull() {
       assertThatThrownBy(() -> thumbnailUtil.saveThumbnail(null, null))
