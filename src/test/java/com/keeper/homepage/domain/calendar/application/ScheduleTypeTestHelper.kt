@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.calendar.application
 
 import com.keeper.homepage.domain.calendar.dao.ScheduleTypeRepository
-import com.keeper.homepage.domain.calendar.entity.Calendar
 import com.keeper.homepage.domain.calendar.entity.ScheduleType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

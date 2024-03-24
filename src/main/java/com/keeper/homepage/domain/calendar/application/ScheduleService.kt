@@ -1,9 +1,8 @@
 package com.keeper.homepage.domain.calendar.application
 
-import com.keeper.homepage.domain.calendar.dao.CalendarRepository
+import com.keeper.homepage.domain.Schedule.entity.Schedule
+import com.keeper.homepage.domain.calendar.dao.ScheduleRepository
 import com.keeper.homepage.domain.calendar.dao.ScheduleTypeRepository
-import com.keeper.homepage.domain.calendar.entity.Calendar
-import com.keeper.homepage.domain.calendar.entity.ScheduleType
 import lombok.RequiredArgsConstructor
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -13,23 +12,23 @@ import java.time.LocalDateTime
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-class CalendarService(
-    val calendarRepository: CalendarRepository,
+class ScheduleService(
+    val scheduleRepository: ScheduleRepository,
     val scheduleTypeRepository: ScheduleTypeRepository,
 ) {
 
     @Transactional
-    fun saveCalendar(name: String, startDateTime: LocalDateTime,
-        endDateTime: LocalDateTime, scheduleTypeId: Long,
+    fun saveSchedule(name: String, startTime: LocalDateTime,
+        endTime: LocalDateTime, scheduleTypeId: Long,
     ): Long {
         val findScheduleId = scheduleTypeRepository.findByIdOrNull(scheduleTypeId)
             ?: throw IllegalArgumentException("ScheduleType not found")
 
-        return calendarRepository.save(
-            Calendar(
+        return scheduleRepository.save(
+            Schedule(
                 name = name,
-                startDateTime = startDateTime,
-                endDateTime = endDateTime,
+                startTime = startTime,
+                endTime = endTime,
                 scheduleType = findScheduleId,
             )
         ).id!!

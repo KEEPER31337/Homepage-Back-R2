@@ -1,26 +1,27 @@
-package com.keeper.homepage.domain.calendar.entity
+package com.keeper.homepage.domain.Schedule.entity
 
+import com.keeper.homepage.domain.calendar.entity.ScheduleType
 import jakarta.persistence.*
 import lombok.AccessLevel
 import lombok.NoArgsConstructor
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "calendar")
+@Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-class Calendar(
+class Schedule(
 
     @Column(name = "name", nullable = false)
     val name: String,
 
-    @Column(name = "start_datetime", nullable = false)
-    val startDateTime: LocalDateTime,
+    @Column(name = "start_time", nullable = false)
+    val startTime: LocalDateTime,
 
-    @Column(name = "end_datetime", nullable = false)
-    val endDateTime: LocalDateTime,
+    @Column(name = "end_time", nullable = false)
+    val endTime: LocalDateTime,
 
     @JoinColumn(name = "schedule_type_id", nullable = false)
-    @OneToOne(mappedBy = "calendar", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     val scheduleType: ScheduleType,
 
     @Id
