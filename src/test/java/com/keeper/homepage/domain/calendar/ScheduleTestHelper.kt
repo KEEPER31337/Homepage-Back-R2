@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.Schedule.application
 
 import com.keeper.homepage.domain.Schedule.entity.Schedule
-import com.keeper.homepage.domain.calendar.application.ScheduleTypeTestHelper
+import com.keeper.homepage.domain.calendar.ScheduleTypeTestHelper
 import com.keeper.homepage.domain.calendar.dao.ScheduleRepository
 import com.keeper.homepage.domain.calendar.entity.ScheduleType
 import org.springframework.beans.factory.annotation.Autowired

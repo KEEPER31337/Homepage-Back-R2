@@ -1,9 +1,7 @@
 package com.keeper.homepage.domain.schedule.application
 
 import com.keeper.homepage.IntegrationTest
-import com.keeper.homepage.domain.Schedule.entity.Schedule
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.data.repository.findByIdOrNull
