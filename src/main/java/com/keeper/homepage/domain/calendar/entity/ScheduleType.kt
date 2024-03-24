@@ -15,10 +15,6 @@ class ScheduleType(
     @Column(name = "description", nullable = false)
     val description: String,
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "calendar_id", nullable = false)
-    val calendar: Calendar,
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long?,

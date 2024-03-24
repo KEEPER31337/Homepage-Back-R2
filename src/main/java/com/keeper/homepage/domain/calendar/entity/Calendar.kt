@@ -19,6 +19,7 @@ class Calendar(
     @Column(name = "end_datetime", nullable = false)
     val endDateTime: LocalDateTime,
 
+    @JoinColumn(name = "schedule_type_id", nullable = false)
     @OneToOne(mappedBy = "calendar", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE])
     val scheduleType: ScheduleType,
 

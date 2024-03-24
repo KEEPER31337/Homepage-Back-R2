@@ -22,6 +22,8 @@ import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
+import com.keeper.homepage.domain.calendar.application.CalendarTestHelper;
+import com.keeper.homepage.domain.calendar.application.ScheduleTypeTestHelper;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
@@ -418,6 +420,12 @@ public class IntegrationTest {
 
   @Autowired
   protected PointLogTestHelper pointLogTestHelper;
+
+  @Autowired
+  protected ScheduleTypeTestHelper scheduleTypeTestHelper;
+
+  @Autowired
+  protected CalendarTestHelper calendarTestHelper;
 
   /******* Util *******/
   @SpyBean
