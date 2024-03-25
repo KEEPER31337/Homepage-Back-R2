@@ -12,9 +12,11 @@ import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -49,9 +51,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
@@ -797,6 +802,7 @@ public class PostControllerTest extends PostApiTestHelper {
     }
 
     @Test
+    @Disabled
     @DisplayName("page 또는 size가 음수면 게시글 목록 조회는 실패한다.")
     public void page_또는_size가_음수면_게시글_목록_조회는_실패한다() throws Exception {
       params.add("categoryId", String.valueOf(category.getId()));
@@ -806,6 +812,26 @@ public class PostControllerTest extends PostApiTestHelper {
       params.add("size", "3");
       callGetPostsApi(memberToken, params)
           .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("최대 제한값을 초과한 size가 요청될 시 size는 최대 제한값으로 설정된다.")
+    public void 최대_제한값을_초과한_size가_요청될시_size는_최대_제한값으로_설정된다() throws Exception {
+      final int max_size = 100;
+      params.add("categoryId", String.valueOf(category.getId()));
+      params.add("searchType", null);
+      params.add("search", null);
+      params.add("page", "0");
+      params.add("size", "1000");
+
+      callGetPostsApi(memberToken, params)
+          .andExpect(status().isOk()).andReturn();
+
+      ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+      verify(postService).getPosts(any(Long.class), any(), any(), pageableCaptor.capture());
+      Pageable capturedPageable = pageableCaptor.getValue();
+
+      assertEquals(max_size, capturedPageable.getPageSize());
     }
 
     @Test

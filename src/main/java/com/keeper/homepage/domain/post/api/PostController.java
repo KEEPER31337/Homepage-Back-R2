@@ -29,7 +29,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -187,10 +189,9 @@ public class PostController {
       @RequestParam long categoryId,
       @RequestParam(required = false) String searchType,
       @RequestParam(required = false) String search,
-      @RequestParam(defaultValue = "0") @PositiveOrZero int page,
-      @RequestParam(defaultValue = "10") @PositiveOrZero int size
+      @PageableDefault Pageable pageable
   ) {
-    return ResponseEntity.ok(postService.getPosts(categoryId, searchType, search, PageRequest.of(page, size)));
+    return ResponseEntity.ok(postService.getPosts(categoryId, searchType, search, pageable));
   }
 
   @GetMapping("/recent")

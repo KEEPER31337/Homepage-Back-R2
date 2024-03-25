@@ -15,6 +15,12 @@ spring:
       max-request-size: 30MB
       max-file-size: 30MB
 
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+        default-page-size: 10
+
 server:
   forward-headers-strategy: framework
 
