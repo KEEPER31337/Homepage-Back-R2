@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
   Optional<Member> findByProfileLoginId(LoginId profileLoginId);
 
@@ -43,10 +43,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
   Page<Member> findAllByMemberTypeAndIdNot(MemberType type, long virtualId, Pageable pageable);
 
-  @Query("SELECT m FROM Member m " +
-      "JOIN FETCH m.memberType " +
-      "JOIN FETCH m.memberJob mj " +
-      "JOIN FETCH mj.memberJob " +
-      "WHERE m.id = :id")
-  Optional<Member> findMemberProfileWithFetchJoin(@Param("id") long id);
 }

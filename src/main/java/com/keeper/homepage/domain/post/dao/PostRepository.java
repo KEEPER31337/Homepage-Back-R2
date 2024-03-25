@@ -13,29 +13,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
 
   Optional<Post> findByIdAndIdNot(Long postId, Long virtualId);
-
-  /**
-   * 카테고리 + 공지글 + 등록시간 최신순 정렬
-   *
-   * @param category 게시글 카테고리
-   */
-  @Query("SELECT p FROM Post p "
-      + "WHERE p.category = :category "
-      + "AND p.isNotice = true "
-      + "ORDER BY p.registerTime DESC")
-  List<Post> findAllNoticeByCategory(@Param("category") Category category);
-
-  /**
-   * 임시 저장글 제외 + 등록 시간 최신순 정렬
-   */
-  @Query("SELECT p FROM Post p "
-      + "WHERE p.isTemp = false "
-      + "AND p.id <> 1 " // virtual post
-      + "ORDER BY p.registerTime DESC")
-  List<Post> findAllRecent(Pageable pageable);
 
   /**
    * 카테고리 + 공지글 제외 + 임시글 제외 + 등록시간 최신순 정렬
@@ -116,43 +96,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Page<Post> findAllRecentByCategoryAndWriter(@Param("category") Category category, @Param("search") String search,
       Pageable pageable);
 
-  /**
-   * 임시 저장글 제외 + 등록 시간 최신순 정렬 + 날짜 사이의 게시글
-   *
-   * @param startDate 가져올 시작 시간
-   * @param endDate   가져올 끝 시간
-   */
-  @Query("SELECT p FROM Post p " +
-      "WHERE p.isTemp = false " +
-      "AND p.registerTime BETWEEN :startDate AND :endDate")
-  List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-
-
-  @Query("SELECT p FROM Post p "
-      + "WHERE p.id > :postId "
-      + "AND p.category = :category "
-      + "AND p.isTemp = false "
-      + "ORDER BY p.id ASC "
-      + "LIMIT 1")
-  Optional<Post> findNextPost(@Param("postId") Long postId, @Param("category") Category category);
-
-  @Query("SELECT p FROM Post p "
-      + "WHERE p.id < :postId "
-      + "AND p.category = :category "
-      + "AND p.isTemp = false "
-      + "ORDER BY p.id DESC "
-      + "LIMIT 1")
-  Optional<Post> findPreviousPost(@Param("postId") Long postId, @Param("category") Category category);
-
   Page<Post> findAllByMemberAndIsTempFalse(Member member, Pageable pageable);
 
   Page<Post> findAllByMemberAndIsTempTrue(Member member, Pageable pageable);
-
-  @Modifying
-  @Query("UPDATE Post p "
-      + "SET p.member = :virtualMember "
-      + "WHERE p.member = :member AND p.isTemp = false ")
-  void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
   void deleteAllByMemberAndIsTempTrue(Member member);
 }

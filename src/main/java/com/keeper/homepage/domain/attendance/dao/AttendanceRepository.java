@@ -8,10 +8,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
+public interface AttendanceRepository extends JpaRepository<Attendance, Long>, AttendanceRepositoryCustom {
 
   boolean existsByMemberAndDate(Member member, LocalDate date);
 
@@ -22,10 +20,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
   Page<Attendance> findAllByDateOrderByRankAsc(LocalDate date, Pageable pageable);
 
   List<Attendance> findAllByDateOrderByContinuousDayDesc(LocalDate date);
-
-  @Query("SELECT a FROM Attendance a "
-      + "WHERE a.member = :member "
-      + "AND a.date >= :localDate")
-  List<Attendance> findAllRecent(@Param("member") Member member, @Param("localDate") LocalDate localDate);
 
 }
