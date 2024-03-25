@@ -76,6 +76,7 @@ import com.keeper.homepage.domain.point.application.GivePointService;
 import com.keeper.homepage.domain.point.application.PointLogService;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.PostTestHelper;
+import com.keeper.homepage.domain.post.application.PostContentService;
 import com.keeper.homepage.domain.post.application.PostService;
 import com.keeper.homepage.domain.post.dao.PostHasFileRepository;
 import com.keeper.homepage.domain.post.dao.PostRepository;
@@ -297,6 +298,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected PostService postService;
+
+  @SpyBean
+  protected PostContentService postInfoService;
 
   @Autowired
   protected ValidSeminarFindService validSeminarFindService;

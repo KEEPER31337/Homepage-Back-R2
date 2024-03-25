@@ -27,7 +27,7 @@ public class MemberPostResponse {
   public static MemberPostResponse from(Post post) {
     return MemberPostResponse.builder()
         .id(post.getId())
-        .title(post.getTitle())
+        .title(post.getPostContent().getTitle())
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
         .visitCount(post.getVisitCount())

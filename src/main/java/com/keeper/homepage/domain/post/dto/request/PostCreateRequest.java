@@ -4,6 +4,8 @@ import static lombok.AccessLevel.PRIVATE;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -51,15 +53,20 @@ public class PostCreateRequest {
   private Long categoryId;
 
   public Post toEntity(Member member, String ipAddress) {
-    return Post.builder()
+    PostContent postContent = PostContent.builder()
         .title(title)
         .content(content)
+        .build();
+    return Post.builder()
+        .postContent(postContent)
         .member(member)
         .ipAddress(ipAddress)
         .allowComment(allowComment)
-        .isNotice(isNotice)
-        .isSecret(isSecret)
-        .isTemp(isTemp)
+        .postStatus(PostStatus.builder()
+            .isNotice(isNotice)
+            .isSecret(isSecret)
+            .isTemp(isTemp)
+            .build())
         .password(password)
         .build();
   }

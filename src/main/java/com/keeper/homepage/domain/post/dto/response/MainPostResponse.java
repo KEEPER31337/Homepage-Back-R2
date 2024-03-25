@@ -30,8 +30,8 @@ public class MainPostResponse {
   public static MainPostResponse from(Post post) {
     return MainPostResponse.builder()
         .id(post.getId())
-        .title(post.getTitle())
-        .thumbnailPath(post.getThumbnailPath())
+        .title(post.getPostContent().getTitle())
+        .thumbnailPath(post.getPostContent().getThumbnailPath())
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
         .writerName(post.getMember().getRealName())
@@ -45,8 +45,8 @@ public class MainPostResponse {
   public static MainPostResponse of(Post post, String writerName) {
     return MainPostResponse.builder()
         .id(post.getId())
-        .title(post.getTitle())
-        .thumbnailPath(post.getThumbnailPath())
+        .title(post.getPostContent().getTitle())
+        .thumbnailPath(post.getPostContent().getThumbnailPath())
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
         .writerName(writerName)

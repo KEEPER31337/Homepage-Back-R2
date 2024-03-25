@@ -25,7 +25,7 @@ public class TempPostResponse {
   public static TempPostResponse from(Post post) {
     return TempPostResponse.builder()
         .id(post.getId())
-        .title(post.getTitle())
+        .title(post.getPostContent().getTitle())
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
         .registerTime(post.getRegisterTime())

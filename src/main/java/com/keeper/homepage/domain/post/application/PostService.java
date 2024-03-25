@@ -4,7 +4,6 @@ import static com.keeper.homepage.domain.post.entity.category.Category.CategoryT
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
-import static com.keeper.homepage.global.error.ErrorCode.POST_CONTENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_HAS_NOT_THAT_FILE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
@@ -31,7 +30,8 @@ import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
@@ -56,10 +56,10 @@ public class PostService {
   private final PostRepository postRepository;
   private final PostHasFileRepository postHasFileRepository;
 
-  private final ThumbnailUtil thumbnailUtil;
   private final FileUtil fileUtil;
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
+  private final PostContentService postInfoService;
   private final CategoryFindService categoryFindService;
   private final MemberFindService memberFindService;
   private final FileService fileService;
@@ -73,18 +73,20 @@ public class PostService {
 
   @Transactional
   public Long create(Post post, Long categoryId, MultipartFile thumbnail, List<MultipartFile> multipartFiles) {
-    if (post.isSecret()) {
+    PostContent postContent= post.getPostContent();
+    PostStatus postStatus = post.getPostStatus();
+    if (postStatus.getIsSecret()) {
       checkPassword(post.getPassword());
     }
-    if (!post.isTemp()) {
-      checkContent(post.getContent());
+    if (!postStatus.getIsTemp()) {
+      postInfoService.checkContent(postContent.getContent());
     }
     if (categoryId == 익명게시판.getId()) {
       Member virtualMember = memberFindService.getVirtualMember();
       post.changeWriter(virtualMember);
     }
 
-    savePostThumbnail(post, thumbnail);
+    postInfoService.savePostThumbnail(postContent, thumbnail);
     savePostFiles(post, multipartFiles);
     return savePost(post, categoryId);
   }
@@ -93,17 +95,6 @@ public class PostService {
     if (!StringUtils.hasText(password)) {
       throw new BusinessException(password, "password", POST_PASSWORD_NEED);
     }
-  }
-
-  private void checkContent(String content) {
-    if (!StringUtils.hasText(content)) {
-      throw new BusinessException(content, "content", POST_CONTENT_NEED);
-    }
-  }
-
-  private void savePostThumbnail(Post post, MultipartFile thumbnail) {
-    Thumbnail savedThumbnail = thumbnailUtil.saveThumbnail(thumbnail).orElse(null);
-    post.changeThumbnail(savedThumbnail);
   }
 
   private void savePostFiles(Post post, List<MultipartFile> multipartFiles) {
@@ -228,31 +219,9 @@ public class PostService {
       checkPassword(newPost.getPassword());
     }
     if (!newPost.isTemp()) {
-      checkContent(newPost.getContent());
+      postInfoService.checkContent(newPost.getPostContent().getContent());
     }
     post.update(newPost);
-  }
-
-  @Transactional
-  public void updatePostThumbnail(Member member, long postId, MultipartFile thumbnail) {
-    Post post = validPostFindService.findById(postId);
-
-    if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
-    }
-    thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
-    savePostThumbnail(post, thumbnail);
-  }
-
-  @Transactional
-  public void deletePostThumbnail(Member member, long postId) {
-    Post post = validPostFindService.findById(postId);
-
-    if (!post.isMine(member)) {
-      throw new BusinessException(post.getId(), "postId", POST_INACCESSIBLE);
-    }
-    thumbnailUtil.deleteFileAndEntityIfExist(post.getThumbnail());
-    post.deleteThumbnail();
   }
 
   @Transactional
