@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.calendar
+package com.keeper.homepage.domain.calendar.application
 
 import com.keeper.homepage.domain.Schedule.entity.Schedule
 import com.keeper.homepage.domain.calendar.dao.ScheduleRepository
