@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController
 @Validated
 @RestController
 @RequestMapping("/schedule")
-@RequiredArgsConstructor
 class ScheduleController(
     val scheduleService: ScheduleService,
 ) {
@@ -26,7 +25,7 @@ class ScheduleController(
             saveScheduleRequest.name,
             saveScheduleRequest.startTime,
             saveScheduleRequest.endTime,
-            saveScheduleRequest.scheduleTypeId
+            saveScheduleRequest.scheduleTypeId.toLong()
         )
 
         return ResponseEntity.ok().build()
