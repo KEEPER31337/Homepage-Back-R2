@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.calendar.application
 import com.keeper.homepage.domain.Schedule.entity.Schedule
 import com.keeper.homepage.domain.calendar.dao.ScheduleRepository
 import com.keeper.homepage.domain.calendar.dao.ScheduleTypeRepository
+import com.keeper.homepage.domain.calendar.dto.response.FindAllScheduleResponse
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
 import lombok.RequiredArgsConstructor
@@ -37,4 +38,12 @@ class ScheduleService(
             )
         ).id!!
     }
+
+    fun findAllSchedule(
+        startTime: LocalDateTime,
+        endTime: LocalDateTime,
+    ): List<FindAllScheduleResponse> =
+        scheduleRepository.findAllSchedule(startTime, endTime)
+            .map { FindAllScheduleResponse.from(it) }
+            .toList()
 }
