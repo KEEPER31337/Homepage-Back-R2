@@ -12,7 +12,10 @@ import com.keeper.homepage.global.dsl.rest_docs.DocsMethod
 import com.keeper.homepage.global.dsl.rest_docs.Documentation
 import com.keeper.homepage.global.dsl.rest_docs.docs
 import com.keeper.homepage.global.dsl.rest_docs.means
+import com.keeper.homepage.global.error.BusinessException
+import com.keeper.homepage.global.error.ErrorCode
 import com.keeper.homepage.global.restdocs.RestDocsHelper
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -20,6 +23,8 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.MvcResult
+import org.springframework.test.web.servlet.ResultMatcher
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.result.StatusResultMatchers
@@ -40,6 +45,17 @@ class ScheduleControllerTest: IntegrationTest() {
             adminMember = memberTestHelper.generate().apply { assignJob(ROLE_회장) }
         }
 
+        @Test
+        fun `캘린더 일정 종료 시간이 시간 시간보다 빠르면 안된다`() {
+            Assertions.assertThatThrownBy { SaveScheduleRequest(
+                name = "일정 이름",
+                startTime = LocalDateTime.now(),
+                endTime = LocalDateTime.now().minusHours(1),
+                scheduleTypeId = "1",
+            )}.isInstanceOf(BusinessException::class.java)
+                .hasMessage(ErrorCode.END_TIME_IS_EARLIER_THAN_START_TIME.message)
+        }
+
         @Documentation("save-schedule")
         fun `일정 저장은 성공해야 한다`() {
             val securedValue = RestDocsHelper.getSecuredValue(ScheduleController::class.java, "saveSchedule")
@@ -50,13 +66,13 @@ class ScheduleControllerTest: IntegrationTest() {
                 scheduleTypeId = "1",
             )
 
-            docs(mockMvc, DocsMethod.POST, "/schedule") {
+            docs(mockMvc, DocsMethod.POST, "/schedules") {
                 request {
                     cookie(*memberTestHelper.getTokenCookies(adminMember!!))
                     content(asJsonString(saveScheduleRequest))
                     contentType(MediaType.APPLICATION_JSON)
                 }
-                result { expect(status().isOk()) }
+                result { expect(status().isCreated()) }
                 response {
                     cookie(
                         ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
@@ -70,10 +86,6 @@ class ScheduleControllerTest: IntegrationTest() {
                     )
                 }
             }
-
-            // when
         }
-
     }
-
 }

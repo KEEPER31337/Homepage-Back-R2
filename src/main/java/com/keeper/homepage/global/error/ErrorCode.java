@@ -103,6 +103,11 @@ public enum ErrorCode {
   ELECTION_CANDIDATE_CANNOT_REGISTER("해당 직위는 후보자 등록 불가합니다.", HttpStatus.BAD_REQUEST),
   ELECTION_CANDIDATE_CANNOT_DELETE("비공개 상태 선거에서만 후보자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
   ELECTION_VOTER_CANNOT_DELETE("비공개 상태 선거에서만 투표자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
+  // SCHEDULES
+  SCHEDULE_NOT_FOUND("해당 일정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
+  //GLOBAL
+  END_TIME_IS_EARLIER_THAN_START_TIME("종료 시간이 시작 시간보다 빠릅니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;
