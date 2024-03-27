@@ -4,6 +4,7 @@ import com.keeper.homepage.IntegrationTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.springframework.data.repository.findByIdOrNull
 import java.time.LocalDateTime
 
@@ -16,6 +17,7 @@ class scheduleServiceTest: IntegrationTest() {
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class `캘린더 저장` {
 
         @Test
@@ -34,4 +36,55 @@ class scheduleServiceTest: IntegrationTest() {
         }
     }
 
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class `캘린더 조회` {
+
+        @Test
+        fun `캘린더 조회를 성공해야 한다`() {
+            scheduleService.saveSchedule( // 2021-05-10 ~ 2021-07-10
+                DEFAULT_SCHEDULE_NAME,
+                LocalDateTime.of(2021, 5, 10, 0, 0),
+                LocalDateTime.of(2021, 7, 10, 0, 0),
+                1L
+            )
+
+            scheduleService.saveSchedule( // 2021-05-10 ~ 2021-06-10
+                DEFAULT_SCHEDULE_NAME,
+                LocalDateTime.of(2021, 5, 10, 0, 0),
+                LocalDateTime.of(2021, 6, 10, 0, 0),
+                1L
+            )
+
+            scheduleService.saveSchedule( // 2021-06-10 ~ 2021-07-10
+                DEFAULT_SCHEDULE_NAME,
+                LocalDateTime.of(2021, 6, 10, 0, 0),
+                LocalDateTime.of(2021, 7, 10, 0, 0),
+                1L
+            )
+
+            scheduleService.saveSchedule( // 2021-06-10 ~ 2021-06-20
+                DEFAULT_SCHEDULE_NAME,
+                LocalDateTime.of(2021, 6, 10, 0, 0),
+                LocalDateTime.of(2021, 6, 20, 0, 0),
+                1L
+            )
+
+            em.flush()
+            em.clear()
+
+            val findSchedule = scheduleService.findAllSchedule(
+                LocalDateTime.of(2021, 6, 11, 0, 0),
+                LocalDateTime.of(2021, 6, 19, 0, 0)
+            )
+
+            val findOtherSchedule = scheduleService.findAllSchedule(
+                LocalDateTime.of(2021, 6, 1, 0, 0),
+                LocalDateTime.of(2021, 6, 30, 0, 0)
+            )
+
+            assertEquals(findSchedule.size, 3)
+            assertEquals(findOtherSchedule.size, 4)
+        }
+    }
 }
