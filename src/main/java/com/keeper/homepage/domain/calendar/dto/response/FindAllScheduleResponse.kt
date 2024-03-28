@@ -9,7 +9,7 @@ data class FindAllScheduleResponse(
     val name: String,
     val startTime: LocalDateTime,
     val endTime: LocalDateTime,
-    val scheduleType: ScheduleType,
+    val scheduleTypeResponse: ScheduleTypeResponse,
 ) {
     companion object {
         fun from(schedule: Schedule): FindAllScheduleResponse {
@@ -18,7 +18,7 @@ data class FindAllScheduleResponse(
                 name = schedule.name,
                 startTime = schedule.startTime,
                 endTime = schedule.endTime,
-                scheduleType = schedule.scheduleType,
+                scheduleTypeResponse = ScheduleTypeResponse.from(schedule.scheduleType),
             )
         }
     }
