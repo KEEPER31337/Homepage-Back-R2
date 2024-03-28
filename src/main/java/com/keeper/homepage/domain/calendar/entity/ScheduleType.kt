@@ -18,4 +18,13 @@ class ScheduleType(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-)
+) {
+    enum class Type(
+        val value: Long,
+    ) {
+        COMMON(1L),
+        EVENT(2L),
+        OPERATE(3L),
+        ETC(4L),
+    }
+}

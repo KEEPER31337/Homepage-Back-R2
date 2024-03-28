@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.calendar.api
 import com.keeper.homepage.IntegrationTest
 import com.keeper.homepage.domain.calendar.dto.request.FindScheduleRequest
 import com.keeper.homepage.domain.calendar.dto.request.SaveScheduleRequest
+import com.keeper.homepage.domain.calendar.entity.ScheduleType
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.*
 import com.keeper.homepage.global.config.security.data.JwtType.*
@@ -55,7 +56,7 @@ class ScheduleControllerTest: IntegrationTest() {
                 name = "일정 이름",
                 startTime = LocalDateTime.now(),
                 endTime = LocalDateTime.now().minusHours(1),
-                scheduleTypeId = "1",
+                scheduleType = ScheduleType.Type.COMMON,
             )}.isInstanceOf(BusinessException::class.java)
                 .hasMessage(ErrorCode.END_TIME_IS_EARLIER_THAN_START_TIME.message)
         }
@@ -67,7 +68,7 @@ class ScheduleControllerTest: IntegrationTest() {
                 name = "일정 이름",
                 startTime = LocalDateTime.now(),
                 endTime = LocalDateTime.now().plusHours(1),
-                scheduleTypeId = "1",
+                scheduleType = ScheduleType.Type.COMMON,
             )
 
             docs(mockMvc, DocsMethod.POST, "/schedules") {
@@ -86,7 +87,7 @@ class ScheduleControllerTest: IntegrationTest() {
                         "name" means "일정의 이름",
                         "startTime" means "일정 시작 시간",
                         "endTime" means "일정 종료 시간",
-                        "scheduleTypeId" means "일정 타입 ID",
+                        "scheduleType" means "일정 타입 ID",
                     )
                 }
             }

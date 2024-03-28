@@ -30,7 +30,7 @@ class ScheduleController(
             saveScheduleRequest.name,
             saveScheduleRequest.startTime,
             saveScheduleRequest.endTime,
-            saveScheduleRequest.scheduleTypeId.toLong()
+            saveScheduleRequest.scheduleType.value
         )
 
         return ResponseEntity.status(HttpStatus.CREATED).build()
