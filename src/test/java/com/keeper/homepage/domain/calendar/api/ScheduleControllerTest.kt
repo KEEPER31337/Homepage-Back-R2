@@ -97,6 +97,15 @@ class ScheduleControllerTest: IntegrationTest() {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class FindSchedules {
 
+        @Test
+        fun `한 달 이상의 일정 조회는 불가능하다`() {
+            Assertions.assertThatThrownBy { FindScheduleRequest(
+                startTime = LocalDateTime.now(),
+                endTime = LocalDateTime.now().plusDays(32),
+            )}.isInstanceOf(BusinessException::class.java)
+                .hasMessage(ErrorCode.END_TIME_IS_TOO_LONG.message)
+        }
+
         @Documentation("find-schedules")
         fun `일정 조회는 성공해야 한다`() {
             val securedValue = RestDocsHelper.getSecuredValue(ScheduleController::class.java, "findAllSchedule")

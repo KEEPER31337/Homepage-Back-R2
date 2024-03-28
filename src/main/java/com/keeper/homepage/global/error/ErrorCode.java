@@ -105,6 +105,7 @@ public enum ErrorCode {
   ELECTION_VOTER_CANNOT_DELETE("비공개 상태 선거에서만 투표자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
   // SCHEDULES
   SCHEDULE_NOT_FOUND("해당 일정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  END_TIME_IS_TOO_LONG("조회하려는 종료 시간이 너무 깁니다.", HttpStatus.BAD_REQUEST),
 
   //GLOBAL
   END_TIME_IS_EARLIER_THAN_START_TIME("종료 시간이 시작 시간보다 빠릅니다.", HttpStatus.BAD_REQUEST),
