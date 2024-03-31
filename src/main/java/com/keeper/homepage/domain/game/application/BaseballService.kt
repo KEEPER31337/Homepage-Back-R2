@@ -66,6 +66,11 @@ class BaseballService(
         if (bettingPoint <= 0) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.POINT_MUST_BE_POSITIVE)
         }
+        if(bettingPoint !in 1000..3000) {
+            throw BusinessException(requestMember.id, "memberId", ErrorCode.INVALID_GAME_POINT)
+        }
+
+
         if (requestMember.point < bettingPoint) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_ENOUGH_POINT)
         }
