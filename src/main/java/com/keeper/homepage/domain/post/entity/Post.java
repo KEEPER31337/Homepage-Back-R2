@@ -14,22 +14,22 @@ import com.keeper.homepage.domain.member.entity.post.MemberHasPostDislike;
 import com.keeper.homepage.domain.member.entity.post.MemberHasPostLike;
 import com.keeper.homepage.domain.post.entity.category.Category;
 import com.keeper.homepage.domain.post.entity.category.Category.CategoryType;
-import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.global.entity.BaseEntity;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -59,19 +59,12 @@ public class Post extends BaseEntity {
   @JoinColumn(name = "member_id", nullable = false)
   private Member member;
 
+  @Embedded
+  PostContent postContent;
+
   @ManyToOne(fetch = LAZY)
   @JoinColumn(name = "category_id", nullable = false)
   private Category category;
-
-  @OneToOne(fetch = LAZY)
-  @JoinColumn(name = "thumbnail_id")
-  private Thumbnail thumbnail;
-
-  @Column(name = "title", nullable = false, length = MAX_TITLE_LENGTH)
-  private String title;
-
-  @Column(name = "content", nullable = false)
-  private String content;
 
   @Column(name = "visit_count", nullable = false)
   private Integer visitCount;
@@ -79,14 +72,8 @@ public class Post extends BaseEntity {
   @Column(name = "allow_comment", nullable = false)
   private Boolean allowComment;
 
-  @Column(name = "is_notice", nullable = false)
-  private Boolean isNotice;
-
-  @Column(name = "is_secret", nullable = false)
-  private Boolean isSecret;
-
-  @Column(name = "is_temp", nullable = false)
-  private Boolean isTemp;
+  @Embedded
+  private PostStatus postStatus;
 
   @Column(name = "ip_address", nullable = false, length = MAX_IP_ADDRESS_LENGTH)
   private String ipAddress;
@@ -107,20 +94,16 @@ public class Post extends BaseEntity {
   private final Set<MemberHasPostDislike> postDislikes = new HashSet<>();
 
   @Builder
-  private Post(String title, String content, Member member, Integer visitCount, String ipAddress, Boolean allowComment,
-      Boolean isNotice, Boolean isSecret, Boolean isTemp, String password, Category category, Thumbnail thumbnail) {
-    this.title = title;
-    this.content = content;
+  private Post(PostContent postContent, Member member, Integer visitCount, String ipAddress, Boolean allowComment,
+      PostStatus postStatus, String password, Category category) {
+    this.postContent = postContent;
     this.member = member;
     this.visitCount = visitCount;
     this.ipAddress = ipAddress;
     this.allowComment = allowComment;
-    this.isNotice = isNotice;
-    this.isSecret = isSecret;
-    this.isTemp = isTemp;
+    this.postStatus = postStatus;
     this.password = password;
     this.category = category;
-    this.thumbnail = thumbnail;
   }
 
   public void addFile(FileEntity file) {
@@ -132,10 +115,6 @@ public class Post extends BaseEntity {
 
   public void addCategory(Category category) {
     this.category = category;
-  }
-
-  public void changeThumbnail(Thumbnail thumbnail) {
-    this.thumbnail = thumbnail;
   }
 
   public void addVisitCount() {
@@ -155,15 +134,15 @@ public class Post extends BaseEntity {
   }
 
   public Boolean isNotice() {
-    return isNotice;
+    return postStatus.getIsNotice();
   }
 
   public Boolean isTemp() {
-    return isTemp;
+    return postStatus.getIsTemp();
   }
 
   public Boolean isSecret() {
-    return isSecret;
+    return postStatus.getIsSecret();
   }
 
   public Boolean allowComment() {
@@ -174,25 +153,14 @@ public class Post extends BaseEntity {
     return this.member.getRealName();
   }
 
-  public FileEntity getThumbnailFile() {
-    return this.thumbnail.getFileEntity();
-  }
-
   public void update(Post post) {
-    this.title = post.getTitle();
-    this.content = post.getContent();
+    this.postStatus.update(post.getPostStatus());
+    this.postContent.update(post.getPostContent());
+    this.postContent = post.postContent;
     this.ipAddress = post.getIpAddress();
     this.allowComment = post.allowComment();
-    this.isNotice = post.isNotice();
-    this.isSecret = post.isSecret();
-    this.isTemp = post.isTemp();
+    this.postStatus = post.getPostStatus();
     this.password = post.getPassword();
-  }
-
-  public String getThumbnailPath() {
-    return Optional.ofNullable(this.thumbnail)
-        .map(Thumbnail::getPath)
-        .orElse(null);
   }
 
   public String getCategoryName() {
@@ -205,9 +173,5 @@ public class Post extends BaseEntity {
 
   public void changeWriter(Member member) {
     this.member = member;
-  }
-
-  public void deleteThumbnail() {
-    this.thumbnail = null;
   }
 }

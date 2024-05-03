@@ -41,6 +41,7 @@ public class MemberDeleteService {
   private final ElectionRepository electionRepository;
   private final GameRepository gameRepository;
   private final FriendRepository friendRepository;
+  private final MemberHasPostDislikeRepository memberHasPostDislikeRepository;
 
   public void delete(Member member) {
     Member virtualMember = getVirtualMember();
@@ -58,6 +59,7 @@ public class MemberDeleteService {
     commentLikeRepository.deleteAllByMember(member);
     commentDislikeRepository.deleteAllByMember(member);
     readPostRepository.deleteAllByMember(member);
+    memberHasPostDislikeRepository.deleteAllByMember(member);
     postRepository.deleteAllByMemberAndIsTempTrue(member);
     memberRepository.delete(member);
   }

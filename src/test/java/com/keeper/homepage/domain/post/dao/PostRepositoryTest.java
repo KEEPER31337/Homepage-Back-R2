@@ -8,6 +8,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.web.WebUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -116,9 +117,12 @@ public class PostRepositoryTest extends IntegrationTest {
     @Test
     @DisplayName("DB 디폴트 처리가 있는 값을 넣지 않았을 때 DB 디폴트 값으로 처리해야 한다.")
     void should_processDefault_when_EmptyValue() {
+      PostContent postContent = PostContent.builder()
+          .title("title")
+          .content("content")
+          .build();
       Post post = postRepository.save(Post.builder()
-          .title("게시글 제목")
-          .content("게시글 내용")
+          .postContent(postContent)
           .category(getCategoryBy(자유게시판))
           .ipAddress(WebUtil.getUserIP())
           .member(member)
@@ -130,9 +134,9 @@ public class PostRepositoryTest extends IntegrationTest {
 
       assertThat(findPost.getVisitCount()).isEqualTo(0);
       assertThat(findPost.getAllowComment()).isEqualTo(true);
-      assertThat(findPost.getIsNotice()).isEqualTo(false);
-      assertThat(findPost.getIsSecret()).isEqualTo(false);
-      assertThat(findPost.getIsTemp()).isEqualTo(false);
+      assertThat(findPost.isNotice()).isEqualTo(false);
+      assertThat(findPost.isSecret()).isEqualTo(false);
+      assertThat(findPost.isTemp()).isEqualTo(false);
     }
   }
 }

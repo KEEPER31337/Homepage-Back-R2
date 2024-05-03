@@ -8,6 +8,8 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.post.entity.category.Category;
+import com.keeper.homepage.domain.post.entity.embedded.PostContent;
+import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.web.WebUtil;
@@ -114,19 +116,25 @@ public class PostTestHelper {
     }
 
     public Post build() {
-      return postRepository.save(Post.builder()
+      PostStatus postStatus = PostStatus.builder()
+          .isNotice(isNotice != null ? isNotice : false)
+          .isSecret(isSecret != null ? isSecret : false)
+          .isTemp(isTemp != null ? isTemp : false)
+          .build();
+      PostContent postContent = PostContent.builder()
           .title(title != null ? title : "게시글 제목")
           .content(content != null ? content : "게시글 내용")
+          .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
+          .build();
+      return postRepository.save(Post.builder()
+          .postContent(postContent)
           .member(member != null ? member : memberTestHelper.generate())
           .visitCount(visitCount)
           .ipAddress(ipAddress != null ? ipAddress : WebUtil.getUserIP())
           .allowComment(allowComment != null ? allowComment : true)
-          .isNotice(isNotice != null ? isNotice : false)
-          .isSecret(isSecret != null ? isSecret : false)
-          .isTemp(isTemp != null ? isTemp : false)
+          .postStatus(postStatus)
           .password(password)
           .category(category != null ? category : getCategoryBy(자유게시판))
-          .thumbnail(thumbnail != null ? thumbnail : thumbnailTestHelper.generateThumbnail())
           .build());
     }
   }
