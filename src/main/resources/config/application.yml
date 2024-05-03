@@ -29,3 +29,9 @@ decorator:
   datasource:
     p6spy:
       enable-logging: true
+management:
+  endpoints:
+    web:
+      base-path: /keeper-metrics
+      exposure:
+        include: prometheus
