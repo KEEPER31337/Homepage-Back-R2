@@ -87,6 +87,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1")
     implementation("org.springframework.boot:spring-boot-starter-aop")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
 
@@ -96,6 +97,7 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     runtimeOnly("com.mysql:mysql-connector-j")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
