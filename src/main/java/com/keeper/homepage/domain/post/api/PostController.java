@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.post.dto.request.PostCreateRequest;
 import com.keeper.homepage.domain.post.dto.request.PostFileDeleteRequest;
 import com.keeper.homepage.domain.post.dto.request.PostUpdateRequest;
 import com.keeper.homepage.domain.post.dto.response.CategoryResponse;
+import com.keeper.homepage.domain.post.dto.response.FileForContentResponse;
 import com.keeper.homepage.domain.post.dto.response.FileResponse;
 import com.keeper.homepage.domain.post.dto.response.MainPostResponse;
 import com.keeper.homepage.domain.post.dto.response.MemberPostResponse;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -241,5 +244,34 @@ public class PostController {
         .contentType(MediaType.APPLICATION_OCTET_STREAM)
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
         .body(resource);
+  }
+
+  /**
+   * Response body로 주는 prefix를 프론트엔드에서 보고 그대로 요청하기 때문에 response body의 prefix와 getFileForContent의 path는 바뀌어선 안된다.
+   */
+  @PostMapping(value = "/files", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+  public ResponseEntity<FileForContentResponse> uploadFileForContent(
+          @LoginMember Member member,
+          @RequestPart MultipartFile file
+  ) {
+    FileEntity fileEntity = postService.uploadFileForContent(file);
+    log.info("member \"{}\" uploaded file. memberId: {}, fileId: {}", member.getRealName(), member.getId(),
+            fileEntity.getId());
+    return ResponseEntity.status(HttpStatus.CREATED)
+            .body(FileForContentResponse.from("/posts/files/" + fileEntity.getFileHash()));
+  }
+
+  @GetMapping("/files/{fileHash}")
+  public ResponseEntity<Resource> getFileForContent(
+          @LoginMember Member member,
+          @PathVariable String fileHash
+  ) throws IOException {
+    FileEntity file = postService.getFileForContent(fileHash, member);
+    Resource resource = fileService.getFileResource(file);
+    String fileName = fileService.getFileName(file);
+    return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+            .body(resource);
   }
 }

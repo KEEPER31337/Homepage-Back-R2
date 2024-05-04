@@ -1034,4 +1034,68 @@ public class PostControllerTest extends PostApiTestHelper {
       assertThat(content).contains(POST_HAS_NOT_THAT_FILE.getMessage());
     }
   }
+
+  @Nested
+  @DisplayName("게시글 본문 파일 업로드 테스트")
+  class UploadFileForContent {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 게시글 본문 파일 업로드는 성공한다.")
+    public void 유효한_요청일_경우_게시글_본문_파일_업로드는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "uploadFileForContent");
+
+      file = new MockMultipartFile("file", "testImage_1x1.png", "image/png",
+              new FileInputStream("src/test/resources/images/testImage_1x1.png"));
+
+      callUploadFileForContent(memberToken, file)
+              .andExpect(status().isCreated())
+              .andDo(document("upload-file-for-content",
+                      requestCookies(
+                              cookieWithName(ACCESS_TOKEN.getTokenName())
+                                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                      ),
+                      requestParts(
+                              partWithName("file").description("게시글의 본문에 넣을 파일")
+                      ),
+                      responseFields(
+                              fieldWithPath("filePath").description("저장된 파일을 불러올 수 있는 file의 hash값과 url입니다.")
+                      )));
+    }
+  }
+
+  @Nested
+  @DisplayName("게시글 본문 파일 다운로드 테스트")
+  class GetFileForContent {
+
+    @Test
+    @DisplayName("유효한 요청일 경우 게시글 본문 파일 다운로드는 성공한다.")
+    public void 유효한_요청일_경우_게시글_본문_파일_다운로드는_성공한다() throws Exception {
+      String securedValue = getSecuredValue(PostController.class, "getFileForContent");
+
+      FileEntity fileEntity = postService.uploadFileForContent(file);
+
+      callGetFileForContent(memberToken, fileEntity.getFileHash())
+              .andExpect(status().isOk())
+              .andExpect(
+                      header().string(CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\""))
+              .andDo(document("get-file-for-content",
+                      requestCookies(
+                              cookieWithName(ACCESS_TOKEN.getTokenName())
+                                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                      ),
+                      pathParameters(
+                              parameterWithName("fileHash").description("업로드한 파일의 hash")
+                      ),
+                      responseHeaders(
+                              headerWithName(CONTENT_DISPOSITION).description("파일 이름을 포함한 응답 헤더입니다.")
+                      )));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 파일 해시일 경우 게시글 본문 파일 다운로드는 실패한다.")
+    public void 존재하지_않는_파일_해시일_경우_게시글_본문_파일_다운로드는_실패한다() throws Exception {
+      callGetFileForContent(memberToken, "invalidFileHash")
+              .andExpect(status().isBadRequest());
+    }
+  }
 }

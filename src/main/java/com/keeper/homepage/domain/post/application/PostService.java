@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.post.application;
 
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
+import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_HAS_NOT_THAT_FILE;
@@ -35,11 +36,11 @@ import com.keeper.homepage.domain.post.entity.embedded.PostStatus;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
-import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -378,5 +380,18 @@ public class PostService {
       throw new BusinessException(postId, "postId", POST_HAS_NOT_THAT_FILE);
     }
     return file;
+  }
+
+  public FileEntity uploadFileForContent(MultipartFile file) {
+    return fileUtil.saveFile(file).orElseThrow();
+  }
+
+  public FileEntity getFileForContent(String fileHash, Member member) {
+    return fileService.findByFileHash(fileHash)
+            .orElseThrow(() -> {
+              log.error("fileHash not found!! member \"{}\" request invalid fileHash. " +
+                      "fileHash: {}, memberId: {}", member.getRealName(), fileHash, member.getId());
+              return new BusinessException(fileHash, "fileHash", FILE_NOT_FOUND);
+            });
   }
 }
