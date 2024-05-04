@@ -1,0 +1,67 @@
+name: Check Pull Request Test Code
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  check_pull_request:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create Docker Env File
+        working-directory: ./docker
+        run: |
+          echo '${{ secrets.DOCKER_ENV }}' >> .env
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> .env
+
+      - name: Create application.yml
+        working-directory: ./src/main/resources
+        env:
+          APPLICATION_YML: ${{ secrets.APPLICATION_YML }}
+        run: |
+          echo '${{ secrets.APPLICATION_YML }}' >> application.yml
+          echo '${{ secrets.APPLICATION_DEPLOY_YML }}' >> application-deploy.yml
+
+      - name: Start Containers
+        working-directory: ./docker
+        run: docker-compose -p keeper up -d
+          
+      - name: Gradle Build & Test
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.5
+          arguments: build
+          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'ref/heads/develop' }}
+
+      - name: Notify Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          author_name: Keeper Devlopment Backend CICD
+          fields: repo, commit, message, author, action, took
+          
