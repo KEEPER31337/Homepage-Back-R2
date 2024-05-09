@@ -82,6 +82,7 @@ public enum ErrorCode {
   NOT_ENOUGH_POINT("베팅 포인트는 보유한 포인트보다 많을 수 없습니다.", HttpStatus.BAD_REQUEST),
   POINT_MUST_BE_POSITIVE("베팅 포인트는 양수여야 합니다.", HttpStatus.BAD_REQUEST),
   NOT_PLAYED_YET("아직 게임을 시작하지 않았습니다.", HttpStatus.BAD_REQUEST),
+  INVALID_BETTING_POINT("베팅포인트는 1000이상 3000이하의 숫자여야합니다",HttpStatus.BAD_REQUEST),
   // FILE
   FILE_NOT_FOUND("해당 파일은 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
   // ATTENDANCE
