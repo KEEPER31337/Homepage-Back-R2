@@ -134,8 +134,9 @@ class BaseballService(
         val earnablePoint = baseballResultEntity.earnablePoint
 
         if (baseballResultEntity.isEnd()) {
-            requestMember.addPoint(earnablePoint*2, EARN_POINT_MESSAGE)
-            gameEntity.baseball.baseballDayPoint = earnablePoint*2
+            earnablePoint * 2
+            requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
+            gameEntity.baseball.baseballDayPoint = earnablePoint
         }
 
         return BaseballResponse(
