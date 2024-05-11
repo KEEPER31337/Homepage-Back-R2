@@ -151,8 +151,8 @@ public class PostApiTestHelper extends IntegrationTest {
             .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callGetFileForContent(String accessToken, String fileHash) throws Exception {
-    return mockMvc.perform(get("/posts/files/{fileHash}", fileHash)
+  ResultActions callGetFileForContent(String accessToken, String fileUUID) throws Exception {
+    return mockMvc.perform(get("/posts/files/{fileUUID}", fileUUID)
             .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 

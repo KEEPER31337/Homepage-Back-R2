@@ -87,7 +87,7 @@ class FileServerUtil extends FileUtil {
                         .fileSize(file.getSize())
                         .uploadTime(now)
                         .ipAddress(ipAddress)
-                        .fileHash(getRandomUUID())
+                        .fileUUID(getRandomUUID())
                         .build());
       } catch (DataIntegrityViolationException e) {
         if (retryCount == 0) {

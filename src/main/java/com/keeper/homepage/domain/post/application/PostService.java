@@ -387,12 +387,12 @@ public class PostService {
     return fileUtil.saveFile(file).orElseThrow();
   }
 
-  public FileEntity getFileForContent(String fileHash, Member member) {
-    return fileService.findByFileHash(fileHash)
+  public FileEntity getFileForContent(String fileUUID, Member member) {
+    return fileService.findByFileUUID(fileUUID)
             .orElseThrow(() -> {
-              log.error("fileHash not found!! member \"{}\" request invalid fileHash. " +
-                      "fileHash: {}, memberId: {}", member.getRealName(), fileHash, member.getId());
-              return new BusinessException(fileHash, "fileHash", FILE_NOT_FOUND);
+              log.error("fileUUID not found!! member \"{}\" request invalid fileUUID. " +
+                      "fileUUID: {}, memberId: {}", member.getRealName(), fileUUID, member.getId());
+              return new BusinessException(fileUUID, "fileUUID", FILE_NOT_FOUND);
             });
   }
 }

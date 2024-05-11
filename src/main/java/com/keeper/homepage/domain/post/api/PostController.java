@@ -258,15 +258,15 @@ public class PostController {
     log.info("member \"{}\" uploaded file. memberId: {}, fileId: {}", member.getRealName(), member.getId(),
             fileEntity.getId());
     return ResponseEntity.status(HttpStatus.CREATED)
-            .body(FileForContentResponse.from("posts/files/" + fileEntity.getFileHash()));
+            .body(FileForContentResponse.from("posts/files/" + fileEntity.getFileUUID()));
   }
 
-  @GetMapping("/files/{fileHash}")
+  @GetMapping("/files/{fileUUID}")
   public ResponseEntity<Resource> getFileForContent(
           @LoginMember Member member,
-          @PathVariable String fileHash
+          @PathVariable String fileUUID
   ) throws IOException {
-    FileEntity file = postService.getFileForContent(fileHash, member);
+    FileEntity file = postService.getFileForContent(fileUUID, member);
     Resource resource = fileService.getFileResource(file);
     String fileName = fileService.getFileName(file);
     return ResponseEntity.ok()

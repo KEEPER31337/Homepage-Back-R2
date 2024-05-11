@@ -1074,7 +1074,7 @@ public class PostControllerTest extends PostApiTestHelper {
 
       FileEntity fileEntity = postService.uploadFileForContent(file);
 
-      callGetFileForContent(memberToken, fileEntity.getFileHash())
+      callGetFileForContent(memberToken, fileEntity.getFileUUID())
               .andExpect(status().isOk())
               .andExpect(
                       header().string(CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\""))
@@ -1084,7 +1084,7 @@ public class PostControllerTest extends PostApiTestHelper {
                                       .description("ACCESS TOKEN %s".formatted(securedValue))
                       ),
                       pathParameters(
-                              parameterWithName("fileHash").description("업로드한 파일의 hash")
+                              parameterWithName("fileUUID").description("업로드한 파일의 uuid")
                       ),
                       responseHeaders(
                               headerWithName(CONTENT_DISPOSITION).description("파일 이름을 포함한 응답 헤더입니다.")
@@ -1094,7 +1094,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("존재하지 않는 파일 해시일 경우 게시글 본문 파일 다운로드는 실패한다.")
     public void 존재하지_않는_파일_해시일_경우_게시글_본문_파일_다운로드는_실패한다() throws Exception {
-      callGetFileForContent(memberToken, "invalidFileHash")
+      callGetFileForContent(memberToken, "invalidFileUUID")
               .andExpect(status().isBadRequest());
     }
   }

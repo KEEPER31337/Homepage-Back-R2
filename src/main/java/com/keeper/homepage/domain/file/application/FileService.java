@@ -32,8 +32,8 @@ public class FileService {
         .orElseThrow(() -> new BusinessException(fileId, "fileId", FILE_NOT_FOUND));
   }
 
-  public Optional<FileEntity> findByFileHash(String fileHash) {
-    return fileRepository.findByFileHash(fileHash);
+  public Optional<FileEntity> findByFileUUID(String fileUUID) {
+    return fileRepository.findByFileUUID(fileUUID);
   }
 
   public Resource getFileResource(FileEntity file) throws IOException {

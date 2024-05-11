@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FileRepository extends JpaRepository<FileEntity, Long> {
 
-    Optional<FileEntity> findByFileHash(String fileHash);
+    Optional<FileEntity> findByFileUUID(String fileUUID);
 }
