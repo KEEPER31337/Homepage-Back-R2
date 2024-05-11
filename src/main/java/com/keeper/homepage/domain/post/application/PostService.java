@@ -382,6 +382,7 @@ public class PostService {
     return file;
   }
 
+  @Transactional
   public FileEntity uploadFileForContent(MultipartFile file) {
     return fileUtil.saveFile(file).orElseThrow();
   }

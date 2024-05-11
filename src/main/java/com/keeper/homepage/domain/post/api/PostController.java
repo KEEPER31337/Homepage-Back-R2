@@ -258,7 +258,7 @@ public class PostController {
     log.info("member \"{}\" uploaded file. memberId: {}, fileId: {}", member.getRealName(), member.getId(),
             fileEntity.getId());
     return ResponseEntity.status(HttpStatus.CREATED)
-            .body(FileForContentResponse.from("/posts/files/" + fileEntity.getFileHash()));
+            .body(FileForContentResponse.from("posts/files/" + fileEntity.getFileHash()));
   }
 
   @GetMapping("/files/{fileHash}")
