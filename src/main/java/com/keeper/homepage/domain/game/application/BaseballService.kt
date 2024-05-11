@@ -66,7 +66,7 @@ class BaseballService(
         if (bettingPoint <= 0) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.POINT_MUST_BE_POSITIVE)
         }
-        if (bettingPoint !in 1000..3000) {
+        if (bettingPoint !in MIN_BETTING_POINT.. MAX_BETTING_POINT) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.INVALID_BETTING_POINT)
         }
 
