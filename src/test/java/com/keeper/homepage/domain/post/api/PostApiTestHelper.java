@@ -144,6 +144,18 @@ public class PostApiTestHelper extends IntegrationTest {
         .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
   }
 
+  ResultActions callUploadFileForContent(String accessToken, MockMultipartFile file) throws Exception {
+    return mockMvc.perform(multipart("/posts/files")
+            .file(file)
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+            .contentType(MediaType.MULTIPART_FORM_DATA));
+  }
+
+  ResultActions callGetFileForContent(String accessToken, String fileUUID) throws Exception {
+    return mockMvc.perform(get("/posts/files/{fileUUID}", fileUUID)
+            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
   FieldDescriptor[] getPostsResponse() {
     return new FieldDescriptor[]{
         fieldWithPath("id").description("게시글 ID"),

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,14 +77,30 @@ class FileServerUtil extends FileUtil {
 
   private FileEntity saveFileEntity(MultipartFile file, File newFile, LocalDateTime now) {
     String ipAddress = WebUtil.getUserIP();
-    return fileRepository.save(
-        FileEntity.builder()
-            .fileName(file.getOriginalFilename())
-            .filePath(getFileUrl(newFile))
-            .fileSize(file.getSize())
-            .uploadTime(now)
-            .ipAddress(ipAddress)
-            .build());
+    int retryCount = 3;
+    while (retryCount >= 0) {
+      try {
+        return fileRepository.save(
+                FileEntity.builder()
+                        .fileName(file.getOriginalFilename())
+                        .filePath(getFileUrl(newFile))
+                        .fileSize(file.getSize())
+                        .uploadTime(now)
+                        .ipAddress(ipAddress)
+                        .fileUUID(getRandomUUID())
+                        .build());
+      } catch (DataIntegrityViolationException e) {
+        if (retryCount == 0) {
+          throw e;
+        }
+        retryCount--;
+      }
+    }
+    throw new RuntimeException("save file entity failed.");
+  }
+
+  protected String getRandomUUID() {
+    return UUID.randomUUID().toString();
   }
 
   private static String getFileUrl(File newFile) {
