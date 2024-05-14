@@ -12,10 +12,12 @@ import static lombok.AccessLevel.PRIVATE;
 public class FileForContentResponse {
 
     private String filePath;
+    private String fileName;
 
-    public static FileForContentResponse from(String filePath) {
+    public static FileForContentResponse of(String filePath, String fileName) {
         return FileForContentResponse.builder()
                 .filePath(filePath)
+                .fileName(fileName)
                 .build();
     }
 }

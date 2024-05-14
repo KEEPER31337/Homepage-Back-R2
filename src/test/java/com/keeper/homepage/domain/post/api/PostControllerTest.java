@@ -1058,7 +1058,8 @@ public class PostControllerTest extends PostApiTestHelper {
                               partWithName("file").description("게시글의 본문에 넣을 파일")
                       ),
                       responseFields(
-                              fieldWithPath("filePath").description("저장된 파일을 불러올 수 있는 file의 hash값과 url입니다.")
+                              fieldWithPath("filePath").description("저장된 파일을 불러올 수 있는 file의 hash값과 url입니다."),
+                              fieldWithPath("fileName").description("저장된 파일의 파일명.")
                       )));
     }
   }
