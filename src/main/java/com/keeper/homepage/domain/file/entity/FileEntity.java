@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,9 +24,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id")
-@Table(name = "file")
+@Table(name = "file", uniqueConstraints = {@UniqueConstraint(columnNames = {"file_uuid"})})
 public class FileEntity {
 
+  private static final int MAX_FILE_UUID_LENGTH = 50;
   private static final int MAX_FILE_NAME_LENGTH = 256;
   private static final int MAX_FILE_PATH_LENGTH = 512;
 
@@ -49,17 +51,21 @@ public class FileEntity {
   @Column(name = "ip_address", nullable = false)
   private String ipAddress;
 
+  @Column(name = "file_uuid", length = MAX_FILE_UUID_LENGTH)
+  private String fileUUID;
+
   @OneToOne(mappedBy = "file", cascade = REMOVE, fetch = LAZY)
   private PostHasFile postHasFile;
 
   @Builder
   private FileEntity(String fileName, String filePath, Long fileSize, LocalDateTime uploadTime,
-      String ipAddress) {
+          String ipAddress, String fileUUID) {
     this.fileName = fileName;
     this.filePath = filePath;
     this.fileSize = fileSize;
     this.uploadTime = uploadTime;
     this.ipAddress = ipAddress;
+    this.fileUUID = fileUUID;
   }
 
   public boolean isPost(Post post) {

@@ -472,3 +472,52 @@ include::{snippets}/download-post-file/path-parameters.adoc[]
 
 include::{snippets}/download-post-file/http-response.adoc[]
 
+== *게시글 본문용 파일 업로드*
+
+NOTE: 게시글의 본문 파일 업로드 기능입니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/upload-file-for-content/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/upload-file-for-content/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/upload-file-for-content/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/upload-file-for-content/response-fields.adoc[]
+
+== *게시글 본문 파일 다운로드*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-file-for-content/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-file-for-content/request-cookies.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/get-file-for-content/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-file-for-content/http-response.adoc[]
+
+==== Response Headers
+
+include::{snippets}/get-file-for-content/response-headers.adoc[]
