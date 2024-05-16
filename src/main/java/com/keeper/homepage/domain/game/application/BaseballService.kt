@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 const val REDIS_KEY_PREFIX = "baseball_"
 const val GUESS_NUMBER_LENGTH = 4
 const val TRY_COUNT = 9
-const val MAX_BETTING_POINT = 5000L
+const val MAX_BETTING_POINT = 3000L
 const val MIN_BETTING_POINT = 1000L
 const val BETTING_POINT_MESSAGE = "야구 게임 베팅"
 const val EARN_POINT_MESSAGE = "야구 게임 획득"
@@ -66,6 +66,10 @@ class BaseballService(
         if (bettingPoint <= 0) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.POINT_MUST_BE_POSITIVE)
         }
+        if (bettingPoint !in MIN_BETTING_POINT.. MAX_BETTING_POINT) {
+            throw BusinessException(requestMember.id, "memberId", ErrorCode.INVALID_BETTING_POINT)
+        }
+
         if (requestMember.point < bettingPoint) {
             throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_ENOUGH_POINT)
         }
@@ -130,6 +134,7 @@ class BaseballService(
         val earnablePoint = baseballResultEntity.earnablePoint
 
         if (baseballResultEntity.isEnd()) {
+            earnablePoint * 2
             requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
             gameEntity.baseball.baseballDayPoint = earnablePoint
         }
