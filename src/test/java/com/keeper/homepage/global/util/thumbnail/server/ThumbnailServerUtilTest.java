@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -93,12 +94,11 @@ class ThumbnailServerUtilTest extends IntegrationTest {
 //          .isInstanceOf(NullPointerException.class);
 //      assertThatThrownBy(() -> thumbnailUtil.deleteFileAndEntity(null))
 //          .isInstanceOf(NullPointerException.class);
-//    }
+  }
 
-    private void deleteTestFile(Thumbnail thumbnail) {
-      File thumbnailFile = new File(ROOT_PATH + separator + thumbnail.getPath());
-      assertThat(thumbnailFile).exists();
-      assertThat(thumbnailFile.delete()).isTrue();
-    }
+  private void deleteTestFile(Thumbnail thumbnail) {
+    File thumbnailFile = new File(ROOT_PATH + separator + thumbnail.getPath());
+    assertThat(thumbnailFile).exists();
+    assertThat(thumbnailFile.delete()).isTrue();
   }
 }
