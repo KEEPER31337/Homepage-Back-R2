@@ -1,5 +1,8 @@
 package com.keeper.homepage.global.error;
 
+import static com.keeper.homepage.domain.game.application.BaseballServiceKt.MAX_BETTING_POINT;
+import static com.keeper.homepage.domain.game.application.BaseballServiceKt.MIN_BETTING_POINT;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
