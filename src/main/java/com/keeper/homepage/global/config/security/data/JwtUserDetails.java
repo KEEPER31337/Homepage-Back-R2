@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 public class JwtUserDetails implements UserDetails {
@@ -18,7 +19,9 @@ public class JwtUserDetails implements UserDetails {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> roles = new ArrayList<>();
     for (String memberJob : memberJobs) {
-      roles.add(new SimpleGrantedAuthority(memberJob));
+      if (StringUtils.hasText(memberJob)) {
+        roles.add(new SimpleGrantedAuthority(memberJob));
+      }
     }
     return roles;
   }
