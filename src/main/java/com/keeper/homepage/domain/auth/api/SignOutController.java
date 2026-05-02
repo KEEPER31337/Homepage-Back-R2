@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.auth.api;
 import com.keeper.homepage.domain.auth.application.SignOutService;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,9 @@ public class SignOutController {
 
   @PostMapping
   public ResponseEntity<Void> signOut(@LoginMember Member me,
+      HttpServletRequest httpServletRequest,
       HttpServletResponse httpServletResponse) {
-    signOutService.signOut(me, httpServletResponse);
+    signOutService.signOut(me, httpServletRequest, httpServletResponse);
     return ResponseEntity.noContent().build();
   }
 }

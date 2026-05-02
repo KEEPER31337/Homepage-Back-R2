@@ -9,7 +9,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,26 +30,21 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests()
-        .requestMatchers("/docs/**", "/keeper_files/**", "/auth-test", "/sign-up/**", "/error",
-            "/about/**", "/sign-in/**", "/posts/recent", "/posts/trend", "/keeper-metrics/**")
-        .permitAll()
-        .anyRequest().hasRole("회원")
-        .and()
-        .httpBasic().disable()
-        .csrf().disable()
-        .logout().disable()
-        .cors().configurationSource(corsConfigurationSource())
-        .and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler)
-        .and()
-        .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
-        .and()
-        .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class);
-
-    return http.build();
+    return http.authorizeHttpRequests(auth -> auth
+            .requestMatchers("/docs/**", "/keeper_files/**", "/auth-test", "/sign-up/**", "/error",
+                "/about/**", "/sign-in/**", "/posts/recent", "/posts/trend", "/keeper-metrics/**")
+            .permitAll()
+            .anyRequest().hasRole("회원"))
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .csrf(AbstractHttpConfigurer::disable)
+        .logout(AbstractHttpConfigurer::disable)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(exceptions -> exceptions
+            .accessDeniedHandler(customAccessDeniedHandler)
+            .authenticationEntryPoint(customAuthenticationEntryPoint))
+        .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
   }
 
   @Bean

@@ -1,0 +1,76 @@
+name: KEEPER Homepage-Back-R2 deploy
+on: workflow_dispatch
+# todo: 임시로 설정한 부분으로 나중에 release 태그 푸시나 어떻게 할지는 고민.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: deploy
+    env:
+      DEPLOY_RETENTION_COUNT: '3' # keep the newest 3 backend images
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set image tag
+        run: echo "SHORT_SHA=$(git rev-parse --short "${GITHUB_SHA}")" >> "$GITHUB_ENV"
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        
+      - name: Build Backend Docker Image
+        run: |
+          docker buildx build \
+            --file ./infra/backend.Dockerfile \
+            --tag homepage-back-r2:${SHORT_SHA} \
+            --load \
+            .
+
+      - uses: rezakargar/setup-unregistry@9166ef1e3d74eca84aecfb412393c17324eea59f # v1
+
+      - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add remote host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Send Docker Image to Server
+        run: docker pussh homepage-back-r2:${SHORT_SHA} ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+
+      - name: Renew Backend Container and prune old images
+        run: |
+          ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "SHORT_SHA=${SHORT_SHA} DEPLOY_RETENTION_COUNT=${DEPLOY_RETENTION_COUNT} bash -s" << 'EOF'
+            set -euo pipefail
+
+            cd /opt/keeper-infra/containers
+
+            if ! [[ "${DEPLOY_RETENTION_COUNT}" =~ ^[1-9][0-9]*$ ]]; then
+              echo "DEPLOY_RETENTION_COUNT must be a positive integer" >&2
+              exit 1
+            fi
+
+            echo "BACKEND_TAG=${SHORT_SHA}" > .backend-ver.env
+            sudo docker compose --env-file .env --env-file .backend-ver.env up -d --no-deps --force-recreate backend
+
+            mapfile -t old_tags < <(
+              sudo docker image ls homepage-back-r2 --format '{{.CreatedAt}}|{{.Tag}}' \
+                | sort -t '|' -k1,1r -k2,2r \
+                | awk -F '|' -v keep="${DEPLOY_RETENTION_COUNT}" '
+                    $2 ~ /^[0-9a-f]+$/ {
+                      count++
+                      if (count > keep) {
+                        print $2
+                      }
+                    }
+                  '
+            )
+
+            if ((${#old_tags[@]} > 0)); then
+              printf '%s\0' "${old_tags[@]}" \
+                | xargs -0 -r -I{} sudo docker image rm -f "homepage-back-r2:{}"
+            fi
+          EOF

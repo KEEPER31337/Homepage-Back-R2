@@ -15,16 +15,14 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.config.security.data.JwtType;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.kotest.core.spec.style.AnnotationSpec.Ignore;
 import jakarta.servlet.http.Cookie;
 import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -213,6 +211,39 @@ class AuthTestControllerTest extends IntegrationTest {
       }
 
       @Test
+      @DisplayName("User-Agent가 변경되어도 RT가 Redis에 있으면 재발급된다.")
+      void should_200OK_when_userAgentChanged() throws Exception {
+        String oldUserAgent = "keeper-old-agent";
+        String newUserAgent = "keeper-new-agent";
+        redisUtil.deleteData(JwtTokenProvider.getRefreshTokenKeyForRedis("0", null));
+        redisUtil.setDataExpire(
+            JwtTokenProvider.getRefreshTokenKeyForRedis("0", oldUserAgent),
+            refreshToken,
+            REFRESH_TOKEN.getExpiredMillis());
+
+        JwtType MOCKED_ACCESS_TOKEN = Mockito.spy(ACCESS_TOKEN);
+        Mockito.doReturn(0L).when(MOCKED_ACCESS_TOKEN).getExpiredMillis();
+
+        String expiredAccessToken = jwtTokenProvider.createAccessToken(MOCKED_ACCESS_TOKEN, 0L, ROLE_회원);
+        Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredAccessToken);
+        expiredCookie.setHttpOnly(true);
+
+        MvcResult result = callRefreshApiWithUserAgent(newUserAgent, refreshCookie, expiredCookie)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        String newRefreshToken = Objects.requireNonNull(
+                result.getResponse().getCookie(REFRESH_TOKEN.getTokenName()))
+            .getValue();
+
+        assertThat(redisUtil.getData(
+            JwtTokenProvider.getRefreshTokenKeyForRedis("0", oldUserAgent), String.class)).isEmpty();
+        assertThat(redisUtil.getData(
+            JwtTokenProvider.getRefreshTokenKeyForRedis("0", newUserAgent), String.class)).isNotEmpty();
+        assertThat(newRefreshToken).isNotEqualTo(refreshCookie.getValue());
+      }
+
+      @Test
       @DisplayName("AT도 있으면 200 OK를 응답한다.")
       void should_200OK_when_accessTokenExist() throws Exception {
         Cookie accessCookie = new Cookie(ACCESS_TOKEN.getTokenName(), adminToken);
@@ -267,6 +298,15 @@ class AuthTestControllerTest extends IntegrationTest {
         return mockMvc.perform(get(REFRESH_URL));
       }
       return mockMvc.perform(get(REFRESH_URL).cookie(cookies));
+    }
+
+    private ResultActions callRefreshApiWithUserAgent(String userAgent, Cookie... cookies) throws Exception {
+      if (cookies == null || cookies.length == 0) {
+        return mockMvc.perform(get(REFRESH_URL).header(HttpHeaders.USER_AGENT, userAgent));
+      }
+      return mockMvc.perform(get(REFRESH_URL)
+          .header(HttpHeaders.USER_AGENT, userAgent)
+          .cookie(cookies));
     }
   }
 }

@@ -180,7 +180,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `베팅 포인트가 10포인트 이상, 1000포인트 이하면 게임이 시작된다`() {
-            player.addPoint(1000)
+            pointService.changePointByDelta(player.id, 1000, "테스트")
             em.flush()
             em.clear()
 
@@ -222,7 +222,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `베팅 포인트가 1000포인트보다 크면 게임을 플레이할 수 없다`() {
-            player.addPoint(1000)
+            pointService.changePointByDelta(player.id, 1000, "테스트")
             memberRepository.save(player)
             callBaseballStart(1001)
                 .andExpect(status().isBadRequest)
@@ -235,7 +235,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `베팅 포인트가 음수거나 10포인트보다 작으면 게임을 플레이 할 수 없다`() {
-            player.addPoint(1000)
+            pointService.changePointByDelta(player.id, 1000, "테스트")
             memberRepository.save(player)
             callBaseballStart(-1000)
                 .andExpect(status().isBadRequest)
@@ -247,7 +247,7 @@ class GameControllerTest : GameApiTestHelper() {
 
         @Test
         fun `베팅 포인트가 가지고 있는 포인트보다 적으면 플레이 할 수 없다`() {
-            player.addPoint(1000)
+            pointService.changePointByDelta(player.id, 1000, "테스트")
             memberRepository.save(player)
             callBaseballStart(2000)
                 .andExpect(status().isBadRequest)
@@ -311,7 +311,10 @@ class GameControllerTest : GameApiTestHelper() {
                 results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("2345", 3, 0))
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint + 2430).isEqualTo(player.point) // 초기 3000 포인트에서 2번 틀렸다고 가정
+            em.flush()
+            em.clear()
+            val afterPlayerPoint = memberRepository.findById(player.id).orElseThrow().point
+            assertThat(beforePlayerPoint + 2430).isEqualTo(afterPlayerPoint) // 초기 3000 포인트에서 2번 틀렸다고 가정
         }
 
         @Test
@@ -323,7 +326,10 @@ class GameControllerTest : GameApiTestHelper() {
                 results = mutableListOf(GuessResultEntity("1234", 2, 2), null, GuessResultEntity("5678", 4, 0))
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint).isEqualTo(player.point)
+            em.flush()
+            em.clear()
+            val afterPlayerPoint = memberRepository.findById(player.id).orElseThrow().point
+            assertThat(beforePlayerPoint).isEqualTo(afterPlayerPoint)
         }
 
         @Test
@@ -338,7 +344,10 @@ class GameControllerTest : GameApiTestHelper() {
                 )
             ).andExpect(status().isOk)
 
-            assertThat(beforePlayerPoint).isEqualTo(player.point)
+            em.flush()
+            em.clear()
+            val afterPlayerPoint = memberRepository.findById(player.id).orElseThrow().point
+            assertThat(beforePlayerPoint).isEqualTo(afterPlayerPoint)
         }
 
         @Test

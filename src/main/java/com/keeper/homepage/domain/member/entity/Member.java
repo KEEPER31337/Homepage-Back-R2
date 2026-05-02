@@ -327,33 +327,6 @@ public class Member {
     return this.point;
   }
 
-  public void addPoint(int point) {
-    this.point += point;
-  }
-
-  public void addPoint(int point, String message) {
-    this.point += point;
-    this.pointLogs.add(PointLog.builder()
-        .time(LocalDateTime.now())
-        .member(this)
-        .point(point)
-        .detail(message)
-        .build());
-  }
-
-  public void minusPoint(int point, String message) {
-    if (this.point < point && point < 0) {
-      throw new IllegalArgumentException();
-    }
-    this.point -= point;
-    this.pointLogs.add(PointLog.builder()
-        .time(LocalDateTime.now())
-        .member(this)
-        .point(-point)
-        .detail(message)
-        .build());
-  }
-
   public String getThumbnailPath() {
     return Optional.ofNullable(this.profile.getThumbnail())
         .map(Thumbnail::getPath)

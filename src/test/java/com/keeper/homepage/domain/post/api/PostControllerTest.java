@@ -3,11 +3,15 @@ package com.keeper.homepage.domain.post.api;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_PASSWORD_LENGTH;
 import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST_TITLE_LENGTH;
+import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.error.ErrorCode.POST_EXAM_FILE_ACCESS_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_EXAM_FILE_POINT_NOT_ENOUGH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_HAS_NOT_THAT_FILE;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateTimeFormat;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
@@ -72,11 +76,11 @@ public class PostControllerTest extends PostApiTestHelper {
   private Post post;
   private static final long virtualPostId = 1;
   private long postId;
-  private static final int EXAM_ACCESSIBLE_POINT = 30000;
+  private static final int EXAM_READ_DEDUCTION_POINT = 10000;
 
   @BeforeEach
   void setUp() throws IOException {
-    member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
+    member = memberTestHelper.generate();
     other = memberTestHelper.generate();
     memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
     otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
@@ -382,8 +386,8 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("writerId").description("게시글 작성자의 ID(익명 게시판일 경우 \"1\")"),
                   fieldWithPath("writerName").description("게시글 작성자의 이름(익명 게시판일 경우 \"익명\")"),
                   fieldWithPath("writerThumbnailPath").description("게시글 작성자의 썸네일 경로(익명 게시판일 경우 null)"),
-                  fieldWithPath("registerTime").description("게시글 등록 시간"),
-                  fieldWithPath("updateTime").description("게시글 수정 시간"),
+                  fieldWithPath("registerTime").description("게시글 등록 시간").attributes(dateTimeFormat()),
+                  fieldWithPath("updateTime").description("게시글 수정 시간").attributes(dateTimeFormat()),
                   fieldWithPath("visitCount").description("게시글 조회수"),
                   fieldWithPath("thumbnailPath").description("게시글 썸네일 주소"),
                   fieldWithPath("content").description("게시글 내용"),
@@ -654,7 +658,7 @@ public class PostControllerTest extends PostApiTestHelper {
                   fieldWithPath("posts[].isSecret").description("게시글 비밀글 여부"),
                   fieldWithPath("posts[].thumbnailPath").description("게시글 썸네일 주소").optional(),
                   fieldWithPath("posts[].likeCount").description("게시글 좋아요 수"),
-                  fieldWithPath("posts[].registerTime").description("게시글 작성 시간")
+                  fieldWithPath("posts[].registerTime").description("게시글 작성 시간").attributes(dateTimeFormat())
               )));
     }
   }
@@ -924,11 +928,83 @@ public class PostControllerTest extends PostApiTestHelper {
               responseFields(
                   fieldWithPath("[].fileId").description("파일 ID"),
                   fieldWithPath("[].name").description("파일 이름"),
-                  fieldWithPath("[].path").description("파일 경로"),
                   fieldWithPath("[].size").description("파일 크기"),
-                  fieldWithPath("[].ipAddress").description("ipAddress"),
                   fieldWithPath("[].uploadTime").description("파일 업로드 시간")
               )));
+    }
+  }
+
+  @Nested
+  @DisplayName("시험게시판 파일 열람 권한")
+  class ExamFilesAccess {
+
+    @BeforeEach
+    void setUp() {
+      other = memberTestHelper.builder().point(EXAM_READ_DEDUCTION_POINT).build();
+      otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글을 열람한 회원이면 열람 권한 조회는 성공한다.")
+    void 열람한_시험게시판_일반글이면_열람권한_조회는_성공한다() throws Exception {
+      Category examCategory = getCategoryBy(시험게시판);
+      postService.create(post, examCategory.getId(), thumbnail, List.of(file));
+      postService.grantExamFilesAccess(other, postId);
+
+      em.flush();
+      em.clear();
+
+      callGetExamFilesAccessApi(otherToken, postId)
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글을 열람하지 않은 회원이면 열람 권한 조회는 실패한다.")
+    void 열람하지_않은_시험게시판_일반글이면_열람권한_조회는_실패한다() throws Exception {
+      Category examCategory = getCategoryBy(시험게시판);
+      postService.create(post, examCategory.getId(), thumbnail, List.of(file));
+
+      em.flush();
+      em.clear();
+
+      MvcResult mvcResult = callGetExamFilesAccessApi(otherToken, postId)
+          .andExpect(status().isForbidden())
+          .andReturn();
+
+      String content = mvcResult.getResponse().getContentAsString();
+      assertThat(content).contains(POST_EXAM_FILE_ACCESS_NEED.getMessage());
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글 열람 권한 생성은 성공한다.")
+    void 시험게시판_일반글_열람권한_생성은_성공한다() throws Exception {
+      Category examCategory = getCategoryBy(시험게시판);
+      postService.create(post, examCategory.getId(), thumbnail, List.of(file));
+
+      em.flush();
+      em.clear();
+
+      callCreateExamFilesAccessApi(otherToken, postId)
+          .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글 열람 권한 생성시 포인트가 부족하면 실패한다.")
+    void 시험게시판_일반글_열람권한_생성시_포인트가_부족하면_실패한다() throws Exception {
+      Category examCategory = getCategoryBy(시험게시판);
+      Member lowPointMember = memberTestHelper.builder().point(9999).build();
+      String lowPointMemberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, lowPointMember.getId(), ROLE_회원);
+      postService.create(post, examCategory.getId(), thumbnail, List.of(file));
+
+      em.flush();
+      em.clear();
+
+      MvcResult mvcResult = callCreateExamFilesAccessApi(lowPointMemberToken, postId)
+          .andExpect(status().isForbidden())
+          .andReturn();
+
+      String content = mvcResult.getResponse().getContentAsString();
+      assertThat(content).contains(POST_EXAM_FILE_POINT_NOT_ENOUGH.getMessage());
     }
   }
 
@@ -1032,6 +1108,44 @@ public class PostControllerTest extends PostApiTestHelper {
 
       String content = mvcResult.getResponse().getContentAsString();
       assertThat(content).contains(POST_HAS_NOT_THAT_FILE.getMessage());
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글을 열람하지 않았으면 파일 다운로드는 실패한다.")
+    void 시험게시판_일반글_미열람시_파일_다운로드는_실패한다() throws Exception {
+      postService.create(post, 시험게시판.getId(), thumbnail, List.of(file));
+      commentTestHelper.builder().post(post).member(other).build();
+
+      em.flush();
+      em.clear();
+      FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
+
+      MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+          .andExpect(status().isForbidden())
+          .andReturn();
+
+      String content = mvcResult.getResponse().getContentAsString();
+      assertThat(content).contains(POST_EXAM_FILE_ACCESS_NEED.getMessage());
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글을 열람했으면 파일 다운로드는 성공한다.")
+    void 시험게시판_일반글_열람시_파일_다운로드는_성공한다() throws Exception {
+      Member reader = memberTestHelper.builder().point(50000).build();
+      String readerToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, reader.getId(), ROLE_회원);
+
+      postService.create(post, 시험게시판.getId(), thumbnail, List.of(file));
+      commentTestHelper.builder().post(post).member(reader).build();
+      postService.grantExamFilesAccess(reader, postId);
+
+      em.flush();
+      em.clear();
+      FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
+
+      mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
+              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), readerToken)))
+          .andExpect(status().isOk());
     }
   }
 

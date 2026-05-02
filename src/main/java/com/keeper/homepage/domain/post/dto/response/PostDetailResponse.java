@@ -34,7 +34,7 @@ public class PostDetailResponse {
   private Boolean isDislike;
   private Boolean isRead;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

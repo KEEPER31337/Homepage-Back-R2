@@ -1,10 +1,12 @@
 package com.keeper.homepage.domain.post.api;
 
 import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateTimeFormat;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.multipart;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
@@ -156,6 +158,16 @@ public class PostApiTestHelper extends IntegrationTest {
             .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
   }
 
+  ResultActions callGetExamFilesAccessApi(String accessToken, long postId) throws Exception {
+    return mockMvc.perform(get("/posts/{postId}/exam-files-access", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
+  ResultActions callCreateExamFilesAccessApi(String accessToken, long postId) throws Exception {
+    return mockMvc.perform(post("/posts/{postId}/exam-files-access", postId)
+        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+  }
+
   FieldDescriptor[] getPostsResponse() {
     return new FieldDescriptor[]{
         fieldWithPath("id").description("게시글 ID"),
@@ -168,7 +180,7 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("isSecret").description("비밀글 여부"),
         fieldWithPath("thumbnailPath").description("게시글 썸네일 주소").optional(),
         fieldWithPath("likeCount").description("게시글 좋아요 수"),
-        fieldWithPath("registerTime").description("게시글 등록 시간")
+        fieldWithPath("registerTime").description("게시글 등록 시간").attributes(dateTimeFormat())
     };
   }
 
@@ -183,7 +195,7 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("visitCount").description("게시글 조회수"),
         fieldWithPath("isSecret").description("비밀글 여부"),
         fieldWithPath("thumbnailPath").description("게시글 썸네일 주소").optional(),
-        fieldWithPath("registerTime").description("게시글 등록 시간")
+        fieldWithPath("registerTime").description("게시글 등록 시간").attributes(dateTimeFormat())
     };
   }
 
@@ -195,7 +207,7 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("categoryName").description("게시글 카테고리 이름"),
         fieldWithPath("visitCount").description("게시글 조회수"),
         fieldWithPath("isSecret").description("비밀글 여부"),
-        fieldWithPath("registerTime").description("게시글 등록 시간")
+        fieldWithPath("registerTime").description("게시글 등록 시간").attributes(dateTimeFormat())
     };
   }
 
@@ -205,7 +217,7 @@ public class PostApiTestHelper extends IntegrationTest {
         fieldWithPath("title").description("게시글 제목"),
         fieldWithPath("categoryId").description("게시글 카테고리 ID"),
         fieldWithPath("categoryName").description("게시글 카테고리 이름"),
-        fieldWithPath("registerTime").description("게시글 등록 시간")
+        fieldWithPath("registerTime").description("게시글 등록 시간").attributes(dateTimeFormat())
     };
   }
 }

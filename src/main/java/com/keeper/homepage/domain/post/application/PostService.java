@@ -1,10 +1,13 @@
 package com.keeper.homepage.domain.post.application;
 
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.휴면회원;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.global.error.ErrorCode.FILE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.POST_ACCESS_CONDITION_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_EXAM_FILE_ACCESS_NEED;
+import static com.keeper.homepage.global.error.ErrorCode.POST_EXAM_FILE_POINT_NOT_ENOUGH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_HAS_NOT_THAT_FILE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.POST_PASSWORD_MISMATCH;
@@ -15,6 +18,7 @@ import com.keeper.homepage.domain.file.application.FileService;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.point.application.PointService;
 import com.keeper.homepage.domain.post.application.convenience.CategoryFindService;
 import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.application.convenience.ValidPostFindService;
@@ -66,11 +70,13 @@ public class PostService {
   private final MemberFindService memberFindService;
   private final FileService fileService;
   private final RedisUtil redisUtil;
+  private final PointService pointService;
 
   private static final String ANONYMOUS_NAME = "익명";
-  private static final int EXAM_ACCESSIBLE_POINT = 30000;
   private static final int EXAM_READ_DEDUCTION_POINT = 10000;
+  private static final int EXAM_READ_REWARD_POINT = 5000;
   private static final String EXAM_READ_POINT_MESSAGE = "족보 열람";
+  private static final String EXAM_READ_REWARD_POINT_MESSAGE = "족보 열람 보상 (다른 회원의 열람에 따른 지급)";
   private static final int RECENT_POSTING_COUNT = 10;
 
   @Transactional
@@ -140,21 +146,14 @@ public class PostService {
 
   private void checkExamPost(Member member, Post post) {
     if (post.isCategory(시험게시판)) {
-      checkAccessibleExamPost(member, post);
+      checkAccessibleExamPost(member);
     }
   }
 
-  private void checkAccessibleExamPost(Member member, Post post) {
-    if (post.isMine(member)) {
-      return;
+  private void checkAccessibleExamPost(Member member) {
+    if (member.isType(휴면회원)) {
+      throw new BusinessException(member.getMemberType().getType(), "memberType", POST_ACCESS_CONDITION_NEED);
     }
-    if (post.isNotice()) {
-      return;
-    }
-    if (member.getPoint() >= EXAM_ACCESSIBLE_POINT) {
-      return;
-    }
-    throw new BusinessException(member.getPoint(), "point", POST_ACCESS_CONDITION_NEED);
   }
 
   private void checkTempPost(Member member, Post post) {
@@ -198,16 +197,39 @@ public class PostService {
   @Transactional
   public List<FileResponse> getFiles(Member member, long postId) {
     Post post = validPostFindService.findById(postId);
-
-    if (post.isCategory(시험게시판) && !member.isRead(post) && !post.isMine(member)) {
-      member.read(post);
-      member.minusPoint(EXAM_READ_DEDUCTION_POINT, EXAM_READ_POINT_MESSAGE);
-    }
     return post.getPostHasFiles()
         .stream()
         .map(PostHasFile::getFile)
         .map(FileResponse::from)
         .toList();
+  }
+
+  public void validateExamFilesAccess(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+    if (isAccessibleExamFiles(member, post)) {
+      return;
+    }
+    throw new BusinessException(postId, "postId", POST_EXAM_FILE_ACCESS_NEED);
+  }
+
+  @Transactional
+  public void grantExamFilesAccess(Member member, long postId) {
+    Post post = validPostFindService.findById(postId);
+    if (isAccessibleExamFiles(member, post)) {
+      return;
+    }
+    member.read(post);
+    pointService.changePointByDelta(member.getId(), -EXAM_READ_DEDUCTION_POINT, EXAM_READ_POINT_MESSAGE,
+        POST_EXAM_FILE_POINT_NOT_ENOUGH);
+    pointService.changePointByDelta(post.getMember().getId(), EXAM_READ_REWARD_POINT, EXAM_READ_REWARD_POINT_MESSAGE);
+  }
+
+  private boolean isAccessibleExamFiles(Member member, Post post) {
+    return !isExamFileAccessTarget(member, post) || member.isRead(post);
+  }
+
+  private boolean isExamFileAccessTarget(Member member, Post post) {
+    return post.isCategory(시험게시판) && !post.isNotice() && !post.isMine(member);
   }
 
   @Transactional
@@ -288,6 +310,9 @@ public class PostService {
     }
     fileIds.stream().forEach(fileId -> {
       FileEntity file = fileService.findById(fileId);
+      if (!file.isPost(post)) {
+        throw new BusinessException(postId, "postId", POST_HAS_NOT_THAT_FILE);
+      }
       postHasFileRepository.deleteByPostAndFile(post, file);
       fileUtil.deleteFileAndEntity(file);
     });
@@ -333,7 +358,7 @@ public class PostService {
   }
 
   public List<MainPostResponse> getRecentPosts() {
-    return postRepository.findAllRecent(PageRequest.of(0, RECENT_POSTING_COUNT))
+    return postRepository.findAllRecent(시험게시판.getId(), PageRequest.of(0, RECENT_POSTING_COUNT))
         .stream()
         .map(this::getMainPostResponse)
         .limit(RECENT_POSTING_COUNT)
@@ -343,7 +368,7 @@ public class PostService {
   public List<MainPostResponse> getTrendPosts() {
     LocalDateTime startDateTime = LocalDateTime.now().minusWeeks(2);
     LocalDateTime endDateTime = LocalDateTime.now().plusDays(1);
-    List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime);
+    List<Post> posts = postRepository.findAllTrend(startDateTime, endDateTime, 시험게시판.getId());
     posts.sort((post1, post2) -> {
       int postScore1 = getPostScore(post1);
       int postScore2 = getPostScore(post2);
@@ -372,14 +397,21 @@ public class PostService {
 
   public FileEntity getFile(Member member, long postId, long fileId) {
     Post post = validPostFindService.findById(postId);
-    if (!member.hasComment(post) && !post.isMine(member)) {
-      throw new BusinessException(postId, "postId", POST_COMMENT_NEED);
-    }
+    validateFileDownloadAccess(member, post);
     FileEntity file = fileService.findById(fileId);
     if (!file.isPost(post)) {
       throw new BusinessException(postId, "postId", POST_HAS_NOT_THAT_FILE);
     }
     return file;
+  }
+
+  private void validateFileDownloadAccess(Member member, Post post) {
+    if (!isAccessibleExamFiles(member, post)) {
+      throw new BusinessException(post.getId(), "postId", POST_EXAM_FILE_ACCESS_NEED);
+    }
+    if (!member.hasComment(post) && !post.isMine(member)) {
+      throw new BusinessException(post.getId(), "postId", POST_COMMENT_NEED);
+    }
   }
 
   @Transactional

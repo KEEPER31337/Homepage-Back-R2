@@ -69,6 +69,6 @@ public class FileEntity {
   }
 
   public boolean isPost(Post post) {
-    return postHasFile.getPost().equals(post);
+    return postHasFile != null && postHasFile.getPost().equals(post);
   }
 }

@@ -8,20 +8,19 @@ import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWit
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
-import io.kotest.core.spec.style.AnnotationSpec.Ignore;
+import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import jakarta.servlet.http.Cookie;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
 
 class SignOutControllerTest extends IntegrationTest {
@@ -40,11 +39,17 @@ class SignOutControllerTest extends IntegrationTest {
         @Test
         @DisplayName("유효한 요청이면 로그아웃이 성공해야 한다.")
         void should_successfullySignOut_when_validRequest() throws Exception {
+            String userAgent = "keeper-test-agent";
             Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN.getTokenName(),
                     jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원));
-            Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN.getTokenName(),
-                    jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), ROLE_회원));
-            callSignOutApi(accessTokenCookie, refreshTokenCookie)
+            String refreshToken = jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), ROLE_회원);
+            Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN.getTokenName(), refreshToken);
+            redisUtil.setDataExpire(
+                JwtTokenProvider.getRefreshTokenKeyForRedis(String.valueOf(member.getId()), userAgent),
+                refreshToken,
+                REFRESH_TOKEN.getExpiredMillis());
+
+            callSignOutApi(userAgent, accessTokenCookie, refreshTokenCookie)
                     .andExpect(status().isNoContent())
                     .andExpect(cookie().maxAge(ACCESS_TOKEN.getTokenName(), 0))
                     .andExpect(cookie().maxAge(REFRESH_TOKEN.getTokenName(), 0))
@@ -54,7 +59,9 @@ class SignOutControllerTest extends IntegrationTest {
                                     cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
                             )));
 
-            assertThat(redisUtil.getData(String.valueOf(member.getId()), String.class)).isEmpty();
+            assertThat(redisUtil.getData(
+                JwtTokenProvider.getRefreshTokenKeyForRedis(String.valueOf(member.getId()), userAgent),
+                String.class)).isEmpty();
         }
 
 //    @Test
@@ -76,8 +83,10 @@ class SignOutControllerTest extends IntegrationTest {
 //    }
 
         @NotNull
-        private ResultActions callSignOutApi(Cookie accessTokenCookie, Cookie refreshTokenCookie) throws Exception {
+        private ResultActions callSignOutApi(String userAgent, Cookie accessTokenCookie, Cookie refreshTokenCookie)
+            throws Exception {
             return mockMvc.perform(post("/sign-out")
+                    .header(HttpHeaders.USER_AGENT, userAgent)
                     .cookie(accessTokenCookie, refreshTokenCookie));
         }
     }

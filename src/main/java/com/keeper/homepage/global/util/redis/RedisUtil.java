@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -64,8 +65,19 @@ public class RedisUtil {
     return secondsUntilMidnight * 1000;
   }
 
-  public void deleteData(String key) {
-    redisTemplate.delete(key);
+  public boolean deleteData(String key) {
+    return redisTemplate.delete(key);
+  }
+
+  public Optional<String> findKeyByValue(String pattern, String expectedValue) {
+    Set<String> keys = redisTemplate.keys(pattern);
+    for (String key : keys) {
+      Optional<String> value = getData(key, String.class);
+      if (value.isPresent() && value.get().equals(expectedValue)) {
+        return Optional.of(key);
+      }
+    }
+    return Optional.empty();
   }
 
   public void flushAll() {

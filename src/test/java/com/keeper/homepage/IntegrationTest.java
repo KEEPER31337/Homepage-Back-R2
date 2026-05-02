@@ -74,6 +74,7 @@ import com.keeper.homepage.domain.merit.dao.MeritTypeRepository;
 import com.keeper.homepage.domain.point.PointLogTestHelper;
 import com.keeper.homepage.domain.point.application.GivePointService;
 import com.keeper.homepage.domain.point.application.PointLogService;
+import com.keeper.homepage.domain.point.application.PointService;
 import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import com.keeper.homepage.domain.post.PostTestHelper;
 import com.keeper.homepage.domain.post.application.PostContentService;
@@ -352,6 +353,9 @@ public class IntegrationTest {
 
   @SpyBean
   protected PointLogService pointLogService;
+
+  @SpyBean
+  protected PointService pointService;
 
   @SpyBean
   protected AdminElectionService adminElectionService;

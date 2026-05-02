@@ -28,11 +28,11 @@ class JwtTokenProviderTest {
     String accessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, userPk, roleType);
     System.out.println(accessToken);
     Claims claims = Jwts
-        .parserBuilder()
-        .setSigningKey(jwtTokenProvider.secretKey)
+        .parser()
+        .verifyWith(jwtTokenProvider.secretKey)
         .build()
-        .parseClaimsJws(accessToken)
-        .getBody();
+        .parseSignedClaims(accessToken)
+        .getPayload();
 
     long resultUserPK = Long.parseLong(claims.getSubject());
     String roles = claims.get("roles").toString();

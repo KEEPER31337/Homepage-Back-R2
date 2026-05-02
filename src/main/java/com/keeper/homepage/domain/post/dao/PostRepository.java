@@ -33,9 +33,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.postStatus.isTemp = false "
+      + "AND p.category.id <> :excludedCategoryId "
       + "AND p.id <> 1 " // virtual post
       + "ORDER BY p.registerTime DESC")
-  List<Post> findAllRecent(Pageable pageable);
+  List<Post> findAllRecent(@Param("excludedCategoryId") Long excludedCategoryId, Pageable pageable);
 
   /**
    * 카테고리 + 공지글 제외 + 임시글 제외 + 등록시간 최신순 정렬
@@ -78,6 +79,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.postStatus.isNotice = false "
       + "AND p.postStatus.isTemp = false "
+      + "AND p.postStatus.isSecret = false "
       + "AND LOWER(p.postContent.content) LIKE LOWER(concat('%', :search, '%')) "
       + "ORDER BY p.registerTime DESC")
   Page<Post> findAllRecentByCategoryAndContent(@Param("category") Category category, @Param("search") String search,
@@ -94,6 +96,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.category = :category "
       + "AND p.postStatus.isNotice = false "
       + "AND p.postStatus.isTemp = false "
+      + "AND p.postStatus.isSecret = false "
       + "AND (LOWER(p.postContent.title) LIKE LOWER(concat('%', :search, '%')) "
       + "OR LOWER(p.postContent.content) LIKE LOWER(concat('%', :search, '%'))) "
       + "ORDER BY p.registerTime DESC")
@@ -119,13 +122,17 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   /**
    * 임시 저장글 제외 + 등록 시간 최신순 정렬 + 날짜 사이의 게시글
    *
-   * @param startDate 가져올 시작 시간
-   * @param endDate   가져올 끝 시간
+   * @param startDate          가져올 시작 시간
+   * @param endDate            가져올 끝 시간
+   * @param excludedCategoryId 제외할 게시글 카테고리 ID
    */
   @Query("SELECT p FROM Post p " +
       "WHERE p.postStatus.isTemp = false " +
+      "AND p.category.id <> :excludedCategoryId " +
       "AND p.registerTime BETWEEN :startDate AND :endDate")
-  List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+  List<Post> findAllTrend(@Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate,
+      @Param("excludedCategoryId") Long excludedCategoryId);
 
 
   @Query("SELECT p FROM Post p "

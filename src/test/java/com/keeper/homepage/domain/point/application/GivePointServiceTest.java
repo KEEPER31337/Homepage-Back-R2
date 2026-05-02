@@ -7,7 +7,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.point.entity.PointLog;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -74,8 +73,10 @@ class GivePointServiceTest extends IntegrationTest {
       em.flush();
       em.clear();
 
-      List<PointLog> giverPointLogs = giver.getPointLogs();
-      List<PointLog> receiverPointLogs = receiver.getPointLogs();
+      Member findGiver = memberRepository.findById(giverId).orElseThrow();
+      Member findReceiver = memberRepository.findById(receiverId).orElseThrow();
+      List<PointLog> giverPointLogs = findGiver.getPointLogs();
+      List<PointLog> receiverPointLogs = findReceiver.getPointLogs();
 
       assertThat(giverPointLogs.stream()
           .map(PointLog::getPoint)

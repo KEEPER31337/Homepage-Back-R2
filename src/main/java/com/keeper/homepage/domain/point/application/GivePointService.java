@@ -1,9 +1,7 @@
 package com.keeper.homepage.domain.point.application;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
-import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.point.dao.PointLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GivePointService {
 
   private final MemberFindService memberFindService;
+  private final PointService pointService;
   private static final String GIVER_DEFAULT_MESSAGE = "포인트 선물 보내기";
   private static final String RECEIVER_DEFAULT_MESSAGE = "포인트 선물 흭득";
 
@@ -26,7 +25,7 @@ public class GivePointService {
     String giverMessage = GIVER_DEFAULT_MESSAGE + (message != null ? " - " + message : "");
     String receiverMessage = RECEIVER_DEFAULT_MESSAGE + (message != null ? " - " + message : "");
 
-    giver.minusPoint(point, giverMessage);
-    receiver.addPoint(point, receiverMessage);
+    pointService.changePointByDelta(giver.getId(), -point, giverMessage);
+    pointService.changePointByDelta(receiver.getId(), point, receiverMessage);
   }
 }

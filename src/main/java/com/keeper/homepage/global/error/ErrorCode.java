@@ -50,6 +50,8 @@ public enum ErrorCode {
   POST_SEARCH_TYPE_NOT_FOUND("존재하지 않는 검색 타입입니다.", HttpStatus.BAD_REQUEST),
   POST_COMMENT_NEED("게시글에 댓글 작성이 필요합니다.", HttpStatus.BAD_REQUEST),
   POST_HAS_NOT_THAT_FILE("해당 파일은 해당 게시글의 파일이 아닙니다.", HttpStatus.BAD_REQUEST),
+  POST_EXAM_FILE_ACCESS_NEED("열람하지 않은 게시글 입니다.", HttpStatus.FORBIDDEN),
+  POST_EXAM_FILE_POINT_NOT_ENOUGH("포인트가 부족합니다.", HttpStatus.FORBIDDEN),
   // COMMENT
   COMMENT_NOT_FOUND("존재하지 않는 댓글입니다.", HttpStatus.NOT_FOUND),
   COMMENT_NOT_WRITER("댓글 작성자가 아닙니다.", HttpStatus.BAD_REQUEST),
@@ -88,6 +90,7 @@ public enum ErrorCode {
   INVALID_BETTING_POINT("베팅포인트는 " + MIN_BETTING_POINT + "이상 " + MAX_BETTING_POINT + "이하의 숫자여야합니다",HttpStatus.BAD_REQUEST),
   // FILE
   FILE_NOT_FOUND("해당 파일은 존재하지 않습니다.", HttpStatus.BAD_REQUEST),
+  FILE_INVALID_TYPE("허용되지 않는 파일 형식입니다.", HttpStatus.BAD_REQUEST),
   // ATTENDANCE
   ATTENDANCE_NOT_FOUND("출석 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   // CTF
@@ -99,6 +102,8 @@ public enum ErrorCode {
   MERIT_TYPE_NOT_FOUND("해당 상벌점 타입을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
   MERIT_TYPE_DETAIL_DUPLICATE("해당 상벌점 타입의 사유가 존재합니다.", HttpStatus.CONFLICT),
   MERIT_LOG_NOT_FOUND("해당 상벌점 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  // POINT
+  POINT_UPDATE_FAILED("포인트 변경에 실패했습니다.", HttpStatus.BAD_REQUEST),
   // ELECTION
   ELECTION_NOT_FOUND("존재하지 않는 선거입니다.", HttpStatus.NOT_FOUND),
   ELECTION_CANNOT_DELETE("비공개 상태 선거만 삭제 가능합니다.", HttpStatus.BAD_REQUEST),

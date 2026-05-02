@@ -16,9 +16,7 @@ public class FileResponse {
 
   private Long fileId;
   private String name;
-  private String path;
   private Long size;
-  private String ipAddress;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime uploadTime;
@@ -27,10 +25,8 @@ public class FileResponse {
     return FileResponse.builder()
         .fileId(file.getId())
         .name(file.getFileName())
-        .path(file.getFilePath())
         .size(file.getFileSize())
         .uploadTime(file.getUploadTime())
-        .ipAddress(file.getIpAddress())
         .build();
   }
 }

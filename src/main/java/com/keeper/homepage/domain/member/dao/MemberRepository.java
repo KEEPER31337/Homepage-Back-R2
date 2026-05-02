@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -42,6 +43,19 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
   List<Member> findAllByMemberTypeAndIdNot(MemberType type, long virtualId);
 
   Page<Member> findAllByMemberTypeAndIdNot(MemberType type, long virtualId, Pageable pageable);
+
+  @Modifying(flushAutomatically = true)
+  @Query("""
+      UPDATE Member m
+      SET m.point = m.point + :delta
+      WHERE m.id = :memberId
+        AND (
+          (:delta >= 0 AND m.point >= 0 AND m.point <= :maxPoint - :delta)
+          OR (:delta < 0 AND m.point >= 0 - :delta)
+        )
+      """)
+  int updatePointByDelta(@Param("memberId") long memberId, @Param("delta") int delta,
+      @Param("maxPoint") int maxPoint);
 
   @Query("SELECT m FROM Member m " +
       "JOIN FETCH m.memberType " +

@@ -44,6 +44,7 @@ class FileServerUtil extends FileUtil {
   @Transactional
   @Override
   protected FileEntity save(@NonNull MultipartFile file) {
+    FileServerValidator.validate(file);
     try {
       LocalDateTime fileUploadTime = LocalDateTime.now();
       File newFile = saveFileInServer(file, fileUploadTime);

@@ -99,6 +99,24 @@ public class PostController {
         .body(responses);
   }
 
+  @GetMapping("/{postId}/exam-files-access")
+  public ResponseEntity<Void> getExamFilesAccess(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    postService.validateExamFilesAccess(member, postId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{postId}/exam-files-access")
+  public ResponseEntity<Void> createExamFilesAccess(
+      @LoginMember Member member,
+      @PathVariable long postId
+  ) {
+    postService.grantExamFilesAccess(member, postId);
+    return ResponseEntity.noContent().build();
+  }
+
   @PutMapping("/{postId}")
   public ResponseEntity<Void> updatePost(
       @LoginMember Member member,

@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.post.application;
 
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.휴면회원;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.익명게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
@@ -15,6 +17,7 @@ import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.point.entity.PointLog;
 import com.keeper.homepage.domain.post.dto.response.PostDetailResponse;
 import com.keeper.homepage.domain.post.dto.response.PostResponse;
 import com.keeper.homepage.domain.post.entity.Post;
@@ -45,7 +48,6 @@ public class PostServiceTest extends IntegrationTest {
   private MockMultipartFile thumbnail;
   private Post post;
   private long postId;
-  private static final int EXAM_ACCESSIBLE_POINT = 30000;
 
   @BeforeEach
   void setUp() {
@@ -114,7 +116,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-      bestMember = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
+      bestMember = memberTestHelper.generate();
       category = getCategoryBy(자유게시판);
       examCategory = getCategoryBy(시험게시판);
     }
@@ -218,9 +220,29 @@ public class PostServiceTest extends IntegrationTest {
     }
 
     @Test
-    @DisplayName("족보 글은 포인트가 20000점 미만이면 조회할 수 없다.")
-    public void should_failGetExamPost_when_pointLessThan20000() throws Exception {
+    @DisplayName("족보 글은 포인트가 없어도 조회할 수 있다.")
+    public void should_successGetExamPost_when_pointIsZero() throws Exception {
       member = memberTestHelper.builder().point(0).build();
+      post = postTestHelper.builder()
+          .member(bestMember)
+          .category(examCategory)
+          .build();
+
+      em.flush();
+      em.clear();
+      member = memberRepository.findById(member.getId()).orElseThrow();
+      post = postRepository.findById(post.getId()).orElseThrow();
+
+      assertDoesNotThrow(() -> {
+        postService.find(member, post.getId(), null);
+      });
+    }
+
+    @Test
+    @DisplayName("휴면 회원은 족보 글을 조회할 수 없다.")
+    public void 휴면_회원은_족보_글을_조회할_수_없다() throws Exception {
+      member = memberTestHelper.generate();
+      member.updateType(getMemberTypeBy(휴면회원));
       post = postTestHelper.builder()
           .member(bestMember)
           .category(examCategory)
@@ -326,6 +348,118 @@ public class PostServiceTest extends IntegrationTest {
   }
 
   @Nested
+  @DisplayName("시험게시판 파일 열람 권한")
+  class ExamFilesAccess {
+
+    private static final int EXAM_READ_DEDUCTION_POINT = 10000;
+    private static final int EXAM_READ_REWARD_POINT = 5000;
+    private static final String EXAM_READ_POINT_MESSAGE = "족보 열람";
+    private static final String EXAM_READ_REWARD_POINT_MESSAGE = "족보 판매 보상";
+
+    private Member writer, reader;
+
+    @BeforeEach
+    void setUp() {
+      writer = memberTestHelper.builder().point(10000).build();
+      reader = memberTestHelper.builder().point(EXAM_READ_DEDUCTION_POINT).build();
+      post = postTestHelper.builder()
+          .member(writer)
+          .category(getCategoryBy(시험게시판))
+          .build();
+      postId = post.getId();
+    }
+
+    @Test
+    @DisplayName("시험게시판 일반글 최초 유료 열람 시 작성자에게 포인트가 지급된다.")
+    void 시험게시판_일반글_최초_유료_열람_시_작성자에게_포인트가_지급된다() {
+      int readerPoint = reader.getPoint();
+      int writerPoint = writer.getPoint();
+
+      postService.grantExamFilesAccess(reader, postId);
+
+      em.flush();
+      em.clear();
+
+      Member findReader = memberRepository.findById(reader.getId()).orElseThrow();
+      Member findWriter = memberRepository.findById(writer.getId()).orElseThrow();
+      List<PointLog> readerPointLogs = pointLogRepository
+          .findAllByMemberId(PageRequest.of(0, 10), reader.getId())
+          .getContent();
+      List<PointLog> writerPointLogs = pointLogRepository
+          .findAllByMemberId(PageRequest.of(0, 10), writer.getId())
+          .getContent();
+
+      assertThat(findReader.getPoint()).isEqualTo(readerPoint - EXAM_READ_DEDUCTION_POINT);
+      assertThat(findWriter.getPoint()).isEqualTo(writerPoint + EXAM_READ_REWARD_POINT);
+      assertThat(readerPointLogs)
+          .extracting(PointLog::getPoint)
+          .contains(-EXAM_READ_DEDUCTION_POINT);
+      assertThat(readerPointLogs)
+          .extracting(PointLog::getDetail)
+          .contains(EXAM_READ_POINT_MESSAGE);
+      assertThat(writerPointLogs)
+          .extracting(PointLog::getPoint)
+          .contains(EXAM_READ_REWARD_POINT);
+      assertThat(writerPointLogs)
+          .extracting(PointLog::getDetail)
+          .contains(EXAM_READ_REWARD_POINT_MESSAGE);
+    }
+
+    @Test
+    @DisplayName("이미 열람 권한이 있으면 작성자에게 포인트를 중복 지급하지 않는다.")
+    void 이미_열람_권한이_있으면_작성자에게_포인트를_중복_지급하지_않는다() {
+      int readerPoint = reader.getPoint();
+      int writerPoint = writer.getPoint();
+
+      postService.grantExamFilesAccess(reader, postId);
+      em.flush();
+      em.clear();
+
+      reader = memberRepository.findById(reader.getId()).orElseThrow();
+      postService.grantExamFilesAccess(reader, postId);
+
+      em.flush();
+      em.clear();
+
+      Member findReader = memberRepository.findById(reader.getId()).orElseThrow();
+      Member findWriter = memberRepository.findById(writer.getId()).orElseThrow();
+      List<PointLog> writerPointLogs = pointLogRepository
+          .findAllByMemberId(PageRequest.of(0, 10), writer.getId())
+          .getContent();
+
+      assertThat(findReader.getPoint()).isEqualTo(readerPoint - EXAM_READ_DEDUCTION_POINT);
+      assertThat(findWriter.getPoint()).isEqualTo(writerPoint + EXAM_READ_REWARD_POINT);
+      assertThat(writerPointLogs)
+          .filteredOn(pointLog -> pointLog.getPoint().equals(EXAM_READ_REWARD_POINT)
+              && EXAM_READ_REWARD_POINT_MESSAGE.equals(pointLog.getDetail()))
+          .hasSize(1);
+    }
+
+    @Test
+    @DisplayName("포인트 부족으로 열람 실패하면 작성자에게 포인트를 지급하지 않는다.")
+    void 포인트_부족으로_열람_실패하면_작성자에게_포인트를_지급하지_않는다() {
+      Member lowPointReader = memberTestHelper.builder().point(EXAM_READ_DEDUCTION_POINT - 1).build();
+      int writerPoint = writer.getPoint();
+
+      assertThatThrownBy(() -> postService.grantExamFilesAccess(lowPointReader, postId))
+          .isInstanceOf(BusinessException.class);
+
+      em.flush();
+      em.clear();
+
+      Member findWriter = memberRepository.findById(writer.getId()).orElseThrow();
+      List<PointLog> writerPointLogs = pointLogRepository
+          .findAllByMemberId(PageRequest.of(0, 10), writer.getId())
+          .getContent();
+
+      assertThat(findWriter.getPoint()).isEqualTo(writerPoint);
+      assertThat(writerPointLogs)
+          .extracting(PointLog::getDetail)
+          .doesNotContain(EXAM_READ_REWARD_POINT_MESSAGE);
+    }
+  }
+
+  @Nested
   @DisplayName("게시글 수정")
   class UpdatePost {
 
@@ -333,7 +467,7 @@ public class PostServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() throws IOException {
-      member = memberTestHelper.builder().point(EXAM_ACCESSIBLE_POINT).build();
+      member = memberTestHelper.generate();
       file1 = new MockMultipartFile("file", "testImage_1x1.png", "image/png",
           new FileInputStream("src/test/resources/images/testImage_1x1.png"));
       file2 = new MockMultipartFile("file",

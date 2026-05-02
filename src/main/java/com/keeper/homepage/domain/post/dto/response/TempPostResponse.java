@@ -19,7 +19,7 @@ public class TempPostResponse {
   private Long categoryId;
   private String categoryName;
 
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime registerTime;
 
   public static TempPostResponse from(Post post) {

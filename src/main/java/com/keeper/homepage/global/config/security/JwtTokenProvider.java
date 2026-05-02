@@ -17,18 +17,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.Key;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,11 +40,15 @@ public class JwtTokenProvider {
   private static final String ROLES = "roles";
   private static final String SEPARATOR = ",";
 
-  final Key secretKey;
+  final SecretKey secretKey;
 
   public static String getRefreshTokenKeyForRedis(String authId, String userAgent) {
     String encodedUserAgent = Base64.getEncoder().encodeToString((userAgent == null ? "" : userAgent).getBytes());
     return "refreshToken:" + authId + ":" + encodedUserAgent;
+  }
+
+  public static String getRefreshTokenKeyPatternForRedis(String authId) {
+    return "refreshToken:" + authId + ":*";
   }
 
   public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey) {
@@ -59,14 +62,13 @@ public class JwtTokenProvider {
   }
 
   public String createAccessToken(JwtType jwtType, String userPk, String... roles) {
-    Claims claims = Jwts.claims().setSubject(userPk);
-    setRoles(claims, roles);
     Date now = new Date();
     return Jwts.builder()
-        .setClaims(claims)
-        .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + jwtType.getExpiredMillis()))
-        .signWith(secretKey, SignatureAlgorithm.HS256)
+        .subject(userPk)
+        .claim(ROLES, String.join(SEPARATOR, roles))
+        .issuedAt(now)
+        .expiration(new Date(now.getTime() + jwtType.getExpiredMillis()))
+        .signWith(secretKey)
         .compact();
   }
 
@@ -83,17 +85,13 @@ public class JwtTokenProvider {
         .split(SEPARATOR));
   }
 
-  private static void setRoles(Claims claims, String[] roles) {
-    claims.put(ROLES, String.join(SEPARATOR, roles));
-  }
-
   private Claims getClaim(String token) {
     return Jwts
-        .parserBuilder()
-        .setSigningKey(secretKey)
+        .parser()
+        .verifyWith(secretKey)
         .build()
-        .parseClaimsJws(token)
-        .getBody();
+        .parseSignedClaims(token)
+        .getPayload();
   }
 
   public long getAuthId(String token) {

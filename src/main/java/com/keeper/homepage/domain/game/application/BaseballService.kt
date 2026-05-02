@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
 import com.keeper.homepage.domain.member.entity.Member
+import com.keeper.homepage.domain.point.application.PointService
 import com.keeper.homepage.global.error.BusinessException
 import com.keeper.homepage.global.error.ErrorCode
 import com.keeper.homepage.global.util.redis.RedisUtil
@@ -28,7 +29,8 @@ const val EARN_POINT_MESSAGE = "야구 게임 획득"
 @Transactional(readOnly = true)
 class BaseballService(
     val redisUtil: RedisUtil,
-    val gameFindService: GameFindService
+    val gameFindService: GameFindService,
+    val pointService: PointService
 ) {
     fun getBaseballGameInfoByMember(): BaseballInfoByMemberResponse =
         BaseballInfoByMemberResponse(
@@ -70,12 +72,13 @@ class BaseballService(
             throw BusinessException(requestMember.id, "memberId", ErrorCode.INVALID_BETTING_POINT)
         }
 
-        if (requestMember.point < bettingPoint) {
-            throw BusinessException(requestMember.id, "memberId", ErrorCode.NOT_ENOUGH_POINT)
-        }
-
         val game = gameFindService.findByMemberOrInit(requestMember)
-        requestMember.minusPoint(bettingPoint, BETTING_POINT_MESSAGE)
+        pointService.changePointByDelta(
+            requestMember.id,
+            -bettingPoint,
+            BETTING_POINT_MESSAGE,
+            ErrorCode.NOT_ENOUGH_POINT
+        )
         game.baseball.increaseBaseballTimes()
 
         val baseballResultEntity = BaseballResultEntity(
@@ -135,7 +138,7 @@ class BaseballService(
 
         if (baseballResultEntity.isEnd()) {
             earnablePoint * 2
-            requestMember.addPoint(earnablePoint, EARN_POINT_MESSAGE)
+            pointService.changePointByDelta(requestMember.id, earnablePoint, EARN_POINT_MESSAGE)
             gameEntity.baseball.baseballDayPoint = earnablePoint
         }
 

@@ -11,6 +11,7 @@ import com.keeper.homepage.domain.attendance.dto.response.AttendanceTodayRankRes
 import com.keeper.homepage.domain.attendance.entity.Attendance;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.point.application.PointService;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.web.WebUtil;
@@ -32,6 +33,7 @@ public class AttendanceService {
   private final AttendanceRepository attendanceRepository;
   private final RedisUtil redisUtil;
   private final MemberFindService memberFindService;
+  private final PointService pointService;
 
   private static final String ATTENDANCE_MESSAGE = "자동 출석입니다.";
   private static final String ATTENDANCE_POINT_MESSAGE = "출석 포인트";
@@ -71,7 +73,7 @@ public class AttendanceService {
         .member(member)
         .build();
     attendanceRepository.save(attendance);
-    member.addPoint(attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
+    pointService.changePointByDelta(member.getId(), attendance.getTotalPoint(), ATTENDANCE_POINT_MESSAGE);
   }
 
   private int getRandomPoint() {
