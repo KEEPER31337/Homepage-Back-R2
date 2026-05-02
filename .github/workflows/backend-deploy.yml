@@ -1,5 +1,15 @@
 name: KEEPER Homepage-Back-R2 deploy
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: Deployment target
+        required: true
+        default: DEV
+        type: choice
+        options:
+          - DEV
+          - PROD
 # todo: 임시로 설정한 부분으로 나중에 release 태그 푸시나 어떻게 할지는 고민.
 
 jobs:
@@ -7,10 +17,20 @@ jobs:
     runs-on: ubuntu-latest
     environment: deploy
     env:
+      DEPLOY_TARGET: ${{ inputs.deploy_target }}
+      DEPLOY_HOST: ${{ secrets[format('DEPLOY_{0}_HOST', inputs.deploy_target)] }}
+      DEPLOY_USER: ${{ secrets[format('DEPLOY_{0}_USER', inputs.deploy_target)] }}
+      SSH_PRIVATE_KEY: ${{ secrets[format('SSH_{0}_PRIVATE_KEY', inputs.deploy_target)] }}
       DEPLOY_RETENTION_COUNT: '3' # keep the newest 3 backend images
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Validate deploy secrets
+        run: |
+          test -n "${DEPLOY_HOST}" || { echo "DEPLOY_${DEPLOY_TARGET}_HOST secret is required" >&2; exit 1; }
+          test -n "${DEPLOY_USER}" || { echo "DEPLOY_${DEPLOY_TARGET}_USER secret is required" >&2; exit 1; }
+          test -n "${SSH_PRIVATE_KEY}" || { echo "SSH_${DEPLOY_TARGET}_PRIVATE_KEY secret is required" >&2; exit 1; }
 
       - name: Set image tag
         run: echo "SHORT_SHA=$(git rev-parse --short "${GITHUB_SHA}")" >> "$GITHUB_ENV"
@@ -30,19 +50,19 @@ jobs:
 
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
 
       - name: Add remote host to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "${DEPLOY_HOST}" >> ~/.ssh/known_hosts
 
       - name: Send Docker Image to Server
-        run: docker pussh homepage-back-r2:${SHORT_SHA} ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+        run: docker pussh homepage-back-r2:${SHORT_SHA} "${DEPLOY_USER}@${DEPLOY_HOST}"
 
       - name: Renew Backend Container and prune old images
         run: |
-          ssh "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+          ssh "${DEPLOY_USER}@${DEPLOY_HOST}" \
             "SHORT_SHA=${SHORT_SHA} DEPLOY_RETENTION_COUNT=${DEPLOY_RETENTION_COUNT} bash -s" << 'EOF'
             set -euo pipefail
 
