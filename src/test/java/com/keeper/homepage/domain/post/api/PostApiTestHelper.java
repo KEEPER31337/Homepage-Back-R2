@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.post.api;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.dateTimeFormat;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -23,56 +23,56 @@ import org.springframework.util.MultiValueMap;
 
 public class PostApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreatePostApiWithFile(String accessToken, MockMultipartFile file, MockPart mockPart)
+  ResultActions callCreatePostApiWithFile(String sessionId, MockMultipartFile file, MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart("/posts")
         .file(file)
         .part(mockPart)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callCreatePostApiWithFiles(String accessToken,
+  ResultActions callCreatePostApiWithFiles(String sessionId,
       MockMultipartFile thumbnail, MockMultipartFile file, MockPart mockPart) throws Exception {
     return mockMvc.perform(multipart("/posts")
         .file(thumbnail)
         .file(file)
         .part(mockPart)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callCreatePostApi(String accessToken, MockPart mockPart)
+  ResultActions callCreatePostApi(String sessionId, MockPart mockPart)
       throws Exception {
     return mockMvc.perform(multipart("/posts")
         .part(mockPart)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callFindPostApi(String accessToken, long postId)
+  ResultActions callFindPostApi(String sessionId, long postId)
       throws Exception {
     return mockMvc.perform(get("/posts/{postId}", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callFindPostApiWithPassword(String accessToken, long postId,
+  ResultActions callFindPostApiWithPassword(String sessionId, long postId,
       String password)
       throws Exception {
     return mockMvc.perform(get("/posts/{postId}", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .param("password", password));
   }
 
-  ResultActions callUpdatePostApi(String accessToken, long postId, PostUpdateRequest request)
+  ResultActions callUpdatePostApi(String sessionId, long postId, PostUpdateRequest request)
       throws Exception {
     return mockMvc.perform(put("/posts/{postId}", postId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callUpdatePostThumbnail(String accessToken, long postId, MockMultipartFile thumbnail)
+  ResultActions callUpdatePostThumbnail(String sessionId, long postId, MockMultipartFile thumbnail)
       throws Exception {
     return mockMvc.perform(multipart("/posts/{postId}/thumbnail", postId)
         .file(thumbnail)
@@ -80,47 +80,47 @@ public class PostApiTestHelper extends IntegrationTest {
           request.setMethod("PATCH");
           return request;
         })
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callDeletePostApi(String accessToken, long postId)
+  ResultActions callDeletePostApi(String sessionId, long postId)
       throws Exception {
     return mockMvc.perform(delete("/posts/{postId}", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callDeletePostThumbnailApi(String accessToken, long postId)
+  ResultActions callDeletePostThumbnailApi(String sessionId, long postId)
       throws Exception {
     return mockMvc.perform(delete("/posts/{postId}/thumbnail", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callAdminDeletePostApi(String adminToken, long postId)
+  ResultActions callAdminDeletePostApi(String adminSessionId, long postId)
       throws Exception {
     return mockMvc.perform(delete("/admin/posts/{postId}", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)));
   }
 
-  ResultActions callLikePostApi(String memberToken, long postId)
+  ResultActions callLikePostApi(String memberSessionId, long postId)
       throws Exception {
     return mockMvc.perform(patch("/posts/{postId}/likes", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callDislikePostApi(String memberToken, long postId)
+  ResultActions callDislikePostApi(String memberSessionId, long postId)
       throws Exception {
     return mockMvc.perform(patch("/posts/{postId}/dislikes", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callGetNoticePostsApi(String memberToken, long categoryId) throws Exception {
+  ResultActions callGetNoticePostsApi(String memberSessionId, long categoryId) throws Exception {
     return mockMvc.perform(get("/posts/notices")
         .param("categoryId", String.valueOf(categoryId))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callAddPostFilesApi(String accessToken, long postId, MockMultipartFile file)
+  ResultActions callAddPostFilesApi(String sessionId, long postId, MockMultipartFile file)
       throws Exception {
     return mockMvc.perform(multipart("/posts/{postId}/files", postId)
         .file(file)
@@ -128,44 +128,44 @@ public class PostApiTestHelper extends IntegrationTest {
           request.setMethod("POST");
           return request;
         })
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callDeletePostFileApi(String accessToken, long postId, PostFileDeleteRequest request)
+  ResultActions callDeletePostFileApi(String sessionId, long postId, PostFileDeleteRequest request)
       throws Exception {
     return mockMvc.perform(delete("/posts/{postId}/files", postId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callGetPostsApi(String memberToken, MultiValueMap<String, String> params) throws Exception {
+  ResultActions callGetPostsApi(String memberSessionId, MultiValueMap<String, String> params) throws Exception {
     return mockMvc.perform(get("/posts")
         .params(params)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callUploadFileForContent(String accessToken, MockMultipartFile file) throws Exception {
+  ResultActions callUploadFileForContent(String sessionId, MockMultipartFile file) throws Exception {
     return mockMvc.perform(multipart("/posts/files")
             .file(file)
-            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+            .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
             .contentType(MediaType.MULTIPART_FORM_DATA));
   }
 
-  ResultActions callGetFileForContent(String accessToken, String fileUUID) throws Exception {
+  ResultActions callGetFileForContent(String sessionId, String fileUUID) throws Exception {
     return mockMvc.perform(get("/posts/files/{fileUUID}", fileUUID)
-            .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+            .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callGetExamFilesAccessApi(String accessToken, long postId) throws Exception {
+  ResultActions callGetExamFilesAccessApi(String sessionId, long postId) throws Exception {
     return mockMvc.perform(get("/posts/{postId}/exam-files-access", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callCreateExamFilesAccessApi(String accessToken, long postId) throws Exception {
+  ResultActions callCreateExamFilesAccessApi(String sessionId, long postId) throws Exception {
     return mockMvc.perform(post("/posts/{postId}/exam-files-access", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
   FieldDescriptor[] getPostsResponse() {

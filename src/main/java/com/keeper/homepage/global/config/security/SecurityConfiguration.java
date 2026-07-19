@@ -1,6 +1,6 @@
 package com.keeper.homepage.global.config.security;
 
-import com.keeper.homepage.global.config.security.filter.RefreshTokenFilter;
+import com.keeper.homepage.global.config.security.filter.SessionAuthenticationFilter;
 import com.keeper.homepage.global.config.security.handler.CustomAccessDeniedHandler;
 import com.keeper.homepage.global.config.security.handler.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class SecurityConfiguration {
 
   private final CustomAccessDeniedHandler customAccessDeniedHandler;
   private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-  private final RefreshTokenFilter refreshTokenFilter;
+  private final SessionAuthenticationFilter sessionAuthenticationFilter;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,7 +43,7 @@ public class SecurityConfiguration {
         .exceptionHandling(exceptions -> exceptions
             .accessDeniedHandler(customAccessDeniedHandler)
             .authenticationEntryPoint(customAuthenticationEntryPoint))
-        .addFilterBefore(refreshTokenFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(sessionAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
 

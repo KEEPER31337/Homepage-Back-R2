@@ -30,8 +30,8 @@ public class AuthTestController {
     return String.valueOf(loginMember.getId());
   }
 
-  @GetMapping("/refresh")
-  public String refreshToken() {
-    return "refresh!";
+  @GetMapping("/session")
+  public String session() {
+    return "session!";
   }
 }

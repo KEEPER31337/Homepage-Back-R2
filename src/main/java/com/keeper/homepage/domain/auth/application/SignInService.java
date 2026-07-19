@@ -12,14 +12,11 @@ import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,30 +31,31 @@ public class SignInService {
 
   private final MemberRepository memberRepository;
   private final AuthCookieService authCookieService;
+  private final SessionService sessionService;
   private final RedisUtil redisUtil;
   private final MailUtil mailUtil;
 
   @Transactional
-  public SignInResponse signIn(LoginId loginId, String rawPassword, HttpServletRequest request,
-      HttpServletResponse response) {
+  public SignInResponse signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
     Member member = memberRepository.findByProfileLoginId(loginId)
         .orElseThrow(
             () -> new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_NOT_FOUND));
     if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
       throw new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_WRONG_ID_OR_PASSWORD);
     }
-    authCookieService.setNewCookieInResponse(String.valueOf(member.getId()),
-        getRoles(member), request.getHeader(HttpHeaders.USER_AGENT), response);
-    return SignInResponse.of(member, Arrays.stream(getRoles(member)).toList());
+    List<String> roles = getRoles(member);
+    var session = sessionService.createSession(member.getId(), roles);
+    authCookieService.setSessionCookie(response, session.sessionId(), session.maxAgeMillis());
+    return SignInResponse.of(member, roles);
   }
 
-  private static String[] getRoles(Member member) {
+  private static List<String> getRoles(Member member) {
     return member.getMemberJob()
         .stream()
         .map(MemberHasMemberJob::getMemberJob)
         .map(MemberJob::getType)
         .map(MemberJobType::name)
-        .toArray(String[]::new);
+        .toList();
   }
 
   @Transactional(readOnly = true)

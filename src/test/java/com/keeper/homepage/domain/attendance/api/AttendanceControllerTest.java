@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.attendance.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.listHelper;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
@@ -33,13 +33,13 @@ import org.springframework.util.MultiValueMap;
 public class AttendanceControllerTest extends IntegrationTest {
 
   private Member member;
-  private String memberToken;
+  private String memberSessionId;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
 
     params.add("page", "0");
     params.add("size", "3");
@@ -63,12 +63,12 @@ public class AttendanceControllerTest extends IntegrationTest {
 
       mockMvc.perform(get("/attendances/today-rank")
               .params(params)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andDo(document("get-today-attendance-ranks",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("page").description("페이지 (default: 0)")
@@ -87,12 +87,12 @@ public class AttendanceControllerTest extends IntegrationTest {
       String securedValue = getSecuredValue(AttendanceController.class, "getContinuousRanks");
 
       mockMvc.perform(get("/attendances/continuous-rank")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andDo(document("get-continuous-attendance-ranks",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               responseFields(
                   listHelper("", getContinuousAttendanceResponse())
@@ -134,12 +134,12 @@ public class AttendanceControllerTest extends IntegrationTest {
       attendanceTestHelper.builder().member(member).build();
 
       mockMvc.perform(get("/attendances/point")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andDo(document("get-today-attendance-point",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               responseFields(
                   fieldWithPath("point").description("기본 포인트"),
@@ -157,13 +157,13 @@ public class AttendanceControllerTest extends IntegrationTest {
       attendanceTestHelper.builder().member(member).build();
 
       mockMvc.perform(get("/attendances/members/{memberId}/info", member.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.totalAttendance").value(member.getTotalAttendance()))
           .andDo(document("get-attendance-info",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원 ID")
@@ -186,13 +186,13 @@ public class AttendanceControllerTest extends IntegrationTest {
 
       mockMvc.perform(get("/attendances/members/{memberId}/total", member.getId())
               .param("localDate", String.valueOf(now.minusYears(1)))
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$[0].value").value(1))
           .andDo(document("get-total-attendance",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원 ID")

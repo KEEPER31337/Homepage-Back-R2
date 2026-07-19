@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.comment.api;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -14,30 +14,30 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public class CommentApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreateCommentApi(String memberToken, CommentCreateRequest request) throws Exception {
+  ResultActions callCreateCommentApi(String memberSessionId, CommentCreateRequest request) throws Exception {
     return mockMvc.perform(post("/comments")
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
         .content(asJsonString(request))
         .contentType(APPLICATION_JSON));
   }
 
-  ResultActions callGetCommentsApi(String memberToken, long postId) throws Exception {
+  ResultActions callGetCommentsApi(String memberSessionId, long postId) throws Exception {
     return mockMvc.perform(get("/comments/posts/{postId}", postId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callDeleteCommentApi(String memberToken, long commentId) throws Exception {
+  ResultActions callDeleteCommentApi(String memberSessionId, long commentId) throws Exception {
     return mockMvc.perform(delete("/comments/{commentId}", commentId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callLikeCommentApi(String memberToken, long commentId) throws Exception {
+  ResultActions callLikeCommentApi(String memberSessionId, long commentId) throws Exception {
     return mockMvc.perform(patch("/comments/{commentId}/likes", commentId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 
-  ResultActions callDislikeCommentApi(String memberToken, long commentId) throws Exception {
+  ResultActions callDislikeCommentApi(String memberSessionId, long commentId) throws Exception {
     return mockMvc.perform(patch("/comments/{commentId}/dislikes", commentId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)));
   }
 }

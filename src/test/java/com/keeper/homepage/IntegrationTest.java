@@ -21,6 +21,7 @@ import com.keeper.homepage.domain.auth.application.CheckDuplicateService;
 import com.keeper.homepage.domain.auth.application.EmailAuthService;
 import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
+import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
@@ -103,7 +104,6 @@ import com.keeper.homepage.domain.survey.dao.SurveyReplyRepository;
 import com.keeper.homepage.domain.survey.dao.SurveyRepository;
 import com.keeper.homepage.domain.thumbnail.dao.ThumbnailRepository;
 import com.keeper.homepage.global.config.password.PasswordFactory;
-import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.file.FileUtil;
 import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
@@ -447,7 +447,7 @@ public class IntegrationTest {
   protected WebApplicationContext webApplicationContext;
 
   @Autowired
-  protected JwtTokenProvider jwtTokenProvider;
+  protected SessionService sessionService;
 
   @Autowired
   protected ObjectMapper objectMapper;

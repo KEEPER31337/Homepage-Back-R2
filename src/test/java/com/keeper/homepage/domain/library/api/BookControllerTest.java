@@ -5,7 +5,7 @@ import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBor
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.반납대기;
 import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -32,13 +32,13 @@ import org.springframework.util.MultiValueMap;
 public class BookControllerTest extends BookApiTestHelper {
 
   private Member member;
-  private String memberToken;
+  private String memberSessionId;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
   }
 
   @Nested
@@ -61,12 +61,12 @@ public class BookControllerTest extends BookApiTestHelper {
       params.add("search", null);
       params.add("page", "0");
       params.add("size", "3");
-      callGetBooksApi(memberToken, params)
+      callGetBooksApi(memberSessionId, params)
           .andExpect(status().isOk())
           .andDo(document("get-books",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("searchType")
@@ -98,12 +98,12 @@ public class BookControllerTest extends BookApiTestHelper {
 
       Book book = bookTestHelper.generate();
 
-      callRequestBorrowBookApi(memberToken, book.getId())
+      callRequestBorrowBookApi(memberSessionId, book.getId())
           .andExpect(status().isCreated())
           .andDo(document("request-book-borrow",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("bookId")
@@ -127,11 +127,11 @@ public class BookControllerTest extends BookApiTestHelper {
           .build()
           .getId();
 
-      callCancelBorrowBookApi(memberToken, borrowId)
+      callCancelBorrowBookApi(memberSessionId, borrowId)
           .andExpect(status().isNoContent())
           .andDo(document("cancel-book-borrow",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("borrowId").description("대출 신청 취소하고자 하는 도서대여 ID")
@@ -145,13 +145,13 @@ public class BookControllerTest extends BookApiTestHelper {
 
     private Member member;
     private Book book;
-    private String memberToken;
+    private String memberSessionId;
 
     @BeforeEach
     void setup() {
       member = memberTestHelper.generate();
       book = bookTestHelper.generate();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -166,12 +166,12 @@ public class BookControllerTest extends BookApiTestHelper {
           .build();
       params.add("page", "0");
       params.add("size", "3");
-      callGetBorrowBooksApi(memberToken, params)
+      callGetBorrowBooksApi(memberSessionId, params)
           .andExpect(status().isOk())
           .andDo(document("get-book-borrows",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("page").description("페이지 (default: 0)")
@@ -200,12 +200,12 @@ public class BookControllerTest extends BookApiTestHelper {
 
       long borrowId = bookBorrowInfo.getId();
 
-      callRequestReturnBookApi(memberToken, borrowId)
+      callRequestReturnBookApi(memberSessionId, borrowId)
           .andExpect(status().isNoContent())
           .andDo(document("request-book-return",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("borrowId")
@@ -229,12 +229,12 @@ public class BookControllerTest extends BookApiTestHelper {
 
       long borrowId = bookBorrowInfo.getId();
 
-      callRequestCancelReturnBookApi(memberToken, borrowId)
+      callRequestCancelReturnBookApi(memberSessionId, borrowId)
           .andDo(print())
           .andExpect(status().isNoContent())
           .andDo(document("cancel-book-return",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("borrowId").description("도서 대출 내역 ID")

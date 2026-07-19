@@ -3,8 +3,7 @@ package com.keeper.homepage.domain.member.api;
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_INVALID;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,14 +66,14 @@ class MemberControllerTest extends MemberApiTestHelper {
 
     private final String oldPassword = "oldPassword123!";
     private Member member;
-    private Cookie[] tokenCookies;
+    private Cookie[] sessionCookies;
 
     @BeforeEach
     void setup() {
       member = memberTestHelper.builder()
           .password(Password.from(oldPassword))
           .build();
-      tokenCookies = memberTestHelper.getTokenCookies(member);
+      sessionCookies = memberTestHelper.getSessionCookies(member);
     }
 
     @Test
@@ -83,15 +82,14 @@ class MemberControllerTest extends MemberApiTestHelper {
       ChangePasswordRequest request = ChangePasswordRequest.from(oldPassword, "password123!@#");
 
       mockMvc.perform(patch("/members/change-password")
-              .cookie(tokenCookies)
+              .cookie(sessionCookies)
               .contentType(APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isNoContent())
           .andExpect(header().string(HttpHeaders.LOCATION, "/members/me"))
           .andDo(document("change-password",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
-                  cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")),
+                  cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID")),
               requestFields(
                   fieldWithPath("oldPassword").description("현재 패스워드"),
                   fieldWithPath("newPassword").description("새로운 패스워드")),
@@ -105,7 +103,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       ChangePasswordRequest request = ChangePasswordRequest.from("wrongPassword", "password123!@#");
 
       mockMvc.perform(patch("/members/change-password")
-              .cookie(tokenCookies)
+              .cookie(sessionCookies)
               .contentType(APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isBadRequest());
@@ -117,12 +115,12 @@ class MemberControllerTest extends MemberApiTestHelper {
   class GetMembers {
 
     private Member member;
-    private String memberToken;
+    private String memberSessionId;
 
     @BeforeEach
     void setUp() throws IOException {
       member = memberTestHelper.builder().build();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -132,13 +130,13 @@ class MemberControllerTest extends MemberApiTestHelper {
       String securedValue = getSecuredValue(MemberController.class, "getMembersByRealName");
 
       mockMvc.perform(get("/members/real-name")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(document("get-members-by-real-name",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("searchName").description("회원 이름 검색어")
@@ -159,7 +157,7 @@ class MemberControllerTest extends MemberApiTestHelper {
   @DisplayName("누적 포인트 랭킹 테스트")
   class PointRanking {
 
-    private String memberToken;
+    private String memberSessionId;
     private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
     @BeforeEach
@@ -168,7 +166,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       memberTestHelper.builder().point(0).build();
       memberTestHelper.builder().point(100).build();
       memberId = memberTestHelper.builder().point(1000).build().getId();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
+      memberSessionId = sessionService.createSessionId(memberId, ROLE_회원);
     }
 
     @Test
@@ -178,12 +176,12 @@ class MemberControllerTest extends MemberApiTestHelper {
 
       params.add("page", "0");
       params.add("size", "3");
-      callGetPointRankingApi(memberToken, params)
+      callGetPointRankingApi(memberSessionId, params)
           .andExpect(status().isOk())
           .andDo(document("get-point-ranks",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("page").description("페이지 (default: 0)")
@@ -201,7 +199,7 @@ class MemberControllerTest extends MemberApiTestHelper {
   @DisplayName("회원 팔로우 언팔로우 테스트")
   class FriendTest {
 
-    private String memberToken;
+    private String memberSessionId;
     private long memberId;
     private long otherId;
 
@@ -209,7 +207,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     void setUp() throws IOException {
       memberId = memberTestHelper.generate().getId();
       otherId = memberTestHelper.generate().getId();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
+      memberSessionId = sessionService.createSessionId(memberId, ROLE_회원);
     }
 
     @Test
@@ -218,12 +216,12 @@ class MemberControllerTest extends MemberApiTestHelper {
       String securedValue = getSecuredValue(MemberController.class, "follow");
 
       mockMvc.perform(post("/members/{memberId}/follow", otherId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isCreated())
           .andDo(document("follow-member",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원 ID")
@@ -236,12 +234,12 @@ class MemberControllerTest extends MemberApiTestHelper {
       String securedValue = getSecuredValue(MemberController.class, "unfollow");
 
       mockMvc.perform(delete("/members/{memberId}/unfollow", otherId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isNoContent())
           .andDo(document("unfollow-member",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원 ID")
@@ -254,12 +252,12 @@ class MemberControllerTest extends MemberApiTestHelper {
   class UpdateProfile {
 
     private Member member;
-    private String memberToken;
+    private String memberSessionId;
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -272,12 +270,12 @@ class MemberControllerTest extends MemberApiTestHelper {
           .birthday(LocalDate.of(1970, 1, 1))
           .build();
 
-      callUpdateProfileApi(memberToken, request)
+      callUpdateProfileApi(memberSessionId, request)
           .andExpect(status().isNoContent())
           .andDo(document("update-profile",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("realName").description("실명을 입력해주세요. (" + REAL_NAME_INVALID + ")"),
@@ -292,13 +290,13 @@ class MemberControllerTest extends MemberApiTestHelper {
 
     private Member member;
     private MockMultipartFile thumbnail;
-    private String memberToken;
+    private String memberSessionId;
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
       thumbnail = thumbnailTestHelper.getThumbnailFile();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -311,13 +309,13 @@ class MemberControllerTest extends MemberApiTestHelper {
                 request.setMethod("PATCH");
                 return request;
               })
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .contentType(MediaType.MULTIPART_FORM_DATA))
           .andExpect(status().isNoContent())
           .andDo(document("update-member-thumbnail",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestParts(
                   partWithName("thumbnail").description("변경할 썸네일")
@@ -330,14 +328,14 @@ class MemberControllerTest extends MemberApiTestHelper {
   class getMemberProfile {
 
     private Member member, otherMember;
-    private String memberToken, otherMemberToken;
+    private String memberSessionId, otherMemberSessionId;
 
     @BeforeEach
     void setUp() throws IOException {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-      otherMemberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, otherMember.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      otherMemberSessionId = sessionService.createSessionId(otherMember.getId(), ROLE_회원);
     }
 
     @Test
@@ -354,15 +352,15 @@ class MemberControllerTest extends MemberApiTestHelper {
       em.clear();
 
       mockMvc.perform(get("/members/{memberId}/profile", member.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
           .andExpect(jsonPath("$.followee[0].name").value("일일"))
           .andDo(document("get-member-profile",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId")
@@ -383,7 +381,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       em.clear();
 
       mockMvc.perform(get("/members/{memberId}/profile", member.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherMemberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, otherMemberSessionId))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.follower[0].name").value("삼삼"))
@@ -398,15 +396,15 @@ class MemberControllerTest extends MemberApiTestHelper {
 
     private Member member, otherMember, admin;
     private Long typeId;
-    private String memberToken, adminToken;
+    private String memberSessionId, adminSessionId;
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
       admin = memberTestHelper.generate();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원, ROLE_회장);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      adminSessionId = sessionService.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
       typeId = 3L;
     }
 
@@ -421,14 +419,14 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       mockMvc.perform(patch("/members/types/{typeId}", typeId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("update-member-type",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("typeId").description("변경할 회원 타입")
@@ -448,7 +446,7 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       mockMvc.perform(patch("/members/types/{typeId}", typeId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andDo(print())
@@ -465,7 +463,7 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       mockMvc.perform(patch("/members/types/{typeId}", typeId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isBadRequest());
@@ -477,13 +475,13 @@ class MemberControllerTest extends MemberApiTestHelper {
   class UpdateMemberProfileEmailAddressTest {
 
     private Member member, otherMember;
-    private String memberToken;
+    private String memberSessionId;
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -494,14 +492,14 @@ class MemberControllerTest extends MemberApiTestHelper {
       EmailAuthRequest request = EmailAuthRequest.from("test@test.com");
 
       mockMvc.perform(post("/members/email-auth")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(document("member-email-auth",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("email").description("인증 코드를 보낼 이메일 주소")
@@ -522,14 +520,14 @@ class MemberControllerTest extends MemberApiTestHelper {
           .updateProfileEmailAddress(any(Member.class), anyString(), anyString(), anyString());
 
       mockMvc.perform(patch("/members/email")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("update-member-emailAddress",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("email").description("회원의 변경할 이메일"),
@@ -544,16 +542,16 @@ class MemberControllerTest extends MemberApiTestHelper {
   class DeleteMemberTest {
 
     private Member member, admin;
-    private String memberToken, adminToken;
+    private String memberSessionId, adminSessionId;
 
     @BeforeEach
     void setUp() {
       member = memberTestHelper.builder()
           .password(Password.from("testPassword"))
           .build();
-      memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
       admin = memberTestHelper.builder().build();
-      adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원, ROLE_회장);
+      adminSessionId = sessionService.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
     }
 
     @Test
@@ -563,14 +561,14 @@ class MemberControllerTest extends MemberApiTestHelper {
       DeleteMemberRequest request = DeleteMemberRequest.from("testPassword");
 
       mockMvc.perform(delete("/members")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("delete-member",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("rawPassword").description("현재 비밀번호")
@@ -589,14 +587,14 @@ class MemberControllerTest extends MemberApiTestHelper {
           .build();
 
       mockMvc.perform(delete("/members/admin")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent())
           .andDo(document("admin-delete-member",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("memberIds").description("하나 이상의 회원 ID")
@@ -609,7 +607,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       DeleteMemberRequest request = DeleteMemberRequest.from("falsePassword");
 
       mockMvc.perform(delete("/members")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(APPLICATION_JSON))
           .andExpect(status().isBadRequest());

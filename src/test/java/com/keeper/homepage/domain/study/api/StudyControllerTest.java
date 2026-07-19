@@ -3,7 +3,7 @@ package com.keeper.homepage.domain.study.api;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_INFORMATION_LENGTH;
 import static com.keeper.homepage.domain.study.dto.request.StudyCreateRequest.STUDY_TITLE_LENGTH;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.field;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -42,7 +42,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
 
   private MockMultipartFile thumbnail;
   private Member member, other;
-  private String memberToken, otherToken;
+  private String memberSessionId, otherSessionId;
   private long studyId;
 
   @BeforeEach
@@ -50,8 +50,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
     member = memberTestHelper.builder().build();
     other = memberTestHelper.builder().build();
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-    otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
+    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+    otherSessionId = sessionService.createSessionId(other.getId(), ROLE_회원);
     studyId = studyTestHelper.builder().headMember(member).build().getId();
   }
 
@@ -79,12 +79,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
+      callCreateStudyApiWithThumbnail(memberSessionId, thumbnail, mockPart)
           .andExpect(status().isCreated())
           .andDo(document("create-study",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue) + " 스터디 생성자는 스터디장이 됩니다.")
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue) + " 스터디 생성자는 스터디장이 됩니다.")
               ),
               requestPartFields(
                   "request",
@@ -128,7 +128,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
+      callCreateStudyApiWithThumbnail(memberSessionId, thumbnail, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -147,7 +147,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
+      callCreateStudyApiWithThumbnail(memberSessionId, thumbnail, mockPart)
           .andExpect(status().isCreated());
     }
 
@@ -165,7 +165,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreateStudyApiWithThumbnail(memberToken, thumbnail, mockPart)
+      callCreateStudyApiWithThumbnail(memberSessionId, thumbnail, mockPart)
           .andExpect(status().isBadRequest());
     }
   }
@@ -179,12 +179,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 유효한_요청_시_스터디_삭제는_성공한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "deleteStudy");
 
-      callDeleteStudyApi(memberToken, studyId)
+      callDeleteStudyApi(memberSessionId, studyId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-study",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("studyId")
@@ -195,7 +195,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     @Test
     @DisplayName("스터디장이 아닐 경우 스터디 삭제는 실패한다.")
     public void 스터디장이_아닐_경우_스터디_삭제는_실패한다() throws Exception {
-      callDeleteStudyApi(otherToken, studyId)
+      callDeleteStudyApi(otherSessionId, studyId)
           .andExpect(status().isBadRequest());
     }
   }
@@ -223,12 +223,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
       em.flush();
       em.clear();
 
-      callGetStudyApi(memberToken, study.getId())
+      callGetStudyApi(memberSessionId, study.getId())
           .andExpect(status().isOk())
           .andDo(document("get-study",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("studyId").description("조회하고자 하는 스터디의 ID")
@@ -252,12 +252,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
     public void 스터디_목록_조회는_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(StudyController.class, "getStudies");
 
-      callGetStudiesApi(memberToken, 2023, 1)
+      callGetStudiesApi(memberSessionId, 2023, 1)
           .andExpect(status().isOk())
           .andDo(document("get-studies",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("year").description("조회하고자 하는 스터디 년도"),
@@ -295,12 +295,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
           .memberIds(List.of(other.getId()))
           .build();
 
-      callUpdateStudyApi(memberToken, studyId, request)
+      callUpdateStudyApi(memberSessionId, studyId, request)
           .andExpect(status().isCreated())
           .andDo(document("update-study",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("studyId").description("스터디 ID")
@@ -331,12 +331,12 @@ public class StudyControllerTest extends StudyApiTestHelper {
       String securedValue = getSecuredValue(StudyController.class, "updateStudyThumbnail");
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
 
-      callUpdateStudyThumbnailApi(memberToken, studyId, newThumbnailFile)
+      callUpdateStudyThumbnailApi(memberSessionId, studyId, newThumbnailFile)
           .andExpect(status().isNoContent())
           .andDo(document("update-study-thumbnail",
                   requestCookies(
-                      cookieWithName(ACCESS_TOKEN.getTokenName())
-                          .description("ACCESS TOKEN %s".formatted(securedValue))
+                      cookieWithName(SESSION_COOKIE_NAME)
+                          .description("OPAQUE SESSION ID %s".formatted(securedValue))
                   ),
                   pathParameters(
                       parameterWithName("studyId").description("스터디 ID")
@@ -353,7 +353,7 @@ public class StudyControllerTest extends StudyApiTestHelper {
     @DisplayName("스터디장이 아닐 경우 스터디 수정은 실패한다.")
     public void 스터디장이_아닐_경우_스터디_수정은_실패한다() throws Exception {
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
-      callUpdateStudyThumbnailApi(otherToken, studyId, newThumbnailFile)
+      callUpdateStudyThumbnailApi(otherSessionId, studyId, newThumbnailFile)
           .andExpect(status().isBadRequest());
     }
   }

@@ -4,7 +4,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_서기;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
@@ -31,7 +31,7 @@ import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest;
 import com.keeper.homepage.domain.merit.dto.request.SearchMeritLogListRequest;
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest;
 import com.keeper.homepage.domain.merit.entity.MeritType;
-import io.jsonwebtoken.io.IOException;
+import java.io.IOException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +45,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
   private MeritType meritType, demeritType;
   private Member member, admin, otherMember;
-  private String userAccessToken, adminAccessToken;
+  private String userSessionId, adminSessionId;
 
   @BeforeEach
   void setUp() throws IOException {
@@ -53,9 +53,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     member = memberTestHelper.generate();
     otherMember = memberTestHelper.generate();
     admin = memberTestHelper.generate();
-    userAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(),
+    userSessionId = sessionService.createSessionId(member.getId(),
         ROLE_회원);
-    adminAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(),
+    adminSessionId = sessionService.createSessionId(member.getId(),
         ROLE_회장, ROLE_부회장, ROLE_서기, ROLE_회원);
   }
 
@@ -68,13 +68,13 @@ public class MeritControllerTest extends MeritApiTestHelper {
     void 상벌점_조회는_성공해야_한다() throws Exception {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritType");
       mockMvc.perform(get("/merits/types")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-meritType",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               responseFields(
                   pageHelper(getMeritTypeResponse())
@@ -85,7 +85,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("일반 회원은 조회할 수 없다.")
     void 일반_회원은_조회할_수_없다() throws Exception {
       mockMvc.perform(get("/merits/types")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, userSessionId)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
@@ -101,14 +101,14 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .build();
 
       mockMvc.perform(post("/merits/types")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
               .content(asJsonString(request))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isCreated())
           .andDo(document("create-meritType",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("score").description("상벌점 점수를 입력해주세요."),
@@ -127,7 +127,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .build();
 
       mockMvc.perform(post("/merits/types")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, userSessionId))
               .content(asJsonString(request))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isForbidden())
@@ -145,14 +145,14 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .build();
 
       mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isCreated())
           .andDo(document("update-meritType",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("score").description("수정할 점수"),
@@ -171,7 +171,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .build();
 
       mockMvc.perform(put("/merits/types/{meritTypeId}", meritType.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, userSessionId))
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isForbidden())
@@ -223,13 +223,13 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())
-                  .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+                  .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-member-meritLog",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId").description("조회하고자 하는 멤버의 ID 값")
@@ -248,7 +248,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
       mockMvc.perform(
               get("/merits/members/{memberId}", member.getId())
-                  .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
+                  .cookie(new Cookie(SESSION_COOKIE_NAME, userSessionId)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
 
@@ -261,13 +261,13 @@ public class MeritControllerTest extends MeritApiTestHelper {
       String securedValue = getSecuredValue(MeritController.class, "searchMeritLogList");
 
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("search-meritLog",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               responseFields(
                   pageHelper(getMeritLogResponse())
@@ -278,7 +278,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
     @DisplayName("일반회원은 상벌점 목록 조회를 할 수 없다.")
     void 일반회원은_상벌점_목록_조회를_할_수_없다() throws Exception {
       mockMvc.perform(get("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, userSessionId)))
           .andExpect(status().isForbidden())
           .andExpect(jsonPath("$.message").exists());
     }
@@ -304,7 +304,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
       mockMvc.perform(get("/merits")
               .param("meritType", "DEMERIT")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.content[0].isMerit").value("false"));
     }
@@ -330,7 +330,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
 
       mockMvc.perform(get("/merits")
               .param("meritType", "MERIT")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.content[0].isMerit").value("true"));
     }
@@ -345,14 +345,14 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .build();
 
       mockMvc.perform(multipart("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isCreated())
           .andDo(document("create-meritLog",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("awarderId").description("수여자의 ID"),
@@ -369,7 +369,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
           .build();
 
       mockMvc.perform(multipart("/merits")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), userAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, userSessionId))
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(request)))
           .andExpect(status().isForbidden())
@@ -432,13 +432,13 @@ public class MeritControllerTest extends MeritApiTestHelper {
       String securedValue = getSecuredValue(MeritController.class, "getAllTotalMeritLogs");
 
       mockMvc.perform(get("/merits/members")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isOk())
           .andDo(document("find-total-merit-logs",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               responseFields(
                   pageHelper(getAllTotalMeritLogsResponse())
@@ -465,12 +465,12 @@ public class MeritControllerTest extends MeritApiTestHelper {
       String securedValue = getSecuredValue(MeritController.class, "deleteMeritLog");
 
       mockMvc.perform(delete("/merits/{meritLogId}", meritLogId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isNoContent())
           .andDo(document("delete-merit-log",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               )));
     }
   }

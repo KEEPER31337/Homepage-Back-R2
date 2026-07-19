@@ -10,8 +10,7 @@ import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStat
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBookBorrowStatusBy
 import com.keeper.homepage.domain.library.entity.BookDepartment.BookDepartmentType
 import com.keeper.homepage.domain.member.entity.job.MemberJob
-import com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN
-import com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN
+import com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import org.junit.jupiter.api.*
 import org.junit.jupiter.params.ParameterizedTest
@@ -99,8 +98,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                     document(
                         "manager-get-books",
                         requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         queryParameters(
                             parameterWithName("page").description("페이지 (양수여야 합니다.)")
@@ -146,8 +144,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                     document(
                         "assign-book",
                         requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         requestPartFields(
                             "bookMetaData",
@@ -209,7 +206,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val member = memberTestHelper.generate()
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
-            callAddBookApi(accessCookies = memberTestHelper.getTokenCookies(member))
+            callAddBookApi(accessCookies = memberTestHelper.getSessionCookies(member))
                 .andExpect(status().isForbidden)
         }
     }
@@ -227,8 +224,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                     document(
                         "delete-book",
                         requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("bookId").description("책 id")
@@ -242,7 +238,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val member = memberTestHelper.generate()
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
-            callDeleteBookApi(accessCookies = memberTestHelper.getTokenCookies(member))
+            callDeleteBookApi(accessCookies = memberTestHelper.getSessionCookies(member))
                 .andExpect(status().isForbidden)
         }
     }
@@ -269,8 +265,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                     document(
                         "modify-book",
                         requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("bookId").description("책 id")
@@ -300,8 +295,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                     document(
                         "modify-book-thumbnail",
                         requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("bookId").description("책 id")
@@ -319,7 +313,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
             val member = memberTestHelper.generate()
             member.assignJob(MemberJob.MemberJobType.ROLE_회원)
 
-            callModifyBookApi(bookId = book.id, accessCookies = memberTestHelper.getTokenCookies(member))
+            callModifyBookApi(bookId = book.id, accessCookies = memberTestHelper.getSessionCookies(member))
                 .andExpect(status().isForbidden)
         }
     }
@@ -384,8 +378,7 @@ class BookManageControllerTest : BookManageApiTestHelper() {
                     document(
                         "get-book-detail",
                         requestCookies(
-                            cookieWithName(ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("bookId").description("책 id")

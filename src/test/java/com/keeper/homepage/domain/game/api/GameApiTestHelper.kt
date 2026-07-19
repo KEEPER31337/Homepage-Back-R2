@@ -25,7 +25,7 @@ class GameApiTestHelper : IntegrationTest() {
     fun setUp() {
         player = memberTestHelper.generate()
         player.assignJob(MemberJob.MemberJobType.ROLE_회원)
-        playerCookies = memberTestHelper.getTokenCookies(player)
+        playerCookies = memberTestHelper.getSessionCookies(player)
     }
 
     @AfterEach
