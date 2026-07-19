@@ -7,7 +7,7 @@ import com.keeper.homepage.domain.library.entity.BookBorrowLog.LogType
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus
 import com.keeper.homepage.domain.library.entity.BookBorrowStatus.BookBorrowStatusType.*
 import com.keeper.homepage.domain.member.entity.embedded.RealName
-import com.keeper.homepage.global.config.security.data.JwtType
+import com.keeper.homepage.global.config.security.session.SessionPolicy
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
 import io.kotest.matchers.shouldBe
 import org.assertj.core.api.Assertions.assertThat
@@ -62,8 +62,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     document(
                         "get-borrow-infos",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         queryParameters(
                             parameterWithName("page").description("페이지 (양수여야 합니다.)")
@@ -379,8 +378,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     document(
                         "borrow-requests-approve",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("borrowId").description("대출 ID")
@@ -416,8 +414,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     document(
                         "borrow-requests-deny",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("borrowId").description("대출 ID")
@@ -463,8 +460,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     document(
                         "borrow-return-approve",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("borrowId").description("대출 ID")
@@ -499,8 +495,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     document(
                         "borrow-return-deny",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         pathParameters(
                             parameterWithName("borrowId").description("대출 ID")
@@ -559,8 +554,7 @@ class BorrowManageControllerTest : BorrowManageApiTestHelper() {
                     document(
                         "get-borrow-logs",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN ${securedValue}"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN ${securedValue}")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID ${securedValue}"),
                         ),
                         queryParameters(
                             parameterWithName("page").description("페이지 (양수여야 합니다.)")

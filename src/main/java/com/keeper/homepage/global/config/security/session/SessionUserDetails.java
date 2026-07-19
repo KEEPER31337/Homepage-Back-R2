@@ -1,26 +1,24 @@
-package com.keeper.homepage.global.config.security.data;
+package com.keeper.homepage.global.config.security.session;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@RequiredArgsConstructor
-public class JwtUserDetails implements UserDetails {
+public class SessionUserDetails implements UserDetails {
 
   private final String id;
-  private final List<String> memberJobs;
+  private final List<SimpleGrantedAuthority> authorities;
+
+  public SessionUserDetails(long id, List<String> roles) {
+    this.id = Long.toString(id);
+    this.authorities = roles.stream().map(SimpleGrantedAuthority::new).toList();
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    List<SimpleGrantedAuthority> roles = new ArrayList<>();
-    for (String memberJob : memberJobs) {
-      roles.add(new SimpleGrantedAuthority(memberJob));
-    }
-    return roles;
+    return authorities;
   }
 
   @Override

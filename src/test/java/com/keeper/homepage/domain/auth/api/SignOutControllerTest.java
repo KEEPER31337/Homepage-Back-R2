@@ -1,8 +1,7 @@
 package com.keeper.homepage.domain.auth.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -13,81 +12,50 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.keeper.homepage.IntegrationTest;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.global.config.security.JwtTokenProvider;
+import com.keeper.homepage.global.config.security.session.SessionIdCodec;
 import jakarta.servlet.http.Cookie;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 class SignOutControllerTest extends IntegrationTest {
 
-    @Nested
-    @DisplayName("로그아웃 테스트")
-    class SignOut {
+  @Autowired
+  private SessionIdCodec sessionIdCodec;
 
-        private Member member;
+  @Autowired
+  private StringRedisTemplate stringRedisTemplate;
 
-        @BeforeEach
-        void setupMember() {
-            member = memberTestHelper.generate();
-        }
+  @Nested
+  @DisplayName("로그아웃 테스트")
+  class SignOut {
 
-        @Test
-        @DisplayName("유효한 요청이면 로그아웃이 성공해야 한다.")
-        void should_successfullySignOut_when_validRequest() throws Exception {
-            String userAgent = "keeper-test-agent";
-            Cookie accessTokenCookie = new Cookie(ACCESS_TOKEN.getTokenName(),
-                    jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원));
-            String refreshToken = jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), ROLE_회원);
-            Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN.getTokenName(), refreshToken);
-            redisUtil.setDataExpire(
-                JwtTokenProvider.getRefreshTokenKeyForRedis(String.valueOf(member.getId()), userAgent),
-                refreshToken,
-                REFRESH_TOKEN.getExpiredMillis());
+    private Member member;
 
-            callSignOutApi(userAgent, accessTokenCookie, refreshTokenCookie)
-                    .andExpect(status().isNoContent())
-                    .andExpect(cookie().maxAge(ACCESS_TOKEN.getTokenName(), 0))
-                    .andExpect(cookie().maxAge(REFRESH_TOKEN.getTokenName(), 0))
-                    .andDo(document("sign-out",
-                            requestCookies(
-                                    cookieWithName(ACCESS_TOKEN.getTokenName()).description("ACCESS TOKEN"),
-                                    cookieWithName(REFRESH_TOKEN.getTokenName()).description("REFRESH TOKEN")
-                            )));
-
-            assertThat(redisUtil.getData(
-                JwtTokenProvider.getRefreshTokenKeyForRedis(String.valueOf(member.getId()), userAgent),
-                String.class)).isEmpty();
-        }
-
-//    @Test
-//    @Disabled
-//    @DisplayName("RT도 AT도 만료되었으면 로그아웃시에 쿠키는 지워져야 한다")
-//    void should_tokenDeleted_when_expiredTokens() throws Exception {
-//      // PK: 0
-//      // ROLE: 회원
-//      // expired: 2023년 1월 25일
-//      String expiredRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDYzMDk2MCwiZXhwIjoxNjc0NjMwOTYwfQ.qcAfEzhDulqsl6HCg8dziVlJoTPORpSUi5sjbCqTg_E";
-//      Cookie expiredRefreshCookie = new Cookie(REFRESH_TOKEN.getTokenName(), expiredRefreshToken);
-//      String expiredToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZXMiOiJST0xFX-2ajOybkCIsImlhdCI6MTY3NDQ1MjM1NSwiZXhwIjoxNjc0NDUyMzU1fQ.FoRbgOGlzLwizp9jQNmM6pET4zA8TPXa56zZlsl6Al8";
-//      Cookie expiredCookie = new Cookie(ACCESS_TOKEN.getTokenName(), expiredToken);
-//
-//      callSignOutApi(expiredCookie, expiredRefreshCookie)
-//              .andExpect(status().isUnauthorized())
-//              .andExpect(cookie().maxAge(ACCESS_TOKEN.getTokenName(), 0))
-//              .andExpect(cookie().maxAge(REFRESH_TOKEN.getTokenName(), 0));
-//    }
-
-        @NotNull
-        private ResultActions callSignOutApi(String userAgent, Cookie accessTokenCookie, Cookie refreshTokenCookie)
-            throws Exception {
-            return mockMvc.perform(post("/sign-out")
-                    .header(HttpHeaders.USER_AGENT, userAgent)
-                    .cookie(accessTokenCookie, refreshTokenCookie));
-        }
+    @BeforeEach
+    void setupMember() {
+      member = memberTestHelper.generate();
     }
+
+    @Test
+    @DisplayName("유효한 요청이면 세션을 삭제하고 로그아웃해야 한다.")
+    void should_successfullySignOut_when_validRequest() throws Exception {
+      String sessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      String key = sessionIdCodec.toRedisKey(sessionId).orElseThrow();
+      Cookie sessionCookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
+
+      mockMvc.perform(post("/sign-out").cookie(sessionCookie))
+          .andExpect(status().isNoContent())
+          .andExpect(cookie().maxAge(SESSION_COOKIE_NAME, 0))
+          .andDo(document("sign-out",
+              requestCookies(
+                  cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID")
+              )));
+
+      assertThat(stringRedisTemplate.hasKey(key)).isFalse();
+    }
+  }
 }

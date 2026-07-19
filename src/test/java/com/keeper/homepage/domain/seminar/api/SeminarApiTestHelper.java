@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.seminar.api;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -23,11 +23,11 @@ public class SeminarApiTestHelper extends IntegrationTest {
 
   ResultActions createSeminarUsingApi(String token, LocalDate openDate) throws Exception {
     return mockMvc.perform(post("/seminars?openDate=" + openDate)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token)));
   }
 
-  Long createSeminarAndGetId(String adminToken, LocalDate openDate) throws Exception {
-    MvcResult mvcResult = createSeminarUsingApi(adminToken, openDate)
+  Long createSeminarAndGetId(String adminSessionId, LocalDate openDate) throws Exception {
+    MvcResult mvcResult = createSeminarUsingApi(adminSessionId, openDate)
         .andDo(print())
         .andExpect(status().isCreated())
         .andReturn();
@@ -39,7 +39,7 @@ public class SeminarApiTestHelper extends IntegrationTest {
   ResultActions startSeminarUsingApi(String token, Long seminarId, SeminarStartRequest request)
       throws Exception {
     return mockMvc.perform(post("/seminars/{seminarId}", seminarId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
@@ -47,47 +47,47 @@ public class SeminarApiTestHelper extends IntegrationTest {
   ResultActions startSeminarUsingApi(String token, Long seminarId, String strJson)
       throws Exception {
     return mockMvc.perform(post("/seminars/{seminarId}", seminarId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
   }
 
   ResultActions searchAllSeminarUsingApi(String token) throws Exception {
     return mockMvc.perform(get("/seminars")
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token)));
   }
 
   ResultActions searchAvailableSeminarUsingApi(String token) throws Exception {
     return mockMvc.perform(get("/seminars/available")
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token)));
   }
 
   ResultActions searchSeminarUsingApi(String token, Long seminarId) throws Exception {
     return mockMvc.perform(get("/seminars/{seminarId}", seminarId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token)));
   }
 
   ResultActions searchDateSeminarUsingApi(String token, String date) throws Exception {
     return mockMvc.perform(get("/seminars?date=" + date)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token)));
   }
 
   ResultActions deleteSeminarUsingApi(String token, Long seminarId) throws Exception {
     return mockMvc.perform(delete("/seminars/{seminarId}", seminarId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token)));
   }
 
   ResultActions attendanceSeminarUsingApi(String token, Long seminarId, SeminarAttendanceCodeRequest request)
       throws Exception {
     return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
 
   ResultActions attendanceSeminarUsingApi(String token, Long seminarId, String strJson) throws Exception {
     return mockMvc.perform(patch("/seminars/{seminarId}/attendances", seminarId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
   }
@@ -95,7 +95,7 @@ public class SeminarApiTestHelper extends IntegrationTest {
   ResultActions changeAttendanceStatusUsingApi(String token, long attendanceId, SeminarAttendanceStatusRequest request)
       throws Exception {
     return mockMvc.perform(patch("/seminars/attendances/{attendanceId}", attendanceId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request)));
   }
@@ -103,7 +103,7 @@ public class SeminarApiTestHelper extends IntegrationTest {
   ResultActions changeAttendanceStatusUsingApi(String token, long attendanceId, String strJson)
       throws Exception {
     return mockMvc.perform(patch("/seminars/attendances/{attendanceId}", attendanceId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), token))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, token))
         .contentType(MediaType.APPLICATION_JSON)
         .content(strJson));
   }

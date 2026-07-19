@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.member.api;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -15,11 +15,11 @@ import org.springframework.util.MultiValueMap;
 
 public class MemberApiTestHelper extends IntegrationTest {
 
-  ResultActions callGetPointRankingApi(String accessToken, MultiValueMap<String, String> params)
+  ResultActions callGetPointRankingApi(String sessionId, MultiValueMap<String, String> params)
       throws Exception {
     return mockMvc.perform(get("/members/point-rank")
         .params(params)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
   FieldDescriptor[] getPointRankResponse() {
@@ -55,11 +55,11 @@ public class MemberApiTestHelper extends IntegrationTest {
     };
   }
 
-  ResultActions callUpdateProfileApi(String accessToken, ProfileUpdateRequest request)
+  ResultActions callUpdateProfileApi(String sessionId, ProfileUpdateRequest request)
       throws Exception {
     return mockMvc.perform(patch("/members/profile")
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 

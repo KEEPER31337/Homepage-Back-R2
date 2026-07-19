@@ -1,9 +1,9 @@
 package com.keeper.homepage.domain.member;
 
 import static com.keeper.homepage.IntegrationTest.generateRandomString;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 
+import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
@@ -16,7 +16,6 @@ import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
-import com.keeper.homepage.global.config.security.JwtTokenProvider;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
@@ -32,7 +31,7 @@ public class MemberTestHelper {
   MemberRepository memberRepository;
 
   @Autowired
-  JwtTokenProvider jwtTokenProvider;
+  SessionService sessionService;
 
   @Autowired
   ThumbnailTestHelper thumbnailTestHelper;
@@ -41,12 +40,10 @@ public class MemberTestHelper {
     return this.builder().build();
   }
 
-  public Cookie[] getTokenCookies(Member member) {
+  public Cookie[] getSessionCookies(Member member) {
     return new Cookie[]{
-        new Cookie(ACCESS_TOKEN.getTokenName(),
-            jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), getRoles(member))),
-        new Cookie(REFRESH_TOKEN.getTokenName(),
-            jwtTokenProvider.createAccessToken(REFRESH_TOKEN, member.getId(), getRoles(member))),
+        new Cookie(SESSION_COOKIE_NAME,
+            sessionService.createSessionId(member.getId(), getRoles(member)))
     };
   }
 

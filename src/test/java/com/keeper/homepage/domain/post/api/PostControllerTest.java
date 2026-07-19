@@ -6,7 +6,7 @@ import static com.keeper.homepage.domain.post.dto.request.PostCreateRequest.POST
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.시험게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.error.ErrorCode.POST_EXAM_FILE_ACCESS_NEED;
 import static com.keeper.homepage.global.error.ErrorCode.POST_EXAM_FILE_POINT_NOT_ENOUGH;
 import static com.keeper.homepage.global.error.ErrorCode.POST_COMMENT_NEED;
@@ -72,7 +72,7 @@ public class PostControllerTest extends PostApiTestHelper {
   private MockMultipartFile thumbnail, file;
   private final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
   private Member member, other;
-  private String memberToken, otherToken;
+  private String memberSessionId, otherSessionId;
   private Post post;
   private static final long virtualPostId = 1;
   private long postId;
@@ -82,8 +82,8 @@ public class PostControllerTest extends PostApiTestHelper {
   void setUp() throws IOException {
     member = memberTestHelper.generate();
     other = memberTestHelper.generate();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
-    otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
+    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+    otherSessionId = sessionService.createSessionId(other.getId(), ROLE_회원);
     category = getCategoryBy(자유게시판);
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     file = new MockMultipartFile("files", "testImage_1x1.png", "image/png",
@@ -123,13 +123,13 @@ public class PostControllerTest extends PostApiTestHelper {
 
       mockCreatePostService();
 
-      callCreatePostApiWithFiles(memberToken, thumbnail, file, mockPart)
+      callCreatePostApiWithFiles(memberSessionId, thumbnail, file, mockPart)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("create-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestPartFields(
                   "request",
@@ -162,7 +162,7 @@ public class PostControllerTest extends PostApiTestHelper {
     void should_201CREATED_when_createPostWithThumbnail() throws Exception {
       mockCreatePostService();
 
-      callCreatePostApiWithFile(memberToken, thumbnail, mockPart)
+      callCreatePostApiWithFile(memberSessionId, thumbnail, mockPart)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId));
     }
@@ -172,7 +172,7 @@ public class PostControllerTest extends PostApiTestHelper {
     void should_201CREATED_when_createPostWithFiles() throws Exception {
       mockCreatePostService();
 
-      callCreatePostApiWithFile(memberToken, file, mockPart)
+      callCreatePostApiWithFile(memberSessionId, file, mockPart)
           .andDo(print())
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId));
@@ -183,7 +183,7 @@ public class PostControllerTest extends PostApiTestHelper {
     void should_201CREATED_when_createPost() throws Exception {
       mockCreatePostService();
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId));
     }
@@ -204,7 +204,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId));
     }
@@ -224,7 +224,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -243,7 +243,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -262,7 +262,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -281,7 +281,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -301,7 +301,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -320,7 +320,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -340,7 +340,7 @@ public class PostControllerTest extends PostApiTestHelper {
       MockPart mockPart = new MockPart("request", asJsonString(request).getBytes(StandardCharsets.UTF_8));
       mockPart.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-      callCreatePostApi(memberToken, mockPart)
+      callCreatePostApi(memberSessionId, mockPart)
           .andExpect(status().isBadRequest());
     }
 
@@ -364,12 +364,12 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
 
-      callFindPostApi(memberToken, postId)
+      callFindPostApi(memberSessionId, postId)
           .andExpect(status().isOk())
           .andDo(document("find-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
@@ -416,20 +416,20 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
 
-      callFindPostApiWithPassword(memberToken, postId, "비밀비밀")
+      callFindPostApiWithPassword(memberSessionId, postId, "비밀비밀")
           .andExpect(status().isOk());
     }
 
     @Test
     @DisplayName("유효하지 않은 게시글은 조회할 수 없다.")
     public void should_fail_when_getInValidPost() throws Exception {
-      callFindPostApi(memberToken, -1)
+      callFindPostApi(memberSessionId, -1)
           .andExpect(status().isNotFound());
 
-      callFindPostApi(memberToken, 0)
+      callFindPostApi(memberSessionId, 0)
           .andExpect(status().isNotFound());
 
-      callFindPostApi(memberToken, virtualPostId)
+      callFindPostApi(memberSessionId, virtualPostId)
           .andExpect(status().isNotFound());
     }
 
@@ -446,10 +446,10 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
 
-      callFindPostApiWithPassword(otherToken, postId, null)
+      callFindPostApiWithPassword(otherSessionId, postId, null)
           .andExpect(status().isForbidden());
 
-      callFindPostApiWithPassword(otherToken, postId, "다른 비밀번호")
+      callFindPostApiWithPassword(otherSessionId, postId, "다른 비밀번호")
           .andExpect(status().isForbidden());
     }
   }
@@ -473,13 +473,13 @@ public class PostControllerTest extends PostApiTestHelper {
           .password("게시글 비밀번호")
           .build();
 
-      callUpdatePostApi(memberToken, postId, request)
+      callUpdatePostApi(memberSessionId, postId, request)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/posts/" + postId))
           .andDo(document("update-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -508,12 +508,12 @@ public class PostControllerTest extends PostApiTestHelper {
       String securedValue = getSecuredValue(PostController.class, "updatePostThumbnail");
       MockMultipartFile newThumbnailFile = thumbnailTestHelper.getThumbnailFile();
 
-      callUpdatePostThumbnail(memberToken, postId, newThumbnailFile)
+      callUpdatePostThumbnail(memberSessionId, postId, newThumbnailFile)
           .andExpect(status().isNoContent())
           .andDo(document("update-post-thumbnail",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -538,7 +538,7 @@ public class PostControllerTest extends PostApiTestHelper {
           .password("게시글 비밀번호")
           .build();
 
-      callUpdatePostApi(otherToken, postId, request)
+      callUpdatePostApi(otherSessionId, postId, request)
           .andExpect(status().isForbidden());
     }
   }
@@ -552,12 +552,12 @@ public class PostControllerTest extends PostApiTestHelper {
     public void should_success_when_writerIsMe() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "deletePost");
 
-      callDeletePostApi(memberToken, postId)
+      callDeletePostApi(memberSessionId, postId)
           .andExpect(status().isOk())
           .andDo(document("delete-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -571,7 +571,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("내가 작성한 게시글이 아닌 경우 게시글 삭제는 실패한다.")
     public void should_success_when_writerIsNotMe() throws Exception {
-      callDeletePostApi(otherToken, postId)
+      callDeletePostApi(otherSessionId, postId)
           .andExpect(status().isForbidden());
     }
   }
@@ -585,12 +585,12 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 게시글_좋아요는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "likePost");
 
-      callLikePostApi(memberToken, postId)
+      callLikePostApi(memberSessionId, postId)
           .andExpect(status().isNoContent())
           .andDo(document("like-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -603,12 +603,12 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 게시글_싫어요는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "dislikePost");
 
-      callDislikePostApi(memberToken, postId)
+      callDislikePostApi(memberSessionId, postId)
           .andExpect(status().isNoContent())
           .andDo(document("dislike-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -636,12 +636,12 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 공지글_목록_조회는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "getNoticePosts");
 
-      callGetNoticePostsApi(memberToken, category.getId())
+      callGetNoticePostsApi(memberSessionId, category.getId())
           .andExpect(status().isOk())
           .andDo(document("get-notice-posts",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("categoryId")
@@ -672,12 +672,12 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 유효한_요청일_경우_썸네일_삭제는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "deletePostThumbnail");
 
-      callDeletePostThumbnailApi(memberToken, postId)
+      callDeletePostThumbnailApi(memberSessionId, postId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-post-thumbnail",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -695,12 +695,12 @@ public class PostControllerTest extends PostApiTestHelper {
     public void 유효한_요청일_경우_게시글_파일_추가는_성공한다() throws Exception {
       String securedValue = getSecuredValue(PostController.class, "addPostFiles");
 
-      callAddPostFilesApi(memberToken, postId, file)
+      callAddPostFilesApi(memberSessionId, postId, file)
           .andExpect(status().isCreated())
           .andDo(document("add-post-files",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -736,12 +736,12 @@ public class PostControllerTest extends PostApiTestHelper {
           .fileIds(List.of(fileId))
           .build();
 
-      callDeletePostFileApi(memberToken, postId, request)
+      callDeletePostFileApi(memberSessionId, postId, request)
           .andExpect(status().isNoContent())
           .andDo(document("delete-post-file",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -776,12 +776,12 @@ public class PostControllerTest extends PostApiTestHelper {
       params.add("search", null);
       params.add("page", "0");
       params.add("size", "3");
-      callGetPostsApi(memberToken, params)
+      callGetPostsApi(memberSessionId, params)
           .andExpect(status().isOk())
           .andDo(document("get-posts",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("categoryId").description("게시글 카테고리 ID"),
@@ -810,7 +810,7 @@ public class PostControllerTest extends PostApiTestHelper {
       params.add("search", null);
       params.add("page", "-1");
       params.add("size", "3");
-      callGetPostsApi(memberToken, params)
+      callGetPostsApi(memberSessionId, params)
           .andExpect(status().isBadRequest());
     }
 
@@ -848,12 +848,12 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
       mockMvc.perform(get("/posts/members/{memberId}", member.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andDo(document("get-member-posts",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("memberId").description("회원의 ID")
@@ -881,12 +881,12 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
       mockMvc.perform(get("/posts/temp")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andDo(document("get-temp-posts",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("page").description("페이지 (default: 0)")
@@ -915,12 +915,12 @@ public class PostControllerTest extends PostApiTestHelper {
       em.clear();
 
       mockMvc.perform(get("/posts/{postId}/files", postId)
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andDo(document("get-post-files",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId").description("조회하고자 하는 게시글의 ID")
@@ -941,7 +941,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @BeforeEach
     void setUp() {
       other = memberTestHelper.builder().point(EXAM_READ_DEDUCTION_POINT).build();
-      otherToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, other.getId(), ROLE_회원);
+      otherSessionId = sessionService.createSessionId(other.getId(), ROLE_회원);
     }
 
     @Test
@@ -954,7 +954,7 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
 
-      callGetExamFilesAccessApi(otherToken, postId)
+      callGetExamFilesAccessApi(otherSessionId, postId)
           .andExpect(status().isNoContent());
     }
 
@@ -967,7 +967,7 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
 
-      MvcResult mvcResult = callGetExamFilesAccessApi(otherToken, postId)
+      MvcResult mvcResult = callGetExamFilesAccessApi(otherSessionId, postId)
           .andExpect(status().isForbidden())
           .andReturn();
 
@@ -984,7 +984,7 @@ public class PostControllerTest extends PostApiTestHelper {
       em.flush();
       em.clear();
 
-      callCreateExamFilesAccessApi(otherToken, postId)
+      callCreateExamFilesAccessApi(otherSessionId, postId)
           .andExpect(status().isNoContent());
     }
 
@@ -993,13 +993,13 @@ public class PostControllerTest extends PostApiTestHelper {
     void 시험게시판_일반글_열람권한_생성시_포인트가_부족하면_실패한다() throws Exception {
       Category examCategory = getCategoryBy(시험게시판);
       Member lowPointMember = memberTestHelper.builder().point(9999).build();
-      String lowPointMemberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, lowPointMember.getId(), ROLE_회원);
+      String lowPointMemberSessionId = sessionService.createSessionId(lowPointMember.getId(), ROLE_회원);
       postService.create(post, examCategory.getId(), thumbnail, List.of(file));
 
       em.flush();
       em.clear();
 
-      MvcResult mvcResult = callCreateExamFilesAccessApi(lowPointMemberToken, postId)
+      MvcResult mvcResult = callCreateExamFilesAccessApi(lowPointMemberSessionId, postId)
           .andExpect(status().isForbidden())
           .andReturn();
 
@@ -1025,13 +1025,13 @@ public class PostControllerTest extends PostApiTestHelper {
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
       mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, otherSessionId)))
           .andExpect(status().isOk())
           .andExpect(header().string(CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\""))
           .andDo(document("download-post-file",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId").description("게시글 ID"),
@@ -1052,7 +1052,7 @@ public class PostControllerTest extends PostApiTestHelper {
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
       MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, otherSessionId)))
           .andExpect(status().isBadRequest())
           .andReturn();
 
@@ -1070,7 +1070,7 @@ public class PostControllerTest extends PostApiTestHelper {
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
       mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk());
     }
 
@@ -1102,7 +1102,7 @@ public class PostControllerTest extends PostApiTestHelper {
       FileEntity file = postHasFileRepository.findByPost(otherPost).get().getFile();
 
       MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, otherSessionId)))
           .andExpect(status().isBadRequest())
           .andReturn();
 
@@ -1121,7 +1121,7 @@ public class PostControllerTest extends PostApiTestHelper {
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
       MvcResult mvcResult = mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), otherToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, otherSessionId)))
           .andExpect(status().isForbidden())
           .andReturn();
 
@@ -1133,7 +1133,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @DisplayName("시험게시판 일반글을 열람했으면 파일 다운로드는 성공한다.")
     void 시험게시판_일반글_열람시_파일_다운로드는_성공한다() throws Exception {
       Member reader = memberTestHelper.builder().point(50000).build();
-      String readerToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, reader.getId(), ROLE_회원);
+      String readerSessionId = sessionService.createSessionId(reader.getId(), ROLE_회원);
 
       postService.create(post, 시험게시판.getId(), thumbnail, List.of(file));
       commentTestHelper.builder().post(post).member(reader).build();
@@ -1144,7 +1144,7 @@ public class PostControllerTest extends PostApiTestHelper {
       FileEntity file = postHasFileRepository.findByPost(post).get().getFile();
 
       mockMvc.perform(get("/posts/{postId}/files/{fileId}", postId, file.getId())
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), readerToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, readerSessionId)))
           .andExpect(status().isOk());
     }
   }
@@ -1161,12 +1161,12 @@ public class PostControllerTest extends PostApiTestHelper {
       file = new MockMultipartFile("file", "testImage_1x1.png", "image/png",
               new FileInputStream("src/test/resources/images/testImage_1x1.png"));
 
-      callUploadFileForContent(memberToken, file)
+      callUploadFileForContent(memberSessionId, file)
               .andExpect(status().isCreated())
               .andDo(document("upload-file-for-content",
                       requestCookies(
-                              cookieWithName(ACCESS_TOKEN.getTokenName())
-                                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                              cookieWithName(SESSION_COOKIE_NAME)
+                                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
                       ),
                       requestParts(
                               partWithName("file").description("게시글의 본문에 넣을 파일")
@@ -1189,14 +1189,14 @@ public class PostControllerTest extends PostApiTestHelper {
 
       FileEntity fileEntity = postService.uploadFileForContent(file);
 
-      callGetFileForContent(memberToken, fileEntity.getFileUUID())
+      callGetFileForContent(memberSessionId, fileEntity.getFileUUID())
               .andExpect(status().isOk())
               .andExpect(
                       header().string(CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\""))
               .andDo(document("get-file-for-content",
                       requestCookies(
-                              cookieWithName(ACCESS_TOKEN.getTokenName())
-                                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                              cookieWithName(SESSION_COOKIE_NAME)
+                                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
                       ),
                       pathParameters(
                               parameterWithName("fileUUID").description("업로드한 파일의 uuid")
@@ -1209,7 +1209,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @Test
     @DisplayName("존재하지 않는 파일 해시일 경우 게시글 본문 파일 다운로드는 실패한다.")
     public void 존재하지_않는_파일_해시일_경우_게시글_본문_파일_다운로드는_실패한다() throws Exception {
-      callGetFileForContent(memberToken, "invalidFileUUID")
+      callGetFileForContent(memberSessionId, "invalidFileUUID")
               .andExpect(status().isBadRequest());
     }
   }

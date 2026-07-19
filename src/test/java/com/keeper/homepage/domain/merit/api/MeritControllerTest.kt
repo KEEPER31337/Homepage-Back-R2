@@ -7,14 +7,14 @@ import com.keeper.homepage.domain.merit.dto.request.AddMeritTypeRequest
 import com.keeper.homepage.domain.merit.dto.request.GiveMeritPointRequest
 import com.keeper.homepage.domain.merit.dto.request.UpdateMeritTypeRequest
 import com.keeper.homepage.domain.merit.entity.MeritType
-import com.keeper.homepage.global.config.security.data.JwtType.*
+import com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME
 import com.keeper.homepage.global.dsl.rest_docs.Documentation
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod
 import com.keeper.homepage.global.dsl.rest_docs.DocsMethod.*
 import com.keeper.homepage.global.dsl.rest_docs.docs
 import com.keeper.homepage.global.dsl.rest_docs.means
 import com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue
-import io.jsonwebtoken.io.IOException
+import java.io.IOException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -31,8 +31,8 @@ class MeritControllerTest1 : IntegrationTest() {
     private var member: Member? = null
     private var admin: Member? = null
     private var otherMember: Member? = null
-    private var userAccessToken: String? = null
-    private var adminAccessToken: String? = null
+    private var userSessionId: String? = null
+    private var adminSessionId: String? = null
 
     @BeforeEach
     @Throws(IOException::class)
@@ -41,9 +41,9 @@ class MeritControllerTest1 : IntegrationTest() {
         member = memberTestHelper.generate()
         otherMember = memberTestHelper.generate()
         admin = memberTestHelper.generate().apply { assignJob(MemberJob.MemberJobType.ROLE_회장) }
-        userAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member!!.id,
+        userSessionId = sessionService.createSessionId(member!!.id,
                 MemberJob.MemberJobType.ROLE_회원)
-        adminAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member!!.id,
+        adminSessionId = sessionService.createSessionId(member!!.id,
                 MemberJob.MemberJobType.ROLE_회장, MemberJob.MemberJobType.ROLE_부회장, MemberJob.MemberJobType.ROLE_서기, MemberJob.MemberJobType.ROLE_회원)
     }
 
@@ -56,15 +56,14 @@ class MeritControllerTest1 : IntegrationTest() {
         fun `상벌점 조회는 성공해야 한다`() {
             val securedValue = getSecuredValue(MeritController::class.java, "searchMeritType")
             docs(mockMvc, DocsMethod.GET, "/merits/types") {
-                request { cookie(*memberTestHelper.getTokenCookies(admin)) }
+                request { cookie(*memberTestHelper.getSessionCookies(admin)) }
                 result {
                     expect(status().isOk())
                     expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 }
                 response {
                     cookie(
-                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
-                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                            SESSION_COOKIE_NAME means "OPAQUE SESSION ID $securedValue",
                     )
                     responseBodyWithPaging(
                             "id" means "상벌점 타입의 ID",
@@ -79,7 +78,7 @@ class MeritControllerTest1 : IntegrationTest() {
         @Test
         fun `일반 회원은 조회할 수 없다`() {
             docs(mockMvc, DocsMethod.GET, "/merits/types") {
-                request { cookie(*memberTestHelper.getTokenCookies(member!!)) }
+                request { cookie(*memberTestHelper.getSessionCookies(member!!)) }
                 result {
                     expect(status().isForbidden())
                     expect(jsonPath("$.message").exists())
@@ -98,15 +97,14 @@ class MeritControllerTest1 : IntegrationTest() {
 
             docs(mockMvc, DocsMethod.POST, "/merits/types") {
                 request {
-                    cookie(*memberTestHelper.getTokenCookies(admin))
+                    cookie(*memberTestHelper.getSessionCookies(admin))
                     content(asJsonString(request))
                     contentType(MediaType.APPLICATION_JSON)
                 }
                 result { expect(status().isCreated()) }
                 response {
                     cookie(
-                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
-                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                            SESSION_COOKIE_NAME means "OPAQUE SESSION ID $securedValue",
                     )
                     requestBody(
                             "score" means "상벌점 점수를 입력해주세요.",
@@ -127,7 +125,7 @@ class MeritControllerTest1 : IntegrationTest() {
 
             docs(mockMvc, DocsMethod.POST, "/merits/types") {
                 request {
-                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                    cookie(*memberTestHelper.getSessionCookies(member!!))
                     content(asJsonString(request))
                     contentType(MediaType.APPLICATION_JSON)
                 }
@@ -149,7 +147,7 @@ class MeritControllerTest1 : IntegrationTest() {
 
             docs(mockMvc, DocsMethod.PUT, "/merits/types/{meritTypeId}", "${meritType!!.id}") {
                 request {
-                    cookie(*memberTestHelper.getTokenCookies(admin))
+                    cookie(*memberTestHelper.getSessionCookies(admin))
                     content(asJsonString(request))
                     contentType(MediaType.APPLICATION_JSON)
                 }
@@ -157,8 +155,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 response {
                     path("meritTypeId" means "수정하고자 하는 상벌점 타입의 ID")
                     cookie(
-                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
-                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                            SESSION_COOKIE_NAME means "OPAQUE SESSION ID $securedValue",
                     )
                     requestBody(
                             "score" means "상벌점 점수를 입력해주세요.",
@@ -179,7 +176,7 @@ class MeritControllerTest1 : IntegrationTest() {
 
             docs(mockMvc, DocsMethod.PUT, "/merits/types/{meritTypeId}", "${meritType!!.id}") {
                 request {
-                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                    cookie(*memberTestHelper.getSessionCookies(member!!))
                     content(asJsonString(request))
                     contentType(MediaType.APPLICATION_JSON)
                 }
@@ -233,7 +230,7 @@ class MeritControllerTest1 : IntegrationTest() {
                     .build()
 
             docs(mockMvc, DocsMethod.GET, "/merits/members/{memberId}", "${member!!.id}") {
-                request { cookie(*memberTestHelper.getTokenCookies(admin)) }
+                request { cookie(*memberTestHelper.getSessionCookies(admin)) }
                 result {
                     expect(status().isOk())
                     expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -241,8 +238,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 response {
                     path("memberId" means "조회하고자 하는 멤버의 ID 값")
                     cookie(
-                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
-                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                            SESSION_COOKIE_NAME means "OPAQUE SESSION ID $securedValue",
                     )
                     responseBodyWithPaging(
                             "id" means "상벌점 로그의 ID",
@@ -263,7 +259,7 @@ class MeritControllerTest1 : IntegrationTest() {
                     .build()
 
             docs(mockMvc, DocsMethod.GET, "/merits/members/{memberId}", "${member!!.id}") {
-                request { cookie(*memberTestHelper.getTokenCookies(member!!)) }
+                request { cookie(*memberTestHelper.getSessionCookies(member!!)) }
                 result {
                     expect(status().isForbidden())
                     expect(jsonPath("$.message").exists())
@@ -275,15 +271,14 @@ class MeritControllerTest1 : IntegrationTest() {
         fun `상벌점 목록 조회를 성공해야 한다`() {
             val securedValue = getSecuredValue(MeritController::class.java, "searchMeritLogList")
             docs(mockMvc, DocsMethod.GET, "/merits") {
-                request { cookie(*memberTestHelper.getTokenCookies(admin)) }
+                request { cookie(*memberTestHelper.getSessionCookies(admin)) }
                 result {
                     expect(status().isOk())
                     expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 }
                 response {
                     cookie(
-                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
-                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                            SESSION_COOKIE_NAME means "OPAQUE SESSION ID $securedValue",
                     )
                     responseBodyWithPaging(
                             "id" means "상벌점 로그의 ID",
@@ -302,7 +297,7 @@ class MeritControllerTest1 : IntegrationTest() {
         @Test
         fun `일반회원은 상벌점 목록 조회를 할 수 없다`() {
             docs(mockMvc, DocsMethod.GET, "/merits") {
-                request { cookie(*memberTestHelper.getTokenCookies(member!!)) }
+                request { cookie(*memberTestHelper.getSessionCookies(member!!)) }
                 result {
                     expect(status().isForbidden())
                     expect(jsonPath("$.message").exists())
@@ -331,7 +326,7 @@ class MeritControllerTest1 : IntegrationTest() {
             docs(mockMvc, DocsMethod.GET, "/merits") {
                 request {
                     param("meritType", "DEMERIT")
-                    cookie(*memberTestHelper.getTokenCookies(admin!!))
+                    cookie(*memberTestHelper.getSessionCookies(admin!!))
                 }
                 result {
                     expect(status().isOk())
@@ -361,7 +356,7 @@ class MeritControllerTest1 : IntegrationTest() {
             docs(mockMvc, DocsMethod.GET, "/merits") {
                 request {
                     param("meritType", "MERIT")
-                    cookie(*memberTestHelper.getTokenCookies(admin!!))
+                    cookie(*memberTestHelper.getSessionCookies(admin!!))
                 }
                 result {
                     expect(status().isOk())
@@ -380,15 +375,14 @@ class MeritControllerTest1 : IntegrationTest() {
 
             docs(mockMvc, MULTIPART, "/merits") {
                 request {
-                    cookie(*memberTestHelper.getTokenCookies(admin))
+                    cookie(*memberTestHelper.getSessionCookies(admin))
                     content(asJsonString(request))
                     contentType(MediaType.APPLICATION_JSON)
                 }
                 result { expect(status().isCreated()) }
                 response {
                     cookie(
-                            ACCESS_TOKEN.tokenName means "ACCESS TOKEN $securedValue",
-                            REFRESH_TOKEN.tokenName means "REFRESH TOKEN",
+                            SESSION_COOKIE_NAME means "OPAQUE SESSION ID $securedValue",
                     )
                     requestBody(
                             "awarderId" means "수여자의 ID",
@@ -407,7 +401,7 @@ class MeritControllerTest1 : IntegrationTest() {
 
             docs(mockMvc, MULTIPART, "/merits") {
                 request {
-                    cookie(*memberTestHelper.getTokenCookies(member!!))
+                    cookie(*memberTestHelper.getSessionCookies(member!!))
                     content(asJsonString(request))
                     contentType(MediaType.APPLICATION_JSON)
                 }

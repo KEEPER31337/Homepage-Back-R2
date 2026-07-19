@@ -30,6 +30,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     long loginMemberId = Long.parseLong(authentication.getName());
     return memberRepository.findById(loginMemberId)
-        .orElseThrow(() -> new BusinessException(loginMemberId, "JWT", ErrorCode.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new BusinessException(loginMemberId, "session", ErrorCode.MEMBER_NOT_FOUND));
   }
 }

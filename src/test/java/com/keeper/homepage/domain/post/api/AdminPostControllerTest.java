@@ -4,7 +4,7 @@ import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobTy
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
 import static com.keeper.homepage.domain.post.entity.category.Category.CategoryType.자유게시판;
 import static com.keeper.homepage.domain.post.entity.category.Category.getCategoryBy;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Test;
 
 public class AdminPostControllerTest extends PostApiTestHelper {
 
-  private String adminToken;
-  private String memberToken;
+  private String adminSessionId;
+  private String memberSessionId;
   private Post post;
   private Category category;
 
@@ -33,8 +33,8 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     long adminId = memberTestHelper.generate().getId();
     Member member = memberTestHelper.generate();
     long memberId = member.getId();
-    adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, adminId, ROLE_회원, ROLE_회장);
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, memberId, ROLE_회원);
+    adminSessionId = sessionService.createSessionId(adminId, ROLE_회원, ROLE_회장);
+    memberSessionId = sessionService.createSessionId(memberId, ROLE_회원);
     post = postTestHelper.generate();
     category = getCategoryBy(자유게시판);
   }
@@ -50,12 +50,12 @@ public class AdminPostControllerTest extends PostApiTestHelper {
 
       long postId = post.getId();
 
-      callAdminDeletePostApi(adminToken, postId)
+      callAdminDeletePostApi(adminSessionId, postId)
           .andExpect(status().isNoContent())
           .andDo(document("admin-delete-post",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId")
@@ -68,7 +68,7 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     public void should_fail_when_member() throws Exception {
       long postId = post.getId();
 
-      callAdminDeletePostApi(memberToken, postId)
+      callAdminDeletePostApi(memberSessionId, postId)
           .andExpect(status().isForbidden());
     }
   }

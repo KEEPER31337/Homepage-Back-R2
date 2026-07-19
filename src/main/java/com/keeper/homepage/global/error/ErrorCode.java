@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
   // AUTH
-  TOKEN_NOT_AVAILABLE("유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED),
+  SESSION_NOT_AVAILABLE("유효하지 않은 세션입니다.", HttpStatus.UNAUTHORIZED),
   AUTH_CODE_EXPIRED("인증 코드가 없거나 만료되었습니다.", HttpStatus.NOT_FOUND),
   AUTH_CODE_MISMATCH("인증 코드가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
   // MEMBER

@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.library.api;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -15,11 +15,11 @@ import org.springframework.util.MultiValueMap;
 
 public class BookApiTestHelper extends IntegrationTest {
 
-  ResultActions callGetBooksApi(String accessToken, MultiValueMap<String, String> params)
+  ResultActions callGetBooksApi(String sessionId, MultiValueMap<String, String> params)
       throws Exception {
     return mockMvc.perform(get("/books")
         .params(params)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
   FieldDescriptor[] getBooksResponse() {
@@ -34,34 +34,34 @@ public class BookApiTestHelper extends IntegrationTest {
     };
   }
 
-  ResultActions callRequestBorrowBookApi(String accessToken, long bookId)
+  ResultActions callRequestBorrowBookApi(String sessionId, long bookId)
       throws Exception {
     return mockMvc.perform(post("/books/{bookId}/request-borrow", bookId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callCancelBorrowBookApi(String accessToken, long borrowId) throws Exception {
+  ResultActions callCancelBorrowBookApi(String sessionId, long borrowId) throws Exception {
     return mockMvc.perform(delete("/books/borrows/{borrowId}/cancel-borrow", borrowId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callGetBorrowBooksApi(String accessToken, MultiValueMap<String, String> params)
+  ResultActions callGetBorrowBooksApi(String sessionId, MultiValueMap<String, String> params)
       throws Exception {
     return mockMvc.perform(get("/books/book-borrows")
         .params(params)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callRequestReturnBookApi(String accessToken, long borrowId)
+  ResultActions callRequestReturnBookApi(String sessionId, long borrowId)
       throws Exception {
     return mockMvc.perform(patch("/books/borrows/{borrowId}/request-return", borrowId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
-  ResultActions callRequestCancelReturnBookApi(String accessToken, long borrowId)
+  ResultActions callRequestCancelReturnBookApi(String sessionId, long borrowId)
       throws Exception {
     return mockMvc.perform(patch("/books/borrows/{borrowId}/cancel-return", borrowId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), accessToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, sessionId)));
   }
 
   FieldDescriptor[] getBorrowBooksResponse() {

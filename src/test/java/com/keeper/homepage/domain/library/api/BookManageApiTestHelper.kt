@@ -94,7 +94,7 @@ class BookManageApiTestHelper : IntegrationTest() {
         bookManager = memberTestHelper.generate()
         bookManager.assignJob(ROLE_회원)
         bookManager.assignJob(ROLE_사서)
-        bookManagerCookies = memberTestHelper.getTokenCookies(bookManager)
+        bookManagerCookies = memberTestHelper.getSessionCookies(bookManager)
     }
 
     fun callGetBooksApi(

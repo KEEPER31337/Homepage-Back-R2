@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.election.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static java.util.stream.Collectors.toList;
@@ -43,14 +43,14 @@ import org.junit.jupiter.api.Test;
 public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper {
 
   private Member admin;
-  private String adminToken;
+  private String adminSessionId;
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
   @BeforeEach
   void setUp() {
     admin = memberTestHelper.generate();
-    adminToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, admin.getId(), ROLE_회장, ROLE_회원);
+    adminSessionId = sessionService.createSessionId(admin.getId(), ROLE_회장, ROLE_회원);
   }
 
   @Nested
@@ -68,12 +68,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .isAvailable(true)
           .build();
 
-      callCreateElectionApi(adminToken, request)
+      callCreateElectionApi(adminSessionId, request)
           .andExpect(status().isCreated())
           .andDo(document("create-election",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("name").description("선거 이름"),
@@ -99,12 +99,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .build();
       long electionId = election.getId();
 
-      callDeleteElectionApi(adminToken, electionId)
+      callDeleteElectionApi(adminSessionId, electionId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-election",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("electionId")
@@ -129,12 +129,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .isAvailable(true)
           .build();
 
-      callUpdateElectionApi(adminToken, election.getId(), request)
+      callUpdateElectionApi(adminSessionId, election.getId(), request)
           .andExpect(status().isCreated())
           .andDo(document("update-election",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("electionId").description("수정하고자 하는 선거 ID")
@@ -162,12 +162,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       electionTestHelper.generate();
       electionTestHelper.generate();
 
-      callGetElectionsApi(adminToken)
+      callGetElectionsApi(adminSessionId)
           .andExpect(status().isOk())
           .andDo(document("get-elections",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               queryParameters(
                   parameterWithName("page").description("페이지 (default : 0)").optional(),
@@ -198,12 +198,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getMember().getId();
 
-      callRegisterCandidateApi(adminToken, request, electionId, candidateId)
+      callRegisterCandidateApi(adminSessionId, request, electionId, candidateId)
           .andExpect(status().isCreated())
           .andDo(document("create-candidate",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("description").description("후보자 설명"),
@@ -233,12 +233,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .memberJobId(memberJobId)
           .build();
 
-      callRegisterCandidatesApi(adminToken, request, electionId)
+      callRegisterCandidatesApi(adminSessionId, request, electionId)
           .andExpect(status().isCreated())
           .andDo(document("create-candidates",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("candidateIds").description("멤버들의 ID"),
@@ -282,12 +282,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
       long electionId = electionCandidate.getElection().getId();
       long candidateId = electionCandidate.getId();
 
-      callDeleteCandidateApi(adminToken, electionId, candidateId)
+      callDeleteCandidateApi(adminSessionId, electionId, candidateId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-candidate",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("electionId").description("삭제하고자 하는 선거 ID"),
@@ -315,12 +315,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
           .voterIds(voterIds)
           .build();
 
-      callRegisterVotersApi(adminToken, request, electionId)
+      callRegisterVotersApi(adminSessionId, request, electionId)
           .andExpect(status().isCreated())
           .andDo(document("create-voters",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("voterIds").description("멤버들의 ID")
@@ -346,12 +346,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
         .voterIds(voterIds)
         .build();
 
-    callDeleteVotersApi(adminToken, request, electionId)
+    callDeleteVotersApi(adminSessionId, request, electionId)
         .andExpect(status().isNoContent())
         .andDo(document("delete-voters",
             requestCookies(
-                cookieWithName(ACCESS_TOKEN.getTokenName())
-                    .description("ACCESS TOKEN %s".formatted(securedValue))
+                cookieWithName(SESSION_COOKIE_NAME)
+                    .description("OPAQUE SESSION ID %s".formatted(securedValue))
             ),
             requestFields(
                 fieldWithPath("voterIds").description("투표자의 ID")
@@ -372,12 +372,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
 
       Election election = electionTestHelper.generate();
 
-      callOpenElectionApi(adminToken, election.getId())
+      callOpenElectionApi(adminSessionId, election.getId())
           .andExpect(status().isNoContent())
           .andDo(document("open-election",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("electionId").description("선거 ID")
@@ -391,12 +391,12 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
 
       Election election = electionTestHelper.generate();
 
-      callCloseElectionApi(adminToken, election.getId())
+      callCloseElectionApi(adminSessionId, election.getId())
           .andExpect(status().isNoContent())
           .andDo(document("close-election",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("electionId").description("선거 ID")

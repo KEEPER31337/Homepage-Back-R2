@@ -5,7 +5,7 @@ import com.keeper.homepage.domain.game.dto.res.BaseballStatus
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity
 import com.keeper.homepage.domain.game.entity.redis.BaseballResultEntity.GuessResultEntity
 import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
-import com.keeper.homepage.global.config.security.data.JwtType
+import com.keeper.homepage.global.config.security.session.SessionPolicy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
@@ -32,8 +32,7 @@ class GameControllerTest : GameApiTestHelper() {
                     document(
                         "get-my-game-info",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                         ),
                         responseFields(
                             fieldWithPath("todayTotalEarnedPoint").description("오늘 게임으로 얻은 총 포인트"),
@@ -53,8 +52,7 @@ class GameControllerTest : GameApiTestHelper() {
                     document(
                         "game-rank",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                         ),
                         responseFields(
                             fieldWithPath("[].rank").description("순위 (1~${MAX_RANK_COUNT})"),
@@ -84,8 +82,7 @@ class GameControllerTest : GameApiTestHelper() {
                     document(
                         "baseball-game-info",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                         ),
                         responseFields(
                             fieldWithPath("guessNumberLength").description("추측할 숫자 길이"),
@@ -108,8 +105,7 @@ class GameControllerTest : GameApiTestHelper() {
                     document(
                         "baseball-get-status",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                         ),
                         responseFields(
                             fieldWithPath("status").description(
@@ -204,8 +200,7 @@ class GameControllerTest : GameApiTestHelper() {
                 document(
                     "baseball-start",
                     requestCookies(
-                        cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                        cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                     ),
                     requestFields(
                         fieldWithPath("bettingPoint").description("베팅을 할 포인트 (${MIN_BETTING_POINT}이상 ${MAX_BETTING_POINT}이하)"),
@@ -271,8 +266,7 @@ class GameControllerTest : GameApiTestHelper() {
                 document(
                     "baseball-guess",
                     requestCookies(
-                        cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                        cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                        cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                     ),
                     requestFields(
                         fieldWithPath("guessNumber").description("추측한 숫자 (반드시 ${GUESS_NUMBER_LENGTH}자 여야 합니다)"),
@@ -396,8 +390,7 @@ class GameControllerTest : GameApiTestHelper() {
                     document(
                         "get-baseball-results",
                         requestCookies(
-                            cookieWithName(JwtType.ACCESS_TOKEN.tokenName).description("ACCESS TOKEN"),
-                            cookieWithName(JwtType.REFRESH_TOKEN.tokenName).description("REFRESH TOKEN")
+                            cookieWithName(SessionPolicy.SESSION_COOKIE_NAME).description("OPAQUE SESSION ID"),
                         ),
                         responseFields(
                             subsectionWithPath("results").description("타임아웃난 round는 null"),

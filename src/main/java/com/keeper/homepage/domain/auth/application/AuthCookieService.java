@@ -1,64 +1,51 @@
 package com.keeper.homepage.domain.auth.application;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
-import static com.keeper.homepage.global.config.security.data.JwtType.REFRESH_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 
-import com.keeper.homepage.global.config.security.JwtTokenProvider;
-import com.keeper.homepage.global.util.redis.RedisUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Optional;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
 public class AuthCookieService {
 
-  private final JwtTokenProvider jwtTokenProvider;
-  private final RedisUtil redisUtil;
-
-  public void setNewCookieInResponse(String authId, String[] roles, String userAgent, HttpServletResponse response) {
-    String newRefreshToken = jwtTokenProvider.createAccessToken(REFRESH_TOKEN, authId, roles);
-    setTokenInCookie(response, newRefreshToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
-        REFRESH_TOKEN.getTokenName());
-    String newAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, authId, roles);
-    setTokenInCookie(response, newAccessToken, (int) REFRESH_TOKEN.getExpiredMillis() / 1000,
-        ACCESS_TOKEN.getTokenName());
-    redisUtil.setDataExpire(JwtTokenProvider.getRefreshTokenKeyForRedis(authId, userAgent), newRefreshToken, REFRESH_TOKEN.getExpiredMillis());
-  }
-
-  private void setTokenInCookie(HttpServletResponse httpResponse, String token, int expiredSeconds, String cookieName) {
-    ResponseCookie cookie = ResponseCookie.from(cookieName, token)
-        .path("/")
-        .sameSite("None")
-        .httpOnly(true)
-        .maxAge(expiredSeconds)
-        .secure(true)
-        .build();
-    httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-  }
-
-  public void setCookieExpiredWithRedis(String authId, String refreshToken,
-      HttpServletResponse response) {
-    setCookieExpired(response);
-    deleteRefreshToken(authId, refreshToken);
-  }
-
-  public void setCookieExpired(HttpServletResponse response) {
-    setTokenInCookie(response, "", 0, REFRESH_TOKEN.getTokenName());
-    setTokenInCookie(response, "", 0, ACCESS_TOKEN.getTokenName());
-  }
-
-  public void deleteRefreshToken(String authId, String refreshToken) {
-    if (refreshToken == null || refreshToken.isBlank()) {
-      return;
+  public Optional<String> resolveSessionId(HttpServletRequest request) {
+    if (request.getCookies() == null) {
+      return Optional.empty();
     }
-    deleteRefreshTokenByValue(authId, refreshToken);
+    return Arrays.stream(request.getCookies())
+        .filter(cookie -> SESSION_COOKIE_NAME.equals(cookie.getName()))
+        .map(Cookie::getValue)
+        .findFirst();
   }
 
-  private void deleteRefreshTokenByValue(String authId, String refreshToken) {
-    redisUtil.findKeyByValue(JwtTokenProvider.getRefreshTokenKeyPatternForRedis(authId), refreshToken)
-        .ifPresent(redisUtil::deleteData);
+  public void setSessionCookie(HttpServletResponse response, String sessionId,
+      long maxAgeMillis) {
+    long maxAgeSeconds = Math.max(1, Math.ceilDiv(maxAgeMillis, 1000));
+    ResponseCookie cookie = ResponseCookie.from(SESSION_COOKIE_NAME, sessionId)
+        .path("/")
+        .sameSite("Lax")
+        .httpOnly(true)
+        .secure(true)
+        .maxAge(Duration.ofSeconds(maxAgeSeconds))
+        .build();
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+  }
+
+  public void expireSessionCookie(HttpServletResponse response) {
+    ResponseCookie cookie = ResponseCookie.from(SESSION_COOKIE_NAME, "")
+        .path("/")
+        .sameSite("Lax")
+        .httpOnly(true)
+        .secure(true)
+        .maxAge(Duration.ZERO)
+        .build();
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
   }
 }

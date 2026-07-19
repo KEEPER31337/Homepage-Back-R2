@@ -65,7 +65,6 @@ KEEPER 홈페이지 백엔드 서버입니다.
 ![Spring Data Jpa](https://img.shields.io/badge/Spring%20data%20jpa-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 
 ![Lombok](https://img.shields.io/badge/Lombok-be2e22?style=for-the-badge&logo=lombok&logoColor=white)
-![Jwt](https://img.shields.io/badge/Jwt-181717?style=for-the-badge&logo=jwt&logoColor=white)
 ![p6spy](https://img.shields.io/badge/p6spy-97979A?style=for-the-badge&logo=p6spy&logoColor=white)
 ![Kotest](https://img.shields.io/badge/Kotest-7F52FF?style=for-the-badge&logo=kotest&logoColor=white)
 ![JUnit5](https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=junit5&logoColor=white)

@@ -1,6 +1,6 @@
 package com.keeper.homepage.domain.election.api;
 
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -23,29 +23,29 @@ import org.springframework.test.web.servlet.ResultActions;
 @Disabled
 public class AdminElectionApiTestHelper extends IntegrationTest {
 
-  ResultActions callCreateElectionApi(String adminToken, ElectionCreateRequest request) throws Exception {
+  ResultActions callCreateElectionApi(String adminSessionId, ElectionCreateRequest request) throws Exception {
     return mockMvc.perform(post("/admin/elections")
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callDeleteElectionApi(String adminToken, long electionId) throws Exception {
+  ResultActions callDeleteElectionApi(String adminSessionId, long electionId) throws Exception {
     return mockMvc.perform(delete("/admin/elections/{electionId}", electionId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)));
   }
 
-  ResultActions callUpdateElectionApi(String adminToken, long electionId, ElectionUpdateRequest request)
+  ResultActions callUpdateElectionApi(String adminSessionId, long electionId, ElectionUpdateRequest request)
       throws Exception {
     return mockMvc.perform(put("/admin/elections/{electionId}", electionId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callGetElectionsApi(String adminToken) throws Exception {
+  ResultActions callGetElectionsApi(String adminSessionId) throws Exception {
     return mockMvc.perform(get("/admin/elections")
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)));
   }
 
   FieldDescriptor[] getElectionResponse() {
@@ -58,51 +58,51 @@ public class AdminElectionApiTestHelper extends IntegrationTest {
 
   }
 
-  ResultActions callRegisterCandidateApi(String adminToken, ElectionCandidateRegisterRequest request, long electionId,
+  ResultActions callRegisterCandidateApi(String adminSessionId, ElectionCandidateRegisterRequest request, long electionId,
       long candidateId) throws Exception {
     return mockMvc.perform(post("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callRegisterCandidatesApi(String adminToken, ElectionCandidatesRegisterRequest request, long electionId)
+  ResultActions callRegisterCandidatesApi(String adminSessionId, ElectionCandidatesRegisterRequest request, long electionId)
       throws Exception {
     return mockMvc.perform(post("/admin/elections/{electionId}/candidates", electionId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callDeleteCandidateApi(String adminToken, long electionId, long candidateId) throws Exception {
+  ResultActions callDeleteCandidateApi(String adminSessionId, long electionId, long candidateId) throws Exception {
     return mockMvc.perform(delete("/admin/elections/{electionId}/candidates/{candidateId}", electionId, candidateId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)));
   }
 
-  ResultActions callRegisterVotersApi(String adminToken, ElectionVotersRequest request, long electionId)
+  ResultActions callRegisterVotersApi(String adminSessionId, ElectionVotersRequest request, long electionId)
       throws Exception {
     return mockMvc.perform(post("/admin/elections/{electionId}/voters", electionId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callDeleteVotersApi(String adminToken, ElectionVotersRequest request, long electionId)
+  ResultActions callDeleteVotersApi(String adminSessionId, ElectionVotersRequest request, long electionId)
       throws Exception {
     return mockMvc.perform(delete("/admin/elections/{electionId}/voters", electionId)
         .content(asJsonString(request))
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken))
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId))
         .contentType(MediaType.APPLICATION_JSON));
   }
 
-  ResultActions callOpenElectionApi(String adminToken, long electionId) throws Exception {
+  ResultActions callOpenElectionApi(String adminSessionId, long electionId) throws Exception {
     return mockMvc.perform(patch("/admin/elections/{electionId}/open", electionId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)));
   }
 
-  ResultActions callCloseElectionApi(String adminToken, long electionId) throws Exception {
+  ResultActions callCloseElectionApi(String adminSessionId, long electionId) throws Exception {
     return mockMvc.perform(patch("/admin/elections/{electionId}/close", electionId)
-        .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), adminToken)));
+        .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)));
   }
 
 }

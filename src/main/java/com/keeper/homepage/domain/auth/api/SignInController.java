@@ -10,7 +10,6 @@ import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
 import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -32,12 +31,11 @@ public class SignInController {
 
   @PostMapping
   public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest request,
-      HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+      HttpServletResponse httpResponse) {
     return ResponseEntity.ok(
         signInService.signIn(
             LoginId.from(request.getLoginId()),
             request.getRawPassword(),
-            httpRequest,
             httpResponse));
   }
 

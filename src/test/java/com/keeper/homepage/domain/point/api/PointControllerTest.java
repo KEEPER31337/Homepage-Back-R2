@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.point.api;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.*;
-import static com.keeper.homepage.global.config.security.data.JwtType.*;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.cookies.CookieDocumentation.*;
@@ -17,7 +17,6 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.point.dto.request.presentPointRequest;
 import com.keeper.homepage.domain.point.dto.response.FindAllPointLogResponse;
-import com.keeper.homepage.global.config.security.data.JwtType;
 import com.keeper.homepage.global.restdocs.RestDocsHelper;
 import jakarta.servlet.http.Cookie;
 import jakarta.validation.Payload;
@@ -36,14 +35,14 @@ import org.springframework.restdocs.payload.PayloadDocumentation;
 class PointControllerTest extends IntegrationTest {
 
   private Member member, otherMember;
-  private String memberAccessToken;
+  private String memberSessionId;
   private static final int GIVEPOINT = 1000;
   private static final String GIVEMESSAGE = "TEST MESSAGE";
 
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    memberAccessToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
   }
 
   @Nested
@@ -66,14 +65,14 @@ class PointControllerTest extends IntegrationTest {
           .memberId(otherMember.getId())
           .build();
       mockMvc.perform(post("/points/present")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberAccessToken))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId))
               .content(asJsonString(request))
               .contentType(MediaType.APPLICATION_JSON))
           .andExpect(status().isCreated())
           .andDo(document("create-presentPointLog",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("point").description("선물할 점수를 입력해주세요."),
@@ -100,13 +99,13 @@ class PointControllerTest extends IntegrationTest {
       String securedValue = getSecuredValue(PointController.class, "findAllPointLogs");
 
       mockMvc.perform(get("/points")
-              .cookie(new Cookie(ACCESS_TOKEN.getTokenName(), memberAccessToken)))
+              .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
           .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
           .andDo(document("find-pointLogs",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               responseFields(
                   pageHelper(

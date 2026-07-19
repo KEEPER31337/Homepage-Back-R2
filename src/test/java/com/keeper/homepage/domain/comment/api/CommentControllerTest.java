@@ -2,7 +2,7 @@ package com.keeper.homepage.domain.comment.api;
 
 import static com.keeper.homepage.domain.comment.dto.request.CommentCreateRequest.MAX_REQUEST_COMMENT_LENGTH;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
-import static com.keeper.homepage.global.config.security.data.JwtType.ACCESS_TOKEN;
+import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static org.springframework.restdocs.cookies.CookieDocumentation.cookieWithName;
 import static org.springframework.restdocs.cookies.CookieDocumentation.requestCookies;
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class CommentControllerTest extends CommentApiTestHelper {
 
   private Member member;
-  private String memberToken;
+  private String memberSessionId;
   private Post post;
   private long postId, commentId;
   private Comment comment;
@@ -42,7 +42,7 @@ public class CommentControllerTest extends CommentApiTestHelper {
     postId = post.getId();
     comment = commentTestHelper.builder().post(post).member(member).build();
     commentId = comment.getId();
-    memberToken = jwtTokenProvider.createAccessToken(ACCESS_TOKEN, member.getId(), ROLE_회원);
+    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
   }
 
   @Nested
@@ -69,13 +69,13 @@ public class CommentControllerTest extends CommentApiTestHelper {
           .content("테스트 댓글 내용")
           .build();
 
-      callCreateCommentApi(memberToken, request)
+      callCreateCommentApi(memberSessionId, request)
           .andExpect(status().isCreated())
           .andExpect(header().string("location", "/comments/posts/" + postId))
           .andDo(document("create-comment",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               requestFields(
                   fieldWithPath("postId").description("댓글을 달 게시글의 ID"),
@@ -96,7 +96,7 @@ public class CommentControllerTest extends CommentApiTestHelper {
           .content("테스트 댓글 내용")
           .build();
 
-      callCreateCommentApi(memberToken, request)
+      callCreateCommentApi(memberSessionId, request)
           .andExpect(status().isBadRequest());
     }
 
@@ -109,7 +109,7 @@ public class CommentControllerTest extends CommentApiTestHelper {
           .content(" ")
           .build();
 
-      callCreateCommentApi(memberToken, request)
+      callCreateCommentApi(memberSessionId, request)
           .andExpect(status().isBadRequest());
     }
 
@@ -122,7 +122,7 @@ public class CommentControllerTest extends CommentApiTestHelper {
           .content("a".repeat(MAX_REQUEST_COMMENT_LENGTH))
           .build();
 
-      callCreateCommentApi(memberToken, request)
+      callCreateCommentApi(memberSessionId, request)
           .andExpect(status().isBadRequest());
     }
   }
@@ -138,12 +138,12 @@ public class CommentControllerTest extends CommentApiTestHelper {
       em.clear();
       String securedValue = getSecuredValue(CommentController.class, "getComments");
 
-      callGetCommentsApi(memberToken, postId)
+      callGetCommentsApi(memberSessionId, postId)
           .andExpect(status().isOk())
           .andDo(document("get-comments",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("postId").description("조회하고자 하는 댓글목록의 게시글 ID")
@@ -174,12 +174,12 @@ public class CommentControllerTest extends CommentApiTestHelper {
     public void 댓글_삭제는_성공한다() throws Exception {
       String securedValue = getSecuredValue(CommentController.class, "deleteComment");
 
-      callDeleteCommentApi(memberToken, commentId)
+      callDeleteCommentApi(memberSessionId, commentId)
           .andExpect(status().isNoContent())
           .andDo(document("delete-comment",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("commentId")
@@ -197,12 +197,12 @@ public class CommentControllerTest extends CommentApiTestHelper {
     public void 댓글_좋아요_또는_좋아요_취소는_성공한다() throws Exception {
       String securedValue = getSecuredValue(CommentController.class, "likeComment");
 
-      callLikeCommentApi(memberToken, commentId)
+      callLikeCommentApi(memberSessionId, commentId)
           .andExpect(status().isNoContent())
           .andDo(document("like-comment",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("commentId")
@@ -215,12 +215,12 @@ public class CommentControllerTest extends CommentApiTestHelper {
     public void 댓글_싫어요_또는_싫어요_취소는_성공한다() throws Exception {
       String securedValue = getSecuredValue(CommentController.class, "dislikeComment");
 
-      callDislikeCommentApi(memberToken, commentId)
+      callDislikeCommentApi(memberSessionId, commentId)
           .andExpect(status().isNoContent())
           .andDo(document("dislike-comment",
               requestCookies(
-                  cookieWithName(ACCESS_TOKEN.getTokenName())
-                      .description("ACCESS TOKEN %s".formatted(securedValue))
+                  cookieWithName(SESSION_COOKIE_NAME)
+                      .description("OPAQUE SESSION ID %s".formatted(securedValue))
               ),
               pathParameters(
                   parameterWithName("commentId")
