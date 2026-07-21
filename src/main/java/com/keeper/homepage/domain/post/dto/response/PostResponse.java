@@ -48,6 +48,7 @@ public class PostResponse {
     return PostResponse.builder()
         .id(post.getId())
         .title(post.getPostContent().getTitle())
+        .writerId(post.getMember().getId())
         .writerName(writerName)
         .writerThumbnailPath(post.getMember().getThumbnailPath())
         .visitCount(post.getVisitCount())

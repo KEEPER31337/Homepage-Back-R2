@@ -101,6 +101,7 @@ public class AttendanceControllerTest extends IntegrationTest {
 
     FieldDescriptor[] getTodayAttendanceResponse() {
       return new FieldDescriptor[]{
+          fieldWithPath("memberId").description("회원 ID"),
           fieldWithPath("rank").description("회원 당일 출석 순위"),
           fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),
           fieldWithPath("realName").description("회원 실명"),
@@ -112,6 +113,7 @@ public class AttendanceControllerTest extends IntegrationTest {
 
     FieldDescriptor[] getContinuousAttendanceResponse() {
       return new FieldDescriptor[]{
+          fieldWithPath("memberId").description("회원 ID"),
           fieldWithPath("rank").description("회원 당일 출석 순위"),
           fieldWithPath("thumbnailPath").description("회원 썸네일 경로"),
           fieldWithPath("realName").description("회원 실명"),
