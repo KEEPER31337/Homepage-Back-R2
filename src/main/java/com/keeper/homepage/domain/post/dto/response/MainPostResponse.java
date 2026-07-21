@@ -16,6 +16,7 @@ public class MainPostResponse {
 
   private Long id;
   private String title;
+  private Long writerId;
   private String thumbnailPath;
   private Long categoryId;
   private String categoryName;
@@ -31,6 +32,7 @@ public class MainPostResponse {
     return MainPostResponse.builder()
         .id(post.getId())
         .title(post.getPostContent().getTitle())
+        .writerId(post.getMember().getId())
         .thumbnailPath(post.getPostContent().getThumbnailPath())
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
@@ -46,6 +48,7 @@ public class MainPostResponse {
     return MainPostResponse.builder()
         .id(post.getId())
         .title(post.getPostContent().getTitle())
+        .writerId(post.getMember().getId())
         .thumbnailPath(post.getPostContent().getThumbnailPath())
         .categoryId(post.getCategory().getId())
         .categoryName(post.getCategory().getType().getName())
