@@ -117,7 +117,7 @@ public class PostController {
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{postId}")
+  @PutMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updatePost(
       @LoginMember Member member,
       @PathVariable long postId,
@@ -159,7 +159,7 @@ public class PostController {
         .build();
   }
 
-  @DeleteMapping("/{postId}/files")
+  @DeleteMapping(value = "/{postId}/files", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deletePostFile(
       @LoginMember Member member,
       @PathVariable long postId,

@@ -9,6 +9,7 @@ import com.keeper.homepage.domain.game.entity.redis.SECOND_PER_GAME
 import com.keeper.homepage.domain.member.entity.Member
 import com.keeper.homepage.global.config.security.annotation.LoginMember
 import jakarta.validation.Valid
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -39,7 +40,10 @@ class GameController(
         return ResponseEntity.ok(BaseballStatusResponse(baseballStatus, baseballPerDay))
     }
 
-    @PostMapping("/baseball/start")
+    @PostMapping(
+        value = ["/baseball/start"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun baseballStart(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballStartRequest
@@ -48,7 +52,10 @@ class GameController(
         return ResponseEntity.ok(baseballResponse)
     }
 
-    @PostMapping("/baseball/guess")
+    @PostMapping(
+        value = ["/baseball/guess"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun baseballGuess(
         @LoginMember requestMember: Member,
         @RequestBody @Valid request: BaseballGuessRequest

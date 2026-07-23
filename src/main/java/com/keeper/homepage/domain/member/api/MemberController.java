@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -49,7 +50,7 @@ public class MemberController {
   private final MemberService memberService;
   private final MemberProfileService memberProfileService;
 
-  @PatchMapping("/change-password")
+  @PatchMapping(value = "/change-password", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> changePassword(
       @LoginMember Member me,
       @RequestBody @Valid ChangePasswordRequest request) {
@@ -99,7 +100,7 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
-  @PatchMapping("/profile")
+  @PatchMapping(value = "/profile", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updateProfile(
       @LoginMember Member member,
       @RequestBody @Valid ProfileUpdateRequest request
@@ -128,7 +129,7 @@ public class MemberController {
   }
 
   @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
-  @PatchMapping("/types/{typeId}")
+  @PatchMapping(value = "/types/{typeId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updateMemberType(
       @PathVariable long typeId,
       @RequestBody @Valid UpdateMemberTypeRequest request
@@ -137,7 +138,7 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/email-auth")
+  @PostMapping(value = "/email-auth", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EmailAuthResponse> emailAuth(
       @RequestBody @Valid EmailAuthRequest request
   ) {
@@ -145,7 +146,7 @@ public class MemberController {
     return ResponseEntity.ok(EmailAuthResponse.from(EMAIL_EXPIRED_SECONDS));
   }
 
-  @PatchMapping("/email")
+  @PatchMapping(value = "/email", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updateMemberEmail(
       @LoginMember Member member,
       @RequestBody @Valid UpdateMemberEmailAddressRequest request
@@ -155,7 +156,7 @@ public class MemberController {
     return ResponseEntity.noContent().build();
   }
 
-  @DeleteMapping
+  @DeleteMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteMember(
       @LoginMember Member member,
       @RequestBody @Valid DeleteMemberRequest request) {
@@ -164,7 +165,7 @@ public class MemberController {
   }
 
   @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
-  @DeleteMapping("/admin")
+  @DeleteMapping(value = "/admin", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteMemberByAdmin(
       @RequestBody @Valid AdminDeleteMemberRequest request
   ) {

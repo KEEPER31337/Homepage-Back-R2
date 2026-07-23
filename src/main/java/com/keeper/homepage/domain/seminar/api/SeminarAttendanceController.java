@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +34,8 @@ public class SeminarAttendanceController {
 
   private final SeminarAttendanceService seminarAttendanceService;
 
-  @PatchMapping("/{seminarId}/attendances")
+  @PatchMapping(value = "/{seminarId}/attendances",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SeminarAttendanceResponse> attendanceSeminar(
       @PathVariable Long seminarId,
       @LoginMember Member member,
@@ -55,7 +57,8 @@ public class SeminarAttendanceController {
   }
 
   @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
-  @PatchMapping("/attendances/{attendanceId}")
+  @PatchMapping(value = "/attendances/{attendanceId}",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> changeAttendanceStatus(
       @PathVariable long attendanceId,
       @RequestBody @Valid SeminarAttendanceStatusRequest request) {

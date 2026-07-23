@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -73,7 +74,7 @@ public class MeritController {
             .map(SearchMemberMeritLogResponse::from));
   }
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> registerMerit(
       @RequestBody @Valid GiveMeritPointRequest request
   ) {
@@ -92,7 +93,7 @@ public class MeritController {
         .map(MeritTypeResponse::from));
   }
 
-  @PostMapping("/types")
+  @PostMapping(value = "/types", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> registerMeritType(
       @RequestBody @Valid AddMeritTypeRequest request
   ) {
@@ -100,7 +101,7 @@ public class MeritController {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
-  @PutMapping("/types/{meritTypeId}")
+  @PutMapping(value = "/types/{meritTypeId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updateMeritType(
       @PathVariable long meritTypeId,
       @RequestBody @Valid UpdateMeritTypeRequest request) {

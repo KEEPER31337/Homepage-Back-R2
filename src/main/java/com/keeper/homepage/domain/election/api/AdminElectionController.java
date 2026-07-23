@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +39,7 @@ public class AdminElectionController {
 
   private final AdminElectionService adminElectionService;
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> createElection(
       @LoginMember Member member,
       @RequestBody @Valid ElectionCreateRequest request) {
@@ -53,7 +54,7 @@ public class AdminElectionController {
     return ResponseEntity.noContent().build();
   }
 
-  @PutMapping("/{electionId}")
+  @PutMapping(value = "/{electionId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updateElection(
       @PathVariable long electionId,
       @RequestBody @Valid ElectionUpdateRequest request) {
@@ -70,7 +71,8 @@ public class AdminElectionController {
     return ResponseEntity.ok(response);
   }
 
-  @PostMapping("/{electionId}/candidates/{candidateId}")
+  @PostMapping(value = "/{electionId}/candidates/{candidateId}",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> registerCandidate(
       @RequestBody @Valid ElectionCandidateRegisterRequest request,
       @PathVariable long electionId,
@@ -79,7 +81,8 @@ public class AdminElectionController {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
-  @PostMapping("/{electionId}/candidates")
+  @PostMapping(value = "/{electionId}/candidates",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> registerCandidates(
       @RequestBody @Valid ElectionCandidatesRegisterRequest request,
       @PathVariable long electionId) {
@@ -96,7 +99,7 @@ public class AdminElectionController {
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/{electionId}/voters")
+  @PostMapping(value = "/{electionId}/voters", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> registerVoters(
       @RequestBody @Valid ElectionVotersRequest request,
       @PathVariable long electionId) {
@@ -104,7 +107,8 @@ public class AdminElectionController {
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
-  @DeleteMapping("/{electionId}/voters")
+  @DeleteMapping(value = "/{electionId}/voters",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> deleteVoters(
       @RequestBody @Valid ElectionVotersRequest request,
       @PathVariable long electionId) {
