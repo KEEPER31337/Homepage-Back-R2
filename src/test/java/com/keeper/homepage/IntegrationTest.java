@@ -8,6 +8,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.keeper.homepage.domain.Schedule.application.ScheduleTestHelper;
 import com.keeper.homepage.domain.about.StaticWriteTestHelper;
 import com.keeper.homepage.domain.about.application.StaticWriteService;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
@@ -23,6 +24,10 @@ import com.keeper.homepage.domain.auth.application.SignInService;
 import com.keeper.homepage.domain.auth.application.SignUpService;
 import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.auth.dao.redis.EmailAuthRedisRepository;
+import com.keeper.homepage.domain.calendar.application.ScheduleService;
+import com.keeper.homepage.domain.calendar.ScheduleTypeTestHelper;
+import com.keeper.homepage.domain.calendar.dao.ScheduleRepository;
+import com.keeper.homepage.domain.calendar.dao.ScheduleTypeRepository;
 import com.keeper.homepage.domain.comment.CommentTestHelper;
 import com.keeper.homepage.domain.comment.application.CommentService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
@@ -272,6 +277,12 @@ public class IntegrationTest {
   @Autowired
   protected MeritTypeRepository meritTypeRepository;
 
+  @Autowired
+  protected ScheduleRepository scheduleRepository;
+
+  @Autowired
+  protected ScheduleTypeRepository scheduleTypeRepository;
+
   /******* Service *******/
   @SpyBean
   protected MemberService memberService;
@@ -363,6 +374,9 @@ public class IntegrationTest {
   @SpyBean
   protected MemberProfileService memberProfileService;
 
+  @SpyBean
+  protected ScheduleService scheduleService;
+
   /******* Helper *******/
   @SpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
@@ -426,6 +440,12 @@ public class IntegrationTest {
 
   @Autowired
   protected PointLogTestHelper pointLogTestHelper;
+
+  @Autowired
+  protected ScheduleTypeTestHelper scheduleTypeTestHelper;
+
+  @Autowired
+  protected ScheduleTestHelper scheduleTestHelper;
 
   /******* Util *******/
   @SpyBean
