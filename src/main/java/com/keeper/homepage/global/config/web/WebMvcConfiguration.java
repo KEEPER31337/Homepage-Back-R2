@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -45,15 +44,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     registry.addConverter(new BorrowStatusDtoConverter());
     registry.addConverter(new BookSearchTypeConverter());
     registry.addConverter(new BorrowLogTypeConverter());
-  }
-
-  @Override
-  public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**")
-        .allowedOrigins("https://keeper.or.kr", "https://localhost:3000")
-        .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-        .allowedHeaders("headers")
-        .maxAge(3000);
   }
 
   @Override
