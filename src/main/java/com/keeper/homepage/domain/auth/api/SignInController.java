@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,7 +30,7 @@ public class SignInController {
 
   private final SignInService signInService;
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest request,
       HttpServletResponse httpResponse) {
     return ResponseEntity.ok(
@@ -39,13 +40,14 @@ public class SignInController {
             httpResponse));
   }
 
-  @PostMapping("/find-login-id")
+  @PostMapping(value = "/find-login-id", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> findLoginId(@RequestBody @Email FindLoginIdRequest request) {
     signInService.findLoginId(EmailAddress.from(request.getEmail()));
     return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/send-password-change-auth-code")
+  @PostMapping(value = "/send-password-change-auth-code",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EmailAuthResponse> sendPasswordChangeAuthCode(
       @RequestBody @Valid MemberIdAndEmailRequest request) {
     int expiredSeconds = signInService.sendPasswordChangeAuthCode(EmailAddress.from(request.getEmail()),
@@ -59,7 +61,8 @@ public class SignInController {
     return ResponseEntity.ok(CheckAuthCodeResponse.from(isAuth));
   }
 
-  @PatchMapping("/change-password-for-missing")
+  @PatchMapping(value = "/change-password-for-missing",
+      consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> changePassword(
       @RequestBody @Valid ChangePasswordForMissingRequest request) {
     signInService.changePassword(request.getAuthCode(),

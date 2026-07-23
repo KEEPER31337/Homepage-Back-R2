@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,13 +32,13 @@ public class SignUpController {
   private final EmailAuthService emailAuthService;
   private final CheckDuplicateService checkDuplicateService;
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
     long memberId = signUpService.signUp(request.toMemberProfile(), request.getAuthCode());
     return ResponseEntity.created(URI.create("/members/" + memberId)).build();
   }
 
-  @PostMapping("/email-auth")
+  @PostMapping(value = "/email-auth", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<EmailAuthResponse> emailAuth(@RequestBody @Valid EmailAuthRequest request) {
     int expiredSeconds = emailAuthService.emailAuth(request.getEmail());
     return ResponseEntity.ok(EmailAuthResponse.from(expiredSeconds));

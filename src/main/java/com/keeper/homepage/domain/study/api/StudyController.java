@@ -73,7 +73,7 @@ public class StudyController {
         .body(listResponse);
   }
 
-  @PutMapping("/{studyId}")
+  @PutMapping(value = "/{studyId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> updateStudy(
       @LoginMember Member member,
       @PathVariable long studyId,

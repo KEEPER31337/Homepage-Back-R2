@@ -68,7 +68,10 @@ class BookManageController(
         return ResponseEntity.noContent().build()
     }
 
-    @PutMapping("/{bookId}")
+    @PutMapping(
+        value = ["/{bookId}"],
+        consumes = [MediaType.APPLICATION_JSON_VALUE]
+    )
     fun modifyBook(
         @PathVariable bookId: Long,
         @RequestBody @Valid request: ModifyBookRequest

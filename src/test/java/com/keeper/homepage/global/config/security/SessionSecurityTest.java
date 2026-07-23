@@ -79,7 +79,7 @@ class SessionSecurityTest {
         .contains("Max-Age=604800")
         .contains("Secure")
         .contains("HttpOnly")
-        .contains("SameSite=Lax")
+        .contains("SameSite=Strict")
         .doesNotContain("Domain=");
   }
 
@@ -95,7 +95,7 @@ class SessionSecurityTest {
         .contains("Max-Age=0")
         .contains("Secure")
         .contains("HttpOnly")
-        .contains("SameSite=Lax")
+        .contains("SameSite=Strict")
         .doesNotContain("Domain=");
   }
 }

@@ -30,7 +30,7 @@ public class AuthCookieService {
     long maxAgeSeconds = Math.max(1, Math.ceilDiv(maxAgeMillis, 1000));
     ResponseCookie cookie = ResponseCookie.from(SESSION_COOKIE_NAME, sessionId)
         .path("/")
-        .sameSite("Lax")
+        .sameSite("Strict")
         .httpOnly(true)
         .secure(true)
         .maxAge(Duration.ofSeconds(maxAgeSeconds))
@@ -41,7 +41,7 @@ public class AuthCookieService {
   public void expireSessionCookie(HttpServletResponse response) {
     ResponseCookie cookie = ResponseCookie.from(SESSION_COOKIE_NAME, "")
         .path("/")
-        .sameSite("Lax")
+        .sameSite("Strict")
         .httpOnly(true)
         .secure(true)
         .maxAge(Duration.ZERO)
