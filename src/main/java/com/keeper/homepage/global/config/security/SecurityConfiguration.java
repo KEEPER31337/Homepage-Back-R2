@@ -3,6 +3,7 @@ package com.keeper.homepage.global.config.security;
 import com.keeper.homepage.global.config.security.filter.SessionAuthenticationFilter;
 import com.keeper.homepage.global.config.security.handler.CustomAccessDeniedHandler;
 import com.keeper.homepage.global.config.security.handler.CustomAuthenticationEntryPoint;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,10 +52,12 @@ public class SecurityConfiguration {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    configuration.addAllowedOriginPattern("*");
-    configuration.addAllowedHeader("*");
-    configuration.addAllowedMethod("*");
+    configuration.setAllowedOrigins(List.of("https://keeper.or.kr"));
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setAllowedMethods(
+        List.of("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
     configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3000L);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
