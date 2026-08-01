@@ -39,7 +39,10 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor(access = PROTECTED)
 @Check(name = "chk_vote_period", constraints = "end_at > start_at")
 @Table(name = "vote",
-    indexes = @Index(name = "idx_vote_created_by", columnList = "created_by"))
+    indexes = {
+        @Index(name = "idx_vote_created_by", columnList = "created_by"),
+        @Index(name = "idx_vote_start_at", columnList = "start_at")
+    })
 public class Vote {
 
   private static final int MAX_TITLE_LENGTH = 500;
