@@ -17,6 +17,7 @@ public record VoteCreateRequest(
     @Size(max = 500, message = "투표 제목은 {max}자 이하로 입력해주세요.")
     String title,
 
+    @Size(max = 16_383, message = "투표 설명은 {max}자 이하로 입력해주세요.")
     String description,
 
     @NotNull(message = "투표 허용 역할 목록을 입력해주세요.")
