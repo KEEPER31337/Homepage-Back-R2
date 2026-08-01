@@ -12,7 +12,10 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +28,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.domain.Persistable;
 
 @DynamicInsert
 @DynamicUpdate
@@ -33,7 +37,7 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "vote_receipt",
     indexes = @Index(name = "idx_vote_receipt_vote", columnList = "vote_id"))
-public class VoteReceipt {
+public class VoteReceipt implements Persistable<UUID> {
 
   @Id
   @JdbcTypeCode(SqlTypes.BINARY)
@@ -50,9 +54,28 @@ public class VoteReceipt {
   @OneToMany(mappedBy = "receipt")
   private final List<VoteChoice> choices = new ArrayList<>();
 
+  @Transient
+  private boolean newEntity = true;
+
   @Builder
   private VoteReceipt(UUID token, Vote vote) {
     this.token = token;
     this.vote = vote;
+  }
+
+  @Override
+  public UUID getId() {
+    return token;
+  }
+
+  @Override
+  public boolean isNew() {
+    return newEntity;
+  }
+
+  @PostLoad
+  @PostPersist
+  private void markNotNew() {
+    this.newEntity = false;
   }
 }

@@ -16,7 +16,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.Builder;
@@ -29,6 +32,7 @@ import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.domain.Persistable;
 
 @DynamicInsert
 @DynamicUpdate
@@ -42,7 +46,7 @@ import org.hibernate.type.SqlTypes;
     },
     uniqueConstraints = @UniqueConstraint(name = "uq_vote_participation_vote_member",
         columnNames = {"vote_id", "dedup_member_id"}))
-public class VoteParticipation {
+public class VoteParticipation implements Persistable<UUID> {
 
   private static final int MAX_VOTER_NAME_LENGTH = 100;
 
@@ -75,6 +79,9 @@ public class VoteParticipation {
   @Column(name = "voter_generation_snapshot", nullable = false)
   private Float voterGenerationSnapshot;
 
+  @Transient
+  private boolean newEntity = true;
+
   @Builder
   private VoteParticipation(Vote vote, Member member, String voterNameSnapshot,
       Float voterGenerationSnapshot) {
@@ -83,5 +90,16 @@ public class VoteParticipation {
     this.member = member;
     this.voterNameSnapshot = voterNameSnapshot;
     this.voterGenerationSnapshot = voterGenerationSnapshot;
+  }
+
+  @Override
+  public boolean isNew() {
+    return newEntity;
+  }
+
+  @PostLoad
+  @PostPersist
+  private void markNotNew() {
+    this.newEntity = false;
   }
 }

@@ -115,6 +115,14 @@ public enum ErrorCode {
   // VOTE
   VOTE_NOT_FOUND("존재하지 않는 투표입니다.", HttpStatus.NOT_FOUND),
   VOTE_INACCESSIBLE("투표에 참여할 권한이 없습니다.", HttpStatus.FORBIDDEN),
+  VOTE_NOT_IN_PROGRESS("투표 가능한 기간이 아닙니다.", HttpStatus.CONFLICT),
+  VOTE_ALREADY_PARTICIPATED("이미 참여한 투표입니다.", HttpStatus.CONFLICT),
+  VOTE_RECEIPT_DUPLICATE("이미 사용된 영수증 토큰입니다.", HttpStatus.CONFLICT),
+  VOTE_RECEIPT_NOT_FOUND("존재하지 않는 영수증 토큰입니다.", HttpStatus.NOT_FOUND),
+  VOTE_AGENDA_MISMATCH("투표에 속하지 않거나 누락된 안건이 있습니다.", HttpStatus.BAD_REQUEST),
+  VOTE_OPTION_MISMATCH("안건에 속하지 않거나 존재하지 않는 선택지가 있습니다.", HttpStatus.BAD_REQUEST),
+  VOTE_SELECTION_COUNT_INVALID("안건의 선택 가능 개수를 벗어났습니다.", HttpStatus.BAD_REQUEST),
+  VOTE_SELECTION_DUPLICATE("중복된 안건 또는 선택지가 있습니다.", HttpStatus.BAD_REQUEST),
   ;
 
   private final String message;

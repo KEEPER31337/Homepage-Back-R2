@@ -1,10 +1,15 @@
 package com.keeper.homepage.domain.vote.api;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.vote.application.VoteParticipationService;
 import com.keeper.homepage.domain.vote.application.VoteService;
+import com.keeper.homepage.domain.vote.dto.request.VoteParticipationRequest;
+import com.keeper.homepage.domain.vote.dto.request.VoteReceiptCheckRequest;
 import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
+import com.keeper.homepage.domain.vote.dto.response.VoteReceiptCheckResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +18,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class VoteController {
 
   private final VoteService voteService;
+  private final VoteParticipationService voteParticipationService;
 
   @GetMapping
   public ResponseEntity<VoteListResponse> getVotes(
@@ -43,5 +51,22 @@ public class VoteController {
       @PathVariable long voteId
   ) {
     return ResponseEntity.ok(voteService.getVote(member, voteId));
+  }
+
+  @PostMapping("/{voteId}/participation")
+  public ResponseEntity<Void> participate(
+      @LoginMember Member member,
+      @PathVariable long voteId,
+      @Valid @RequestBody VoteParticipationRequest request
+  ) {
+    voteParticipationService.participate(member, voteId, request);
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/receipt_check")
+  public ResponseEntity<VoteReceiptCheckResponse> checkReceipt(
+      @Valid @RequestBody VoteReceiptCheckRequest request
+  ) {
+    return ResponseEntity.ok(voteParticipationService.checkReceipt(request));
   }
 }

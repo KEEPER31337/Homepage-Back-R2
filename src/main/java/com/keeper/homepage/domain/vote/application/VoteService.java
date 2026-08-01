@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.vote.application;
 
+import static com.keeper.homepage.domain.vote.application.VotePermissionChecker.isPermitted;
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.NOT_PERMITTED;
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.OUTSIDE_VOTING_PERIOD;
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.PERMITTED;
@@ -112,15 +113,6 @@ public class VoteService {
       return NOT_PERMITTED;
     }
     return PERMITTED;
-  }
-
-  private static boolean isPermitted(Vote vote, long memberId, Set<String> memberRoles) {
-    boolean permittedByMember = vote.getPermitByMember().contains(memberId);
-    boolean permittedByRole = vote.getPermitByRole().stream().anyMatch(memberRoles::contains);
-    if (!permittedByMember && !permittedByRole) {
-      return false;
-    }
-    return true;
   }
 
   private static Map<Long, List<VoteOptionResponse>> groupOptionsByAgendaId(

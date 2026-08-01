@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.vote.dao;
 
+import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteParticipation;
 import java.util.Collection;
 import java.util.Set;
@@ -9,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface VoteParticipationRepository extends JpaRepository<VoteParticipation, UUID> {
+
+  boolean existsByVoteAndMember(Vote vote, Member member);
 
   @Query("""
       SELECT participation.vote.id
