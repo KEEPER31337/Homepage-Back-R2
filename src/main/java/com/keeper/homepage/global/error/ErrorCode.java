@@ -114,6 +114,7 @@ public enum ErrorCode {
   ELECTION_VOTER_CANNOT_DELETE("비공개 상태 선거에서만 투표자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
   // VOTE
   VOTE_NOT_FOUND("존재하지 않는 투표입니다.", HttpStatus.NOT_FOUND),
+  VOTE_INACCESSIBLE("투표에 참여할 권한이 없습니다.", HttpStatus.FORBIDDEN),
   ;
 
   private final String message;

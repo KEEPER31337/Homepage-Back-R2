@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.vote.api;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.application.VoteService;
+import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.constraints.Max;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +35,13 @@ public class VoteController {
       int year
   ) {
     return ResponseEntity.ok(voteService.getVotes(member, year));
+  }
+
+  @GetMapping("/{voteId}")
+  public ResponseEntity<VoteDetailResponse> getVote(
+      @LoginMember Member member,
+      @PathVariable long voteId
+  ) {
+    return ResponseEntity.ok(voteService.getVote(member, voteId));
   }
 }
