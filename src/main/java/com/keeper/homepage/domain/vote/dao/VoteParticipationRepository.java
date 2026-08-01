@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,5 +24,16 @@ public interface VoteParticipationRepository extends JpaRepository<VoteParticipa
   Set<Long> findParticipatedVoteIds(
       @Param("memberId") long memberId,
       @Param("voteIds") Collection<Long> voteIds
+  );
+
+  @Modifying
+  @Query("""
+      UPDATE VoteParticipation participation
+      SET participation.member = :virtualMember
+      WHERE participation.member = :member
+      """)
+  void updateVirtualMember(
+      @Param("member") Member member,
+      @Param("virtualMember") Member virtualMember
   );
 }
