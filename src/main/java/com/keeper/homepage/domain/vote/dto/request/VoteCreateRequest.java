@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record VoteCreateRequest(
@@ -27,10 +27,10 @@ public record VoteCreateRequest(
         @Positive(message = "회원 ID는 양수여야 합니다.") Long> permitByUserIds,
 
     @NotNull(message = "투표 시작 시각을 입력해주세요.")
-    Instant startAt,
+    LocalDateTime startAt,
 
     @NotNull(message = "투표 종료 시각을 입력해주세요.")
-    Instant endAt,
+    LocalDateTime endAt,
 
     @NotEmpty(message = "안건을 한 개 이상 입력해주세요.")
     List<@NotNull(message = "안건은 null일 수 없습니다.") @Valid VoteAgendaCreateRequest> agendas

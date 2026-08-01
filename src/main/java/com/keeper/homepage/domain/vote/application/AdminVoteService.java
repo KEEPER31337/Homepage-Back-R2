@@ -2,7 +2,6 @@ package com.keeper.homepage.domain.vote.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_NOT_FOUND;
-import static java.time.ZoneOffset.UTC;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -17,7 +16,6 @@ import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
 import com.keeper.homepage.domain.vote.entity.VoteOption;
 import com.keeper.homepage.global.error.BusinessException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -82,8 +80,8 @@ public class AdminVoteService {
         .description(request.description())
         .permitByRole(permitByRoles)
         .permitByMember(request.permitByUserIds())
-        .startAt(LocalDateTime.ofInstant(request.startAt(), UTC))
-        .endAt(LocalDateTime.ofInstant(request.endAt(), UTC))
+        .startAt(request.startAt())
+        .endAt(request.endAt())
         .createdBy(creator)
         .build();
   }
