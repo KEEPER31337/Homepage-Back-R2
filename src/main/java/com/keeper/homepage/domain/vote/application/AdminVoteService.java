@@ -1,6 +1,7 @@
 package com.keeper.homepage.domain.vote.application;
 
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.VOTE_NOT_FOUND;
 import static java.time.ZoneOffset.UTC;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -45,6 +46,13 @@ public class AdminVoteService {
     voteOptionRepository.saveAll(options);
 
     return vote.getId();
+  }
+
+  @Transactional
+  public void deleteVote(long voteId) {
+    Vote vote = voteRepository.findById(voteId)
+        .orElseThrow(() -> new BusinessException(voteId, "voteId", VOTE_NOT_FOUND));
+    voteRepository.delete(vote);
   }
 
   private void validatePermitMembers(List<Long> permitByUserIds) {

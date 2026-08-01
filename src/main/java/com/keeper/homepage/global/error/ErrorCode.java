@@ -112,6 +112,8 @@ public enum ErrorCode {
   ELECTION_CANDIDATE_CANNOT_REGISTER("해당 직위는 후보자 등록 불가합니다.", HttpStatus.BAD_REQUEST),
   ELECTION_CANDIDATE_CANNOT_DELETE("비공개 상태 선거에서만 후보자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
   ELECTION_VOTER_CANNOT_DELETE("비공개 상태 선거에서만 투표자 삭제가 가능합니다.", HttpStatus.BAD_REQUEST),
+  // VOTE
+  VOTE_NOT_FOUND("존재하지 않는 투표입니다.", HttpStatus.NOT_FOUND),
   ;
 
   private final String message;
