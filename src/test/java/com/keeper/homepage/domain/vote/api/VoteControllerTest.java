@@ -9,11 +9,10 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.application.VoteParticipationService;
 import com.keeper.homepage.domain.vote.application.VoteService;
 import com.keeper.homepage.domain.vote.dto.request.VoteParticipationRequest;
-import com.keeper.homepage.domain.vote.dto.request.VoteReceiptCheckRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteSelectionRequest;
 import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
-import com.keeper.homepage.domain.vote.dto.response.VoteReceiptCheckResponse;
+import com.keeper.homepage.domain.vote.dto.response.VoteParticipationResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -71,31 +70,22 @@ class VoteControllerTest {
   }
 
   @Test
-  void participateReturnsOkWithoutBody() {
+  void participateReturnsReceiptAndSelections() {
     Member member = mock(Member.class);
     VoteParticipationRequest request = new VoteParticipationRequest(
-        UUID.fromString("123e4567-e89b-42d3-a456-426614174000"),
         List.of(new VoteSelectionRequest(20L, List.of(101L)))
     );
+    VoteParticipationResponse expected = new VoteParticipationResponse(
+        UUID.fromString("123e4567-e89b-42d3-a456-426614174000"),
+        List.of());
+    when(voteParticipationService.participate(member, 42L, request)).thenReturn(expected);
 
-    ResponseEntity<Void> response = voteController.participate(member, 42L, request);
-
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isNull();
-    verify(voteParticipationService).participate(member, 42L, request);
-  }
-
-  @Test
-  void checkReceiptReturnsSelectedOptions() {
-    VoteReceiptCheckRequest request = new VoteReceiptCheckRequest(
-        UUID.fromString("123e4567-e89b-42d3-a456-426614174000"));
-    VoteReceiptCheckResponse expected = new VoteReceiptCheckResponse(42L, List.of());
-    when(voteParticipationService.checkReceipt(request)).thenReturn(expected);
-
-    ResponseEntity<VoteReceiptCheckResponse> response = voteController.checkReceipt(request);
+    ResponseEntity<VoteParticipationResponse> response =
+        voteController.participate(member, 42L, request);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isSameAs(expected);
-    verify(voteParticipationService).checkReceipt(request);
+    verify(voteParticipationService).participate(member, 42L, request);
   }
+
 }

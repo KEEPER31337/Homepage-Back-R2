@@ -4,10 +4,9 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.application.VoteParticipationService;
 import com.keeper.homepage.domain.vote.application.VoteService;
 import com.keeper.homepage.domain.vote.dto.request.VoteParticipationRequest;
-import com.keeper.homepage.domain.vote.dto.request.VoteReceiptCheckRequest;
 import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
-import com.keeper.homepage.domain.vote.dto.response.VoteReceiptCheckResponse;
+import com.keeper.homepage.domain.vote.dto.response.VoteParticipationResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -54,19 +53,11 @@ public class VoteController {
   }
 
   @PostMapping("/{voteId}/participation")
-  public ResponseEntity<Void> participate(
+  public ResponseEntity<VoteParticipationResponse> participate(
       @LoginMember Member member,
       @PathVariable long voteId,
       @Valid @RequestBody VoteParticipationRequest request
   ) {
-    voteParticipationService.participate(member, voteId, request);
-    return ResponseEntity.ok().build();
-  }
-
-  @PostMapping("/receipt_check")
-  public ResponseEntity<VoteReceiptCheckResponse> checkReceipt(
-      @Valid @RequestBody VoteReceiptCheckRequest request
-  ) {
-    return ResponseEntity.ok(voteParticipationService.checkReceipt(request));
+    return ResponseEntity.ok(voteParticipationService.participate(member, voteId, request));
   }
 }

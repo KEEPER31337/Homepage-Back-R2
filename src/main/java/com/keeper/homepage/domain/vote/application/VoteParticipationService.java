@@ -7,8 +7,6 @@ import static com.keeper.homepage.global.error.ErrorCode.VOTE_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_NOT_IN_PROGRESS;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_OPTION_MISMATCH;
-import static com.keeper.homepage.global.error.ErrorCode.VOTE_RECEIPT_DUPLICATE;
-import static com.keeper.homepage.global.error.ErrorCode.VOTE_RECEIPT_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_SELECTION_COUNT_INVALID;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_SELECTION_DUPLICATE;
 
@@ -20,11 +18,8 @@ import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
 import com.keeper.homepage.domain.vote.dao.VoteReceiptRepository;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.domain.vote.dto.request.VoteParticipationRequest;
-import com.keeper.homepage.domain.vote.dto.request.VoteReceiptCheckRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteSelectionRequest;
-import com.keeper.homepage.domain.vote.dto.response.VoteReceiptCheckResponse;
-import com.keeper.homepage.domain.vote.dto.response.VoteReceiptOptionResponse;
-import com.keeper.homepage.domain.vote.dto.response.VoteReceiptSelectionResponse;
+import com.keeper.homepage.domain.vote.dto.response.VoteParticipationResponse;
 import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
 import com.keeper.homepage.domain.vote.entity.VoteChoice;
@@ -36,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,41 +51,21 @@ public class VoteParticipationService {
   private final VoteChoiceRepository voteChoiceRepository;
 
   @Transactional
-  public void participate(Member member, long voteId, VoteParticipationRequest request) {
+  public VoteParticipationResponse participate(
+      Member member,
+      long voteId,
+      VoteParticipationRequest request
+  ) {
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new BusinessException(voteId, "voteId", VOTE_NOT_FOUND));
     validateParticipationPermission(member, vote);
     validateNotParticipated(member, vote);
-    validateReceiptTokenNotDuplicate(request);
     List<VoteOption> selectedOptions = validateSelections(vote, request.selections());
 
     saveParticipation(member, vote);
-    VoteReceipt receipt = saveReceipt(vote, request);
+    VoteReceipt receipt = saveReceipt(vote);
     saveChoices(receipt, selectedOptions);
-  }
-
-  @Transactional(readOnly = true)
-  public VoteReceiptCheckResponse checkReceipt(VoteReceiptCheckRequest request) {
-    VoteReceipt receipt = voteReceiptRepository.findById(request.receiptToken())
-        .orElseThrow(() -> new BusinessException(
-            request.receiptToken(), "receiptToken", VOTE_RECEIPT_NOT_FOUND));
-    List<VoteChoice> choices = voteChoiceRepository.findAllWithOptionAndAgendaByReceipt(receipt);
-
-    Map<Long, VoteAgenda> agendasById = new LinkedHashMap<>();
-    Map<Long, List<VoteReceiptOptionResponse>> optionsByAgendaId = new LinkedHashMap<>();
-    for (VoteChoice choice : choices) {
-      VoteOption option = choice.getOption();
-      VoteAgenda agenda = option.getAgenda();
-      agendasById.putIfAbsent(agenda.getId(), agenda);
-      optionsByAgendaId.computeIfAbsent(agenda.getId(), key -> new ArrayList<>())
-          .add(VoteReceiptOptionResponse.from(option));
-    }
-
-    List<VoteReceiptSelectionResponse> selections = optionsByAgendaId.entrySet().stream()
-        .map(entry -> VoteReceiptSelectionResponse.from(
-            agendasById.get(entry.getKey()), entry.getValue()))
-        .toList();
-    return new VoteReceiptCheckResponse(receipt.getVote().getId(), selections);
+    return VoteParticipationResponse.from(receipt, selectedOptions);
   }
 
   private static void validateParticipationPermission(Member member, Vote vote) {
@@ -109,13 +83,6 @@ public class VoteParticipationService {
   private void validateNotParticipated(Member member, Vote vote) {
     if (voteParticipationRepository.existsByVoteAndMember(vote, member)) {
       throw new BusinessException(vote.getId(), "voteId", VOTE_ALREADY_PARTICIPATED);
-    }
-  }
-
-  private void validateReceiptTokenNotDuplicate(VoteParticipationRequest request) {
-    if (voteReceiptRepository.existsById(request.receiptToken())) {
-      throw new BusinessException(
-          request.receiptToken(), "receiptToken", VOTE_RECEIPT_DUPLICATE);
     }
   }
 
@@ -192,17 +159,11 @@ public class VoteParticipationService {
     }
   }
 
-  private VoteReceipt saveReceipt(Vote vote, VoteParticipationRequest request) {
+  private VoteReceipt saveReceipt(Vote vote) {
     VoteReceipt receipt = VoteReceipt.builder()
-        .token(request.receiptToken())
         .vote(vote)
         .build();
-    try {
-      return voteReceiptRepository.saveAndFlush(receipt);
-    } catch (DataIntegrityViolationException exception) {
-      throw new BusinessException(
-          request.receiptToken(), "receiptToken", VOTE_RECEIPT_DUPLICATE);
-    }
+    return voteReceiptRepository.saveAndFlush(receipt);
   }
 
   private void saveChoices(VoteReceipt receipt, List<VoteOption> selectedOptions) {
