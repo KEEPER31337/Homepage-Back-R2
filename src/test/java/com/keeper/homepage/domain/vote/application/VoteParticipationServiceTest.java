@@ -154,7 +154,7 @@ class VoteParticipationServiceTest {
     Member member = mock(Member.class);
     Vote vote = vote(
         LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2),
-        List.of("ROLE_회원"));
+        List.of(10L));
     when(voteRepository.findById(42L)).thenReturn(Optional.of(vote));
 
     assertBusinessException(
@@ -162,7 +162,7 @@ class VoteParticipationServiceTest {
         HttpStatus.CONFLICT,
         "투표 가능한 기간이 아닙니다.");
 
-    verify(member, never()).getJobs();
+    verify(member, never()).getId();
     verifyNoInteractions(
         voteAgendaRepository,
         voteOptionRepository,
@@ -175,10 +175,9 @@ class VoteParticipationServiceTest {
   void participateRejectsMemberWithoutPermission() {
     Member member = mock(Member.class);
     when(member.getId()).thenReturn(10L);
-    when(member.getJobs()).thenReturn(List.of("ROLE_회원"));
     Vote vote = vote(
         LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1),
-        List.of("ROLE_회장"));
+        List.of(11L));
     when(voteRepository.findById(42L)).thenReturn(Optional.of(vote));
 
     assertBusinessException(
@@ -357,7 +356,6 @@ class VoteParticipationServiceTest {
   private Member permittedMember() {
     Member member = mock(Member.class);
     when(member.getId()).thenReturn(10L);
-    when(member.getJobs()).thenReturn(List.of("ROLE_회원"));
     return member;
   }
 
@@ -365,19 +363,18 @@ class VoteParticipationServiceTest {
     return vote(
         LocalDateTime.now().minusDays(1),
         LocalDateTime.now().plusDays(1),
-        List.of("ROLE_회원"));
+        List.of(10L));
   }
 
   private static Vote vote(
       LocalDateTime startAt,
       LocalDateTime endAt,
-      List<String> permitByRole
+      List<Long> permitByMember
   ) {
     Vote vote = Vote.builder()
         .title("회장 선거")
         .description("설명")
-        .permitByRole(permitByRole)
-        .permitByMember(List.of())
+        .permitByMember(permitByMember)
         .startAt(startAt)
         .endAt(endAt)
         .build();

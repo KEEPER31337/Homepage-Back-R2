@@ -52,29 +52,28 @@ class VoteServiceTest {
   void getVotesReturnsParticipationStatusForEachVote() {
     Member member = mock(Member.class);
     when(member.getId()).thenReturn(10L);
-    when(member.getJobs()).thenReturn(List.of("ROLE_회원"));
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime openStartAt = now.minusDays(1);
     LocalDateTime openEndAt = now.plusDays(1);
     LocalDateTime futureStartAt = now.plusDays(1);
     LocalDateTime futureEndAt = now.plusDays(2);
-    Vote permittedByRoleVote = vote(
-        5L, "역할 허용 투표", List.of("ROLE_회원"), List.of(), openStartAt, openEndAt);
-    Vote permittedByMemberVote = vote(
-        4L, "회원 허용 투표", List.of(), List.of(10L), openStartAt, openEndAt);
+    Vote firstPermittedVote = vote(
+        5L, "첫 번째 허용 투표", List.of(10L), openStartAt, openEndAt);
+    Vote secondPermittedVote = vote(
+        4L, "두 번째 허용 투표", List.of(10L), openStartAt, openEndAt);
     Vote notPermittedVote = vote(
-        3L, "권한 없는 투표", List.of(), List.of(), openStartAt, openEndAt);
+        3L, "권한 없는 투표", List.of(), openStartAt, openEndAt);
     Vote submittedVote = vote(
-        2L, "제출한 투표", List.of("ROLE_회원"), List.of(), openStartAt, openEndAt);
+        2L, "제출한 투표", List.of(10L), openStartAt, openEndAt);
     Vote outsideVotingPeriodVote = vote(
-        1L, "기간 외 투표", List.of("ROLE_회원"), List.of(), futureStartAt, futureEndAt);
+        1L, "기간 외 투표", List.of(10L), futureStartAt, futureEndAt);
     when(voteRepository
         .findAllByStartAtGreaterThanEqualAndStartAtLessThanOrderByStartAtDescIdDesc(
             LocalDateTime.of(2026, 1, 1, 0, 0),
             LocalDateTime.of(2027, 1, 1, 0, 0)))
         .thenReturn(List.of(
-            permittedByRoleVote,
-            permittedByMemberVote,
+            firstPermittedVote,
+            secondPermittedVote,
             notPermittedVote,
             submittedVote,
             outsideVotingPeriodVote));
@@ -114,12 +113,10 @@ class VoteServiceTest {
   void getVoteReturnsAgendasAndOptionsInDisplayOrder() {
     Member member = mock(Member.class);
     when(member.getId()).thenReturn(10L);
-    when(member.getJobs()).thenReturn(List.of("ROLE_회원"));
     Vote vote = vote(
         42L,
         "회장 선거",
-        List.of("ROLE_회원"),
-        List.of(),
+        List.of(10L),
         LocalDateTime.of(2026, 8, 1, 0, 0),
         LocalDateTime.of(2026, 8, 2, 0, 0));
     VoteAgenda firstAgenda = agenda(100L, vote, "회장 선출", 0, 1, 1);
@@ -152,12 +149,10 @@ class VoteServiceTest {
   void getVoteRejectsMemberWithoutPermission() {
     Member member = mock(Member.class);
     when(member.getId()).thenReturn(10L);
-    when(member.getJobs()).thenReturn(List.of("ROLE_회원"));
     Vote vote = vote(
         42L,
         "회장 선거",
-        List.of("ROLE_회장"),
-        List.of(),
+        List.of(11L),
         LocalDateTime.of(2026, 8, 1, 0, 0),
         LocalDateTime.of(2026, 8, 2, 0, 0));
     when(voteRepository.findById(42L)).thenReturn(Optional.of(vote));
@@ -185,12 +180,11 @@ class VoteServiceTest {
     verifyNoInteractions(voteAgendaRepository, voteOptionRepository);
   }
 
-  private static Vote vote(long id, String title, List<String> permitByRole,
-      List<Long> permitByMember, LocalDateTime startAt, LocalDateTime endAt) {
+  private static Vote vote(long id, String title, List<Long> permitByMember,
+      LocalDateTime startAt, LocalDateTime endAt) {
     Vote vote = Vote.builder()
         .title(title)
         .description("설명")
-        .permitByRole(permitByRole)
         .permitByMember(permitByMember)
         .startAt(startAt)
         .endAt(endAt)

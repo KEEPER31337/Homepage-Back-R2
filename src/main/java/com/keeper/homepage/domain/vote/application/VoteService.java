@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.vote.application;
 
-import static com.keeper.homepage.domain.vote.application.VotePermissionChecker.isPermitted;
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.NOT_PERMITTED;
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.OUTSIDE_VOTING_PERIOD;
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.PERMITTED;
@@ -59,12 +58,11 @@ public class VoteService {
         .toList();
     Set<Long> participatedVoteIds = voteParticipationRepository.findParticipatedVoteIds(
         memberId, voteIds);
-    Set<String> memberRoles = Set.copyOf(member.getJobs());
     LocalDateTime now = LocalDateTime.now();
     List<VoteListItemResponse> responses = votes.stream()
         .map(vote -> VoteListItemResponse.from(
             vote, getParticipationStatus(
-                vote, memberId, memberRoles, participatedVoteIds, now)))
+                vote, memberId, participatedVoteIds, now)))
         .toList();
 
     return new VoteListResponse(responses);
@@ -74,8 +72,7 @@ public class VoteService {
     Vote vote = voteRepository.findById(voteId)
         .orElseThrow(() -> new BusinessException(voteId, "voteId", VOTE_NOT_FOUND));
     long memberId = member.getId();
-    Set<String> memberRoles = Set.copyOf(member.getJobs());
-    if (!isPermitted(vote, memberId, memberRoles)) {
+    if (!vote.getPermitByMember().contains(memberId)) {
       throw new BusinessException(voteId, "voteId", VOTE_INACCESSIBLE);
     }
 
@@ -98,7 +95,6 @@ public class VoteService {
   private static VoteParticipationStatus getParticipationStatus(
       Vote vote,
       long memberId,
-      Set<String> memberRoles,
       Set<Long> participatedVoteIds,
       LocalDateTime now
   ) {
@@ -109,7 +105,7 @@ public class VoteService {
       return SUBMITTED;
     }
 
-    if (!isPermitted(vote, memberId, memberRoles)) {
+    if (!vote.getPermitByMember().contains(memberId)) {
       return NOT_PERMITTED;
     }
     return PERMITTED;

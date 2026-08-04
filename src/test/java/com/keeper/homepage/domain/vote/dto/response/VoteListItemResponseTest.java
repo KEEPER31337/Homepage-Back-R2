@@ -31,6 +31,6 @@ class VoteListItemResponseTest {
         .contains("\"startAt\":\"2026-08-01T00:00:00\"")
         .contains("\"endAt\":\"2026-08-02T00:00:00\"")
         .contains("\"participated\":3")
-        .doesNotContain("permitByUserIds", "permitByRoles");
+        .doesNotContain("permitByUserIds");
   }
 }

@@ -5,7 +5,6 @@ import static com.keeper.homepage.global.error.ErrorCode.VOTE_NOT_FOUND;
 
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
-import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import com.keeper.homepage.domain.vote.dao.VoteAgendaRepository;
 import com.keeper.homepage.domain.vote.dao.VoteOptionRepository;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
@@ -70,15 +69,9 @@ public class AdminVoteService {
   }
 
   private Vote createVoteEntity(Member creator, VoteCreateRequest request) {
-    List<String> permitByRoles = request.permitByRoles()
-        .stream()
-        .map(MemberJobType::name)
-        .toList();
-
     return Vote.builder()
         .title(request.title())
         .description(request.description())
-        .permitByRole(permitByRoles)
         .permitByMember(request.permitByUserIds())
         .startAt(request.startAt())
         .endAt(request.endAt())

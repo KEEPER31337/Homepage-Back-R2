@@ -1,7 +1,6 @@
 package com.keeper.homepage.domain.vote.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -19,9 +18,6 @@ public record VoteCreateRequest(
 
     @Size(max = 16_383, message = "투표 설명은 {max}자 이하로 입력해주세요.")
     String description,
-
-    @NotNull(message = "투표 허용 역할 목록을 입력해주세요.")
-    List<@NotNull(message = "투표 허용 역할은 null일 수 없습니다.") MemberJobType> permitByRoles,
 
     @NotNull(message = "투표 허용 회원 ID 목록을 입력해주세요.")
     List<@NotNull(message = "회원 ID는 null일 수 없습니다.")

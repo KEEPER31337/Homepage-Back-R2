@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.vote.dto.request;
 
-import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.validation.ConstraintViolation;
@@ -45,7 +44,6 @@ class VoteCreateRequestTest {
     VoteCreateRequest request = new VoteCreateRequest(
         valid.title(),
         valid.description(),
-        valid.permitByRoles(),
         valid.permitByUserIds(),
         valid.endAt(),
         valid.endAt(),
@@ -65,7 +63,6 @@ class VoteCreateRequestTest {
     VoteCreateRequest request = new VoteCreateRequest(
         valid.title(),
         "가".repeat(16_384),
-        valid.permitByRoles(),
         valid.permitByUserIds(),
         valid.startAt(),
         valid.endAt(),
@@ -91,7 +88,6 @@ class VoteCreateRequestTest {
     VoteCreateRequest request = new VoteCreateRequest(
         valid.title(),
         valid.description(),
-        valid.permitByRoles(),
         valid.permitByUserIds(),
         valid.startAt(),
         valid.endAt(),
@@ -111,7 +107,6 @@ class VoteCreateRequestTest {
     VoteCreateRequest request = new VoteCreateRequest(
         valid.title(),
         valid.description(),
-        valid.permitByRoles(),
         List.of(0L),
         valid.startAt(),
         valid.endAt(),
@@ -138,7 +133,6 @@ class VoteCreateRequestTest {
     return new VoteCreateRequest(
         "2026년 회장 선거",
         "2026년도 회장을 선출하기 위한 투표입니다.",
-        List.of(ROLE_회원),
         List.of(16381L, 26381L),
         LocalDateTime.of(2026, 8, 1, 0, 0),
         LocalDateTime.of(2026, 8, 2, 0, 0),

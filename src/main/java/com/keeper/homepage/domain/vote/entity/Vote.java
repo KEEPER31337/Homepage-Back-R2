@@ -60,11 +60,6 @@ public class Vote {
 
   @JdbcTypeCode(SqlTypes.JSON)
   @ColumnDefault("(JSON_ARRAY())")
-  @Column(name = "permit_by_role", nullable = false, columnDefinition = "JSON")
-  private List<String> permitByRole = new ArrayList<>();
-
-  @JdbcTypeCode(SqlTypes.JSON)
-  @ColumnDefault("(JSON_ARRAY())")
   @Column(name = "permit_by_member", nullable = false, columnDefinition = "JSON")
   private List<Long> permitByMember = new ArrayList<>();
 
@@ -96,11 +91,10 @@ public class Vote {
   private final List<VoteReceipt> receipts = new ArrayList<>();
 
   @Builder
-  private Vote(String title, String description, List<String> permitByRole,
-      List<Long> permitByMember, LocalDateTime startAt, LocalDateTime endAt, Member createdBy) {
+  private Vote(String title, String description, List<Long> permitByMember,
+      LocalDateTime startAt, LocalDateTime endAt, Member createdBy) {
     this.title = title;
     this.description = description;
-    this.permitByRole = permitByRole == null ? new ArrayList<>() : new ArrayList<>(permitByRole);
     this.permitByMember = permitByMember == null
         ? new ArrayList<>()
         : new ArrayList<>(permitByMember);

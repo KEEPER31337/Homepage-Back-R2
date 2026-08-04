@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.vote.api;
 
-import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -57,7 +56,6 @@ class AdminVoteControllerTest {
     return new VoteCreateRequest(
         "2026년 회장 선거",
         null,
-        List.of(ROLE_회원),
         List.of(16381L),
         LocalDateTime.of(2026, 8, 1, 0, 0),
         LocalDateTime.of(2026, 8, 2, 0, 0),

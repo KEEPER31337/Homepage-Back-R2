@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.vote.application;
 
-import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +92,6 @@ class AdminVoteServiceTest {
     Vote vote = voteCaptor.getValue();
     assertThat(vote.getTitle()).isEqualTo(request.title());
     assertThat(vote.getDescription()).isEqualTo(request.description());
-    assertThat(vote.getPermitByRole()).containsExactly("ROLE_회원");
     assertThat(vote.getPermitByMember()).containsExactly(16381L, 26381L);
     assertThat(vote.getStartAt()).isEqualTo(request.startAt());
     assertThat(vote.getEndAt()).isEqualTo(request.endAt());
@@ -171,7 +169,6 @@ class AdminVoteServiceTest {
     return new VoteCreateRequest(
         "2026년 회장 선거",
         "2026년도 임원진을 선출하기 위한 투표입니다.",
-        List.of(ROLE_회원),
         List.of(16381L, 26381L),
         LocalDateTime.of(2026, 8, 1, 0, 0),
         LocalDateTime.of(2026, 8, 2, 0, 0),

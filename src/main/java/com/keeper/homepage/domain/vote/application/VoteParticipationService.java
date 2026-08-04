@@ -1,6 +1,5 @@
 package com.keeper.homepage.domain.vote.application;
 
-import static com.keeper.homepage.domain.vote.application.VotePermissionChecker.isPermitted;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_AGENDA_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_ALREADY_PARTICIPATED;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_INACCESSIBLE;
@@ -74,8 +73,7 @@ public class VoteParticipationService {
       throw new BusinessException(vote.getId(), "voteId", VOTE_NOT_IN_PROGRESS);
     }
 
-    Set<String> memberRoles = Set.copyOf(member.getJobs());
-    if (!isPermitted(vote, member.getId(), memberRoles)) {
+    if (!vote.getPermitByMember().contains(member.getId())) {
       throw new BusinessException(vote.getId(), "voteId", VOTE_INACCESSIBLE);
     }
   }
