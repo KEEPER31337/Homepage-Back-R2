@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.vote.api;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.application.AdminVoteService;
 import com.keeper.homepage.domain.vote.dto.request.VoteCreateRequest;
+import com.keeper.homepage.domain.vote.dto.response.AdminVoteListResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteIdResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +29,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminVoteController {
 
   private final AdminVoteService adminVoteService;
+
+  @GetMapping
+  public ResponseEntity<AdminVoteListResponse> getVotes() {
+    return ResponseEntity.ok(adminVoteService.getVotes());
+  }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)

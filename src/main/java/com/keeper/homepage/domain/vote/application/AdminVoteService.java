@@ -7,17 +7,23 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.dao.VoteAgendaRepository;
 import com.keeper.homepage.domain.vote.dao.VoteOptionRepository;
+import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
+import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository.VoteParticipationCount;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.domain.vote.dto.request.VoteAgendaCreateRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteCreateRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteOptionCreateRequest;
+import com.keeper.homepage.domain.vote.dto.response.AdminVoteListItemResponse;
+import com.keeper.homepage.domain.vote.dto.response.AdminVoteListResponse;
 import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
 import com.keeper.homepage.domain.vote.entity.VoteOption;
 import com.keeper.homepage.global.error.BusinessException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +36,32 @@ public class AdminVoteService {
   private final VoteRepository voteRepository;
   private final VoteAgendaRepository voteAgendaRepository;
   private final VoteOptionRepository voteOptionRepository;
+  private final VoteParticipationRepository voteParticipationRepository;
   private final MemberRepository memberRepository;
+
+  @Transactional(readOnly = true)
+  public AdminVoteListResponse getVotes() {
+    List<Vote> votes = voteRepository.findAllByOrderByStartAtDescIdDesc();
+    if (votes.isEmpty()) {
+      return new AdminVoteListResponse(List.of());
+    }
+
+    List<Long> voteIds = votes.stream()
+        .map(Vote::getId)
+        .toList();
+    List<VoteParticipationCount> participantCounts =
+        voteParticipationRepository.countParticipantsByVoteIds(voteIds);
+    Map<Long, Long> participantCountsByVoteId = new HashMap<>();
+    for (VoteParticipationCount count : participantCounts) {
+      participantCountsByVoteId.put(count.getVoteId(), count.getParticipantCount());
+    }
+
+    List<AdminVoteListItemResponse> responses = votes.stream()
+        .map(vote -> AdminVoteListItemResponse.from(
+            vote, participantCountsByVoteId.getOrDefault(vote.getId(), 0L)))
+        .toList();
+    return new AdminVoteListResponse(responses);
+  }
 
   @Transactional
   public long createVote(Member creator, VoteCreateRequest request) {

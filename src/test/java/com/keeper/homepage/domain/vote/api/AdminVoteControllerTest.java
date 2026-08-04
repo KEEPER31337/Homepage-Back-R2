@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.vote.application.AdminVoteService;
 import com.keeper.homepage.domain.vote.dto.request.VoteAgendaCreateRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteCreateRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteOptionCreateRequest;
+import com.keeper.homepage.domain.vote.dto.response.AdminVoteListResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteIdResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,18 @@ class AdminVoteControllerTest {
 
   @InjectMocks
   private AdminVoteController adminVoteController;
+
+  @Test
+  void getVotesReturnsAdminVoteList() {
+    AdminVoteListResponse expected = new AdminVoteListResponse(List.of());
+    when(adminVoteService.getVotes()).thenReturn(expected);
+
+    ResponseEntity<AdminVoteListResponse> response = adminVoteController.getVotes();
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isSameAs(expected);
+    verify(adminVoteService).getVotes();
+  }
 
   @Test
   void createVoteReturnsCreatedVoteId() {

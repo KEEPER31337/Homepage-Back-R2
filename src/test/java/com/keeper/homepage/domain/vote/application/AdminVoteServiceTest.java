@@ -13,10 +13,13 @@ import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.dao.VoteAgendaRepository;
 import com.keeper.homepage.domain.vote.dao.VoteOptionRepository;
+import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
+import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository.VoteParticipationCount;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.domain.vote.dto.request.VoteAgendaCreateRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteCreateRequest;
 import com.keeper.homepage.domain.vote.dto.request.VoteOptionCreateRequest;
+import com.keeper.homepage.domain.vote.dto.response.AdminVoteListResponse;
 import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
 import com.keeper.homepage.domain.vote.entity.VoteOption;
@@ -48,6 +51,9 @@ class AdminVoteServiceTest {
   private VoteOptionRepository voteOptionRepository;
 
   @Mock
+  private VoteParticipationRepository voteParticipationRepository;
+
+  @Mock
   private MemberRepository memberRepository;
 
   @InjectMocks
@@ -67,6 +73,56 @@ class AdminVoteServiceTest {
   @BeforeEach
   void setUp() {
     creator = mock(Member.class);
+  }
+
+  @Test
+  void getVotesReturnsPermitUserIdsAndParticipantCounts() {
+    Vote latestVote = vote(
+        42L,
+        "2026년 회장 선거",
+        List.of(16381L, 26381L),
+        LocalDateTime.of(2026, 8, 1, 0, 0),
+        LocalDateTime.of(2026, 8, 2, 0, 0));
+    Vote previousVote = vote(
+        21L,
+        "2025년 회장 선거",
+        List.of(16381L),
+        LocalDateTime.of(2025, 8, 1, 0, 0),
+        LocalDateTime.of(2025, 8, 2, 0, 0));
+    VoteParticipationCount latestVoteCount = mock(VoteParticipationCount.class);
+    when(latestVoteCount.getVoteId()).thenReturn(42L);
+    when(latestVoteCount.getParticipantCount()).thenReturn(3L);
+    when(voteRepository.findAllByOrderByStartAtDescIdDesc())
+        .thenReturn(List.of(latestVote, previousVote));
+    when(voteParticipationRepository.countParticipantsByVoteIds(List.of(42L, 21L)))
+        .thenReturn(List.of(latestVoteCount));
+
+    AdminVoteListResponse response = adminVoteService.getVotes();
+
+    assertThat(response.votes())
+        .extracting(item -> item.id())
+        .containsExactly(42L, 21L);
+    assertThat(response.votes().get(0).title()).isEqualTo("2026년 회장 선거");
+    assertThat(response.votes().get(0).startAt())
+        .isEqualTo(LocalDateTime.of(2026, 8, 1, 0, 0));
+    assertThat(response.votes().get(0).endAt())
+        .isEqualTo(LocalDateTime.of(2026, 8, 2, 0, 0));
+    assertThat(response.votes().get(0).permitByUserIds())
+        .containsExactly(16381L, 26381L);
+    assertThat(response.votes().get(0).participantCount()).isEqualTo(3L);
+    assertThat(response.votes().get(1).permitByUserIds()).containsExactly(16381L);
+    assertThat(response.votes().get(1).participantCount()).isZero();
+    verify(voteParticipationRepository).countParticipantsByVoteIds(List.of(42L, 21L));
+  }
+
+  @Test
+  void getVotesDoesNotQueryParticipantCountsWhenVoteListIsEmpty() {
+    when(voteRepository.findAllByOrderByStartAtDescIdDesc()).thenReturn(List.of());
+
+    AdminVoteListResponse response = adminVoteService.getVotes();
+
+    assertThat(response.votes()).isEmpty();
+    verifyNoInteractions(voteParticipationRepository);
   }
 
   @Test
@@ -159,6 +215,19 @@ class AdminVoteServiceTest {
     Member member = mock(Member.class);
     when(member.getId()).thenReturn(id);
     return member;
+  }
+
+  private static Vote vote(long id, String title, List<Long> permitByUserIds,
+      LocalDateTime startAt, LocalDateTime endAt) {
+    Vote vote = Vote.builder()
+        .title(title)
+        .description("설명")
+        .permitByMember(permitByUserIds)
+        .startAt(startAt)
+        .endAt(endAt)
+        .build();
+    ReflectionTestUtils.setField(vote, "id", id);
+    return vote;
   }
 
   private static <T> List<T> toList(Iterable<T> values) {
