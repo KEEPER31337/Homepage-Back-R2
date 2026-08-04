@@ -7,6 +7,7 @@ import com.keeper.homepage.domain.vote.dto.request.VoteParticipationRequest;
 import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteParticipationResponse;
+import com.keeper.homepage.domain.vote.dto.response.VoteResultResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -50,6 +51,13 @@ public class VoteController {
       @PathVariable long voteId
   ) {
     return ResponseEntity.ok(voteService.getVote(member, voteId));
+  }
+
+  @GetMapping("/{voteId}/result")
+  public ResponseEntity<VoteResultResponse> getVoteResult(
+      @PathVariable long voteId
+  ) {
+    return ResponseEntity.ok(voteService.getVoteResult(voteId));
   }
 
   @PostMapping("/{voteId}/participation")

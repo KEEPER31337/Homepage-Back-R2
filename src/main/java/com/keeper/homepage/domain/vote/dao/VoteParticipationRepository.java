@@ -23,6 +23,8 @@ public interface VoteParticipationRepository extends JpaRepository<VoteParticipa
 
   boolean existsByVoteAndMember(Vote vote, Member member);
 
+  List<VoteParticipation> findAllByVote(Vote vote);
+
   @Query("""
       SELECT participation.vote.id
       FROM VoteParticipation participation

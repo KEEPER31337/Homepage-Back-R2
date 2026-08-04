@@ -11,17 +11,23 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.dao.VoteAgendaRepository;
 import com.keeper.homepage.domain.vote.dao.VoteOptionRepository;
 import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
+import com.keeper.homepage.domain.vote.dao.VoteReceiptRepository;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
+import com.keeper.homepage.domain.vote.dto.response.VoteResultResponse;
 import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
+import com.keeper.homepage.domain.vote.entity.VoteChoice;
 import com.keeper.homepage.domain.vote.entity.VoteOption;
+import com.keeper.homepage.domain.vote.entity.VoteParticipation;
+import com.keeper.homepage.domain.vote.entity.VoteReceipt;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +44,9 @@ class VoteServiceTest {
 
   @Mock
   private VoteParticipationRepository voteParticipationRepository;
+
+  @Mock
+  private VoteReceiptRepository voteReceiptRepository;
 
   @Mock
   private VoteAgendaRepository voteAgendaRepository;
@@ -180,6 +189,114 @@ class VoteServiceTest {
     verifyNoInteractions(voteAgendaRepository, voteOptionRepository);
   }
 
+  @Test
+  void getVoteResultReturnsParticipantsReceiptsAndVoteAfterVoteEnds() {
+    Vote vote = vote(
+        42L,
+        "회장 선거",
+        List.of(10L),
+        LocalDateTime.now().minusDays(2),
+        LocalDateTime.now().minusDays(1));
+    VoteAgenda president = agenda(20L, vote, "회장", 0, 1, 1);
+    VoteAgenda vicePresident = agenda(21L, vote, "부회장", 1, 1, 2);
+    VoteOption option101 = option(101L, president, "후보 A", 0);
+    VoteOption option201 = option(201L, vicePresident, "후보 B", 0);
+    VoteOption option202 = option(202L, vicePresident, "후보 C", 1);
+    VoteParticipation secondParticipant = participation(vote, "홍길동", 17.5F, 1L);
+    VoteParticipation firstParticipant = participation(vote, "김철수", 18.0F);
+    VoteReceipt secondReceipt = receipt(
+        vote,
+        "ffffffff-ffff-4fff-bfff-ffffffffffff",
+        option202,
+        option101,
+        option201);
+    VoteReceipt firstReceipt = receipt(
+        vote,
+        "00000000-0000-4000-8000-000000000000",
+        option201,
+        option101);
+    when(voteRepository.findById(42L)).thenReturn(Optional.of(vote));
+    when(voteParticipationRepository.findAllByVote(vote))
+        .thenReturn(List.of(secondParticipant, firstParticipant));
+    when(voteReceiptRepository.findAllWithChoicesByVote(vote))
+        .thenReturn(List.of(secondReceipt, firstReceipt));
+    when(voteAgendaRepository.findAllByVoteOrderByDisplayOrderAsc(vote))
+        .thenReturn(List.of(president, vicePresident));
+    when(voteOptionRepository.findAllByAgendaIdInOrderByDisplayOrderAsc(List.of(20L, 21L)))
+        .thenReturn(List.of(option101, option201, option202));
+
+    VoteResultResponse response = voteService.getVoteResult(42L);
+
+    assertThat(response.participations())
+        .extracting(
+            participation -> participation.realName(),
+            participation -> participation.generation())
+        .containsExactly(
+            org.assertj.core.groups.Tuple.tuple("김철수", "18.0"),
+            org.assertj.core.groups.Tuple.tuple("홍길동 (홈페이지 탈퇴한 회원)", "17.5"));
+    assertThat(response.receiptTokenChoices())
+        .extracting(receipt -> receipt.receiptToken().toString())
+        .containsExactly(
+            "00000000-0000-4000-8000-000000000000",
+            "ffffffff-ffff-4fff-bfff-ffffffffffff");
+    assertThat(response.receiptTokenChoices().get(0).choices())
+        .extracting(choice -> choice.agendaId(), choice -> choice.optionIds())
+        .containsExactly(
+            org.assertj.core.groups.Tuple.tuple(20L, List.of(101L)),
+            org.assertj.core.groups.Tuple.tuple(21L, List.of(201L)));
+    assertThat(response.receiptTokenChoices().get(1).choices())
+        .extracting(choice -> choice.agendaId(), choice -> choice.optionIds())
+        .containsExactly(
+            org.assertj.core.groups.Tuple.tuple(20L, List.of(101L)),
+            org.assertj.core.groups.Tuple.tuple(21L, List.of(201L, 202L)));
+    assertThat(response.vote().id()).isEqualTo(42L);
+    assertThat(response.vote().agendas())
+        .extracting(agenda -> agenda.id())
+        .containsExactly(20L, 21L);
+  }
+
+  @Test
+  void getVoteResultRejectsRequestBeforeVoteEnds() {
+    Vote vote = vote(
+        42L,
+        "회장 선거",
+        List.of(10L),
+        LocalDateTime.now().minusDays(1),
+        LocalDateTime.now().plusDays(1));
+    when(voteRepository.findById(42L)).thenReturn(Optional.of(vote));
+
+    assertThatThrownBy(() -> voteService.getVoteResult(42L))
+        .isInstanceOfSatisfying(BusinessException.class, exception -> {
+          assertThat(exception.getHttpStatus()).isEqualTo(HttpStatus.CONFLICT);
+          assertThat(exception.getFieldName()).isEqualTo("voteId");
+          assertThat(exception.getMessage())
+              .isEqualTo("투표가 종료된 후 결과를 조회할 수 있습니다.");
+        });
+
+    verifyNoInteractions(
+        voteParticipationRepository,
+        voteReceiptRepository,
+        voteAgendaRepository,
+        voteOptionRepository);
+  }
+
+  @Test
+  void getVoteResultRejectsMissingVote() {
+    when(voteRepository.findById(42L)).thenReturn(Optional.empty());
+
+    assertThatThrownBy(() -> voteService.getVoteResult(42L))
+        .isInstanceOfSatisfying(BusinessException.class, exception -> {
+          assertThat(exception.getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+          assertThat(exception.getFieldName()).isEqualTo("voteId");
+        });
+
+    verifyNoInteractions(
+        voteParticipationRepository,
+        voteReceiptRepository,
+        voteAgendaRepository,
+        voteOptionRepository);
+  }
+
   private static Vote vote(long id, String title, List<Long> permitByMember,
       LocalDateTime startAt, LocalDateTime endAt) {
     Vote vote = Vote.builder()
@@ -214,5 +331,43 @@ class VoteServiceTest {
         .build();
     ReflectionTestUtils.setField(option, "id", id);
     return option;
+  }
+
+  private static VoteParticipation participation(Vote vote, String realName, float generation) {
+    return participation(vote, realName, generation, 2L);
+  }
+
+  private static VoteParticipation participation(
+      Vote vote,
+      String realName,
+      float generation,
+      long memberId
+  ) {
+    Member member = mock(Member.class);
+    when(member.getId()).thenReturn(memberId);
+    return VoteParticipation.builder()
+        .vote(vote)
+        .member(member)
+        .voterNameSnapshot(realName)
+        .voterGenerationSnapshot(generation)
+        .build();
+  }
+
+  private static VoteReceipt receipt(
+      Vote vote,
+      String token,
+      VoteOption... options
+  ) {
+    VoteReceipt receipt = VoteReceipt.builder()
+        .vote(vote)
+        .build();
+    ReflectionTestUtils.setField(receipt, "token", UUID.fromString(token));
+    for (VoteOption option : options) {
+      receipt.getChoices().add(VoteChoice.builder()
+          .receipt(receipt)
+          .option(option)
+          .build());
+    }
+    return receipt;
   }
 }

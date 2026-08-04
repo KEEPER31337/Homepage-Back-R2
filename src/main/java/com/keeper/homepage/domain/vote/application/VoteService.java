@@ -6,11 +6,13 @@ import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStat
 import static com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus.SUBMITTED;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_INACCESSIBLE;
 import static com.keeper.homepage.global.error.ErrorCode.VOTE_NOT_FOUND;
+import static com.keeper.homepage.global.error.ErrorCode.VOTE_RESULT_NOT_AVAILABLE;
 
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.vote.dao.VoteAgendaRepository;
 import com.keeper.homepage.domain.vote.dao.VoteOptionRepository;
 import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
+import com.keeper.homepage.domain.vote.dao.VoteReceiptRepository;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.domain.vote.dto.response.VoteAgendaResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteDetailResponse;
@@ -18,9 +20,12 @@ import com.keeper.homepage.domain.vote.dto.response.VoteListItemResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteListResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteOptionResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteParticipationStatus;
+import com.keeper.homepage.domain.vote.dto.response.VoteResultResponse;
 import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
 import com.keeper.homepage.domain.vote.entity.VoteOption;
+import com.keeper.homepage.domain.vote.entity.VoteParticipation;
+import com.keeper.homepage.domain.vote.entity.VoteReceipt;
 import com.keeper.homepage.global.error.BusinessException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,6 +44,7 @@ public class VoteService {
 
   private final VoteRepository voteRepository;
   private final VoteParticipationRepository voteParticipationRepository;
+  private final VoteReceiptRepository voteReceiptRepository;
   private final VoteAgendaRepository voteAgendaRepository;
   private final VoteOptionRepository voteOptionRepository;
 
@@ -76,6 +82,22 @@ public class VoteService {
       throw new BusinessException(voteId, "voteId", VOTE_INACCESSIBLE);
     }
 
+    return getVoteDetail(vote);
+  }
+
+  public VoteResultResponse getVoteResult(long voteId) {
+    Vote vote = voteRepository.findById(voteId)
+        .orElseThrow(() -> new BusinessException(voteId, "voteId", VOTE_NOT_FOUND));
+    if (LocalDateTime.now().isBefore(vote.getEndAt())) {
+      throw new BusinessException(voteId, "voteId", VOTE_RESULT_NOT_AVAILABLE);
+    }
+
+    List<VoteParticipation> participations = voteParticipationRepository.findAllByVote(vote);
+    List<VoteReceipt> receipts = voteReceiptRepository.findAllWithChoicesByVote(vote);
+    return VoteResultResponse.from(participations, receipts, getVoteDetail(vote));
+  }
+
+  private VoteDetailResponse getVoteDetail(Vote vote) {
     List<VoteAgenda> agendas = voteAgendaRepository.findAllByVoteOrderByDisplayOrderAsc(vote);
     List<Long> agendaIds = agendas.stream()
         .map(VoteAgenda::getId)

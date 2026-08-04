@@ -121,6 +121,7 @@ public enum ErrorCode {
   VOTE_OPTION_MISMATCH("안건에 속하지 않거나 존재하지 않는 선택지가 있습니다.", HttpStatus.BAD_REQUEST),
   VOTE_SELECTION_COUNT_INVALID("안건의 선택 가능 개수를 벗어났습니다.", HttpStatus.BAD_REQUEST),
   VOTE_SELECTION_DUPLICATE("중복된 안건 또는 선택지가 있습니다.", HttpStatus.BAD_REQUEST),
+  VOTE_RESULT_NOT_AVAILABLE("투표가 종료된 후 결과를 조회할 수 있습니다.", HttpStatus.CONFLICT),
   ;
 
   private final String message;
