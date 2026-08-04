@@ -14,13 +14,13 @@ class VoteParticipationRequestTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void mapsSnakeCaseSelectionFieldsWithoutReceiptToken() throws Exception {
+  void mapsCamelCaseSelectionFieldsWithoutReceiptToken() throws Exception {
     String json = """
         {
           "selections": [
             {
-              "agenda_id": 20,
-              "option_ids": [101, 102]
+              "agendaId": 20,
+              "optionIds": [101, 102]
             }
           ]
         }
