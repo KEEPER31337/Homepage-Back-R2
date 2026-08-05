@@ -16,6 +16,8 @@ import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.post.dao.PostRepository;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
+import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
+import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class MemberDeleteService {
 
   public static final long VIRTUAL_MEMBER_ID = 1;
@@ -42,6 +44,8 @@ public class MemberDeleteService {
   private final GameRepository gameRepository;
   private final FriendRepository friendRepository;
   private final MemberHasPostDislikeRepository memberHasPostDislikeRepository;
+  private final VoteRepository voteRepository;
+  private final VoteParticipationRepository voteParticipationRepository;
 
   public void delete(Member member) {
     Member virtualMember = getVirtualMember();
@@ -50,6 +54,8 @@ public class MemberDeleteService {
     studyRepository.updateVirtualMember(member, virtualMember);
     seminarRepository.updateVirtualMember(member, virtualMember);
     electionRepository.updateVirtualMember(member, virtualMember);
+    voteRepository.updateVirtualMember(member, virtualMember);
+    voteParticipationRepository.updateVirtualMember(member, virtualMember);
 
     friendRepository.deleteAllByFollowee(member);
     friendRepository.deleteAllByFollower(member);
