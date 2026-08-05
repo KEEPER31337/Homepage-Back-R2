@@ -7,6 +7,8 @@ import com.keeper.homepage.domain.vote.dto.response.AdminVoteListResponse;
 import com.keeper.homepage.domain.vote.dto.response.VoteIdResponse;
 import com.keeper.homepage.global.config.security.annotation.LoginMember;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
@@ -31,8 +34,13 @@ public class AdminVoteController {
   private final AdminVoteService adminVoteService;
 
   @GetMapping
-  public ResponseEntity<AdminVoteListResponse> getVotes() {
-    return ResponseEntity.ok(adminVoteService.getVotes());
+  public ResponseEntity<AdminVoteListResponse> getVotes(
+      @RequestParam
+      @Min(value = 1000, message = "연도는 1000 이상이어야 합니다.")
+      @Max(value = 9998, message = "연도는 9998 이하여야 합니다.")
+      int year
+  ) {
+    return ResponseEntity.ok(adminVoteService.getVotes(year));
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,

@@ -19,6 +19,7 @@ import com.keeper.homepage.domain.vote.entity.Vote;
 import com.keeper.homepage.domain.vote.entity.VoteAgenda;
 import com.keeper.homepage.domain.vote.entity.VoteOption;
 import com.keeper.homepage.global.error.BusinessException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -40,8 +41,12 @@ public class AdminVoteService {
   private final MemberRepository memberRepository;
 
   @Transactional(readOnly = true)
-  public AdminVoteListResponse getVotes() {
-    List<Vote> votes = voteRepository.findAllByOrderByStartAtDescIdDesc();
+  public AdminVoteListResponse getVotes(int year) {
+    LocalDateTime startAt = LocalDateTime.of(year, 1, 1, 0, 0);
+    LocalDateTime endAt = LocalDateTime.of(year + 1, 1, 1, 0, 0);
+    List<Vote> votes = voteRepository
+        .findAllByStartAtGreaterThanEqualAndStartAtLessThanOrderByStartAtDescIdDesc(
+            startAt, endAt);
     if (votes.isEmpty()) {
       return new AdminVoteListResponse(List.of());
     }

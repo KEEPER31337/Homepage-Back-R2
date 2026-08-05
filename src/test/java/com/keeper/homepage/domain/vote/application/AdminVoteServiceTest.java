@@ -85,19 +85,22 @@ class AdminVoteServiceTest {
         LocalDateTime.of(2026, 8, 2, 0, 0));
     Vote previousVote = vote(
         21L,
-        "2025년 회장 선거",
+        "2026년 운영 설문",
         List.of(16381L),
-        LocalDateTime.of(2025, 8, 1, 0, 0),
-        LocalDateTime.of(2025, 8, 2, 0, 0));
+        LocalDateTime.of(2026, 7, 1, 0, 0),
+        LocalDateTime.of(2026, 7, 2, 0, 0));
     VoteParticipationCount latestVoteCount = mock(VoteParticipationCount.class);
     when(latestVoteCount.getVoteId()).thenReturn(42L);
     when(latestVoteCount.getParticipantCount()).thenReturn(3L);
-    when(voteRepository.findAllByOrderByStartAtDescIdDesc())
+    when(voteRepository
+        .findAllByStartAtGreaterThanEqualAndStartAtLessThanOrderByStartAtDescIdDesc(
+            LocalDateTime.of(2026, 1, 1, 0, 0),
+            LocalDateTime.of(2027, 1, 1, 0, 0)))
         .thenReturn(List.of(latestVote, previousVote));
     when(voteParticipationRepository.countParticipantsByVoteIds(List.of(42L, 21L)))
         .thenReturn(List.of(latestVoteCount));
 
-    AdminVoteListResponse response = adminVoteService.getVotes();
+    AdminVoteListResponse response = adminVoteService.getVotes(2026);
 
     assertThat(response.votes())
         .extracting(item -> item.id())
@@ -117,9 +120,13 @@ class AdminVoteServiceTest {
 
   @Test
   void getVotesDoesNotQueryParticipantCountsWhenVoteListIsEmpty() {
-    when(voteRepository.findAllByOrderByStartAtDescIdDesc()).thenReturn(List.of());
+    when(voteRepository
+        .findAllByStartAtGreaterThanEqualAndStartAtLessThanOrderByStartAtDescIdDesc(
+            LocalDateTime.of(2026, 1, 1, 0, 0),
+            LocalDateTime.of(2027, 1, 1, 0, 0)))
+        .thenReturn(List.of());
 
-    AdminVoteListResponse response = adminVoteService.getVotes();
+    AdminVoteListResponse response = adminVoteService.getVotes(2026);
 
     assertThat(response.votes()).isEmpty();
     verifyNoInteractions(voteParticipationRepository);

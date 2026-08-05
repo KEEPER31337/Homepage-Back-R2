@@ -34,13 +34,13 @@ class AdminVoteControllerTest {
   @Test
   void getVotesReturnsAdminVoteList() {
     AdminVoteListResponse expected = new AdminVoteListResponse(List.of());
-    when(adminVoteService.getVotes()).thenReturn(expected);
+    when(adminVoteService.getVotes(2026)).thenReturn(expected);
 
-    ResponseEntity<AdminVoteListResponse> response = adminVoteController.getVotes();
+    ResponseEntity<AdminVoteListResponse> response = adminVoteController.getVotes(2026);
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isSameAs(expected);
-    verify(adminVoteService).getVotes();
+    verify(adminVoteService).getVotes(2026);
   }
 
   @Test

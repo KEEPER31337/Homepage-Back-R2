@@ -11,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface VoteRepository extends JpaRepository<Vote, Long> {
 
-  List<Vote> findAllByOrderByStartAtDescIdDesc();
-
   List<Vote> findAllByStartAtGreaterThanEqualAndStartAtLessThanOrderByStartAtDescIdDesc(
       LocalDateTime startAt,
       LocalDateTime endAt
