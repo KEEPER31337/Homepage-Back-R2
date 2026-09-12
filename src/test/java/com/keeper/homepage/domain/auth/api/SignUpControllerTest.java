@@ -38,11 +38,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 
-@TestPropertySource(properties = "keeper.sign-up.enabled=true")
 class SignUpControllerTest extends IntegrationTest {
 
   @Nested

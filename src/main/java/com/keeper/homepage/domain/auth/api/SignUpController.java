@@ -14,8 +14,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,14 +32,8 @@ public class SignUpController {
   private final EmailAuthService emailAuthService;
   private final CheckDuplicateService checkDuplicateService;
 
-  @Value("${keeper.sign-up.enabled:false}")
-  private boolean signUpEnabled;
-
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-    if (!signUpEnabled) {
-      return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
-    }
     long memberId = signUpService.signUp(request.toMemberProfile(), request.getAuthCode());
     return ResponseEntity.created(URI.create("/members/" + memberId)).build();
   }
