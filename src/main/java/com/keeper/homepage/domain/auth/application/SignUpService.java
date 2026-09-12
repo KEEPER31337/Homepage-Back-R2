@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.auth.application;
 
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.가입대기;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static com.keeper.homepage.global.error.ErrorCode.AUTH_CODE_EXPIRED;
 import static com.keeper.homepage.global.error.ErrorCode.AUTH_CODE_MISMATCH;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_EMAIL_DUPLICATE;
@@ -35,10 +37,11 @@ public class SignUpService {
 
     String actualAuthCode = getActualAuthCode(profile.getEmailAddress().get());
     checkAuthCodeMatch(authCode, actualAuthCode);
-    return memberRepository.save(Member.builder()
-            .profile(profile)
-            .build())
-        .getId();
+    Member member = Member.builder()
+        .profile(profile)
+        .build();
+    member.updateType(getMemberTypeBy(가입대기));
+    return memberRepository.save(member).getId();
   }
 
   private void checkIsDuplicateEmail(EmailAddress email) {

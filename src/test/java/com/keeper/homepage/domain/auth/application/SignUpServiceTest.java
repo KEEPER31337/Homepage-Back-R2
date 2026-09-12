@@ -44,6 +44,8 @@ class SignUpServiceTest extends IntegrationTest {
     long savedMemberId = signUpService.signUp(profile, authCode);
 
     Member savedMember = memberRepository.findById(savedMemberId).orElseThrow();
+    assertThat(savedMember.getMemberType().getType().name()).isEqualTo("가입대기");
+    assertThat(savedMember.getJobs()).containsExactly("ROLE_회원");
     String hashedPassword = savedMember.getProfile().getPassword().get();
     assertThat(hashedPassword).isNotEqualTo(rawPassword);
     assertThat(passwordEncoder.matches(rawPassword, hashedPassword)).isTrue();

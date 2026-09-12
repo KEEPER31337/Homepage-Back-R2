@@ -58,6 +58,7 @@ public class MemberType {
     정회원(2),
     휴면회원(3),
     졸업(4),
+    가입대기(5),
     ;
 
     @Getter

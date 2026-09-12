@@ -15,6 +15,8 @@ link:../keeper.html[API 목록으로 돌아가기]
 
 == *회원 가입*
 
+NOTE: 가입한 계정은 `가입대기` 유형이며 `ROLE_회원` 권한을 갖습니다. 가입 성공 후에도 관리자의 승인 전까지 로그인할 수 없습니다. 관리자는 기존 회원 유형 변경 API(`PATCH /members/types/2`, 요청 본문: `{"memberIds": [회원 ID]}`)로 정회원으로 변경하여 승인합니다.
+
 === 요청
 
 ==== Request
@@ -148,6 +150,17 @@ include::{snippets}/sign-in/response-fields.adoc[]
 ==== Response Cookies
 
 include::{snippets}/sign-in/response-cookies.adoc[]
+
+==== 가입 승인 대기 오류
+
+아이디와 비밀번호가 올바르더라도 회원 유형이 `가입대기`이면 `403 Forbidden`을 반환하며 세션과 로그인 쿠키를 발급하지 않습니다. 비밀번호가 틀리면 기존 비밀번호 오류가 우선 반환됩니다.
+
+[source,json]
+----
+{
+  "message": "[memberType] 가입대기: 가입 승인 대기 중입니다."
+}
+----
 
 == *로그아웃*
 

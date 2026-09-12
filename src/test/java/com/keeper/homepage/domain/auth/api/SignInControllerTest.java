@@ -1,5 +1,8 @@
 package com.keeper.homepage.domain.auth.api;
 
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.가입대기;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -95,6 +98,39 @@ class SignInControllerTest extends IntegrationTest {
                   cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID")
               )
           ));
+    }
+
+    @Test
+    @DisplayName("가입 대기 회원은 기존 회원 유형 변경 API로 승인한 후 로그인할 수 있다.")
+    void should_allowSignIn_after_adminApprovesPendingMember() throws Exception {
+      member.updateType(getMemberTypeBy(가입대기));
+      em.flush();
+
+      mockMvc.perform(post("/sign-in")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(validRequest)))
+          .andExpect(status().isForbidden())
+          .andExpect(jsonPath("$.message")
+              .value("[memberType] 가입대기: 가입 승인 대기 중입니다."))
+          .andExpect(cookie().doesNotExist(SESSION_COOKIE_NAME));
+
+      Member admin = memberTestHelper.generate();
+      admin.assignJob(ROLE_회장);
+      mockMvc.perform(patch("/members/types/2")
+              .cookie(memberTestHelper.getSessionCookies(admin))
+              .contentType(MediaType.APPLICATION_JSON)
+              .content("{\"memberIds\": [%d]}".formatted(member.getId())))
+          .andExpect(status().isNoContent());
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(post("/sign-in")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(validRequest)))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.memberType").value("정회원"))
+          .andExpect(jsonPath("$.memberJobs[0]").value("ROLE_회원"))
+          .andExpect(cookie().exists(SESSION_COOKIE_NAME));
     }
   }
 

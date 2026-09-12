@@ -1,5 +1,7 @@
 package com.keeper.homepage.domain.auth.application;
 
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.가입대기;
+
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dto.response.MemberDetailResponse;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -42,6 +44,9 @@ public class SignInService {
             () -> new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_NOT_FOUND));
     if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
       throw new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_WRONG_ID_OR_PASSWORD);
+    }
+    if (member.isType(가입대기)) {
+      throw new BusinessException(가입대기, "memberType", ErrorCode.MEMBER_APPROVAL_PENDING);
     }
     List<String> roles = getRoles(member);
     var session = sessionService.createSession(member.getId(), roles);
