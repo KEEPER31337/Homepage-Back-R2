@@ -1,4 +1,4 @@
-package com.keeper.homepage.domain.auth.dto.response;
+package com.keeper.homepage.domain.member.dto.response;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = PRIVATE)
-public class SignInResponse {
+public class MemberDetailResponse {
 
   private long memberId;
   private String loginId;
@@ -27,8 +27,8 @@ public class SignInResponse {
   private String memberRank;
   private List<String> memberJobs;
 
-  public static SignInResponse of(Member member, List<String> roles) {
-    return new SignInResponse(
+  public static MemberDetailResponse of(Member member, List<String> roles) {
+    return new MemberDetailResponse(
         member.getId(),
         member.getProfile().getLoginId().get(),
         member.getProfile().getEmailAddress().get(),

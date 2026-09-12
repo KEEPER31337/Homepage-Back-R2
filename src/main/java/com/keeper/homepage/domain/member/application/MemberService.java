@@ -3,12 +3,14 @@ package com.keeper.homepage.domain.member.application;
 import static com.keeper.homepage.domain.member.application.convenience.MemberFindService.VIRTUAL_MEMBER_ID;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_BOOK_NOT_EMPTY;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME;
+import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_TYPE_NOT_FOUND;
 
 import com.keeper.homepage.domain.member.application.convenience.MemberDeleteService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
 import com.keeper.homepage.domain.member.dao.type.MemberTypeRepository;
+import com.keeper.homepage.domain.member.dto.response.MemberDetailResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileResponse;
@@ -42,6 +44,12 @@ public class MemberService {
       throw new BusinessException(oldPassword, "oldPassword", ErrorCode.MEMBER_WRONG_PASSWORD);
     }
     me.getProfile().changePassword(newPassword);
+  }
+
+  public MemberDetailResponse getMyProfile(long memberId) {
+    Member member = memberRepository.findById(memberId)
+        .orElseThrow(() -> new BusinessException(memberId, "memberId", MEMBER_NOT_FOUND));
+    return MemberDetailResponse.of(member, member.getJobs());
   }
 
   public List<MemberResponse> getMembersByRealName(String searchName) {
