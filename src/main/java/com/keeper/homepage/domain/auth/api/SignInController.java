@@ -7,7 +7,7 @@ import com.keeper.homepage.domain.auth.dto.request.MemberIdAndEmailRequest;
 import com.keeper.homepage.domain.auth.dto.request.SignInRequest;
 import com.keeper.homepage.domain.auth.dto.response.CheckAuthCodeResponse;
 import com.keeper.homepage.domain.auth.dto.response.EmailAuthResponse;
-import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
+import com.keeper.homepage.domain.member.dto.response.MemberDetailResponse;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +31,7 @@ public class SignInController {
   private final SignInService signInService;
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<SignInResponse> signIn(@RequestBody @Valid SignInRequest request,
+  public ResponseEntity<MemberDetailResponse> signIn(@RequestBody @Valid SignInRequest request,
       HttpServletResponse httpResponse) {
     return ResponseEntity.ok(
         signInService.signIn(

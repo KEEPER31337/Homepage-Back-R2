@@ -12,6 +12,7 @@ import com.keeper.homepage.domain.member.dto.request.DeleteMemberRequest;
 import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
+import com.keeper.homepage.domain.member.dto.response.MemberDetailResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberPointRankResponse;
 import com.keeper.homepage.domain.member.dto.response.MemberResponse;
 import com.keeper.homepage.domain.member.dto.response.profile.MemberProfileResponse;
@@ -60,9 +61,9 @@ public class MemberController {
         .build();
   }
 
-  // TODO: 비밀번호 변경 후 redirect 용 API, 임시로 만들어 둠
   @GetMapping("/me")
-  public void getMyProfile() {
+  public ResponseEntity<MemberDetailResponse> getMyProfile(@LoginMember Member me) {
+    return ResponseEntity.ok(memberService.getMyProfile(me.getId()));
   }
 
   @GetMapping("/real-name")

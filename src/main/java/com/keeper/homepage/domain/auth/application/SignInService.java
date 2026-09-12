@@ -1,7 +1,7 @@
 package com.keeper.homepage.domain.auth.application;
 
-import com.keeper.homepage.domain.auth.dto.response.SignInResponse;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
+import com.keeper.homepage.domain.member.dto.response.MemberDetailResponse;
 import com.keeper.homepage.domain.member.entity.Member;
 import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.LoginId;
@@ -36,7 +36,7 @@ public class SignInService {
   private final MailUtil mailUtil;
 
   @Transactional
-  public SignInResponse signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
+  public MemberDetailResponse signIn(LoginId loginId, String rawPassword, HttpServletResponse response) {
     Member member = memberRepository.findByProfileLoginId(loginId)
         .orElseThrow(
             () -> new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_NOT_FOUND));
@@ -46,7 +46,7 @@ public class SignInService {
     List<String> roles = getRoles(member);
     var session = sessionService.createSession(member.getId(), roles);
     authCookieService.setSessionCookie(response, session.sessionId(), session.maxAgeMillis());
-    return SignInResponse.of(member, roles);
+    return MemberDetailResponse.of(member, roles);
   }
 
   private static List<String> getRoles(Member member) {

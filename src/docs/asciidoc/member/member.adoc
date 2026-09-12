@@ -13,6 +13,40 @@ endif::[]
 
 link:../keeper.html[API 목록으로 돌아가기]
 
+== *로그인 회원 정보 조회*
+
+세션 쿠키로 인증된 본인의 최신 회원 정보를 조회합니다.
+별도의 요청 파라미터나 본문은 필요하지 않습니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-my-profile/http-request.adoc[]
+
+==== Request Cookies
+
+include::{snippets}/get-my-profile/request-cookies.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-my-profile/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-my-profile/response-fields.adoc[]
+
+NOTE: 생일과 썸네일이 미등록 상태이면 해당 필드는 null입니다. 생일 형식은 YYYY-MM-DD입니다.
+
+==== 오류 상태
+
+* `401 Unauthorized`: 세션 쿠키가 없거나 세션이 무효 또는 만료된 경우
+* `403 Forbidden`: 세션에 ROLE_회원 권한이 없는 경우
+* `404 Not Found`: 세션이 가리키는 회원이 존재하지 않는 경우
+* `503 Service Unavailable`: 인증 저장소에 접근할 수 없는 경우
+
 == *비밀번호 변경하기*
 
 === 요청

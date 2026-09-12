@@ -1,12 +1,17 @@
 package com.keeper.homepage.domain.member.api;
 
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.REAL_NAME_INVALID;
+import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_사서;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회장;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.휴면회원;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.getSecuredValue;
 import static com.keeper.homepage.global.restdocs.RestDocsHelper.pageHelper;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -30,6 +35,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,16 +48,25 @@ import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberTypeRequest;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
+import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
+import com.keeper.homepage.domain.member.entity.embedded.Profile;
 import com.keeper.homepage.domain.member.entity.embedded.RealName;
+import com.keeper.homepage.domain.member.entity.embedded.StudentId;
+import com.keeper.homepage.global.config.security.session.SessionData;
+import com.keeper.homepage.global.config.security.session.SessionIdCodec;
 import jakarta.servlet.http.Cookie;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -60,6 +75,168 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class MemberControllerTest extends MemberApiTestHelper {
+
+  @Nested
+  @DisplayName("로그인 회원 정보 조회")
+  class GetMyProfile {
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    private Member member;
+    private Cookie[] sessionCookies;
+
+    @BeforeEach
+    void setup() {
+      member = memberTestHelper.builder()
+          .loginId(LoginId.from("myprofileuser"))
+          .emailAddress(EmailAddress.from("me@example.com"))
+          .realName(RealName.from("홍길동"))
+          .birthday(LocalDate.of(2000, 1, 2))
+          .studentId(StudentId.from("202612345"))
+          .point(1200)
+          .level(3)
+          .totalAttendance(42)
+          .build();
+      member.assignJob(ROLE_회장);
+      sessionCookies = memberTestHelper.getSessionCookies(member);
+      em.flush();
+      em.clear();
+    }
+
+    @Test
+    @DisplayName("세션으로 인증된 본인의 상세 정보를 반환한다.")
+    void returnsAuthenticatedMemberDetails() throws Exception {
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isOk())
+          .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+          .andExpect(jsonPath("$.memberId").value(member.getId()))
+          .andExpect(jsonPath("$.loginId").value("myprofileuser"))
+          .andExpect(jsonPath("$.emailAddress").value("me@example.com"))
+          .andExpect(jsonPath("$.realName").value("홍길동"))
+          .andExpect(jsonPath("$.birthday").value("2000-01-02"))
+          .andExpect(jsonPath("$.studentId").value("202612345"))
+          .andExpect(jsonPath("$.thumbnailPath").hasJsonPath())
+          .andExpect(jsonPath("$.thumbnailPath").value(nullValue()))
+          .andExpect(jsonPath("$.generation").value(member.getGeneration()))
+          .andExpect(jsonPath("$.point").value(1200))
+          .andExpect(jsonPath("$.level").value(3))
+          .andExpect(jsonPath("$.totalAttendance").value(42))
+          .andExpect(jsonPath("$.memberType").value("정회원"))
+          .andExpect(jsonPath("$.memberRank").value("일반회원"))
+          .andExpect(jsonPath("$.memberJobs", containsInAnyOrder("ROLE_회원", "ROLE_회장")))
+          .andDo(document("get-my-profile",
+              requestCookies(cookieWithName(SESSION_COOKIE_NAME).description("OPAQUE SESSION ID")),
+              responseFields(getMyProfileResponse())));
+    }
+
+    @Test
+    @DisplayName("다른 회원의 세션으로 요청하면 해당 회원의 정보를 반환한다.")
+    void identifiesMemberFromSession() throws Exception {
+      Member other = memberTestHelper.generate();
+      Cookie[] otherCookies = memberTestHelper.getSessionCookies(other);
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/me").cookie(otherCookies))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.memberId").value(other.getId()))
+          .andExpect(jsonPath("$.loginId").value(other.getProfile().getLoginId().get()))
+          .andExpect(jsonPath("$.studentId").value(other.getProfile().getStudentId().get()));
+    }
+
+    @Test
+    @DisplayName("생일이 미등록 상태이면 필드를 생략하지 않고 null을 반환한다.")
+    void returnsNullBirthday() throws Exception {
+      Member savedMember = memberRepository.findById(member.getId()).orElseThrow();
+      savedMember.getProfile().update(Profile.builder()
+          .realName(savedMember.getProfile().getRealName())
+          .birthday(null)
+          .build());
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.birthday").hasJsonPath())
+          .andExpect(jsonPath("$.birthday").value(nullValue()));
+    }
+
+    @Test
+    @DisplayName("로그인 이후 변경된 프로필과 역할은 재조회 시 DB의 최신 값을 반환한다.")
+    void returnsCurrentMemberDetails() throws Exception {
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.memberJobs", containsInAnyOrder("ROLE_회원", "ROLE_회장")));
+
+      Member savedMember = memberRepository.findById(member.getId()).orElseThrow();
+      savedMember.getProfile().update(Profile.builder()
+          .realName(RealName.from("김키퍼"))
+          .birthday(LocalDate.of(2001, 3, 4))
+          .build());
+      savedMember.getProfile().updateEmailAddress("updated@example.com");
+      var thumbnail = thumbnailTestHelper.generateThumbnail();
+      savedMember.getProfile().updateThumbnail(thumbnail);
+      savedMember.deleteJob(ROLE_회장);
+      savedMember.assignJob(ROLE_사서);
+      savedMember.updateType(getMemberTypeBy(휴면회원));
+      memberRepository.updatePointByDelta(member.getId(), 100, Integer.MAX_VALUE);
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.memberId").value(member.getId()))
+          .andExpect(jsonPath("$.realName").value("김키퍼"))
+          .andExpect(jsonPath("$.birthday").value("2001-03-04"))
+          .andExpect(jsonPath("$.emailAddress").value("updated@example.com"))
+          .andExpect(jsonPath("$.thumbnailPath").value(thumbnail.getPath()))
+          .andExpect(jsonPath("$.point").value(1300))
+          .andExpect(jsonPath("$.memberType").value("휴면회원"))
+          .andExpect(jsonPath("$.memberJobs", containsInAnyOrder("ROLE_회원", "ROLE_사서")));
+    }
+
+    @Test
+    @DisplayName("세션 쿠키가 없으면 401을 반환한다.")
+    void unauthorizedWithoutSession() throws Exception {
+      mockMvc.perform(get("/members/me"))
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("무효한 세션 쿠키이면 401을 반환한다.")
+    void unauthorizedWithInvalidSession() throws Exception {
+      mockMvc.perform(get("/members/me")
+              .cookie(new Cookie(SESSION_COOKIE_NAME, "invalid-session")))
+          .andExpect(status().isUnauthorized());
+
+      sessionService.deleteSession(sessionCookies[0].getValue());
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("세션이 만료되면 401을 반환한다.")
+    void unauthorizedWithExpiredSession() throws Exception {
+      String key = new SessionIdCodec().toRedisKey(sessionCookies[0].getValue()).orElseThrow();
+      SessionData expired = new SessionData(member.getId(), 0, 0, List.of(ROLE_회원.name()));
+      stringRedisTemplate.opsForValue().set(key, asJsonString(expired), Duration.ofDays(1));
+
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("세션이 가리키는 회원이 삭제되었으면 기존 방식대로 404를 반환한다.")
+    void notFoundWhenMemberWasDeleted() throws Exception {
+      memberRepository.deleteById(member.getId());
+      em.flush();
+      em.clear();
+
+      mockMvc.perform(get("/members/me").cookie(sessionCookies))
+          .andExpect(status().isNotFound());
+    }
+  }
 
   @Nested
   class ChangePassword {

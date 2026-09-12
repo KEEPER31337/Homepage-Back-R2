@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.member.dto.request.ProfileUpdateRequest;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.MultiValueMap;
 
@@ -29,6 +30,27 @@ public class MemberApiTestHelper extends IntegrationTest {
         fieldWithPath("generation").description("회원의 기수"),
         fieldWithPath("point").description("회원의 포인트"),
         fieldWithPath("thumbnailPath").description("회원의 썸네일 주소")
+    };
+  }
+
+  FieldDescriptor[] getMyProfileResponse() {
+    return new FieldDescriptor[]{
+        fieldWithPath("memberId").description("회원의 ID"),
+        fieldWithPath("loginId").description("회원의 로그인 ID"),
+        fieldWithPath("emailAddress").description("회원의 이메일 주소"),
+        fieldWithPath("realName").description("회원의 실명"),
+        fieldWithPath("birthday").type(JsonFieldType.STRING).optional()
+            .description("회원의 생일 (YYYY-MM-DD, 미등록 시 null)"),
+        fieldWithPath("studentId").description("본인의 학번"),
+        fieldWithPath("thumbnailPath").type(JsonFieldType.STRING).optional()
+            .description("썸네일 경로 (미등록 시 null)"),
+        fieldWithPath("generation").description("회원의 기수 (문자열)"),
+        fieldWithPath("point").description("회원의 포인트"),
+        fieldWithPath("level").description("회원의 레벨"),
+        fieldWithPath("totalAttendance").description("회원의 총 출석 횟수"),
+        fieldWithPath("memberType").description("회원의 타입"),
+        fieldWithPath("memberRank").description("회원의 등급"),
+        fieldWithPath("memberJobs").description("회원의 현재 역할 목록 (ROLE_ 접두사 포함)")
     };
   }
 
