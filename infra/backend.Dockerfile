@@ -11,15 +11,13 @@ COPY settings.gradle.kts build.gradle.kts ./
 
 RUN chmod +x ./gradlew
 
-# 2) Warm up Gradle cache before copying the full source tree.
-RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --no-daemon -x test -x asciidoctor dependencies
+# 2) Keep downloaded dependencies in this layer so the exported build cache includes them.
+RUN ./gradlew --no-daemon downloadDependencies
 
 # 3) Copy application source and build boot jar.
 COPY src ./src
 
-RUN --mount=type=cache,target=/root/.gradle \
-    ./gradlew --no-daemon -x test -x asciidoctor bootJar
+RUN ./gradlew --no-daemon -x test -x asciidoctor bootJar
 
 RUN JAR_FILE="$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-plain.jar' | head -n 1)" \
     && test -n "${JAR_FILE}" \

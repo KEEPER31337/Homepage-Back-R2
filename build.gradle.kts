@@ -27,6 +27,25 @@ repositories {
     mavenCentral()
 }
 
+tasks.register("downloadDependencies") {
+    group = "build setup"
+    description = "Downloads dependencies for the Docker build before application sources are copied."
+
+    doLast {
+        // Resolve actual JARs, including Kotlin build tools, without compiling sources.
+        listOf(
+            "compileClasspath",
+            "runtimeClasspath",
+            "annotationProcessor",
+            "kotlinCompilerClasspath",
+            "kotlinCompilerPluginClasspathMain",
+            "kotlinBuildToolsApiClasspath",
+        ).forEach { configurationName ->
+            configurations.getByName(configurationName).resolve()
+        }
+    }
+}
+
 /******* Start Spring Rest Docs *******/
 
 val asciidoctorExt: Configuration by configurations.creating
