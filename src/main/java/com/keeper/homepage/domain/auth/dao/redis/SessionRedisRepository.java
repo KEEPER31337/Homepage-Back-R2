@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.auth.dao.redis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.global.config.security.session.SessionLookupResult;
+import com.keeper.homepage.global.config.security.session.SessionPolicy;
 import com.keeper.homepage.global.config.security.session.SessionStoreException;
 import com.keeper.homepage.global.config.security.session.StoredSessionCreationResult;
 import java.util.List;
@@ -20,6 +21,10 @@ public class SessionRedisRepository {
       "redis/session/create.lua");
   private static final DefaultRedisScript<String> FIND_AND_TOUCH_SCRIPT = script(
       "redis/session/find-and-touch.lua");
+  private static final DefaultRedisScript<Long> UPDATE_ALL_SESSION_ROLES_SCRIPT = script(
+      "redis/session/update-all-session-roles.lua", Long.class);
+  private static final DefaultRedisScript<Long> DELETE_ALL_SESSIONS_SCRIPT = script(
+      "redis/session/delete-all-sessions.lua", Long.class);
 
   private final StringRedisTemplate redisTemplate;
   private final ObjectMapper objectMapper;
@@ -51,6 +56,28 @@ public class SessionRedisRepository {
     redisTemplate.delete(key);
   }
 
+  public long updateAllSessionRoles(long userId, List<String> roles) {
+    try {
+      return requireCount(redisTemplate.execute(UPDATE_ALL_SESSION_ROLES_SCRIPT, List.of(),
+          SessionPolicy.REDIS_KEY_PREFIX + "*", Long.toString(userId),
+          objectMapper.writeValueAsString(roles)));
+    } catch (JsonProcessingException e) {
+      throw new SessionStoreException("세션 역할을 직렬화하지 못했습니다.", e);
+    }
+  }
+
+  public long deleteAllSessions(long userId) {
+    return requireCount(redisTemplate.execute(DELETE_ALL_SESSIONS_SCRIPT, List.of(),
+        SessionPolicy.REDIS_KEY_PREFIX + "*", Long.toString(userId)));
+  }
+
+  private static long requireCount(Long count) {
+    if (count == null) {
+      throw new SessionStoreException("Redis 세션 스크립트가 결과를 반환하지 않았습니다.");
+    }
+    return count;
+  }
+
   private <T> T readResult(String result, Class<T> type) {
     if (result == null) {
       throw new SessionStoreException("Redis 세션 스크립트가 결과를 반환하지 않았습니다.");
@@ -63,9 +90,13 @@ public class SessionRedisRepository {
   }
 
   private static DefaultRedisScript<String> script(String path) {
-    DefaultRedisScript<String> script = new DefaultRedisScript<>();
+    return script(path, String.class);
+  }
+
+  private static <T> DefaultRedisScript<T> script(String path, Class<T> resultType) {
+    DefaultRedisScript<T> script = new DefaultRedisScript<>();
     script.setLocation(new ClassPathResource(path));
-    script.setResultType(String.class);
+    script.setResultType(resultType);
     return script;
   }
 }

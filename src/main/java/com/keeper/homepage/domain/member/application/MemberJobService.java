@@ -3,6 +3,7 @@ package com.keeper.homepage.domain.member.application;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_JOB_IS_NOT_EXECUTIVE;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_JOB_NOT_FOUND;
 
+import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.role.MemberHasMemberJobRepository;
 import com.keeper.homepage.domain.member.dao.role.MemberJobRepository;
@@ -24,6 +25,7 @@ public class MemberJobService {
   private final MemberFindService memberFindService;
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final MemberJobRepository memberJobRepository;
+  private final SessionService sessionService;
 
   public List<MemberJobResponse> getExecutives() {
     return memberHasMemberJobRepository.findAll()
@@ -49,6 +51,7 @@ public class MemberJobService {
 
     checkExecutiveJob(memberJob);
     member.assignJob(memberJob.getType());
+    sessionService.updateAllSessionRoles(member.getId(), member.getJobs());
   }
 
   private void checkExecutiveJob(MemberJob memberJob) {
@@ -65,5 +68,6 @@ public class MemberJobService {
 
     checkExecutiveJob(memberJob);
     member.deleteJob(memberJob.getType());
+    sessionService.updateAllSessionRoles(member.getId(), member.getJobs());
   }
 }

@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.member.application.convenience;
 
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 
+import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.game.dao.GameRepository;
@@ -46,6 +47,7 @@ public class MemberDeleteService {
   private final MemberHasPostDislikeRepository memberHasPostDislikeRepository;
   private final VoteRepository voteRepository;
   private final VoteParticipationRepository voteParticipationRepository;
+  private final SessionService sessionService;
 
   public void delete(Member member) {
     Member virtualMember = getVirtualMember();
@@ -68,6 +70,7 @@ public class MemberDeleteService {
     memberHasPostDislikeRepository.deleteAllByMember(member);
     postRepository.deleteAllByMemberAndIsTempTrue(member);
     memberRepository.delete(member);
+    sessionService.deleteAllSessions(member.getId());
   }
 
   public Member getVirtualMember() {
