@@ -3,8 +3,10 @@ package com.keeper.homepage.domain.member.application.convenience;
 import static com.keeper.homepage.domain.member.application.convenience.MemberDeleteService.VIRTUAL_MEMBER_ID;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.comment.dao.CommentRepository;
 import com.keeper.homepage.domain.election.dao.ElectionRepository;
 import com.keeper.homepage.domain.game.dao.GameRepository;
@@ -80,12 +82,16 @@ class MemberDeleteServiceTest {
   @Mock
   private VoteParticipationRepository voteParticipationRepository;
 
+  @Mock
+  private SessionService sessionService;
+
   @InjectMocks
   private MemberDeleteService memberDeleteService;
 
   @Test
   void deleteChangesVoteReferencesToVirtualMemberBeforeDeletingMember() {
     Member member = mock(Member.class);
+    when(member.getId()).thenReturn(123L);
     Member virtualMember = mock(Member.class);
     when(memberRepository.findById(VIRTUAL_MEMBER_ID)).thenReturn(Optional.of(virtualMember));
 
@@ -96,5 +102,6 @@ class MemberDeleteServiceTest {
     order.verify(voteRepository).updateVirtualMember(member, virtualMember);
     order.verify(voteParticipationRepository).updateVirtualMember(member, virtualMember);
     order.verify(memberRepository).delete(member);
+    verify(sessionService).deleteAllSessions(123L);
   }
 }

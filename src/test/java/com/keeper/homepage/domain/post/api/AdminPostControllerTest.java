@@ -33,8 +33,8 @@ public class AdminPostControllerTest extends PostApiTestHelper {
     long adminId = memberTestHelper.generate().getId();
     Member member = memberTestHelper.generate();
     long memberId = member.getId();
-    adminSessionId = sessionService.createSessionId(adminId, ROLE_회원, ROLE_회장);
-    memberSessionId = sessionService.createSessionId(memberId, ROLE_회원);
+    adminSessionId = memberTestHelper.createSessionId(adminId, ROLE_회원, ROLE_회장);
+    memberSessionId = memberTestHelper.createSessionId(memberId, ROLE_회원);
     post = postTestHelper.generate();
     category = getCategoryBy(자유게시판);
   }

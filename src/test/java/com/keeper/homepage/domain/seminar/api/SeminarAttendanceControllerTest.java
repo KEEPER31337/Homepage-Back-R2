@@ -59,8 +59,8 @@ public class SeminarAttendanceControllerTest extends SeminarApiTestHelper {
   void setUp() {
     adminId = memberTestHelper.builder().realName(RealName.from("김영환")).build().getId();
     userId = memberTestHelper.builder().realName(RealName.from("김기철")).build().getId();
-    adminSessionId = sessionService.createSessionId(adminId, ROLE_회원, ROLE_회장);
-    userSessionId = sessionService.createSessionId(userId, ROLE_회원);
+    adminSessionId = memberTestHelper.createSessionId(adminId, ROLE_회원, ROLE_회장);
+    userSessionId = memberTestHelper.createSessionId(userId, ROLE_회원);
 
     now = LocalDateTime.now().withNano(0);
     seminarStartRequest = SeminarStartRequest.builder()

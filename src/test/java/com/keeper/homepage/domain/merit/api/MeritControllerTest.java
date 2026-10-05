@@ -53,9 +53,9 @@ public class MeritControllerTest extends MeritApiTestHelper {
     member = memberTestHelper.generate();
     otherMember = memberTestHelper.generate();
     admin = memberTestHelper.generate();
-    userSessionId = sessionService.createSessionId(member.getId(),
+    userSessionId = memberTestHelper.createSessionId(member.getId(),
         ROLE_회원);
-    adminSessionId = sessionService.createSessionId(member.getId(),
+    adminSessionId = memberTestHelper.createSessionId(member.getId(),
         ROLE_회장, ROLE_부회장, ROLE_서기, ROLE_회원);
   }
 

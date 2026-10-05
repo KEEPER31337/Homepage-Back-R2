@@ -43,7 +43,7 @@ class SignOutControllerTest extends IntegrationTest {
     @Test
     @DisplayName("유효한 요청이면 세션을 삭제하고 로그아웃해야 한다.")
     void should_successfullySignOut_when_validRequest() throws Exception {
-      String sessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      String sessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
       String key = sessionIdCodec.toRedisKey(sessionId).orElseThrow();
       Cookie sessionCookie = new Cookie(SESSION_COOKIE_NAME, sessionId);
 

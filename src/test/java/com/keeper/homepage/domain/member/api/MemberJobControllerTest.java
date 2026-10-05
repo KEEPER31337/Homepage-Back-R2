@@ -33,7 +33,7 @@ public class MemberJobControllerTest extends IntegrationTest {
   void setUp() {
     member = memberTestHelper.generate();
     member.assignJob(ROLE_회장);
-    adminSessionId = sessionService.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
+    adminSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
     em.flush();
     em.clear();
   }

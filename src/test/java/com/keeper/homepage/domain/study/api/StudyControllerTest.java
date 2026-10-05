@@ -50,8 +50,8 @@ public class StudyControllerTest extends StudyApiTestHelper {
     member = memberTestHelper.builder().build();
     other = memberTestHelper.builder().build();
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
-    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
-    otherSessionId = sessionService.createSessionId(other.getId(), ROLE_회원);
+    memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
+    otherSessionId = memberTestHelper.createSessionId(other.getId(), ROLE_회원);
     studyId = studyTestHelper.builder().headMember(member).build().getId();
   }
 

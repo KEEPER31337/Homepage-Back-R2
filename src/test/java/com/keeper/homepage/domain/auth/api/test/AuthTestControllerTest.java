@@ -45,8 +45,8 @@ class AuthTestControllerTest extends IntegrationTest {
   void setup() {
     adminId = memberTestHelper.builder().build().getId();
     userId = memberTestHelper.builder().build().getId();
-    adminSessionId = sessionService.createSessionId(adminId, ROLE_회원, ROLE_회장);
-    userSessionId = sessionService.createSessionId(userId, ROLE_회원);
+    adminSessionId = memberTestHelper.createSessionId(adminId, ROLE_회원, ROLE_회장);
+    userSessionId = memberTestHelper.createSessionId(userId, ROLE_회원);
   }
 
   @Nested

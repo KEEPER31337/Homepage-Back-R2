@@ -82,8 +82,8 @@ public class PostControllerTest extends PostApiTestHelper {
   void setUp() throws IOException {
     member = memberTestHelper.generate();
     other = memberTestHelper.generate();
-    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
-    otherSessionId = sessionService.createSessionId(other.getId(), ROLE_회원);
+    memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
+    otherSessionId = memberTestHelper.createSessionId(other.getId(), ROLE_회원);
     category = getCategoryBy(자유게시판);
     thumbnail = thumbnailTestHelper.getSmallThumbnailFile();
     file = new MockMultipartFile("files", "testImage_1x1.png", "image/png",
@@ -941,7 +941,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @BeforeEach
     void setUp() {
       other = memberTestHelper.builder().point(EXAM_READ_DEDUCTION_POINT).build();
-      otherSessionId = sessionService.createSessionId(other.getId(), ROLE_회원);
+      otherSessionId = memberTestHelper.createSessionId(other.getId(), ROLE_회원);
     }
 
     @Test
@@ -993,7 +993,7 @@ public class PostControllerTest extends PostApiTestHelper {
     void 시험게시판_일반글_열람권한_생성시_포인트가_부족하면_실패한다() throws Exception {
       Category examCategory = getCategoryBy(시험게시판);
       Member lowPointMember = memberTestHelper.builder().point(9999).build();
-      String lowPointMemberSessionId = sessionService.createSessionId(lowPointMember.getId(), ROLE_회원);
+      String lowPointMemberSessionId = memberTestHelper.createSessionId(lowPointMember.getId(), ROLE_회원);
       postService.create(post, examCategory.getId(), thumbnail, List.of(file));
 
       em.flush();
@@ -1133,7 +1133,7 @@ public class PostControllerTest extends PostApiTestHelper {
     @DisplayName("시험게시판 일반글을 열람했으면 파일 다운로드는 성공한다.")
     void 시험게시판_일반글_열람시_파일_다운로드는_성공한다() throws Exception {
       Member reader = memberTestHelper.builder().point(50000).build();
-      String readerSessionId = sessionService.createSessionId(reader.getId(), ROLE_회원);
+      String readerSessionId = memberTestHelper.createSessionId(reader.getId(), ROLE_회원);
 
       postService.create(post, 시험게시판.getId(), thumbnail, List.of(file));
       commentTestHelper.builder().post(post).member(reader).build();

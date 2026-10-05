@@ -38,7 +38,7 @@ public class BookControllerTest extends BookApiTestHelper {
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+    memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
   }
 
   @Nested
@@ -151,7 +151,7 @@ public class BookControllerTest extends BookApiTestHelper {
     void setup() {
       member = memberTestHelper.generate();
       book = bookTestHelper.generate();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test

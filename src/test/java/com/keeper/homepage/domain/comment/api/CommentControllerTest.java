@@ -42,7 +42,7 @@ public class CommentControllerTest extends CommentApiTestHelper {
     postId = post.getId();
     comment = commentTestHelper.builder().post(post).member(member).build();
     commentId = comment.getId();
-    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+    memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
   }
 
   @Nested
