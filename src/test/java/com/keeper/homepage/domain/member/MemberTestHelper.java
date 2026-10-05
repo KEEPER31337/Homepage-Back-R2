@@ -19,6 +19,8 @@ import com.keeper.homepage.domain.thumbnail.entity.Thumbnail;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import jakarta.servlet.http.Cookie;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,8 +45,13 @@ public class MemberTestHelper {
   public Cookie[] getSessionCookies(Member member) {
     return new Cookie[]{
         new Cookie(SESSION_COOKIE_NAME,
-            sessionService.createSessionId(member.getId(), getRoles(member)))
+            createSessionId(member.getId(), getRoles(member)))
     };
+  }
+
+  public String createSessionId(long userId, MemberJobType... roles) {
+    List<String> roleNames = Arrays.stream(roles).map(MemberJobType::name).toList();
+    return sessionService.createSession(userId, roleNames).sessionId();
   }
 
   private static MemberJobType[] getRoles(Member member) {

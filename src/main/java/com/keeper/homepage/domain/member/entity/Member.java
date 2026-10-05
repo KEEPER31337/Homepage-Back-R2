@@ -6,6 +6,8 @@ import static com.keeper.homepage.domain.member.entity.embedded.Password.HASHED_
 import static com.keeper.homepage.domain.member.entity.embedded.RealName.MAX_REAL_NAME_LENGTH;
 import static com.keeper.homepage.domain.member.entity.embedded.StudentId.MAX_STUDENT_ID_LENGTH;
 import static com.keeper.homepage.domain.member.entity.rank.MemberRank.MemberRankType.일반회원;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.가입대기;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.비회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static jakarta.persistence.CascadeType.ALL;
@@ -374,5 +376,9 @@ public class Member {
 
   public boolean isType(MemberTypeEnum memberTypeEnum) {
     return this.memberType.getType() == memberTypeEnum;
+  }
+
+  public boolean isSignInRestricted() {
+    return isType(가입대기) || isType(비회원);
   }
 }

@@ -53,9 +53,9 @@ public class SeminarControllerTest extends SeminarApiTestHelper {
     adminId = memberTestHelper.builder().build().getId();
     clerkId = memberTestHelper.builder().build().getId();
     userId = memberTestHelper.builder().build().getId();
-    adminSessionId = sessionService.createSessionId(adminId, ROLE_회원, ROLE_회장);
-    clerkSessionId = sessionService.createSessionId(clerkId, ROLE_회원, ROLE_서기);
-    userSessionId = sessionService.createSessionId(userId, ROLE_회원);
+    adminSessionId = memberTestHelper.createSessionId(adminId, ROLE_회원, ROLE_회장);
+    clerkSessionId = memberTestHelper.createSessionId(clerkId, ROLE_회원, ROLE_서기);
+    userSessionId = memberTestHelper.createSessionId(userId, ROLE_회원);
 
     now = LocalDateTime.now().withNano(0);
     seminarStartRequest = SeminarStartRequest.builder()

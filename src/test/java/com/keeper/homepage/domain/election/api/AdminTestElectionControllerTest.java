@@ -50,7 +50,7 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
   @BeforeEach
   void setUp() {
     admin = memberTestHelper.generate();
-    adminSessionId = sessionService.createSessionId(admin.getId(), ROLE_회장, ROLE_회원);
+    adminSessionId = memberTestHelper.createSessionId(admin.getId(), ROLE_회장, ROLE_회원);
   }
 
   @Nested
@@ -405,4 +405,3 @@ public class AdminTestElectionControllerTest extends AdminElectionApiTestHelper 
   }
 
 }
-

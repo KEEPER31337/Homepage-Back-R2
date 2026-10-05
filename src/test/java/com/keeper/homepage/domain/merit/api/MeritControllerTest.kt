@@ -41,9 +41,9 @@ class MeritControllerTest1 : IntegrationTest() {
         member = memberTestHelper.generate()
         otherMember = memberTestHelper.generate()
         admin = memberTestHelper.generate().apply { assignJob(MemberJob.MemberJobType.ROLE_회장) }
-        userSessionId = sessionService.createSessionId(member!!.id,
+        userSessionId = memberTestHelper.createSessionId(member!!.id,
                 MemberJob.MemberJobType.ROLE_회원)
-        adminSessionId = sessionService.createSessionId(member!!.id,
+        adminSessionId = memberTestHelper.createSessionId(member!!.id,
                 MemberJob.MemberJobType.ROLE_회장, MemberJob.MemberJobType.ROLE_부회장, MemberJob.MemberJobType.ROLE_서기, MemberJob.MemberJobType.ROLE_회원)
     }
 

@@ -39,7 +39,7 @@ public class AttendanceControllerTest extends IntegrationTest {
   @BeforeEach
   void setUp() {
     member = memberTestHelper.generate();
-    memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+    memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
 
     params.add("page", "0");
     params.add("size", "3");

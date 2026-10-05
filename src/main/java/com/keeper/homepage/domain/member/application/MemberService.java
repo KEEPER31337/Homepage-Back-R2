@@ -6,6 +6,7 @@ import static com.keeper.homepage.global.error.ErrorCode.MEMBER_CANNOT_FOLLOW_ME
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.MEMBER_TYPE_NOT_FOUND;
 
+import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.domain.member.application.convenience.MemberDeleteService;
 import com.keeper.homepage.domain.member.application.convenience.MemberFindService;
 import com.keeper.homepage.domain.member.dao.MemberRepository;
@@ -36,6 +37,7 @@ public class MemberService {
   private final MemberProfileService memberProfileService;
   private final MemberTypeRepository memberTypeRepository;
   private final MemberDeleteService memberDeleteService;
+  private final SessionService sessionService;
 
 
   @Transactional
@@ -95,9 +97,14 @@ public class MemberService {
     MemberType findMemberType = memberTypeRepository.findById(typeId)
         .orElseThrow(() -> new BusinessException(typeId, "memberType", MEMBER_TYPE_NOT_FOUND));
 
-    memberIds.stream()
-        .map(memberFindService::findById)
-        .forEach(m -> m.updateType(findMemberType));
+    for (long memberId : memberIds) {
+      Member member = memberFindService.findById(memberId);
+      member.updateType(findMemberType);
+      
+      if (member.isSignInRestricted()) {
+        sessionService.deleteAllSessions(member.getId());
+      }
+    }
   }
 
   @Transactional

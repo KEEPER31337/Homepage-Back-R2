@@ -297,7 +297,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     @BeforeEach
     void setUp() throws IOException {
       member = memberTestHelper.builder().build();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -343,7 +343,7 @@ class MemberControllerTest extends MemberApiTestHelper {
       memberTestHelper.builder().point(0).build();
       memberTestHelper.builder().point(100).build();
       memberId = memberTestHelper.builder().point(1000).build().getId();
-      memberSessionId = sessionService.createSessionId(memberId, ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(memberId, ROLE_회원);
     }
 
     @Test
@@ -384,7 +384,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     void setUp() throws IOException {
       memberId = memberTestHelper.generate().getId();
       otherId = memberTestHelper.generate().getId();
-      memberSessionId = sessionService.createSessionId(memberId, ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(memberId, ROLE_회원);
     }
 
     @Test
@@ -434,7 +434,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     @BeforeEach
     void setUp() {
       member = memberTestHelper.generate();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -473,7 +473,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     void setUp() {
       member = memberTestHelper.generate();
       thumbnail = thumbnailTestHelper.getThumbnailFile();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -511,8 +511,8 @@ class MemberControllerTest extends MemberApiTestHelper {
     void setUp() throws IOException {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
-      otherMemberSessionId = sessionService.createSessionId(otherMember.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
+      otherMemberSessionId = memberTestHelper.createSessionId(otherMember.getId(), ROLE_회원);
     }
 
     @Test
@@ -580,8 +580,8 @@ class MemberControllerTest extends MemberApiTestHelper {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
       admin = memberTestHelper.generate();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
-      adminSessionId = sessionService.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
+      adminSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
       typeId = 3L;
     }
 
@@ -658,7 +658,7 @@ class MemberControllerTest extends MemberApiTestHelper {
     void setUp() {
       member = memberTestHelper.generate();
       otherMember = memberTestHelper.generate();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
     }
 
     @Test
@@ -726,9 +726,9 @@ class MemberControllerTest extends MemberApiTestHelper {
       member = memberTestHelper.builder()
           .password(Password.from("testPassword"))
           .build();
-      memberSessionId = sessionService.createSessionId(member.getId(), ROLE_회원);
+      memberSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원);
       admin = memberTestHelper.builder().build();
-      adminSessionId = sessionService.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
+      adminSessionId = memberTestHelper.createSessionId(member.getId(), ROLE_회원, ROLE_회장);
     }
 
     @Test
