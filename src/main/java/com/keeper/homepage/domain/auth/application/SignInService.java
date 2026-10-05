@@ -10,6 +10,7 @@ import com.keeper.homepage.domain.member.entity.embedded.LoginId;
 import com.keeper.homepage.domain.member.entity.job.MemberHasMemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob;
 import com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType;
+import com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum;
 import com.keeper.homepage.global.error.BusinessException;
 import com.keeper.homepage.global.error.ErrorCode;
 import com.keeper.homepage.global.util.mail.MailUtil;
@@ -45,9 +46,16 @@ public class SignInService {
     if (member.getProfile().getPassword().isWrongPassword(rawPassword)) {
       throw new BusinessException(loginId.get(), "loginId", ErrorCode.MEMBER_WRONG_ID_OR_PASSWORD);
     }
-    if (member.isType(가입대기)) {
-      throw new BusinessException(가입대기, "memberType", ErrorCode.MEMBER_APPROVAL_PENDING);
+    if (member.isSignInRestricted()) {
+      MemberTypeEnum type = member.getMemberType().getType();
+
+      if (type == 가입대기) {
+        throw new BusinessException(type, "memberType", ErrorCode.MEMBER_APPROVAL_PENDING);
+      }
+
+      throw new BusinessException(type, "memberType", ErrorCode.MEMBER_SIGN_IN_RESTRICTED);
     }
+    
     List<String> roles = getRoles(member);
     var session = sessionService.createSession(member.getId(), roles);
     authCookieService.setSessionCookie(response, session.sessionId(), session.maxAgeMillis());

@@ -2,6 +2,7 @@ package com.keeper.homepage.domain.auth.application;
 
 import static com.keeper.homepage.domain.member.entity.job.MemberJob.MemberJobType.ROLE_회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.가입대기;
+import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.비회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.MemberTypeEnum.정회원;
 import static com.keeper.homepage.domain.member.entity.type.MemberType.getMemberTypeBy;
 import static com.keeper.homepage.global.config.security.session.SessionPolicy.SESSION_COOKIE_NAME;
@@ -126,6 +127,19 @@ class PendingMemberAuthenticationTest {
   }
 
   @Test
+  void nonMemberCannotSignInOrCreateSession() throws Exception {
+    member.updateType(getMemberTypeBy(비회원));
+
+    signIn(RAW_PASSWORD)
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.message")
+            .value("[memberType] 비회원: 로그인할 수 없는 회원 유형입니다."))
+        .andExpect(cookie().doesNotExist(SESSION_COOKIE_NAME));
+
+    verifyNoInteractions(sessionService, authCookieService);
+  }
+
+  @Test
   void wrongPasswordTakesPrecedenceOverPendingApproval() throws Exception {
     member.updateType(getMemberTypeBy(가입대기));
 
@@ -151,7 +165,8 @@ class PendingMemberAuthenticationTest {
   }
 
   @ParameterizedTest
-  @EnumSource(value = MemberTypeEnum.class, names = "가입대기", mode = EnumSource.Mode.EXCLUDE)
+  @EnumSource(value = MemberTypeEnum.class, names = {"가입대기", "비회원"},
+      mode = EnumSource.Mode.EXCLUDE)
   void existingMemberTypesCanStillSignIn(MemberTypeEnum type) throws Exception {
     member.updateType(getMemberTypeBy(type));
     stubSessionCreation();
