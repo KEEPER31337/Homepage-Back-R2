@@ -167,9 +167,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       + "WHERE p.member = :member AND p.postStatus.isTemp = false ")
   void updateVirtualMember(@Param("member") Member member, @Param("virtualMember") Member virtualMember);
 
-  @Modifying
-  @Query("DELETE FROM Post p "
+  @Query("SELECT p FROM Post p "
       + "WHERE p.member = :member "
       + "AND p.postStatus.isTemp = true")
-  void deleteAllByMemberAndIsTempTrue(@Param("member") Member member);
+  List<Post> findAllByMemberAndIsTempTrue(@Param("member") Member member);
 }

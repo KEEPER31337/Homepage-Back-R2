@@ -1,8 +1,10 @@
 package com.keeper.homepage.domain.member.application.convenience;
 
 import static com.keeper.homepage.domain.member.application.convenience.MemberDeleteService.VIRTUAL_MEMBER_ID;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,11 +20,14 @@ import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberReadPostRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +44,9 @@ class MemberDeleteServiceTest {
 
   @Mock
   private PostRepository postRepository;
+
+  @Mock
+  private PostDeleteService postDeleteService;
 
   @Mock
   private CommentRepository commentRepository;
@@ -103,5 +111,36 @@ class MemberDeleteServiceTest {
     order.verify(voteParticipationRepository).updateVirtualMember(member, virtualMember);
     order.verify(memberRepository).delete(member);
     verify(sessionService).deleteAllSessions(123L);
+  }
+
+  @Test
+  void deleteRemovesEachTempPostThroughPostDeleteServiceBeforeDeletingMember() {
+    Member member = mock(Member.class);
+    Member virtualMember = mock(Member.class);
+    Post tempPost1 = mock(Post.class);
+    Post tempPost2 = mock(Post.class);
+    when(memberRepository.findById(VIRTUAL_MEMBER_ID)).thenReturn(Optional.of(virtualMember));
+    when(postRepository.findAllByMemberAndIsTempTrue(member)).thenReturn(List.of(tempPost1, tempPost2));
+
+    memberDeleteService.delete(member);
+
+    InOrder order = inOrder(postRepository, postDeleteService, memberRepository);
+    order.verify(postRepository).updateVirtualMember(member, virtualMember);
+    order.verify(postDeleteService).delete(tempPost1);
+    order.verify(postDeleteService).delete(tempPost2);
+    order.verify(memberRepository).delete(member);
+  }
+
+  @Test
+  void deleteDoesNotCallPostDeleteServiceWhenMemberHasNoTempPost() {
+    Member member = mock(Member.class);
+    Member virtualMember = mock(Member.class);
+    when(memberRepository.findById(VIRTUAL_MEMBER_ID)).thenReturn(Optional.of(virtualMember));
+    when(postRepository.findAllByMemberAndIsTempTrue(member)).thenReturn(List.of());
+
+    memberDeleteService.delete(member);
+
+    verify(postDeleteService, never()).delete(any());
+    verify(memberRepository).delete(member);
   }
 }

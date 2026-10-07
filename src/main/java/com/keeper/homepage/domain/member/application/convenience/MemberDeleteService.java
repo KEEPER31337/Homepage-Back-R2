@@ -14,12 +14,15 @@ import com.keeper.homepage.domain.member.dao.post.MemberHasPostDislikeRepository
 import com.keeper.homepage.domain.member.dao.post.MemberHasPostLikeRepository;
 import com.keeper.homepage.domain.member.dao.post.MemberReadPostRepository;
 import com.keeper.homepage.domain.member.entity.Member;
+import com.keeper.homepage.domain.post.application.convenience.PostDeleteService;
 import com.keeper.homepage.domain.post.dao.PostRepository;
+import com.keeper.homepage.domain.post.entity.Post;
 import com.keeper.homepage.domain.seminar.dao.SeminarRepository;
 import com.keeper.homepage.domain.study.dao.StudyRepository;
 import com.keeper.homepage.domain.vote.dao.VoteParticipationRepository;
 import com.keeper.homepage.domain.vote.dao.VoteRepository;
 import com.keeper.homepage.global.error.BusinessException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberDeleteService {
 
   public static final long VIRTUAL_MEMBER_ID = 1;
+
+  private final PostDeleteService postDeleteService;
 
   private final MemberRepository memberRepository;
   private final PostRepository postRepository;
@@ -68,9 +73,18 @@ public class MemberDeleteService {
     commentDislikeRepository.deleteAllByMember(member);
     readPostRepository.deleteAllByMember(member);
     memberHasPostDislikeRepository.deleteAllByMember(member);
-    postRepository.deleteAllByMemberAndIsTempTrue(member);
+    deleteAllTempPosts(member);
+    
     memberRepository.delete(member);
     sessionService.deleteAllSessions(member.getId());
+  }
+
+  private void deleteAllTempPosts(Member member) {
+    List<Post> tempPosts = postRepository.findAllByMemberAndIsTempTrue(member);
+
+    for (Post tempPost : tempPosts) {
+      postDeleteService.delete(tempPost);
+    }
   }
 
   public Member getVirtualMember() {
