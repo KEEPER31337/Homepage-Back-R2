@@ -21,6 +21,7 @@ import com.keeper.homepage.domain.comment.entity.Comment;
 import com.keeper.homepage.domain.election.entity.Election;
 import com.keeper.homepage.domain.election.entity.ElectionCandidate;
 import com.keeper.homepage.domain.election.entity.ElectionChartLog;
+import com.keeper.homepage.domain.file.entity.FileEntity;
 import com.keeper.homepage.domain.library.entity.Book;
 import com.keeper.homepage.domain.member.dto.request.UpdateMemberEmailAddressRequest;
 import com.keeper.homepage.domain.member.entity.Member;
@@ -28,6 +29,7 @@ import com.keeper.homepage.domain.member.entity.embedded.EmailAddress;
 import com.keeper.homepage.domain.member.entity.embedded.Password;
 import com.keeper.homepage.domain.member.entity.friend.Friend;
 import com.keeper.homepage.domain.post.entity.Post;
+import com.keeper.homepage.domain.post.entity.PostHasFile;
 import com.keeper.homepage.domain.seminar.entity.Seminar;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendance;
 import com.keeper.homepage.domain.study.entity.Study;
@@ -265,6 +267,42 @@ public class MemberServiceTest extends IntegrationTest {
       assertThat(seminarAttendanceRepository.findById(seminarAttendanceId)).isEmpty();
       assertThat(surveyMemberReplyRepository.findById(replyId)).isEmpty();
       assertThat(gameRepository.findById(gameId)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("첨부파일이 있는 임시글이 있어도 탈퇴에 성공하고, 임시글과 파일 관계는 함께 삭제된다.")
+    public void 첨부파일이_있는_임시글이_있어도_탈퇴에_성공하고_임시글과_파일_관계는_함께_삭제된다() throws Exception {
+      //given
+      long memberId = member.getId();
+      Post tempPost = postTestHelper.builder().member(member).isTemp(true).build();
+      postService.addPostFiles(member, tempPost.getId(), List.of(thumbnailTestHelper.getThumbnailFile()));
+      Post publishedPost = postTestHelper.builder().member(member).isTemp(false).build();
+      postService.addPostFiles(member, publishedPost.getId(), List.of(thumbnailTestHelper.getThumbnailFile()));
+      em.flush();
+      em.clear();
+
+      long tempPostId = tempPost.getId();
+      long publishedPostId = publishedPost.getId();
+      List<PostHasFile> tempPostFiles = postHasFileRepository.findAllByPost(
+          postRepository.findById(tempPostId).orElseThrow());
+      assertThat(tempPostFiles).hasSize(1);
+      FileEntity tempPostFile = tempPostFiles.get(0).getFile();
+
+      //when
+      member = memberRepository.findById(memberId).orElseThrow();
+      memberService.deleteMember(member, "TruePassword");
+      em.flush();
+      em.clear();
+
+      //then
+      assertThat(memberRepository.findById(memberId)).isEmpty();
+      assertThat(postRepository.findById(tempPostId)).isEmpty();
+      assertThat(postHasFileRepository.findAll())
+          .noneMatch(postHasFile -> postHasFile.getFile().getId().equals(tempPostFile.getId()));
+
+      Post remainingPost = postRepository.findById(publishedPostId).orElseThrow();
+      assertThat(remainingPost.getMember()).isEqualTo(memberFindService.getVirtualMember());
+      assertThat(postHasFileRepository.findAllByPost(remainingPost)).hasSize(1);
     }
   }
 }
