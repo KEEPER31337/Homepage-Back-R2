@@ -23,7 +23,7 @@ class FileServerValidator {
         String mimeType = detectMimeType(file);
         String extension = extractExtension(file.getOriginalFilename());
         
-        if (mimeType == null || !ALLOWED_MIME_TYPES.contains(mimeType)) {
+        if (!ALLOWED_MIME_TYPES.contains(mimeType)) {
             throw new BusinessException(mimeType, "mimeType", FILE_INVALID_TYPE);
         }
         
