@@ -7,7 +7,6 @@ import static com.keeper.homepage.domain.library.entity.BookBorrowStatus.getBook
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_BORROWING_COUNT_OVER;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_CURRENT_QUANTITY_IS_ZERO;
 import static com.keeper.homepage.global.error.ErrorCode.BOOK_NOT_FOUND;
-import static com.keeper.homepage.global.error.ErrorCode.BOOK_SEARCH_TYPE_NOT_FOUND;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_CANCEL_REQUEST_DENY;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_RENEWAL_ELIGIBILITY_NOT_MET;
 import static com.keeper.homepage.global.error.ErrorCode.BORROW_REQUEST_ALREADY;
@@ -64,7 +63,6 @@ public class BookService {
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
       case AUTHOR -> bookRepository.findAllByAuthorIgnoreCaseContainingOrderByIdDesc(search, pageable)
           .map(book -> BookResponse.of(book, canBorrow(member, book) && isUnderLimit));
-      default -> throw new BusinessException(searchType, "searchType", BOOK_SEARCH_TYPE_NOT_FOUND);
     };
   }
 
