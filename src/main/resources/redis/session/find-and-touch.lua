@@ -31,9 +31,6 @@ if now >= absoluteExpiresAt then
 end
 
 local pttl = redis.call('PTTL', KEYS[1])
-if pttl == -2 then
-  return cjson.encode({status = 'INVALID', redis_time = now})
-end
 if pttl == -1 then
   redis.call('DEL', KEYS[1])
   return cjson.encode({status = 'TTL_MISSING', redis_time = now})
