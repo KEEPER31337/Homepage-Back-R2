@@ -70,7 +70,6 @@ public class PasswordFactory {
         iterations, 256);
     SecretKey secret = keyFactory.generateSecret(keySpec);
 
-    assert secret != null;
     byte[] rawHash = secret.getEncoded();
     byte[] hashBase64 = Base64.getEncoder().encode(rawHash);
 
