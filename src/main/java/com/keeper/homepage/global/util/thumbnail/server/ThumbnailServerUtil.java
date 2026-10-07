@@ -93,11 +93,7 @@ class ThumbnailServerUtil extends ThumbnailUtil {
   }
 
   private String getThumbnailURI(String thumbnailFullPath) {
-    String thumbnailURI = thumbnailFullPath;
-    if (thumbnailFullPath.startsWith(ROOT_PATH)) {
-      thumbnailURI = thumbnailFullPath.substring(ROOT_PATH.length() + 1);
-    }
-    return thumbnailURI;
+    return thumbnailFullPath.substring(ROOT_PATH.length() + 1);
   }
 
   @Transactional
