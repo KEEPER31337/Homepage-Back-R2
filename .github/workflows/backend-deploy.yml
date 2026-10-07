@@ -48,6 +48,8 @@ jobs:
           cache-to: type=gha,scope=backend,mode=max
 
       - uses: rezakargar/setup-unregistry@9166ef1e3d74eca84aecfb412393c17324eea59f # v1
+        with:
+          version: 75f5b35683980a7cb3811645ef7ee0cfe3d64c00 # psviderski/unregistry v0.4.3
 
       - uses: webfactory/ssh-agent@dc588b651fe13675774614f8e6a936a468676387 # v0.9.0
         with:
