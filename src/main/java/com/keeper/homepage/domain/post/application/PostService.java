@@ -361,7 +361,6 @@ public class PostService {
     return postRepository.findAllRecent(시험게시판.getId(), PageRequest.of(0, RECENT_POSTING_COUNT))
         .stream()
         .map(this::getMainPostResponse)
-        .limit(RECENT_POSTING_COUNT)
         .toList();
   }
 
