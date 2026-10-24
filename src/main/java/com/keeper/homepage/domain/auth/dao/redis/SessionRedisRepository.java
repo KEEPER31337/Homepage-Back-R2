@@ -1,7 +1,5 @@
 package com.keeper.homepage.domain.auth.dao.redis;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.global.config.security.session.SessionLookupResult;
 import com.keeper.homepage.global.config.security.session.SessionPolicy;
 import com.keeper.homepage.global.config.security.session.SessionStoreException;
@@ -12,6 +10,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Repository;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class SessionRedisRepository {
           Long.toString(absoluteTimeoutMillis),
           rolesJson);
       return readResult(result, StoredSessionCreationResult.class);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new SessionStoreException("세션 역할을 직렬화하지 못했습니다.", e);
     }
   }
@@ -61,7 +61,7 @@ public class SessionRedisRepository {
       return requireCount(redisTemplate.execute(UPDATE_ALL_SESSION_ROLES_SCRIPT, List.of(),
           SessionPolicy.REDIS_KEY_PREFIX + "*", Long.toString(userId),
           objectMapper.writeValueAsString(roles)));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new SessionStoreException("세션 역할을 직렬화하지 못했습니다.", e);
     }
   }
@@ -84,7 +84,7 @@ public class SessionRedisRepository {
     }
     try {
       return objectMapper.readValue(result, type);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new SessionStoreException("Redis 세션 스크립트 결과를 읽지 못했습니다.", e);
     }
   }

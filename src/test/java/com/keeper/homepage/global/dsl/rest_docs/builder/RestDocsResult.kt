@@ -13,12 +13,12 @@ import org.springframework.restdocs.snippet.Snippet
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.ResultMatcher
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder
 import org.springframework.util.Assert
 
 class RestDocsResult(
         private val mockMvc: MockMvc,
-        private val resultActions: MockHttpServletRequestBuilder,
+        private val resultActions: AbstractMockHttpServletRequestBuilder<*>,
 ) {
     private lateinit var request: DocsRequestBuilder
     private lateinit var results : DocsResultBuilder

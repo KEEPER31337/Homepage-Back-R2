@@ -4,8 +4,6 @@ package com.keeper.homepage.global.util.redis;
 import static java.time.ZoneOffset.UTC;
 import static java.time.temporal.ChronoUnit.DAYS;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -13,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @RequiredArgsConstructor
 @Component
@@ -29,7 +29,7 @@ public class RedisUtil {
     }
     try {
       return Optional.ofNullable(objectMapper.readValue(value, classType));
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new RuntimeException(e);
     }
   }
@@ -39,7 +39,7 @@ public class RedisUtil {
     Duration expireDuration = Duration.ofMillis(durationMillis);
     try {
       valueOperations.set(key, objectMapper.writeValueAsString(value), expireDuration);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new RuntimeException(e);
     }
   }
@@ -51,7 +51,7 @@ public class RedisUtil {
     Long incrementedValue = valueOperations.increment(key);
     try {
       valueOperations.set(key, objectMapper.writeValueAsString(incrementedValue), expireDuration);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw new RuntimeException(e);
     }
     return incrementedValue;

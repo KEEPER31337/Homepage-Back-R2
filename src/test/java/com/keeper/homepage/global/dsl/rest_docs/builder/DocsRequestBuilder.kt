@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder
+import org.springframework.test.web.servlet.request.AbstractMockHttpServletRequestBuilder
 import org.springframework.util.Assert
 
 class DocsRequestBuilder {
@@ -31,7 +31,7 @@ class DocsRequestBuilder {
         paramMap[name] = value
     }
 
-    fun build(mockMvc: MockMvc, resultActions: MockHttpServletRequestBuilder): ResultActions {
+    fun build(mockMvc: MockMvc, resultActions: AbstractMockHttpServletRequestBuilder<*>): ResultActions {
         cookies.forEach { resultActions.cookie(it) }
         paramMap.forEach { (name, value) -> resultActions.param(name, value) }
         content?.let { resultActions.content(it) }

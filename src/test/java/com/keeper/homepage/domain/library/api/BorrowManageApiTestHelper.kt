@@ -20,7 +20,7 @@ class BorrowManageApiTestHelper : BookManageApiTestHelper() {
     ): ResultActions = mockMvc.perform(
         get(BORROW_URL)
             .params(params)
-            .param("status", borrowStatus?.status)
+            .apply { borrowStatus?.let { param("status", it.status) } }
             .cookie(*accessCookies)
     )
 
@@ -64,8 +64,8 @@ class BorrowManageApiTestHelper : BookManageApiTestHelper() {
     ): ResultActions = mockMvc.perform(
         get("${BORROW_URL}/logs")
             .params(params)
-            .param("searchType", searchType?.name)
-            .param("search", search)
+            .apply { searchType?.let { param("searchType", it.name) } }
+            .apply { search?.let { param("search", it) } }
             .cookie(*accessCookies)
     )
 }

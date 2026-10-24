@@ -11,7 +11,7 @@ fun docs(
         init: RestDocsResult.() -> Unit
 ): RestDocsRequestBuilder {
     val restDocsRequestBuilder = RestDocsRequestBuilder(mockMvc, method, url, pathParams)
-    val requestBuilder = restDocsRequestBuilder.build()!!
+    val requestBuilder = restDocsRequestBuilder.build()
 
     val restDocsResult = RestDocsResult(mockMvc, requestBuilder)
     restDocsResult.init()

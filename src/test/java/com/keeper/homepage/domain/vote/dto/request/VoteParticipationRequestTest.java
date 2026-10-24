@@ -2,16 +2,17 @@ package com.keeper.homepage.domain.vote.dto.request;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 class VoteParticipationRequestTest {
 
   private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = JsonMapper.builderWithJackson2Defaults().build();
 
   @Test
   void mapsCamelCaseSelectionFieldsWithoutReceiptToken() throws Exception {

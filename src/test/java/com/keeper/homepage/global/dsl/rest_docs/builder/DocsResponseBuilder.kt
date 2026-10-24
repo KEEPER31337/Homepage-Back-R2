@@ -57,7 +57,9 @@ class DocsResponseBuilder {
         val methodName = currentStackTraceElement?.methodName
 
         val method = Class.forName(className).methods.firstOrNull { it.name == methodName }
-        val documentName = method?.getAnnotation(Documentation::class.java)?.documentName
+        val documentName = requireNotNull(method?.getAnnotation(Documentation::class.java)?.documentName) {
+            "response { } 블록을 사용하는 테스트 메서드에는 @Documentation(documentName) 이 필요합니다: $className.$methodName"
+        }
 
         val cookieFieldDescriptors = cookieFields.map { CookieDocumentation.cookieWithName(it.fieldName).description(it.description) }
         val pathParameterDescriptors = pathFields.map { RequestDocumentation.parameterWithName(it.fieldName).description(it.description) }

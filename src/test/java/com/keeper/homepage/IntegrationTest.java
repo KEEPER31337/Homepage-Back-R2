@@ -7,7 +7,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.domain.about.StaticWriteTestHelper;
 import com.keeper.homepage.domain.about.application.StaticWriteService;
 import com.keeper.homepage.domain.about.dao.StaticWriteContentRepository;
@@ -109,7 +108,7 @@ import com.keeper.homepage.global.util.mail.MailUtil;
 import com.keeper.homepage.global.util.redis.RedisUtil;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailTestHelper;
 import com.keeper.homepage.global.util.thumbnail.ThumbnailUtil;
-import com.ninjasquad.springmockk.SpykBean;
+import com.ninjasquad.springmockk.MockkSpyBean;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.io.File;
@@ -131,6 +130,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith({RestDocumentationExtension.class})
 @Transactional
@@ -306,10 +306,10 @@ public class IntegrationTest {
   @Autowired
   protected ValidSeminarFindService validSeminarFindService;
 
-  @SpykBean
+  @MockkSpyBean
   protected BookManageService bookManageService;
 
-  @SpykBean
+  @MockkSpyBean
   protected BorrowManageService borrowManageService;
 
   @MockitoSpyBean
@@ -327,10 +327,10 @@ public class IntegrationTest {
   @MockitoSpyBean
   protected BaseballService baseballService;
 
-  @SpykBean
+  @MockkSpyBean
   protected GameFindService gameFindService;
 
-  @SpykBean
+  @MockkSpyBean
   protected GameService gameService;
 
   @MockitoSpyBean
@@ -498,11 +498,7 @@ public class IntegrationTest {
   }
 
   protected String asJsonString(final Object obj) {
-    try {
-      return objectMapper.writeValueAsString(obj);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return objectMapper.writeValueAsString(obj);
   }
 
   public static String generateRandomString(int length) {
