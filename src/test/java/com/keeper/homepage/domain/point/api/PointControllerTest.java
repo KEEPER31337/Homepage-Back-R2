@@ -101,7 +101,7 @@ class PointControllerTest extends IntegrationTest {
       mockMvc.perform(get("/points")
               .cookie(new Cookie(SESSION_COOKIE_NAME, memberSessionId)))
           .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
           .andDo(document("find-pointLogs",
               requestCookies(
                   cookieWithName(SESSION_COOKIE_NAME)

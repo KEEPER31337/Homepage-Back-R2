@@ -59,7 +59,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 request { cookie(*memberTestHelper.getSessionCookies(admin)) }
                 result {
                     expect(status().isOk())
-                    expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    expect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 }
                 response {
                     cookie(
@@ -233,7 +233,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 request { cookie(*memberTestHelper.getSessionCookies(admin)) }
                 result {
                     expect(status().isOk())
-                    expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    expect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 }
                 response {
                     path("memberId" means "조회하고자 하는 멤버의 ID 값")
@@ -274,7 +274,7 @@ class MeritControllerTest1 : IntegrationTest() {
                 request { cookie(*memberTestHelper.getSessionCookies(admin)) }
                 result {
                     expect(status().isOk())
-                    expect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    expect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 }
                 response {
                     cookie(
