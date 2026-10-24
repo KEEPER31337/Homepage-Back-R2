@@ -122,10 +122,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,85 +140,85 @@ public class IntegrationTest {
   public static final Random RANDOM = new Random();
 
   /******* Repository *******/
-  @SpyBean
+  @MockitoSpyBean
   protected MemberRepository memberRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberJobRepository memberJobRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberHasMemberJobRepository memberHasMemberJobRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberRankRepository memberRankRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberTypeRepository memberTypeRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected StaticWriteTitleRepository staticWriteTitleRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected StaticWriteContentRepository staticWriteContentRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected AttendanceRepository attendanceRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BookRepository bookRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BookBorrowInfoRepository bookBorrowInfoRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BookDepartmentRepository bookDepartmentRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BookBorrowStatusRepository bookBorrowStatusRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BookBorrowLogRepository bookBorrowLogRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SeminarRepository seminarRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SeminarAttendanceRepository seminarAttendanceRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected FriendRepository friendRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected CategoryRepository categoryRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected CommentRepository commentRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected PostRepository postRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected PostHasFileRepository postHasFileRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberHasPostDislikeRepository memberHasPostDislikeRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberHasPostLikeRepository memberHasPostLikeRepository;
 
   @Autowired
@@ -227,34 +227,34 @@ public class IntegrationTest {
   @Autowired
   protected GameRepository gameRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected StudyRepository studyRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected StudyHasMemberRepository studyHasMemberRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SurveyRepository surveyRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SurveyReplyRepository surveyReplyRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SurveyMemberReplyRepository surveyMemberReplyRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected ElectionCandidateRepository electionCandidateRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected ElectionChartLogRepository electionChartLogRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected ElectionRepository electionRepository;
 
-  @SpyBean
+  @MockitoSpyBean
   protected ElectionVoterRepository electionVoterRepository;
 
   @Autowired
@@ -273,22 +273,22 @@ public class IntegrationTest {
   protected MeritTypeRepository meritTypeRepository;
 
   /******* Service *******/
-  @SpyBean
+  @MockitoSpyBean
   protected MemberService memberService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected EmailAuthService emailAuthService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SignUpService signUpService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected CheckDuplicateService checkDuplicateService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SignInService signInService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected AuthCookieService authCookieService;
 
   @Autowired
@@ -297,10 +297,10 @@ public class IntegrationTest {
   @Autowired
   protected SeminarService seminarService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected PostService postService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected PostContentService postInfoService;
 
   @Autowired
@@ -312,19 +312,19 @@ public class IntegrationTest {
   @SpykBean
   protected BorrowManageService borrowManageService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BookService bookService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected CommentService commentService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberFindService memberFindService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected StudyService studyService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected BaseballService baseballService;
 
   @SpykBean
@@ -333,38 +333,38 @@ public class IntegrationTest {
   @SpykBean
   protected GameService gameService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberJobService memberJobService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected AttendanceService attendanceService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected SeminarAttendanceService seminarAttendanceService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MeritTypeService meritTypeService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MeritLogService meritLogService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected GivePointService givePointService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected PointLogService pointLogService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected PointService pointService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected AdminElectionService adminElectionService;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MemberProfileService memberProfileService;
 
   /******* Helper *******/
-  @SpyBean
+  @MockitoSpyBean
   protected StaticWriteTestHelper staticWriteTestHelper;
 
   @Autowired
@@ -428,16 +428,16 @@ public class IntegrationTest {
   protected PointLogTestHelper pointLogTestHelper;
 
   /******* Util *******/
-  @SpyBean
+  @MockitoSpyBean
   protected ThumbnailUtil thumbnailUtil;
 
-  @SpyBean
+  @MockitoSpyBean
   protected FileUtil fileUtil;
 
-  @SpyBean
+  @MockitoSpyBean
   protected RedisUtil redisUtil;
 
-  @SpyBean
+  @MockitoSpyBean
   protected MailUtil mailUtil;
 
   protected PasswordEncoder passwordEncoder = PasswordFactory.getPasswordEncoder();
