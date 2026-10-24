@@ -3,7 +3,7 @@ package com.keeper.homepage.domain.seminar.dto.request;
 import com.keeper.homepage.domain.seminar.entity.SeminarAttendanceStatus.SeminarAttendanceStatusType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 
 @Builder
 public record SeminarAttendanceStatusRequest(
