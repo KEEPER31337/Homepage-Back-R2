@@ -3,10 +3,12 @@ spring:
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
 
   jackson:
+    # Jackson 2 기본값 유지: Redis 세션 Lua 스크립트가 부분 객체(예: {status:'INVALID'}, touched/redis_time/expires_at 없음)를 반환하고
+    # 이를 primitive 필드 record(SessionLookupResult 등)로 매핑하므로, Jackson 3 기본값(FAIL_ON_NULL_FOR_PRIMITIVES=true)에서는 역직렬화가 실패한다.
+    # 응답 JSON 키 순서도 알파벳순이 아닌 기존(선언) 순서로 유지된다.
     use-jackson2-defaults: true
 
   jpa:
-    database: mysql
     defer-datasource-initialization: true
     properties:
       hibernate:
