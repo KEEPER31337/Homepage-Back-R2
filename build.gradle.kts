@@ -104,8 +104,8 @@ dependencies {
     implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.12.1")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.apache.tika:tika-core:3.2.3")
-    implementation("org.apache.tika:tika-parsers-standard-package:3.2.3")
+    implementation("org.apache.tika:tika-core:3.3.3")
+    implementation("org.apache.tika:tika-parsers-standard-package:3.3.3")
     implementation("org.apache.commons:commons-lang3:3.20.0")
 
     asciidoctorExt("org.springframework.restdocs:spring-restdocs-asciidoctor")
