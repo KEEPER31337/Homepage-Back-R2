@@ -7,6 +7,7 @@ import static org.hibernate.annotations.OnDeleteAction.RESTRICT;
 import static org.hibernate.generator.EventType.INSERT;
 
 import com.keeper.homepage.domain.member.entity.Member;
+import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -23,7 +24,6 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Check;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -37,12 +37,12 @@ import org.hibernate.type.SqlTypes;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@Check(name = "chk_vote_period", constraints = "end_at > start_at")
 @Table(name = "vote",
     indexes = {
         @Index(name = "idx_vote_created_by", columnList = "created_by"),
         @Index(name = "idx_vote_start_at", columnList = "start_at")
-    })
+    },
+    check = @CheckConstraint(name = "chk_vote_period", constraint = "end_at > start_at"))
 public class Vote {
 
   private static final int MAX_TITLE_LENGTH = 500;

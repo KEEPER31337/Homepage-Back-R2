@@ -70,7 +70,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       mockMvc.perform(get("/merits/types")
               .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
           .andDo(document("search-meritType",
               requestCookies(
                   cookieWithName(SESSION_COOKIE_NAME)
@@ -225,7 +225,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
               get("/merits/members/{memberId}", member.getId())
                   .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
           .andDo(document("search-member-meritLog",
               requestCookies(
                   cookieWithName(SESSION_COOKIE_NAME)
@@ -263,7 +263,7 @@ public class MeritControllerTest extends MeritApiTestHelper {
       mockMvc.perform(get("/merits")
               .cookie(new Cookie(SESSION_COOKIE_NAME, adminSessionId)))
           .andExpect(status().isOk())
-          .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+          .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
           .andDo(document("search-meritLog",
               requestCookies(
                   cookieWithName(SESSION_COOKIE_NAME)

@@ -3,8 +3,6 @@ package com.keeper.homepage.domain.auth.dao.redis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.keeper.homepage.global.config.security.session.SessionAuthenticationFactory;
 import com.keeper.homepage.global.config.security.session.SessionLookupResult;
 import java.time.Duration;
@@ -22,6 +20,9 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.security.core.GrantedAuthority;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 /** Run against an isolated Redis 7 server with SESSION_TEST_REDIS_PORT set. */
 @EnabledIfEnvironmentVariable(named = "SESSION_TEST_REDIS_PORT", matches = "[0-9]+")
@@ -29,7 +30,7 @@ class SessionRedisRepositoryTest {
 
   private static LettuceConnectionFactory connectionFactory;
   private static StringRedisTemplate redis;
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = JsonMapper.builderWithJackson2Defaults().build();
   private final List<String> keys = new ArrayList<>();
   private final long memberId = ThreadLocalRandom.current().nextLong(1, 1L << 40);
   private SessionRedisRepository repository;

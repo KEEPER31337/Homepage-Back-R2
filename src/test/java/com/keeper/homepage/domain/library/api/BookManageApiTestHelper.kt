@@ -66,7 +66,7 @@ fun listHelper(objectName: String, vararg fieldDescriptors: FieldDescriptor): Ar
     fieldDescriptors.map { field("${objectName}[].${it.path}", it.description.toString(), it.isOptional) }
         .toTypedArray()
 
-fun <K, V> multiValueMapOf(
+fun <K : Any, V : Any> multiValueMapOf(
     vararg pairs: Pair<K, V>
 ): MultiValueMap<K, V> = LinkedMultiValueMap<K, V>().apply {
     setAll(mapOf(*pairs))

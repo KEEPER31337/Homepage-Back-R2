@@ -1,6 +1,5 @@
 package com.keeper.homepage.global.config.security.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keeper.homepage.domain.auth.application.AuthCookieService;
 import com.keeper.homepage.domain.auth.application.SessionService;
 import com.keeper.homepage.global.config.security.session.SessionAuthenticationFactory;
@@ -20,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @Component

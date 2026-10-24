@@ -2,19 +2,19 @@ package com.keeper.homepage.domain.vote.dto.response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
 
 class VoteResultResponseTest {
 
-  private final ObjectMapper objectMapper = new ObjectMapper()
-      .registerModule(new JavaTimeModule())
-      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+  private final ObjectMapper objectMapper = JsonMapper.builderWithJackson2Defaults()
+      .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS)
+      .build();
 
   @Test
   void serializeResultStructureInCamelCase() throws Exception {

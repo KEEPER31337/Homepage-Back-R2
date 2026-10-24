@@ -5,6 +5,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 import static org.hibernate.annotations.OnDeleteAction.CASCADE;
 
+import jakarta.persistence.CheckConstraint;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
@@ -21,7 +22,6 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Check;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OnDelete;
@@ -31,12 +31,12 @@ import org.hibernate.annotations.OnDelete;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@Check(name = "chk_vote_agenda_select_range",
-    constraints = "min_select >= 1 AND min_select <= max_select")
 @Table(name = "vote_agenda",
     indexes = @Index(name = "idx_vote_agenda_vote", columnList = "vote_id"),
     uniqueConstraints = @UniqueConstraint(name = "uq_vote_agenda_vote_order",
-        columnNames = {"vote_id", "display_order"}))
+        columnNames = {"vote_id", "display_order"}),
+    check = @CheckConstraint(name = "chk_vote_agenda_select_range",
+        constraint = "min_select >= 1 AND min_select <= max_select"))
 public class VoteAgenda {
 
   private static final int MAX_TITLE_LENGTH = 500;
