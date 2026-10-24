@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -69,6 +70,9 @@ public class RedisUtil {
   }
 
   public void flushAll() {
-    redisTemplate.getConnectionFactory().getConnection().flushAll();
+    redisTemplate.execute((RedisCallback<Void>) connection -> {
+      connection.serverCommands().flushAll();
+      return null;
+    });
   }
 }
