@@ -49,7 +49,11 @@ tasks.register("downloadDependencies") {
 /******* Start Spring Rest Docs *******/
 
 val asciidoctorExt: Configuration by configurations.creating
-val snippetsDir by extra { "$buildDir/generated-snippets" }
+val snippetsDir = layout.buildDirectory.dir("generated-snippets")
+
+asciidoctorj {
+    setVersion("3.0.0")
+}
 
 tasks {
     withType<KotlinCompile> {
