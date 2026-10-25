@@ -11,11 +11,11 @@ public class MeritLogsGroupByMemberResponse {
   private Integer merit;
   private Integer demerit;
 
-  public MeritLogsGroupByMemberResponse(Long memberId, String memberName, String generation,
+  public MeritLogsGroupByMemberResponse(Long memberId, String memberName, Float generation,
       Integer merit, Integer demerit) {
     this.memberId = memberId;
     this.memberName = memberName;
-    this.generation = generation;
+    this.generation = generation != null ? Float.toString(generation) : null;
     this.merit = merit;
     this.demerit = demerit;
   }

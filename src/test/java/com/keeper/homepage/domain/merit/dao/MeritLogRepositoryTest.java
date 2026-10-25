@@ -1,5 +1,6 @@
 package com.keeper.homepage.domain.merit.dao;
 
+import static com.keeper.homepage.domain.member.application.convenience.MemberFindService.VIRTUAL_MEMBER_ID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -133,6 +134,68 @@ public class MeritLogRepositoryTest extends IntegrationTest {
 
       assertThat(result.map(MeritLogsGroupByMemberResponse::getDemerit).toList())
           .containsExactly(-3, -3);
+    }
+
+    @Test
+    @DisplayName("로그에 저장된 이름이 달라도 회원당 한 줄로, 현재 이름으로 조회되어야 한다.")
+    public void 로그에_저장된_이름이_달라도_회원당_한_줄로_현재_이름으로_조회되어야_한다() {
+      meritLogTestHelper.builder()
+          .memberId(member.getId())
+          .memberRealName("예전이름")
+          .memberGeneration(member.getGeneration())
+          .meritType(meritType)
+          .build();
+
+      em.flush();
+      em.clear();
+
+      Page<MeritLogsGroupByMemberResponse> result = meritLogRepository.findAllTotalMeritLogs(
+          PageRequest.of(0, 10));
+      Page<MeritLogsGroupByMemberResponse> firstPage = meritLogRepository.findAllTotalMeritLogs(
+          PageRequest.of(0, 1));
+
+      assertThat(result.map(MeritLogsGroupByMemberResponse::getMemberId).toList())
+          .containsExactlyInAnyOrder(member.getId(), otherMember.getId());
+
+      MeritLogsGroupByMemberResponse memberResult = result.stream()
+          .filter(response -> response.getMemberId().equals(member.getId()))
+          .findFirst()
+          .orElseThrow();
+      assertThat(memberResult.getMemberName()).isEqualTo(member.getRealName());
+      assertThat(memberResult.getGeneration()).isEqualTo(member.getGeneration());
+      assertThat(memberResult.getMerit()).isEqualTo(10);
+
+      assertThat(firstPage.getTotalElements()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("탈퇴 회원과 virtual member의 상벌점은 집계에서 제외되어야 한다.")
+    public void 탈퇴_회원과_virtual_member의_상벌점은_집계에서_제외되어야_한다() {
+      Member withdrawnMember = memberTestHelper.generate();
+      meritLogTestHelper.builder()
+          .memberId(withdrawnMember.getId())
+          .memberRealName(withdrawnMember.getRealName())
+          .memberGeneration(withdrawnMember.getGeneration())
+          .meritType(meritType)
+          .build();
+      memberRepository.delete(withdrawnMember);
+
+      meritLogTestHelper.builder()
+          .memberId(VIRTUAL_MEMBER_ID)
+          .meritType(meritType)
+          .build();
+
+      em.flush();
+      em.clear();
+
+      Page<MeritLogsGroupByMemberResponse> result = meritLogRepository.findAllTotalMeritLogs(
+          PageRequest.of(0, 10));
+      Page<MeritLogsGroupByMemberResponse> firstPage = meritLogRepository.findAllTotalMeritLogs(
+          PageRequest.of(0, 1));
+
+      assertThat(result.map(MeritLogsGroupByMemberResponse::getMemberId).toList())
+          .containsExactlyInAnyOrder(member.getId(), otherMember.getId());
+      assertThat(firstPage.getTotalElements()).isEqualTo(2);
     }
 
   }
