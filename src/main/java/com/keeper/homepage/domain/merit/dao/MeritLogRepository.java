@@ -19,10 +19,15 @@ public interface MeritLogRepository extends JpaRepository<MeritLog, Long> {
   long countByMemberId(long memberId);
 
   @Query(
-      "SELECT NEW com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse(m.memberId, m.memberRealName, m.memberGeneration, " +
+      value = "SELECT NEW com.keeper.homepage.domain.merit.dto.response.MeritLogsGroupByMemberResponse(m.memberId, mem.profile.realName.realName, mem.generation.generation, " +
           "CAST(SUM(CASE WHEN m.meritType.isMerit = true THEN m.meritType.merit ELSE 0 END) AS INTEGER), " +
           "CAST(SUM(CASE WHEN m.meritType.isMerit = false THEN m.meritType.merit ELSE 0 END) AS INTEGER)) " +
-          "FROM MeritLog m GROUP BY m.memberId, m.memberRealName, m.memberGeneration")
+          "FROM MeritLog m JOIN Member mem ON mem.id = m.memberId " +
+          "WHERE mem.id <> 1 " + // virtual member 제외
+          "GROUP BY m.memberId, mem.profile.realName.realName, mem.generation.generation " +
+          "ORDER BY m.memberId",
+      countQuery = "SELECT COUNT(DISTINCT m.memberId) FROM MeritLog m JOIN Member mem ON mem.id = m.memberId " +
+          "WHERE mem.id <> 1")
   Page<MeritLogsGroupByMemberResponse> findAllTotalMeritLogs(Pageable pageable);
 
   @Query("SELECT m FROM MeritLog m WHERE m.meritType.isMerit = true")
