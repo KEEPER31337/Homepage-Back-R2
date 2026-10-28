@@ -20,6 +20,7 @@ public class AdminPostService {
   private final ValidPostFindService validPostFindService;
   private final PostDeleteService postDeleteService;
 
+  @Transactional
   public void delete(long postId) {
     Post post = validPostFindService.findById(postId);
 
