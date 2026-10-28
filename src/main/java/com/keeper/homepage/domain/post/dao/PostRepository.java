@@ -18,13 +18,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
   Optional<Post> findByIdAndIdNot(Long postId, Long virtualId);
 
   /**
-   * 카테고리 + 공지글 + 등록시간 최신순 정렬
+   * 카테고리 + 공지글 + 임시글 제외 + 등록시간 최신순 정렬
    *
    * @param category 게시글 카테고리
    */
   @Query("SELECT p FROM Post p "
       + "WHERE p.category = :category "
       + "AND p.postStatus.isNotice = true "
+      + "AND p.postStatus.isTemp = false "
       + "ORDER BY p.registerTime DESC")
   List<Post> findAllNoticeByCategory(@Param("category") Category category);
 
